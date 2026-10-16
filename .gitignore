@@ -1,0 +1,36 @@
+# Dépendances
+node_modules/
+
+# Builds
+.next/
+out/
+build/
+next-env.d.ts
+
+# Tests
+coverage/
+playwright-report/
+test-results/
+
+# Environnement (ne jamais committer les secrets)
+.env
+.env.*
+!.env.example
+*.pem
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS / éditeurs
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+.vercel
+
+# Caches
+.eslintcache
+*.tsbuildinfo
