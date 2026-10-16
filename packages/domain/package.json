@@ -1,0 +1,13 @@
+{
+  "name": "@hipmaster/domain",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Logique de jeu pure de HIPMaster (ADR 0004) : aucune dépendance à Angular, Fastify ni à la base.",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json"
+  }
+}

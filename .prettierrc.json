@@ -4,5 +4,6 @@
   "trailingComma": "all",
   "printWidth": 100,
   "plugins": ["prettier-plugin-tailwindcss"],
-  "tailwindStylesheet": "./src/app/globals.css"
+  "tailwindStylesheet": "./apps/web/src/styles.css",
+  "overrides": [{ "files": "*.html", "options": { "parser": "angular" } }]
 }

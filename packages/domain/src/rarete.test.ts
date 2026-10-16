@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { CHANCES_BOOSTER, RARETES, tirerRarete } from '@/domain/rarete';
+import { CHANCES_BOOSTER, RARETES, tirerRarete } from './rarete.ts';
 
 describe('tirerRarete', () => {
   it('les chances du booster totalisent 100 %', () => {

@@ -2,10 +2,9 @@
 node_modules/
 
 # Builds
-.next/
-out/
+.angular/
+dist/
 build/
-next-env.d.ts
 
 # Tests
 coverage/

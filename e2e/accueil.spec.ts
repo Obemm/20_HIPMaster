@@ -1,13 +1,18 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
 
-test('la page d’accueil présente le jeu', async ({ page }) => {
+test('la page d’accueil présente le jeu et les chances calculées par l’API', async ({ page }) => {
   await page.goto('/');
   await expect(page.getByRole('heading', { level: 1, name: 'HIPMaster' })).toBeVisible();
+  const raretes = page.getByRole('region', { name: 'Chances par booster' });
+  await expect(raretes.getByRole('listitem')).toHaveCount(4);
+  await expect(raretes).toContainText('Légendaire');
+  await expect(raretes).toContainText('1 %');
 });
 
 test('la page d’accueil ne présente aucune violation d’accessibilité', async ({ page }) => {
   await page.goto('/');
+  await expect(page.getByRole('listitem').first()).toBeVisible();
   const { violations } = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
   expect(violations).toEqual([]);
 });
