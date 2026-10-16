@@ -24,5 +24,8 @@ Toutes les évolutions notables du projet sont consignées ici
 
 ### Modifié
 
+- Dependabot ne propose plus TypeScript 6.1 ou plus (incompatible avec Angular 22) ni de version majeure de
+  `@types/node` (qui suit Node 24) (US-007).
+
 - Next.js remplacé par Angular (ADR 0001 remplacé par 0006) ; la logique de jeu passe de `src/domain` à
   `packages/domain` ; Node 24.15 minimum (exigé par Angular 22) (US-006).
