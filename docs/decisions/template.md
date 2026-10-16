@@ -2,6 +2,7 @@
 
 - **Date** : AAAA-MM-JJ
 - **Statut** : Proposée | Acceptée | Remplacée par NNNN
+- **Référence Elis** : ADR-0NN (ou « aucune » si le référentiel ne couvre pas le sujet)
 
 ## Contexte
 

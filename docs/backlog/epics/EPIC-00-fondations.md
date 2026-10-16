@@ -17,6 +17,7 @@ Disposer d'un socle de développement propre, outillé et traçable.
 - [x] US-002 — Next.js + Tailwind CSS
 - [x] US-003 — Organisation en mode projet
 - [ ] US-004 — Base de données locale
+- [x] US-006 — Socle Angular aligné sur le référentiel Elis
 
 ## Hors périmètre
 

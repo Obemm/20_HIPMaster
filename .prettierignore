@@ -1,10 +1,8 @@
 node_modules
-.next
-out
-build
+dist
 coverage
+.angular
 playwright-report
 test-results
-drizzle
+apps/api/drizzle
 package-lock.json
-next-env.d.ts

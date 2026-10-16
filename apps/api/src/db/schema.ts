@@ -1,5 +1,5 @@
 import { pgEnum, pgTable, integer, text, timestamp, uuid } from 'drizzle-orm/pg-core';
-import { RARETES } from '@/domain/rarete';
+import { RARETES } from '@hipmaster/domain';
 
 export const rarete = pgEnum('rarete', RARETES);
 

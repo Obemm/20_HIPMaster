@@ -5,6 +5,7 @@
     "editorconfig.editorconfig",
     "vitest.explorer",
     "ms-playwright.playwright",
+    "angular.ng-template",
     "bradlc.vscode-tailwindcss"
   ]
 }

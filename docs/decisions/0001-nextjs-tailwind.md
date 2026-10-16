@@ -1,7 +1,7 @@
 # 0001 — Next.js + React + Tailwind CSS, TypeScript strict
 
 - **Date** : 2026-10-16
-- **Statut** : Acceptée
+- **Statut** : Remplacée par 0006
 
 ## Contexte
 

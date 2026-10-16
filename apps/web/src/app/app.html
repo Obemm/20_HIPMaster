@@ -1,0 +1,29 @@
+<main class="mx-auto flex w-full max-w-3xl flex-1 flex-col justify-center gap-6 px-6 py-24">
+  <h1 class="text-4xl font-bold tracking-tight">HIPMaster</h1>
+  <p class="text-lg text-zinc-700">
+    Jeu de cartes à collectionner : ouvre des boosters, complète ta collection et défie tes amis.
+  </p>
+
+  <section aria-labelledby="titre-raretes" class="rounded-lg border border-zinc-200 p-4">
+    <h2 id="titre-raretes" class="mb-2 text-lg font-semibold">Chances par booster</h2>
+    @if (raretes.hasValue()) {
+      <ul class="grid grid-cols-2 gap-2 sm:grid-cols-4">
+        @for (r of raretes.value(); track r.rarete) {
+          <li class="rounded bg-zinc-100 px-3 py-2">
+            <span class="block text-sm text-zinc-700">{{ libelles[r.rarete] }}</span>
+            <span class="text-xl font-semibold">{{ enPourcentage(r.chance) }} %</span>
+          </li>
+        }
+      </ul>
+    } @else if (raretes.error()) {
+      <p role="alert" class="text-red-800">
+        L’API ne répond pas : lance-la avec <code>npm run dev</code>.
+      </p>
+    } @else {
+      <p>Chargement…</p>
+    }
+  </section>
+
+  <p class="text-sm text-zinc-700">Projet en cours de construction.</p>
+</main>
+<router-outlet />

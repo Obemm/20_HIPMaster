@@ -1,7 +1,6 @@
 import { defineConfig, devices } from '@playwright/test';
 
 const CI = Boolean(process.env.CI);
-const PORT = 3100;
 // En local : le Chrome déjà installé (aucun navigateur à télécharger). En CI : Chromium installé par Playwright.
 const navigateur = CI ? {} : { channel: 'chrome' };
 
@@ -12,7 +11,7 @@ export default defineConfig({
   retries: CI ? 1 : 0,
   reporter: CI ? 'github' : 'list',
   use: {
-    baseURL: `http://127.0.0.1:${PORT}`,
+    baseURL: 'http://localhost:4200',
     locale: 'fr-FR',
     trace: 'retain-on-failure',
   },
@@ -20,10 +19,18 @@ export default defineConfig({
     { name: 'mobile', use: { ...devices['Pixel 7'], ...navigateur } },
     { name: 'bureau', use: { ...devices['Desktop Chrome'], ...navigateur } },
   ],
-  webServer: {
-    command: `npm run build && npx next start -H 127.0.0.1 -p ${PORT}`,
-    url: `http://127.0.0.1:${PORT}`,
-    reuseExistingServer: !CI,
-    timeout: 180_000,
-  },
+  // L'API puis le front Angular, qui lui relaie /api (proxy.conf.json).
+  webServer: [
+    {
+      command: 'npm start -w @hipmaster/api',
+      url: 'http://127.0.0.1:3000/api/v1/sante',
+      reuseExistingServer: !CI,
+    },
+    {
+      command: 'npm start -w @hipmaster/web',
+      url: 'http://localhost:4200',
+      reuseExistingServer: !CI,
+      timeout: 180_000,
+    },
+  ],
 });
