@@ -1,6 +1,6 @@
 # EPIC-01 — Univers et modèle de carte
 
-- **Statut** : À affiner
+- **Statut** : En cours
 - **Priorité** : Must
 
 ## Objectif
@@ -14,9 +14,10 @@ Un premier set d'au moins 50 cartes est décrit dans des données versionnées, 
 
 ## Stories
 
-- [ ] US-005 — Univers et règles du jeu
+- [ ] US-005 — Univers et règles du jeu (en revue)
 
-Stories à découper ensuite : modèle de carte dans `src/domain/`, premier set de cartes, composant d'affichage d'une carte.
+Stories à découper ensuite : modèle de carte et d'effets dans `packages/domain`, premier set de cartes en données
+(à partir de [cartes-set-1.md](../../produit/cartes-set-1.md)), composant d'affichage d'une carte.
 
 ## Hors périmètre
 
