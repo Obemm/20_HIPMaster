@@ -7,6 +7,13 @@ updates:
     groups:
       dev-dependencies:
         dependency-type: development
+    ignore:
+      # Angular 22 exige TypeScript >=6.0 <6.1 : à lever quand Angular acceptera une version plus récente (US-007).
+      - dependency-name: typescript
+        versions: ['>=6.1.0']
+      # @types/node suit la version majeure de Node (.nvmrc) : à lever au passage à Node 26 (US-007).
+      - dependency-name: '@types/node'
+        update-types: ['version-update:semver-major']
   - package-ecosystem: github-actions
     directory: /
     schedule:
