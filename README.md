@@ -24,31 +24,34 @@ npm run dev          # API sur localhost:3000, jeu sur http://localhost:4200
 
 ## Scripts
 
-| Commande                | Rôle                                                   |
-| ----------------------- | ------------------------------------------------------ |
-| `npm run dev`           | API + front Angular en mode développement              |
-| `npm run build`         | Construit le front pour la production                  |
-| `npm run lint`          | ESLint + règles SonarJS et Angular (`lint:fix`)        |
-| `npm run format`        | Formate tout le code avec Prettier                     |
-| `npm run typecheck`     | Vérifie les types de chaque paquet                     |
-| `npm test`              | Tests unitaires (Vitest : domaine, API, Angular)       |
-| `npm run test:e2e`      | Tests de bout en bout + accessibilité (Playwright)     |
-| `npm run test:coverage` | Tests du domaine et de l'API avec couverture           |
-| `npm run check`         | Lint + format + types + tests (quality gate, = CI)     |
-| `npm run db:up`         | Démarre PostgreSQL (Docker) ; `db:down` pour l'arrêter |
-| `npm run db:generate`   | Génère une migration depuis le schéma Drizzle          |
-| `npm run db:migrate`    | Applique les migrations                                |
-| `npm run db:studio`     | Explore la base dans le navigateur                     |
+| Commande                            | Rôle                                                                  |
+| ----------------------------------- | --------------------------------------------------------------------- |
+| `npm run dev`                       | API + front Angular en mode développement                             |
+| `npm run build`                     | Construit le front pour la production                                 |
+| `npm run lint`                      | ESLint + règles SonarJS et Angular (`lint:fix`)                       |
+| `npm run format`                    | Formate tout le code avec Prettier                                    |
+| `npm run typecheck`                 | Vérifie les types de chaque paquet                                    |
+| `npm test`                          | Tests unitaires (Vitest : domaine, API, Angular)                      |
+| `npm run test:e2e`                  | Tests de bout en bout + accessibilité (Playwright)                    |
+| `npm run test:coverage`             | Tests du domaine et de l'API avec couverture                          |
+| `npm run check`                     | Lint + format + types + tests (quality gate, = CI)                    |
+| `npm run db:up`                     | Démarre PostgreSQL (Docker) ; `db:down` pour l'arrêter                |
+| `npm run db:generate`               | Génère une migration depuis le schéma Drizzle                         |
+| `npm run db:migrate`                | Applique les migrations                                               |
+| `npm run db:studio`                 | Explore la base dans le navigateur                                    |
+| `npm run illustrations`             | Décline les illustrations des cartes (voir `packages/illustrations`)  |
+| `npm run illustrations:provisoires` | Dessine les illustrations provisoires des 71 cartes, puis les décline |
 
 ## Organisation du code
 
-| Dossier           | Contenu                                                                    |
-| ----------------- | -------------------------------------------------------------------------- |
-| `apps/web/`       | Front Angular (PWA à venir) — ADR 0006                                     |
-| `apps/api/`       | API REST Fastify, schéma et migrations Drizzle — ADR 0007, 0003            |
-| `packages/domain` | Logique de jeu pure et testée (tirages, règles, bot) — ADR 0004            |
-| `e2e/`            | Parcours Playwright                                                        |
-| `docs/`           | Vision, backlog (epics/stories), décisions (ADR) — [index](docs/README.md) |
+| Dossier                  | Contenu                                                                    |
+| ------------------------ | -------------------------------------------------------------------------- |
+| `apps/web/`              | Front Angular (PWA à venir) — ADR 0006                                     |
+| `apps/api/`              | API REST Fastify, schéma et migrations Drizzle — ADR 0007, 0003            |
+| `packages/domain`        | Logique de jeu pure et testée (tirages, règles, bot) — ADR 0004            |
+| `packages/illustrations` | Chaîne d'import et d'optimisation des illustrations — ADR 0015             |
+| `e2e/`                   | Parcours Playwright                                                        |
+| `docs/`                  | Vision, backlog (epics/stories), décisions (ADR) — [index](docs/README.md) |
 
 ## Conventions
 
