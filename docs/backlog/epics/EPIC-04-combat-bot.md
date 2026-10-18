@@ -17,7 +17,9 @@ Une partie dure moins de 5 minutes ; le bot de niveau moyen gagne environ une pa
 - [x] US-011 — Bot « Batch de nuit » et decks prêtés
 - [x] US-012 — API de partie contre le bot
 - [x] US-013 — Écran de partie contre le bot
-- [ ] US-014 — Effets des sorts, des incidents et des cartes IA
+- [ ] US-014 — Sorts et incidents
+- [ ] US-019 — Effets propres des composants
+- [ ] US-020 — Capacités IA et Migration
 
 Premier jalon jouable à la fin d'US-013, avec les cartes que le moteur prend déjà en charge (décision du porteur du
 projet, 2026-10-18). À découper ensuite : autres niveaux de bot, récompense de victoire (avec EPIC-03).
