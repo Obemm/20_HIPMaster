@@ -42,3 +42,11 @@ les images** afin que **les 71 cartes forment un set cohérent, sans risque sur 
   images se génèrent à la main dans l'interface web) et images **propriété de Recraft**, publiques : elles servent à
   juger le style et ne sont **pas commitées** ; le set final demandera une offre payante ou une autre voie.
   Brouillon de [direction artistique](../../produit/direction-artistique.md) et consignes des 4 cartes d'essai.
+- 2026-10-18 — **essai réalisé** dans Recraft (offre gratuite, modèle V4.1 Flash, sans style imposé, format 4:3) :
+  2 variantes par carte, **8 crédits sur 60**, environ 10 s par génération ; originaux en 1216 × 896 px, sans texte
+  ni logo. Retenues par le porteur du projet : FTP (robot au cadenas), webMethods IS (moyeu en étoile), Apigee
+  (porte-forteresse), Solace Agent Mesh (créatures lumineuses). Passées par la chaîne d'US-015 : 16 fichiers de 7 à
+  71 Ko, affichés dans le catalogue et le détail. **Constat** : chaque image est réussie, mais le rendu varie d'une
+  carte à l'autre (peinture texturée, dessin au trait, aplats isométriques, style « mignon ») : sans style verrouillé,
+  le bloc de style commun ne suffit pas pour 71 cartes. Piste : la fonction « Créer un style » de Recraft, à partir
+  des images retenues. Images et métadonnées de l'essai gardées hors des commits (propriété de Recraft).
