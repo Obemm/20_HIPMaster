@@ -48,5 +48,5 @@ Objectif : un socle outillé, vérifié automatiquement, et une méthode de trav
 | [US-010 — Moteur de combat : règles de base](stories/US-010-moteur-combat.md)                | EPIC-04 | Must     | L      | Faite     |
 | [US-011 — Bot « Batch de nuit » et decks prêtés](stories/US-011-bot-decks-pretes.md)         | EPIC-04 | Must     | M      | Faite     |
 | [US-012 — API de partie contre le bot](stories/US-012-api-partie-pve.md)                     | EPIC-04 | Must     | M      | Faite     |
-| [US-013 — Écran de partie contre le bot](stories/US-013-ecran-partie-pve.md)                 | EPIC-04 | Must     | L      | À affiner |
+| [US-013 — Écran de partie contre le bot](stories/US-013-ecran-partie-pve.md)                 | EPIC-04 | Must     | L      | En revue  |
 | [US-014 — Effets des sorts, des incidents et des cartes IA](stories/US-014-effets-cartes.md) | EPIC-04 | Should   | L      | À affiner |

@@ -1,0 +1,43 @@
+<main class="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 py-8 sm:px-6">
+  <p>
+    <a routerLink="/" class="text-texte-doux underline underline-offset-4">← Accueil</a>
+  </p>
+  <h1 class="text-3xl font-bold tracking-tight">Jouer contre le bot</h1>
+  <p class="text-texte-doux">
+    Choisissez un deck prêté. Votre adversaire, le bot « Batch de nuit », joue avec un deck tiré au
+    sort. Ramenez le SLA de son SI à 0, ou gardez le meilleur SLA après 20 tours.
+  </p>
+
+  @if (erreur()) {
+    <p role="alert" class="text-alerte">{{ erreur() }}</p>
+  }
+
+  @if (decks.hasValue()) {
+    <ul class="flex flex-col gap-3">
+      @for (deck of decks.value(); track deck.id) {
+        <li
+          class="flex flex-col gap-3 rounded-xl border border-bordure p-4 sm:flex-row sm:items-center"
+        >
+          <div class="flex-1">
+            <h2 class="text-xl font-semibold">{{ deck.nom }}</h2>
+            <p class="text-texte-doux">{{ deck.description }}</p>
+          </div>
+          <button
+            type="button"
+            class="rounded-lg bg-accent px-4 py-3 font-semibold text-sur-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:opacity-60"
+            [disabled]="enCours() !== null"
+            (click)="jouer(deck)"
+          >
+            {{ enCours() === deck.id ? 'Création…' : 'Jouer avec ' + deck.nom }}
+          </button>
+        </li>
+      }
+    </ul>
+  } @else if (decks.error()) {
+    <p role="alert" class="text-alerte">
+      Les decks n’ont pas pu être chargés : l’API ne répond pas.
+    </p>
+  } @else {
+    <p>Chargement des decks…</p>
+  }
+</main>
