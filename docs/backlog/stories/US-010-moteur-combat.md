@@ -1,7 +1,7 @@
 # US-010 — Moteur de combat : règles de base
 
 - **Epic** : EPIC-04
-- **Statut** : En revue
+- **Statut** : Faite
 - **Priorité** : Must
 - **Taille** : L
 - **Branche** : `us-010-moteur-combat`
@@ -68,3 +68,4 @@ afin que **le bot, l'API et l'écran de partie reposent tous sur la même vérit
   `actionsPossibles`, `vueDe`, 13 capacités, évolutions ; 33 tests (une règle ou une capacité par test, 25 parties
   au hasard qui se terminent toutes, rejeu identique depuis la graine), couverture du moteur 97 % ; précisions de
   règles reportées dans regles.md. En revue.
+- 2026-10-18 — livrée : moteur de combat pur et rejouable (ADR 0013) : règles de base, 13 capacités, 28 cartes jouables

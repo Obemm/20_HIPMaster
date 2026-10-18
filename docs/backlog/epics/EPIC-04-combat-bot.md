@@ -13,7 +13,7 @@ Une partie dure moins de 5 minutes ; le bot de niveau moyen gagne environ une pa
 
 ## Stories
 
-- [ ] US-010 — Moteur de combat : règles de base
+- [x] US-010 — Moteur de combat : règles de base
 - [ ] US-011 — Bot « Batch de nuit » et decks prêtés
 - [ ] US-012 — API de partie contre le bot
 - [ ] US-013 — Écran de partie contre le bot
