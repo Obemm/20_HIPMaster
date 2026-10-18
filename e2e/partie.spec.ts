@@ -10,6 +10,8 @@ async function commencer(page: Page, deck = 'Hybride') {
   await page.getByRole('button', { name: `Jouer avec ${deck}` }).click();
   await expect(page).toHaveURL(/\/jouer\/[0-9a-f-]{36}$/);
   await expect(page.getByRole('heading', { level: 1, name: 'Partie contre le bot' })).toBeVisible();
+  await expect(page.getByText('Objectif :')).toBeVisible();
+  await expect(page.getByText('Comment gagner ?')).toBeVisible();
 }
 
 /** Joue un tour simple : pose la première carte posable de la main, attaque si possible, puis finit le tour. */

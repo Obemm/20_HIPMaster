@@ -14,6 +14,9 @@ jeu en jouant**.
 ## Critères d'acceptation
 
 - [x] Depuis l'accueil, « Jouer contre le bot » mène au choix d'un deck prêté, puis à la partie.
+- [x] Une **règle courte** explique comment gagner et le déroulement d'un tour : l'objectif reste visible pendant la
+      partie, et l'aide « Comment jouer ? » est ouverte au début et consultable à tout moment (retour du porteur du
+      projet après sa première partie, 2026-10-18).
 - [x] Le plateau montre les deux SI et leur SLA, le Débit, le nombre de cartes en pioche et en main de l'adversaire,
       les composants posés de chaque camp et ma main, avec les cartes d'US-009.
 - [x] Je joue au toucher, à la souris et **au clavier** : poser une carte, choisir un attaquant puis sa cible,
@@ -41,3 +44,8 @@ jeu en jouant**.
   12 tests unitaires et 5 parcours e2e (dont une partie complète jusqu'au résultat, audit axe-core en clair et en
   sombre). Un défaut trouvé par l'e2e (journal mélangé quand deux réponses se chevauchaient) est corrigé et couvert.
   En revue.
+- 2026-10-18 — retour du porteur du projet après une partie : « je ne comprends pas comment gagner ». Ajout d'une
+  règle courte (critère ajouté).
+- 2026-10-18 — composant `hip-regle-courte` (comment gagner, les 4 temps d'un tour, Garde et décommission) sur
+  l'écran de choix du deck et dans « Comment jouer ? », ouvert au début de la partie ; objectif toujours visible ;
+  SLA affichés « sur 20 ». En revue.

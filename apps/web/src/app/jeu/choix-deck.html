@@ -3,9 +3,13 @@
     <a routerLink="/" class="text-texte-doux underline underline-offset-4">← Accueil</a>
   </p>
   <h1 class="text-3xl font-bold tracking-tight">Jouer contre le bot</h1>
+  <section aria-labelledby="titre-regle" class="rounded-xl bg-surface p-4">
+    <h2 id="titre-regle" class="mb-2 text-lg font-semibold">La règle en bref</h2>
+    <hip-regle-courte />
+  </section>
   <p class="text-texte-doux">
     Choisissez un deck prêté. Votre adversaire, le bot « Batch de nuit », joue avec un deck tiré au
-    sort. Ramenez le SLA de son SI à 0, ou gardez le meilleur SLA après 20 tours.
+    sort.
   </p>
 
   @if (erreur()) {

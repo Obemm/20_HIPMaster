@@ -3,11 +3,12 @@ import { Component, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import type { Deck, Partie } from './modele';
+import { RegleCourte } from './regle-courte';
 
 /** Choix d'un deck prêté, puis création de la partie contre le bot (US-013). */
 @Component({
   selector: 'hip-choix-deck',
-  imports: [RouterLink],
+  imports: [RouterLink, RegleCourte],
   templateUrl: './choix-deck.html',
 })
 export class ChoixDeck {

@@ -18,6 +18,7 @@ import { VignetteCarte } from '../cartes/vignette-carte';
 import { Icone } from '../icone';
 import { decrireComposant, JetonComposant } from './jeton-composant';
 import { decrireEvenement } from './journal';
+import { RegleCourte } from './regle-courte';
 import { type Action, type Composant, type Evenement, type Partie, TOURS_MAX } from './modele';
 
 type ActionCarte = Extract<Action, { carte: string }>;
@@ -31,7 +32,7 @@ const DELAI_JOURNAL_MS = 250;
  */
 @Component({
   selector: 'hip-partie',
-  imports: [RouterLink, VignetteCarte, JetonComposant, Icone],
+  imports: [RouterLink, VignetteCarte, JetonComposant, Icone, RegleCourte],
   templateUrl: './partie.html',
 })
 export class PartieEcran implements OnInit, OnDestroy {
@@ -60,6 +61,8 @@ export class PartieEcran implements OnInit, OnDestroy {
       .map((e) => decrireEvenement(e, joueur, this.nommer))
       .filter((ligne): ligne is string => ligne !== null);
   });
+  /** L'aide « Comment jouer ? » est ouverte en début de partie, repliable ensuite. */
+  protected reglesOuvertes = false;
   protected readonly carteChoisie = signal<string | null>(null);
   protected readonly attaquant = signal<string | null>(null);
 
@@ -189,6 +192,7 @@ export class PartieEcran implements OnInit, OnDestroy {
   private async charger(): Promise<void> {
     try {
       const partie = await firstValueFrom(this.http.get<Partie>(`/api/v1/parties/${this.id()}`));
+      this.reglesOuvertes = partie.vue.moi.tours <= 1;
       this.recevoir(partie, false);
     } catch (erreur) {
       this.signalerErreur(erreur);

@@ -101,6 +101,20 @@ describe('PartieEcran', () => {
     expect(page.querySelector('[role="log"]')?.textContent).toContain('Le bot pose SOAP / WSDL.');
   });
 
+  it('rappelle l’objectif, et ouvre « Comment jouer ? » au début de la partie seulement', async () => {
+    const debut = vue();
+    debut.moi.tours = 1;
+    const { page } = await ouvrir(debut);
+    expect(page.textContent).toContain('faire tomber le SLA du SI du bot à 0');
+    expect(page.querySelector('details')?.open).toBe(true);
+    expect(page.querySelector('details')?.textContent).toContain('Comment gagner ?');
+  });
+
+  it('replie « Comment jouer ? » une fois la partie avancée', async () => {
+    const { page } = await ouvrir();
+    expect(page.querySelector('details')?.open).toBe(false);
+  });
+
   it('propose les actions d’une carte choisie, et envoie celle qu’on clique', async () => {
     const { fixture, http, page } = await ouvrir();
     bouton(page, 'API REST')?.click();
@@ -194,6 +208,7 @@ describe('ChoixDeck', () => {
     fixture.detectChanges();
     const naviguer = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
     const page = fixture.nativeElement as HTMLElement;
+    expect(page.textContent).toContain('Comment gagner ?');
     bouton(page, 'Jouer avec Moderne')?.click();
     const creation = http.expectOne('/api/v1/parties');
     expect(creation.request.body).toEqual({ deck: 'moderne' });

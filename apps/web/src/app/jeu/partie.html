@@ -21,6 +21,15 @@
   } @else if (pret()) {
     @let v = vue()!;
 
+    <p class="rounded-lg bg-surface px-3 py-2 text-sm">
+      <strong>Objectif :</strong> faire tomber le SLA du SI du bot à 0. Après 20 tours, le meilleur
+      SLA gagne.
+    </p>
+    <details class="rounded-lg border border-bordure px-3 py-2" [open]="reglesOuvertes">
+      <summary class="cursor-pointer font-semibold">Comment jouer ?</summary>
+      <div class="pt-2"><hip-regle-courte /></div>
+    </details>
+
     <!-- Camp du bot -->
     <section aria-labelledby="titre-bot" class="flex flex-col gap-2">
       <div class="flex flex-wrap items-center justify-between gap-2">
@@ -41,7 +50,7 @@
         (click)="attaquer('si')"
       >
         <span>SI du bot</span>
-        <span>SLA {{ v.adversaire.sla }}</span>
+        <span>SLA {{ v.adversaire.sla }} / 20</span>
         @if (ciblesPossibles().has('si')) {
           <span class="sr-only">: attaquer</span>
         }
@@ -105,7 +114,7 @@
       <div class="flex flex-wrap items-center justify-between gap-2">
         <h2 id="titre-moi" class="font-semibold">Vous</h2>
         <p class="flex flex-wrap gap-3 text-sm">
-          <span class="font-semibold">SI : SLA {{ v.moi.sla }}</span>
+          <span class="font-semibold">Votre SI : SLA {{ v.moi.sla }} / 20</span>
           <span class="font-semibold">
             <hip-icone nom="debit" class="size-3.5 text-amber-600 dark:text-amber-400" /> Débit
             {{ v.moi.debit }}
