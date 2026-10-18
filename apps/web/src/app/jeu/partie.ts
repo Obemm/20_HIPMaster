@@ -19,7 +19,14 @@ import { Icone } from '../icone';
 import { decrireComposant, JetonComposant } from './jeton-composant';
 import { decrireEvenement } from './journal';
 import { RegleCourte } from './regle-courte';
-import { type Action, type Composant, type Evenement, type Partie, TOURS_MAX } from './modele';
+import {
+  type Action,
+  type Composant,
+  type Evenement,
+  type Niveau,
+  type Partie,
+  TOURS_MAX,
+} from './modele';
 
 type ActionCarte = Extract<Action, { carte: string }>;
 
@@ -76,6 +83,13 @@ export class PartieEcran implements OnInit, OnDestroy {
   private readonly numeros = new Map<string, number>();
 
   protected readonly vue = computed(() => this.partie()?.vue ?? null);
+  /** Le nom du niveau du bot adverse, pour le rappeler pendant la partie (US-021). */
+  private readonly niveaux = httpResource<Niveau[]>(() => '/api/v1/niveaux');
+  protected readonly nomNiveau = computed(() => {
+    const id = this.partie()?.niveau;
+    const niveaux = this.niveaux.hasValue() ? this.niveaux.value() : [];
+    return niveaux.find((n) => n.id === id)?.nom ?? '';
+  });
   protected readonly pret = computed(() => this.vue() !== null && this.catalogue.hasValue());
   protected readonly monTour = computed(() => {
     const vue = this.vue();

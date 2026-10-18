@@ -86,6 +86,7 @@ export const schemaPartie = z.object({
   id: z.uuid(),
   deck: z.string(),
   deckAdversaire: z.string(),
+  niveau: z.string(),
   vue: schemaVue,
   evenements: z.array(schemaEvenement),
 });
@@ -96,3 +97,5 @@ export const schemaDeck = z.object({
   description: z.string(),
   cartes: z.array(z.number().int()),
 });
+
+export const schemaNiveau = z.object({ id: z.string(), nom: z.string(), description: z.string() });

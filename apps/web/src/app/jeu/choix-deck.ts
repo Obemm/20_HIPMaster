@@ -2,7 +2,7 @@ import { HttpClient, httpResource } from '@angular/common/http';
 import { Component, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
-import type { Deck, Partie } from './modele';
+import type { Deck, Niveau, Partie } from './modele';
 import { RegleCourte } from './regle-courte';
 
 /** Choix d'un deck prêté, puis création de la partie contre le bot (US-013). */
@@ -16,6 +16,9 @@ export class ChoixDeck {
   private readonly router = inject(Router);
 
   protected readonly decks = httpResource<Deck[]>(() => '/api/v1/decks');
+  protected readonly niveaux = httpResource<Niveau[]>(() => '/api/v1/niveaux');
+  /** Niveau du bot choisi (Batch de nuit par défaut, le plus simple). */
+  protected readonly niveau = signal('batch-de-nuit');
   protected readonly enCours = signal<string | null>(null);
   protected readonly erreur = signal<string | null>(null);
 
@@ -24,7 +27,7 @@ export class ChoixDeck {
     this.erreur.set(null);
     try {
       const partie = await firstValueFrom(
-        this.http.post<Partie>('/api/v1/parties', { deck: deck.id }),
+        this.http.post<Partie>('/api/v1/parties', { deck: deck.id, niveau: this.niveau() }),
       );
       await this.router.navigate(['/jouer', partie.id]);
     } catch {
