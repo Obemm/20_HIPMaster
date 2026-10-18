@@ -9,6 +9,7 @@ import { MesDuels } from './mes-duels';
 import type { ResumeDuel } from './mes-duels.service';
 
 const il = (minutes: number) => new Date(Date.now() - minutes * 60_000).toISOString();
+const dans = (minutes: number) => new Date(Date.now() + minutes * 60_000).toISOString();
 const DUELS: ResumeDuel[] = [
   {
     id: 'a',
@@ -17,7 +18,9 @@ const DUELS: ResumeDuel[] = [
     monTour: true,
     tour: 5,
     resultat: null,
+    raison: null,
     majLe: il(3),
+    echeance: dans(49 * 60),
   },
   {
     id: 'b',
@@ -26,7 +29,9 @@ const DUELS: ResumeDuel[] = [
     monTour: false,
     tour: 2,
     resultat: null,
+    raison: null,
     majLe: il(120),
+    echeance: dans(70 * 60),
   },
   {
     id: 'c',
@@ -35,7 +40,9 @@ const DUELS: ResumeDuel[] = [
     monTour: false,
     tour: null,
     resultat: null,
+    raison: null,
     majLe: il(30),
+    echeance: null,
   },
   {
     id: 'd',
@@ -44,7 +51,9 @@ const DUELS: ResumeDuel[] = [
     monTour: false,
     tour: 20,
     resultat: 'victoire',
+    raison: 'forfait',
     majLe: il(3000),
+    echeance: null,
   },
 ];
 
@@ -87,10 +96,10 @@ describe('Mes duels', () => {
       a.textContent?.replaceAll(/\s+/g, ' ').trim(),
     );
     expect(liens).toEqual([
-      'Contre Bob Tour 5 · dernier coup il y a 3 min',
-      'Contre Eve Tour 2 · dernier coup il y a 2 h',
+      'Contre Bob Tour 5 · reste 2 j 1 h · dernier coup il y a 3 min',
+      'Contre Eve Tour 2 · reste 2 j 22 h · dernier coup il y a 2 h',
       'Défi non relevé lancé il y a 30 min',
-      'Contre Bob Victoire · dernier coup il y a 2 j',
+      'Contre Bob Victoire par forfait · dernier coup il y a 2 j',
     ]);
     expect(page.querySelector('li a')?.getAttribute('href')).toBe('/duels/a');
   });

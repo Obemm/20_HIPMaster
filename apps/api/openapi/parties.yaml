@@ -180,7 +180,10 @@ components:
               required: [gagnant, raison]
               properties:
                 gagnant: { type: [string, 'null'], enum: [j1, j2, null] }
-                raison: { type: string, enum: [sla, tours] }
+                raison:
+                  type: string
+                  enum: [sla, tours, abandon, forfait]
+                  description: abandon et forfait ne concernent que les duels (US-036).
         actions:
           type: array
           description: Actions légales du joueur ; vide quand ce n'est pas son tour.

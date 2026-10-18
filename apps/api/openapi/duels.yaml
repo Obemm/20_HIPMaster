@@ -114,6 +114,26 @@ paths:
             application/problem+json:
               schema: { $ref: '#/components/schemas/Probleme' }
         '422': { $ref: '#/components/responses/Probleme' }
+  /duels/{id}/abandon:
+    parameters: [{ $ref: '#/components/parameters/IdDuel' }]
+    post:
+      operationId: abandonnerDuel
+      summary: Abandonne un duel en cours ; l'adversaire gagne (US-036)
+      responses:
+        '200':
+          description: Le duel terminé.
+          headers:
+            ETag: { $ref: '#/components/headers/ETag' }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Duel' }
+        '401': { $ref: '#/components/responses/Probleme' }
+        '404': { $ref: '#/components/responses/Probleme' }
+        '409':
+          description: Le duel n'a pas commencé, ou il est déjà terminé (Problem Details).
+          content:
+            application/problem+json:
+              schema: { $ref: '#/components/schemas/Probleme' }
   /duels/{id}/actions:
     parameters: [{ $ref: '#/components/parameters/IdDuel' }]
     post:
@@ -203,7 +223,19 @@ components:
     Duel:
       type: object
       required:
-        [id, statut, version, createur, deckCreateur, adversaire, moi, curseur, vue, evenements]
+        [
+          id,
+          statut,
+          version,
+          createur,
+          deckCreateur,
+          adversaire,
+          moi,
+          curseur,
+          echeance,
+          vue,
+          evenements,
+        ]
       properties:
         id: { type: string, format: uuid }
         statut: { type: string, enum: [attente, en-cours, termine] }
@@ -219,6 +251,12 @@ components:
           enum: [j1, j2, null]
           description: Le camp du joueur qui demande ; null s'il ne participe pas.
         curseur: { type: integer, description: Longueur du journal, à repasser dans `depuis`. }
+        echeance:
+          type: [string, 'null']
+          format: date-time
+          description: >
+            Duel en cours : instant limite du coup attendu (72 h après le dernier coup). Au-delà, le joueur actif
+            perd par forfait, évalué à la lecture (US-036).
         vue:
           description: La vue du joueur qui demande ; null tant que le duel n'a pas commencé ou pour un non-participant.
           oneOf:
@@ -234,7 +272,7 @@ components:
         pseudo: { type: string }
     ResumeDuel:
       type: object
-      required: [id, statut, adversaire, monTour, tour, resultat, majLe]
+      required: [id, statut, adversaire, monTour, tour, resultat, raison, majLe, echeance]
       properties:
         id: { type: string, format: uuid }
         statut: { type: string, enum: [attente, en-cours, termine] }
@@ -252,5 +290,13 @@ components:
           type: [string, 'null']
           enum: [victoire, defaite, nulle, null]
           description: Pour un duel terminé, du point de vue du joueur.
+        raison:
+          type: [string, 'null']
+          enum: [sla, tours, abandon, forfait, null]
+          description: Pour un duel terminé, comment il s'est fini.
         majLe:
           { type: string, format: date-time, description: Dernier coup joué (ou création du défi). }
+        echeance:
+          type: [string, 'null']
+          format: date-time
+          description: Pour un duel en cours, instant limite du coup attendu.

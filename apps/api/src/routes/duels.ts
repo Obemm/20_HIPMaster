@@ -3,6 +3,7 @@ import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
 import { z } from 'zod';
 import type { Base } from '../db/index.ts';
 import {
+  abandonnerDuel,
   annulerDuel,
   creerDuel,
   type DuelVisible,
@@ -30,6 +31,7 @@ const schemaDuel = z.object({
   adversaire: z.object({ pseudo: z.string() }).nullable(),
   moi: z.enum(['j1', 'j2']).nullable(),
   curseur: z.int(),
+  echeance: z.iso.datetime().nullable(),
   vue: schemaVue.nullable(),
   evenements: z.array(schemaEvenement),
 });
@@ -70,6 +72,8 @@ function refuser(reponse: FastifyReply, resultat: Exclude<ResultatDuel<unknown>,
       return corps(409, 'Le duel a changé : rechargez-le avant de jouer');
     case 'expire':
       return corps(410, 'Ce défi a expiré');
+    case 'deja-termine':
+      return corps(409, 'Ce duel est déjà terminé');
     case 'action-refusee':
       return corps(422, 'Action refusée', {
         detail: resultat.erreur.message,
@@ -115,7 +119,9 @@ export const routesDuels: FastifyPluginAsyncZod<{ base: Base; duels?: OptionsDue
                 monTour: z.boolean(),
                 tour: z.int().nullable(),
                 resultat: z.enum(['victoire', 'defaite', 'nulle']).nullable(),
+                raison: z.enum(['sla', 'tours', 'abandon', 'forfait']).nullable(),
                 majLe: z.iso.datetime(),
+                echeance: z.iso.datetime().nullable(),
               }),
             ),
           }),
@@ -124,7 +130,7 @@ export const routesDuels: FastifyPluginAsyncZod<{ base: Base; duels?: OptionsDue
     },
     async (requete, reponse) => {
       const session = await connecte(requete, reponse);
-      return session ? lireMesDuels(base, session.joueur.id) : reponse;
+      return session ? lireMesDuels(base, session.joueur.id, options) : reponse;
     },
   );
 
@@ -181,6 +187,17 @@ export const routesDuels: FastifyPluginAsyncZod<{ base: Base; duels?: OptionsDue
   );
 
   app.post(
+    '/duels/:id/abandon',
+    { schema: { params: parametres, response: { 200: schemaDuel } } },
+    async (requete, reponse) => {
+      const session = await connecte(requete, reponse);
+      if (!session) return reponse;
+      const resultat = await abandonnerDuel(base, requete.params.id, session.joueur.id, options);
+      return resultat.ok ? envoyer(reponse, 200, resultat.valeur) : refuser(reponse, resultat);
+    },
+  );
+
+  app.post(
     '/duels/:id/actions',
     { schema: { params: parametres, body: schemaAction, response: { 200: schemaDuel } } },
     async (requete, reponse) => {
@@ -192,6 +209,7 @@ export const routesDuels: FastifyPluginAsyncZod<{ base: Base; duels?: OptionsDue
         session.joueur.id,
         versAction(requete.body),
         versionDe(requete.headers['if-match']),
+        options,
       );
       return resultat.ok ? envoyer(reponse, 200, resultat.valeur) : refuser(reponse, resultat);
     },

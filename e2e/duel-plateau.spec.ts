@@ -77,6 +77,22 @@ test('un duel se joue à deux navigateurs, chacun voyant le tour de l’autre ar
   await contexte.close();
 });
 
+test('abandonner un duel, après confirmation : l’adversaire voit sa victoire sans recharger', async ({
+  page,
+  browser,
+}) => {
+  const { ada, bob, contexte } = await duelEntre(page, browser, 'abandon');
+  await expect(ada.getByText(/dans les .*, sinon forfait\./)).toBeVisible();
+  await ada.getByRole('button', { name: 'Abandonner', exact: true }).click();
+  await ada.getByRole('button', { name: 'Oui, abandonner' }).click();
+  await expect(ada.getByRole('heading', { name: 'Défaite' })).toBeVisible();
+  await expect(ada.getByText('Vous avez abandonné.')).toBeVisible();
+
+  await expect(bob.getByRole('heading', { name: 'Victoire !' })).toBeVisible({ timeout: 10_000 });
+  await expect(bob.getByText('Ada abandon a abandonné.')).toBeVisible();
+  await contexte.close();
+});
+
 for (const theme of ['light', 'dark'] as const) {
   test(`le plateau du duel ne présente aucune violation d’accessibilité (thème ${theme})`, async ({
     page,

@@ -18,6 +18,51 @@
     </p>
   </header>
 
+  @if (mode() === 'duel' && vue(); as v) {
+    @if (!v.issue) {
+      <div class="flex flex-wrap items-center justify-between gap-2 text-sm">
+        <p class="text-texte-doux">
+          @if (reste(); as reste) {
+            {{ v.actif === v.joueur ? 'À vous de jouer' : autre().sujet + ' doit jouer' }} dans les
+            {{ reste }}, sinon forfait.
+          }
+        </p>
+        @if (confirmerAbandon()) {
+          <p
+            class="flex flex-wrap items-center gap-2"
+            role="group"
+            aria-label="Confirmer l’abandon"
+          >
+            <span class="font-semibold">Abandonner ce duel ? {{ autre().sujet }} gagnera.</span>
+            <button
+              type="button"
+              class="rounded-lg bg-accent px-3 py-1.5 font-semibold text-sur-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:opacity-60"
+              [disabled]="occupe()"
+              (click)="abandonner()"
+            >
+              Oui, abandonner
+            </button>
+            <button
+              type="button"
+              class="rounded-lg border-2 border-bordure px-3 py-1.5 font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+              (click)="confirmerAbandon.set(false)"
+            >
+              Non, continuer
+            </button>
+          </p>
+        } @else {
+          <button
+            type="button"
+            class="rounded-lg border-2 border-bordure px-3 py-1.5 font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+            (click)="confirmerAbandon.set(true)"
+          >
+            Abandonner
+          </button>
+        }
+      </div>
+    }
+  }
+
   @if (introuvable()) {
     <section class="flex flex-col gap-2" aria-labelledby="titre-introuvable">
       <h2 id="titre-introuvable" class="text-lg font-semibold">
@@ -172,11 +217,7 @@
           }
         </h2>
         <p class="text-texte-doux">
-          {{
-            issue.raison === 'sla'
-              ? 'Un SI est tombé à 0 de SLA.'
-              : 'Les 20 tours sont joués : le meilleur SLA l’emporte.'
-          }}
+          {{ raisonFin(issue, v.joueur) }}
           SLA final : vous {{ v.moi.sla }}, {{ autre().nom }} {{ v.adversaire.sla }}.
         </p>
         @if (partie()?.recompense; as recompense) {

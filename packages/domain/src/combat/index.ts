@@ -1,4 +1,5 @@
 export { appliquer } from './moteur.ts';
+export { conceder } from './fin.ts';
 export {
   DEBIT_DECOMMISSION,
   DEBIT_MAX,

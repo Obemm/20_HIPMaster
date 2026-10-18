@@ -45,7 +45,7 @@ export type Action =
 
 export interface Issue {
   gagnant: IdJoueur | null;
-  raison: 'sla' | 'tours';
+  raison: 'sla' | 'tours' | 'abandon' | 'forfait';
 }
 
 export interface Vue {

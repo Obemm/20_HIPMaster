@@ -21,7 +21,7 @@ direct si les deux joueurs sont présents.
 - [x] US-033 — Défier un collègue par lien
 - [x] US-034 — Écran de duel
 - [x] US-035 — Mes duels et « à vous de jouer »
-- [ ] US-036 — Abandon et forfait
+- [x] US-036 — Abandon et forfait
 - [ ] US-037 — Adversaire au hasard
 - [ ] US-038 — Un booster pour une victoire en duel
 

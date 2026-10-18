@@ -18,12 +18,15 @@ import { VignetteCarte } from '../cartes/vignette-carte';
 import { Icone } from '../icone';
 import { decrireComposant, JetonComposant } from './jeton-composant';
 import type { Duel } from '../duels/modele';
+import { resteAvant } from '../duels/temps';
 import { type Adversaire, adversaireNomme, BOT, decrireEvenement } from './journal';
 import { RegleCourte } from './regle-courte';
 import {
   type Action,
   type Composant,
   type Evenement,
+  type IdJoueur,
+  type Issue,
   type Niveau,
   type Partie,
   TOURS_MAX,
@@ -68,6 +71,10 @@ export class PartieEcran implements OnInit, OnDestroy {
   private version = -1;
   private curseur = 0;
   protected readonly pseudoAdversaire = signal<string | null>(null);
+  /** En duel : échéance du coup attendu (US-036), et confirmation d'abandon en cours. */
+  private readonly echeance = signal<string | null>(null);
+  protected readonly confirmerAbandon = signal(false);
+  protected readonly reste = computed(() => resteAvant(this.echeance()));
   protected readonly autre = computed<Adversaire>(() => {
     if (this.mode() !== 'duel') return BOT;
     return adversaireNomme(this.pseudoAdversaire() ?? 'votre adversaire');
@@ -303,12 +310,13 @@ export class PartieEcran implements OnInit, OnDestroy {
   }
 
   /**
-   * En duel, pendant le tour de l'adversaire : redemande le duel, sauf si l'onglet est caché. L'API répond 304 si
-   * rien n'a changé ; sinon les coups de l'adversaire défilent dans le journal comme ceux du bot.
+   * En duel : redemande le duel, sauf si l'onglet est caché. L'API répond 304 si rien n'a changé ; sinon les coups
+   * de l'adversaire défilent dans le journal comme ceux du bot. Aussi pendant son propre tour : l'adversaire peut
+   * abandonner, ou le forfait tomber (US-036).
    */
   private async actualiserDuel(): Promise<void> {
     const vue = this.vue();
-    if (!vue || vue.issue || this.monTour() || this.occupe()) return;
+    if (!vue || vue.issue || this.occupe()) return;
     if (globalThis.document?.visibilityState === 'hidden') return;
     try {
       const duel = await firstValueFrom(
@@ -323,11 +331,47 @@ export class PartieEcran implements OnInit, OnDestroy {
     }
   }
 
+  /** Abandonne le duel, après confirmation à l'écran (US-036) : l'adversaire gagne. */
+  protected async abandonner(): Promise<void> {
+    if (this.occupe()) return;
+    this.occupe.set(true);
+    this.erreur.set(null);
+    try {
+      const duel = await firstValueFrom(
+        this.http.post<Duel>(`/api/v1/duels/${this.id()}/abandon`, null),
+      );
+      this.confirmerAbandon.set(false);
+      this.recevoir(this.depuisDuel(duel), false);
+    } catch (erreur) {
+      this.signalerErreur(erreur);
+    } finally {
+      this.occupe.set(false);
+    }
+  }
+
+  /** Comment la partie s'est terminée, du point de vue du joueur. */
+  protected raisonFin(issue: Issue, joueur: IdJoueur): string {
+    const gagne = issue.gagnant === joueur;
+    switch (issue.raison) {
+      case 'sla':
+        return 'Un SI est tombé à 0 de SLA.';
+      case 'tours':
+        return 'Les 20 tours sont joués : le meilleur SLA l’emporte.';
+      case 'abandon':
+        return gagne ? `${this.autre().sujet} a abandonné.` : 'Vous avez abandonné.';
+      case 'forfait':
+        return gagne
+          ? `${this.autre().sujet} n’a pas joué à temps : forfait.`
+          : 'Vous n’avez pas joué à temps : forfait.';
+    }
+  }
+
   /** Un duel vu comme une partie, pour réutiliser tout l'écran ; retient version, curseur et adversaire. */
   private depuisDuel(duel: Duel): Partie {
     if (!duel.vue) throw new Error('Le duel n’a pas commencé.');
     this.version = duel.version;
     this.curseur = duel.curseur;
+    this.echeance.set(duel.echeance);
     this.pseudoAdversaire.set(
       duel.moi === 'j1' ? (duel.adversaire?.pseudo ?? null) : duel.createur.pseudo,
     );

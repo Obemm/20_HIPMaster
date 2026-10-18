@@ -72,7 +72,8 @@ export interface EtatJoueur {
 export interface Issue {
   /** `null` : partie nulle. */
   gagnant: IdJoueur | null;
-  raison: 'sla' | 'tours';
+  /** `abandon` et `forfait` ne viennent que des duels entre joueurs (US-036). */
+  raison: 'sla' | 'tours' | 'abandon' | 'forfait';
 }
 
 export type Cible = string | 'si';

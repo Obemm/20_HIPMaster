@@ -11,6 +11,8 @@ export interface Duel {
   /** Le camp du joueur connecté ; `null` s'il ne participe pas (il voit un défi à relever). */
   moi: 'j1' | 'j2' | null;
   curseur: number;
+  /** Duel en cours : instant limite du coup attendu, au-delà le joueur actif perd par forfait (US-036). */
+  echeance: string | null;
   vue: Vue | null;
   evenements: Evenement[];
 }
