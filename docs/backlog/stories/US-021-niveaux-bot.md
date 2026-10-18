@@ -1,7 +1,7 @@
 # US-021 — Niveaux du bot
 
 - **Epic** : EPIC-04
-- **Statut** : En revue
+- **Statut** : Faite
 - **Priorité** : Must
 - **Taille** : M
 - **Branche** : `us-021-niveaux-bot`
@@ -51,3 +51,4 @@ aguerri**.
   compare deux stratégies ; script de simulation étendu aux niveaux ; API `GET /niveaux` et niveau à la création ;
   écran : choix de la difficulté et rappel pendant la partie ; 4 tests du domaine, 3 de l'API, écran et e2e mis à
   jour. En revue.
+- 2026-10-18 — livrée : trois niveaux de bot (Batch de nuit, Architecte ESB, Agent autonome), sans triche, progression mesurée par simulation

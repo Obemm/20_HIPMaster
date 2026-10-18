@@ -48,6 +48,9 @@ Toutes les évolutions notables du projet sont consignées ici
 - **Les 71 cartes du set 1 sont jouables** : capacités IA (Autonome, Orchestration, Délégation, Contexte, Outillage,
   Cache sémantique, Routage multi-modèles, Garde-fous, Asynchrone) et Migration ; Solace Agent Mesh et Apigee AI
   Gateway jouables ; le bot et les decks prêtés les utilisent (US-020).
+- Trois niveaux de bot au choix : Batch de nuit (facile), Architecte ESB (moyen), Agent autonome (difficile), qui
+  évaluent leurs actions avec le moteur sans tricher ; `GET /api/v1/niveaux` et choix de la difficulté à l'écran
+  (US-021).
 - Chaîne des illustrations : un original déposé et décrit devient, en une commande (`npm run illustrations`), quatre
   images AVIF et WebP de moins de 100 Ko et un manifeste ; la carte affiche son illustration, ou son pictogramme de
   famille à défaut. EPIC-05 découpé en US-015 à US-017 (US-015, ADR 0015).
