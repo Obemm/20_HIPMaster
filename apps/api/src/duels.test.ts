@@ -236,3 +236,57 @@ describe('défis (US-033)', () => {
     await appli.close();
   });
 });
+
+describe('mes duels (US-035)', () => {
+  interface MesDuels {
+    aMonTour: number;
+    duels: {
+      id: string;
+      statut: string;
+      adversaire: { pseudo: string } | null;
+      monTour: boolean;
+    }[];
+  }
+
+  it('liste d’abord les duels à mon tour, puis ceux de l’adversaire, les défis en attente et les terminés', async () => {
+    const { ada, bob, id, lance } = await duelLance();
+    const attente = (await requete('POST', '/duels', ada, { deck: 'hybride' })).json<DuelVisible>();
+    const adaCommence = lance.vue?.actif === 'j1';
+
+    const deAda = (await requete('GET', '/moi/duels', ada)).json<MesDuels>();
+    expect(deAda.duels.map((d) => d.id)).toEqual([id, attente.id]);
+    expect(deAda.duels[0]).toMatchObject({ adversaire: { pseudo: 'Bob' }, monTour: adaCommence });
+    expect(deAda.duels[1]).toMatchObject({ statut: 'attente', adversaire: null, monTour: false });
+    expect(deAda.aMonTour).toBe(adaCommence ? 1 : 0);
+
+    const deBob = (await requete('GET', '/moi/duels', bob)).json<MesDuels>();
+    expect(deBob.duels.map((d) => d.id)).toEqual([id]);
+    expect(deBob.duels[0]).toMatchObject({ adversaire: { pseudo: 'Ada' }, monTour: !adaCommence });
+    expect(deBob.aMonTour).toBe(adaCommence ? 0 : 1);
+  });
+
+  it('un duel à mon tour passe devant un duel plus récent au tour de l’adversaire', async () => {
+    const { ada, bob, id, lance } = await duelLance();
+    const actif = lance.vue?.actif === 'j1' ? ada : bob;
+    const passif = actif === ada ? bob : ada;
+    // Un second duel, plus récent, où le joueur passif attend l'autre.
+    const second = (
+      await requete('POST', '/duels', passif, { deck: 'moderne' })
+    ).json<DuelVisible>();
+    const rejoint = (
+      await requete('POST', `/duels/${second.id}/rejoindre`, actif, { deck: 'heritage' })
+    ).json<DuelVisible>();
+    // Dans ce second duel, `actif` (qui l'a rejoint, camp j2) doit attendre : s'il commence, il passe son tour.
+    if (rejoint.vue?.actif === 'j2') {
+      await requete('POST', `/duels/${second.id}/actions`, actif, { type: 'finirTour' });
+    }
+    const liste = (await requete('GET', '/moi/duels', actif)).json<MesDuels>();
+    expect(liste.duels.map((d) => d.id)).toEqual([id, second.id]);
+    expect(liste.duels[0]).toMatchObject({ monTour: true });
+    expect(liste.duels[1]).toMatchObject({ monTour: false });
+  });
+
+  it('exige un compte', async () => {
+    expect((await requete('GET', '/moi/duels', {})).statusCode).toBe(401);
+  });
+});

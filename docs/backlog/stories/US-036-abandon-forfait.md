@@ -15,7 +15,7 @@ afin que **chaque duel finisse un jour**.
 
 - [ ] Je peux abandonner un duel en cours, après confirmation : l'adversaire gagne.
 - [ ] Sans action du joueur actif pendant 72 heures (réglable), il perd par forfait ; l'échéance est évaluée à la
-      lecture (ADR 0020) et affichée aux deux joueurs.
+      lecture (ADR 0020) et affichée aux deux joueurs, sur le plateau et dans « Mes duels » (temps restant).
 - [ ] L'issue indique la raison (SLA, tours, abandon, forfait) dans l'écran de fin et dans « Mes duels ».
 - [ ] Tests de l'API (abandon, forfait avec horloge injectée) et de l'écran.
 
