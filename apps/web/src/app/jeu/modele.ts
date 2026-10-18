@@ -1,0 +1,83 @@
+// Forme des parties renvoyées par l'API (contrat : apps/api/openapi/parties.yaml). Aucune règle de jeu ici :
+// l'écran affiche la vue et envoie les actions proposées par le serveur (ADR 0004, 0006).
+
+export type IdJoueur = 'j1' | 'j2';
+
+export interface Instance {
+  id: string;
+  numero: number;
+}
+
+export interface Composant extends Instance {
+  pv: number;
+  /** Attaque effective, bonus compris (calculée par le serveur). */
+  attaque: number;
+  poseAuTour: number;
+  aAttaqueCeTour: boolean;
+}
+
+interface Camp {
+  sla: number;
+  debit: number;
+  tours: number;
+  plateau: Composant[];
+  defausse: Instance[];
+  pioche: number;
+}
+
+export type Action =
+  | { type: 'poser'; carte: string }
+  | { type: 'evoluer'; carte: string; origine: string }
+  | { type: 'decommissionner'; carte: string }
+  | { type: 'attaquer'; attaquant: string; cible: string }
+  | { type: 'finirTour' };
+
+export interface Issue {
+  gagnant: IdJoueur | null;
+  raison: 'sla' | 'tours';
+}
+
+export interface Vue {
+  joueur: IdJoueur;
+  moi: Camp & { main: Instance[]; aDecommissionne: boolean };
+  adversaire: Camp & { main: number };
+  actif: IdJoueur;
+  tour: number;
+  issue: Issue | null;
+  actions: Action[];
+}
+
+/** Un événement du journal ; ses champs dépendent de son type (packages/domain/src/combat/types.ts). */
+export interface Evenement {
+  type: string;
+  joueur?: IdJoueur;
+  tour?: number;
+  /** La carte concernée ; un simple identifiant pour l'entretien (Sur site). */
+  carte?: Instance | string | null;
+  origine?: Instance;
+  debit?: number;
+  attaquant?: string;
+  cible?: string;
+  montant?: number;
+  cause?: string;
+  paye?: boolean;
+  issue?: Issue;
+}
+
+export interface Partie {
+  id: string;
+  deck: string;
+  deckAdversaire: string;
+  vue: Vue;
+  evenements: Evenement[];
+}
+
+export interface Deck {
+  id: string;
+  nom: string;
+  description: string;
+  cartes: number[];
+}
+
+/** Nombre de tours d'une partie, tous joueurs confondus (règles). */
+export const TOURS_MAX = 20;
