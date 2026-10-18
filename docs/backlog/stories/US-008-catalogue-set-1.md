@@ -1,7 +1,7 @@
 # US-008 — Catalogue du set 1
 
 - **Epic** : EPIC-01
-- **Statut** : En revue
+- **Statut** : Faite
 - **Priorité** : Must
 - **Taille** : L
 - **Branche** : `us-008-catalogue-set-1`
@@ -66,3 +66,4 @@ afin de **découvrir l'univers du jeu et relire le set avant de pouvoir y jouer*
   contrat `apps/api/openapi/cartes.yaml`, `GET /api/v1/cartes` et `/cartes/{numero}` ; front : accueil déplacé dans
   sa route, catalogue filtrable `/cartes` et détail `/cartes/:numero`, fond explicite de la page ; 4 parcours e2e
   (mobile et bureau) avec audit axe-core. En revue.
+- 2026-10-18 — livrée : catalogue du set 1 : 71 cartes en données du domaine (ADR 0011), API /api/v1/cartes, pages catalogue filtrable et détail, parcours e2e avec audit axe-core

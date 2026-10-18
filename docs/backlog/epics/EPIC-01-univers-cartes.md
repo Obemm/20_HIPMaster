@@ -1,6 +1,6 @@
 # EPIC-01 — Univers et modèle de carte
 
-- **Statut** : En cours
+- **Statut** : Terminé
 - **Priorité** : Must
 
 ## Objectif
@@ -15,7 +15,7 @@ Un premier set d'au moins 50 cartes est décrit dans des données versionnées, 
 ## Stories
 
 - [x] US-005 — Univers et règles du jeu
-- [ ] US-008 — Catalogue du set 1
+- [x] US-008 — Catalogue du set 1
 
 Stories à découper ensuite : moteur de combat et modèle d'effets dans `packages/domain`, équilibrage du set par
 simulations « bot contre bot ».
