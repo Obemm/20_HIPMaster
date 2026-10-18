@@ -2,7 +2,7 @@ import type { Carte, Rarete } from '@hipmaster/domain';
 import { DESCRIPTIONS_EMBLEME, DETAILS, PALETTES, SILHOUETTES } from './emblemes.ts';
 import { creerHasard, entre } from './hasard.ts';
 
-/** Surface de dessin en 4:3 (ADR 0014) ; le rendu PNG se fait à une taille supérieure. */
+/** Surface de dessin en 4:3 (ADR 0015) ; le rendu PNG se fait à une taille supérieure. */
 export const LARGEUR = 1200;
 export const HAUTEUR = 900;
 const CENTRE_X = LARGEUR / 2;
@@ -132,7 +132,7 @@ function motifType(carte: Carte, hasard: () => number, couleur: string): string 
   }
 }
 
-/** Dessine l'illustration provisoire d'une carte (US-018, ADR 0015). Déterministe : même carte, même image. */
+/** Dessine l'illustration provisoire d'une carte (US-018, ADR 0016). Déterministe : même carte, même image. */
 export function dessinerCarte(carte: Carte): string {
   const hasard = creerHasard(carte.numero);
   const palette = PALETTES[carte.famille];

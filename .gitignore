@@ -34,5 +34,5 @@ Thumbs.db
 .eslintcache
 *.tsbuildinfo
 
-# Originaux des illustrations : hors du dépôt (ADR 0014)
+# Originaux des illustrations : hors du dépôt (ADR 0015)
 packages/illustrations/sources/

@@ -1,4 +1,4 @@
-# 0015 — Illustrations provisoires vectorielles, générées par le code
+# 0016 — Illustrations provisoires vectorielles, générées par le code
 
 - **Date** : 2026-10-18
 - **Statut** : Acceptée
@@ -17,7 +17,7 @@ reconnaissables dès maintenant (catalogue, futurs boosters et combat).
 - Un **générateur vectoriel** dans `packages/illustrations/src/vectoriel/` dessine chaque carte en SVG à partir de ses
   données (famille, type, rareté, numéro), selon la [direction artistique](../produit/direction-artistique.md) : un
   emblème par famille, un motif par type, une intensité par rareté, des variations tirées du numéro.
-- Le SVG est rendu en PNG 4:3 par `sharp`, puis passe par la chaîne d'US-015 ([ADR 0014](0014-illustrations-statiques-optimisees.md)).
+- Le SVG est rendu en PNG 4:3 par `sharp`, puis passe par la chaîne d'US-015 ([ADR 0015](0015-illustrations-statiques-optimisees.md)).
 - Le **générateur fait foi** : les images se refont à l'identique à la demande, il n'y a pas d'original à archiver.
 - Les illustrations produites sont **versionnées** ; elles seront remplacées carte par carte quand un générateur
   d'images sera retenu (US-016, US-017).

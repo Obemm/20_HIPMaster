@@ -49,7 +49,7 @@ npm run dev          # API sur localhost:3000, jeu sur http://localhost:4200
 | `apps/web/`              | Front Angular (PWA à venir) — ADR 0006                                     |
 | `apps/api/`              | API REST Fastify, schéma et migrations Drizzle — ADR 0007, 0003            |
 | `packages/domain`        | Logique de jeu pure et testée (tirages, règles, bot) — ADR 0004            |
-| `packages/illustrations` | Chaîne d'import et d'optimisation des illustrations — ADR 0014             |
+| `packages/illustrations` | Chaîne d'import et d'optimisation des illustrations — ADR 0015             |
 | `e2e/`                   | Parcours Playwright                                                        |
 | `docs/`                  | Vision, backlog (epics/stories), décisions (ADR) — [index](docs/README.md) |
 

@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-/** Description d'une illustration dans `set-1.json` (ADR 0014). */
+/** Description d'une illustration dans `set-1.json` (ADR 0015). */
 const schemaIllustration = z.object({
   numero: z.int().positive(),
   /** Ce que montre l'image, pour les lecteurs d'écran : une phrase, sans répéter le nom de la carte. */

@@ -2,7 +2,7 @@ import { SET_1 } from '@hipmaster/domain';
 import { fileURLToPath } from 'node:url';
 import { produireIllustrations } from './chaine.ts';
 
-// `npm run illustrations` : déclinaisons et manifeste du set 1 (US-015, ADR 0014).
+// `npm run illustrations` : déclinaisons et manifeste du set 1 (US-015, ADR 0015).
 const depuisPaquet = (chemin: string) => fileURLToPath(new URL(`../${chemin}`, import.meta.url));
 
 const { erreurs, fichiers } = await produireIllustrations(

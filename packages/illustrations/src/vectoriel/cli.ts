@@ -6,7 +6,7 @@ import sharp from 'sharp';
 import { produireIllustrations } from '../chaine.ts';
 import { dessinerCarte, texteAlternatif } from './dessin.ts';
 
-// `npm run illustrations:provisoires` : dessine les 71 cartes (US-018, ADR 0015), puis lance la chaîne d'US-015.
+// `npm run illustrations:provisoires` : dessine les 71 cartes (US-018, ADR 0016), puis lance la chaîne d'US-015.
 const depuisPaquet = (chemin: string) => fileURLToPath(new URL(`../../${chemin}`, import.meta.url));
 const sources = depuisPaquet('sources/set-1');
 const aujourdhui = new Date().toISOString().slice(0, 10);
@@ -31,7 +31,7 @@ await writeFile(
   `${JSON.stringify(
     {
       $commentaire:
-        "Une entrée par carte illustrée du set 1 (US-015, ADR 0014). L'original va dans sources/set-1/<numero>.png.",
+        "Une entrée par carte illustrée du set 1 (US-015, ADR 0015). L'original va dans sources/set-1/<numero>.png.",
       illustrations,
     },
     null,

@@ -17,7 +17,7 @@ En tant que **joueur de l'équipe d'intégration**, je veux **que chaque carte d
 - [ ] Chacune a un texte alternatif et sa provenance (outil, date, consigne) dans `packages/illustrations/set-1.json`.
 - [ ] Un test vérifie que **toutes** les cartes du set 1 ont une illustration de moins de 100 Ko (indicateur de
       réussite d'EPIC-05).
-- [ ] Les originaux sont archivés hors du dépôt (ADR 0014).
+- [ ] Les originaux sont archivés hors du dépôt (ADR 0015).
 - [ ] Les captures du catalogue, sur mobile et sur bureau, en thème clair et sombre, sont jointes à la PR.
 
 ## Notes

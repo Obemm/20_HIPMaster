@@ -1,6 +1,6 @@
 import sharp from 'sharp';
 
-/** Largeurs servies au front, au format 4:3 (ADR 0014). */
+/** Largeurs servies au front, au format 4:3 (ADR 0015). */
 export const LARGEURS = [320, 640] as const;
 export const FORMATS = ['avif', 'webp'] as const;
 export type Format = (typeof FORMATS)[number];

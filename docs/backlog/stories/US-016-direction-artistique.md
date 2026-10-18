@@ -58,5 +58,5 @@ les images** afin que **les 71 cartes forment un set cohérent, sans risque sur 
   gauche, Apigee droite, Solace droite. Reste à trancher : l'offre (les images gratuites restent la propriété de
   Recraft) avant de produire les 71 cartes (US-017).
 - 2026-10-18 — décision du porteur du projet : l'offre Recraft attend ; **pour le moment**, des illustrations simples
-  générées par le code (US-018, ADR 0015). Les images de l'essai sont rangées hors du dépôt
+  générées par le code (US-018, ADR 0016). Les images de l'essai sont rangées hors du dépôt
   (`packages/illustrations/sources/recraft-essai/`).

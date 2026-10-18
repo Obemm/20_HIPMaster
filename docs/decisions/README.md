@@ -22,7 +22,7 @@ référence Elis.
 | [0011](0011-catalogue-cartes-versionne.md)             | Catalogue des cartes versionné dans le domaine, pas en base           | ADR-026 (écarté)       | Acceptée                      |
 | [0012](0012-theme-clair-sombre.md)                     | Thème clair ou sombre selon le système, jetons de couleur             | ADR-019 (adapté)       | Acceptée                      |
 | [0013](0013-moteur-combat.md)                          | Moteur de combat : état sérialisable, actions, hasard à graine        | aucune                 | Acceptée                      |
-| [0014](0014-illustrations-statiques-optimisees.md)     | Illustrations : fichiers statiques optimisés, originaux hors du dépôt | ADR-012, ADR-030       | Acceptée                      |
-| [0015](0015-illustrations-provisoires-vectorielles.md) | Illustrations provisoires vectorielles, générées par le code          | aucune (ADR-033)       | Acceptée                      |
+| [0015](0015-illustrations-statiques-optimisees.md)     | Illustrations : fichiers statiques optimisés, originaux hors du dépôt | ADR-012, ADR-030       | Acceptée                      |
+| [0016](0016-illustrations-provisoires-vectorielles.md) | Illustrations provisoires vectorielles, générées par le code          | aucune (ADR-033)       | Acceptée                      |
 
 Modèle : [template.md](template.md).

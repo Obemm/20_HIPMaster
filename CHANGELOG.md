@@ -35,10 +35,10 @@ Toutes les évolutions notables du projet sont consignées ici
   (US-010, ADR 0013).
 - Chaîne des illustrations : un original déposé et décrit devient, en une commande (`npm run illustrations`), quatre
   images AVIF et WebP de moins de 100 Ko et un manifeste ; la carte affiche son illustration, ou son pictogramme de
-  famille à défaut. EPIC-05 découpé en US-015 à US-017 (US-015, ADR 0014).
+  famille à défaut. EPIC-05 découpé en US-015 à US-017 (US-015, ADR 0015).
 - Illustrations provisoires des 71 cartes, dessinées par le code (`npm run illustrations:provisoires`) : un emblème
   par famille, un motif par type, une intensité par rareté, sans texte ni logo, en attendant de vraies illustrations
-  (US-018, ADR 0015).
+  (US-018, ADR 0016).
 
 ### Modifié
 

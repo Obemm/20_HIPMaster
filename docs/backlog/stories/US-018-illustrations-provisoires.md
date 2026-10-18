@@ -26,7 +26,7 @@ cohérente** afin de **reconnaître les cartes d'un coup d'œil sans attendre le
 
 ## Notes
 
-- Décision : [ADR 0015](../../decisions/0015-illustrations-provisoires-vectorielles.md). Le porteur du projet a
+- Décision : [ADR 0016](../../decisions/0016-illustrations-provisoires-vectorielles.md). Le porteur du projet a
   demandé le 2026-10-18 des images simples faites par Claude « pour le moment », en attendant de trancher l'offre
   Recraft (US-016).
 - Les images de l'essai Recraft (US-016) restent hors du dépôt : elles appartiennent à Recraft.

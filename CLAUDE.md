@@ -27,7 +27,7 @@ pure en TypeScript, PostgreSQL + Drizzle. TypeScript strict, Node ≥ 24.15.
 | `apps/web`               | Front Angular (standalone, signals, sans zone.js), préfixe de sélecteurs `hip-`                  |
 | `apps/api`               | API REST Fastify `/api/v1/…`, schéma Drizzle et migrations (`apps/api/drizzle`)                  |
 | `packages/domain`        | `@hipmaster/domain` : logique de jeu pure (ADR 0004)                                             |
-| `packages/illustrations` | Chaîne des illustrations : originaux → AVIF/WebP + manifeste (`npm run illustrations`, ADR 0014) |
+| `packages/illustrations` | Chaîne des illustrations : originaux → AVIF/WebP + manifeste (`npm run illustrations`, ADR 0015) |
 | `e2e`                    | Parcours Playwright avec audit axe-core                                                          |
 
 - `npm run dev` : API (localhost:3000) + front (localhost:4200, qui relaie `/api` vers l'API). `npm run build`.

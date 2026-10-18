@@ -1,4 +1,4 @@
-# 0014 — Illustrations des cartes : fichiers statiques optimisés, originaux hors du dépôt
+# 0015 — Illustrations des cartes : fichiers statiques optimisés, originaux hors du dépôt
 
 - **Date** : 2026-10-18
 - **Statut** : Acceptée

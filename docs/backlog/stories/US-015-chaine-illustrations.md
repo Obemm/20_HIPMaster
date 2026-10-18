@@ -28,14 +28,14 @@ en une commande** afin de **pouvoir illustrer les 71 cartes sans retouche à la 
 
 ## Notes
 
-- Décision de stockage et de formats : [ADR 0014](../../decisions/0014-illustrations-statiques-optimisees.md).
+- Décision de stockage et de formats : [ADR 0015](../../decisions/0015-illustrations-statiques-optimisees.md).
 - La chaîne ne dépend d'aucun générateur : elle sert à Recraft (US-016, US-017) comme à des images faites à la main.
 - Hors périmètre : choisir l'outil et le style (US-016), produire les 71 illustrations (US-017), envoyer les images
   vers Azure (à la mise en ligne, ADR 0008).
 
 ## Journal
 
-- 2026-10-18 — création, au découpage d'EPIC-05 ; ADR 0014.
+- 2026-10-18 — création, au découpage d'EPIC-05 ; ADR 0015.
 - 2026-10-18 — paquet `@hipmaster/illustrations` (validation de `set-1.json` par Zod, déclinaisons `sharp` en AVIF et
   WebP de 320 et 640 px recadrées en 4:3 sur la zone la plus marquante, qualité abaissée par paliers sous 100 Ko,
   manifeste formaté par Prettier, rien n'est écrit en cas d'erreur, images d'une carte retirée supprimées) ;

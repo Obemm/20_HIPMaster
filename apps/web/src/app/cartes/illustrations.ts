@@ -2,7 +2,7 @@ import { InjectionToken } from '@angular/core';
 import { ILLUSTRATIONS_SET_1 } from './illustrations.generated';
 
 /**
- * Cartes qui ont une illustration : numéro → texte alternatif (US-015, ADR 0014).
+ * Cartes qui ont une illustration : numéro → texte alternatif (US-015, ADR 0015).
  * Par défaut, le manifeste produit par `npm run illustrations` ; les tests en fournissent un autre.
  */
 export const ILLUSTRATIONS_CARTES = new InjectionToken<Readonly<Record<number, string>>>(
