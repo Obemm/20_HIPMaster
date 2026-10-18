@@ -76,3 +76,9 @@ Toutes les évolutions notables du projet sont consignées ici
 
 - Next.js remplacé par Angular (ADR 0001 remplacé par 0006) ; la logique de jeu passe de `src/domain` à
   `packages/domain` ; Node 24.15 minimum (exigé par Angular 22) (US-006).
+
+### Corrigé
+
+- La vue de partie renvoyée par l'API perdait le bonus d'attaque des composants et les marqueurs du joueur : un bot
+  du domaine joué depuis l'API (Agent autonome) évaluait tout à `NaN` et ne gagnait plus aucune partie. Le schéma et
+  le contrat OpenAPI les exposent ; la vue de l'API suffit désormais à reconstituer la partie (US-026).

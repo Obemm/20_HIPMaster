@@ -22,6 +22,7 @@ Une partie dure moins de 5 minutes ; le bot de niveau moyen gagne environ une pa
 - [x] US-020 — Capacités IA et Migration
 - [x] US-021 — Niveaux du bot
 - [ ] US-025 — Un booster pour chaque victoire
+- [x] US-026 — Une vue publique complète, qui suffit à un bot
 
 Premier jalon jouable à la fin d'US-013, avec les cartes que le moteur prend déjà en charge (décision du porteur du
 projet, 2026-10-18). Niveaux du bot (US-021) et récompense de victoire (US-025, avec EPIC-02 et EPIC-03) rédigés le 2026-10-18.

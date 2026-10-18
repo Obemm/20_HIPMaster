@@ -1,6 +1,6 @@
 # Tableau de suivi
 
-_Dernière mise à jour : 2026-10-18_
+_Dernière mise à jour : 2026-10-19_
 
 ## Epics
 
@@ -10,7 +10,7 @@ _Dernière mise à jour : 2026-10-18_
 | [EPIC-01 — Univers et modèle de carte](epics/EPIC-01-univers-cartes.md)  | Must     | Terminé   | 2/2        |
 | [EPIC-02 — Comptes joueurs](epics/EPIC-02-comptes-joueurs.md)            | Must     | Terminé   | 1/1        |
 | [EPIC-03 — Boosters et collection](epics/EPIC-03-boosters-collection.md) | Must     | Terminé   | 2/2        |
-| [EPIC-04 — Combat contre le bot](epics/EPIC-04-combat-bot.md)            | Must     | En cours  | 8/9        |
+| [EPIC-04 — Combat contre le bot](epics/EPIC-04-combat-bot.md)            | Must     | En cours  | 9/10       |
 | [EPIC-05 — Illustrations des cartes](epics/EPIC-05-illustrations.md)     | Should   | En cours  | 3/5        |
 | [EPIC-06 — Duels entre joueurs](epics/EPIC-06-duels-joueurs.md)          | Should   | À affiner | 0/0        |
 | [EPIC-07 — Vie sociale](epics/EPIC-07-vie-sociale.md)                    | Could    | À affiner | 0/0        |
@@ -62,10 +62,11 @@ Objectif : un socle outillé, vérifié automatiquement, et une méthode de trav
 Ordre décidé avec le porteur du projet le 2026-10-18 : niveaux du bot, comptes simples, boosters et collection, puis
 récompense de victoire. Les illustrations (EPIC-05) attendent.
 
-| Story                                                                             | Epic    | Priorité | Taille | Statut    |
-| --------------------------------------------------------------------------------- | ------- | -------- | ------ | --------- |
-| [US-021 — Niveaux du bot](stories/US-021-niveaux-bot.md)                          | EPIC-04 | Must     | M      | Faite     |
-| [US-022 — Compte invité, sans mot de passe](stories/US-022-compte-invite.md)      | EPIC-02 | Must     | L      | Faite     |
-| [US-023 — Recevoir et ouvrir des boosters](stories/US-023-ouvrir-boosters.md)     | EPIC-03 | Must     | L      | Faite     |
-| [US-024 — Ma collection](stories/US-024-ma-collection.md)                         | EPIC-03 | Must     | M      | Faite     |
-| [US-025 — Un booster pour chaque victoire](stories/US-025-recompense-victoire.md) | EPIC-04 | Should   | S      | À affiner |
+| Story                                                                               | Epic    | Priorité | Taille | Statut    |
+| ----------------------------------------------------------------------------------- | ------- | -------- | ------ | --------- |
+| [US-021 — Niveaux du bot](stories/US-021-niveaux-bot.md)                            | EPIC-04 | Must     | M      | Faite     |
+| [US-022 — Compte invité, sans mot de passe](stories/US-022-compte-invite.md)        | EPIC-02 | Must     | L      | Faite     |
+| [US-023 — Recevoir et ouvrir des boosters](stories/US-023-ouvrir-boosters.md)       | EPIC-03 | Must     | L      | Faite     |
+| [US-024 — Ma collection](stories/US-024-ma-collection.md)                           | EPIC-03 | Must     | M      | Faite     |
+| [US-025 — Un booster pour chaque victoire](stories/US-025-recompense-victoire.md)   | EPIC-04 | Should   | S      | À affiner |
+| [US-026 — Vue publique complète pour les bots](stories/US-026-vue-publique-bots.md) | EPIC-04 | Should   | XS     | Faite     |
