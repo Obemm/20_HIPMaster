@@ -19,7 +19,7 @@ direct si les deux joueurs sont présents.
 
 - [x] US-032 — Duels côté serveur : créer, rejoindre, jouer à son tour
 - [x] US-033 — Défier un collègue par lien
-- [ ] US-034 — Écran de duel
+- [x] US-034 — Écran de duel
 - [ ] US-035 — Mes duels et « à vous de jouer »
 - [ ] US-036 — Abandon et forfait
 - [ ] US-037 — Adversaire au hasard

@@ -1,7 +1,7 @@
 # US-034 — Écran de duel
 
 - **Epic** : EPIC-06
-- **Statut** : En revue
+- **Statut** : Faite
 - **Priorité** : Must
 - **Taille** : L
 - **Branche** : `us-034-ecran-duel`
@@ -37,3 +37,4 @@ jusqu'au bout**.
   affiche ce plateau dès que le défi est relevé. La main de cartes devient focusable (défilement au clavier même
   quand ses cartes sont désactivées). Repli du mode sur « bot » quand le routeur lie `undefined`. Tests : écran (4),
   journal (1), e2e (3 : duel à deux navigateurs, fin menée par l'API pour aller vite, axe en clair et en sombre).
+- 2026-10-19 — livrée : Écran de duel : plateau partagé avec le bot, adversaire nommé, mise à jour pendant le tour adverse
