@@ -109,7 +109,35 @@ describe('boosters', () => {
     });
   });
 
+  it('la collection liste les cartes possédées, doubles cumulés, par numéro', async () => {
+    const { entetes } = await nouveauJoueur();
+    const vide = await app.inject({
+      method: 'GET',
+      url: '/api/v1/moi/collection',
+      headers: entetes,
+    });
+    expect(vide.json()).toEqual({ cartes: [] });
+
+    const tirees: number[] = [];
+    for (let i = 0; i < 3; i++) {
+      tirees.push(...(await ouvrir(entetes)).json<Ouverture>().cartes.map((c) => c.numero));
+    }
+    const { cartes } = (
+      await app.inject({ method: 'GET', url: '/api/v1/moi/collection', headers: entetes })
+    ).json<{ cartes: { numero: number; exemplaires: number }[] }>();
+    const attendu = new Map<number, number>();
+    for (const n of tirees) attendu.set(n, (attendu.get(n) ?? 0) + 1);
+    expect(cartes).toEqual(
+      [...attendu]
+        .sort(([a], [b]) => a - b)
+        .map(([numero, exemplaires]) => ({ numero, exemplaires })),
+    );
+  });
+
   it('exige un compte', async () => {
+    expect((await app.inject({ method: 'GET', url: '/api/v1/moi/collection' })).statusCode).toBe(
+      401,
+    );
     expect((await lire({})).statusCode).toBe(401);
     expect((await ouvrir({})).statusCode).toBe(401);
   });

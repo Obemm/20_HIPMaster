@@ -11,6 +11,8 @@ import {
   viewChild,
 } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
+import { CollectionService } from '../collection/collection.service';
+import { CompteService } from '../compte/compte.service';
 import { Icone } from '../icone';
 import { LIBELLES_RARETE, SYMBOLES_RARETE } from '../libelles';
 import { type Carte, LIBELLES_FAMILLE, libelleType } from './carte';
@@ -28,6 +30,13 @@ import { VignetteCarte } from './vignette-carte';
 export class DetailCarte implements OnDestroy {
   /** Paramètre de route `:numero`, lié par `withComponentInputBinding()`. */
   readonly numero = input.required<string>();
+  /**
+   * Page sous la fenêtre (donnée de route `retour`) : le catalogue, ou la collection (US-024). Sans cette donnée,
+   * le routeur lie `undefined` : on retombe alors sur le catalogue.
+   */
+  readonly retour = input('/cartes', {
+    transform: (valeur: string | undefined) => valeur ?? '/cartes',
+  });
 
   private readonly router = inject(Router);
   private readonly dialogue = viewChild.required<ElementRef<HTMLDialogElement>>('dialogue');
@@ -49,6 +58,14 @@ export class DetailCarte implements OnDestroy {
     return origine === undefined ? undefined : `/api/v1/cartes/${origine}`;
   });
 
+  protected readonly compte = inject(CompteService);
+  private readonly collection = inject(CollectionService);
+  /** Exemplaires possédés par le joueur connecté ; `null` sans compte ou avant chargement. */
+  protected readonly exemplaires = computed(() => {
+    const collection = this.collection.exemplaires();
+    return collection ? (collection.get(Number(this.numero())) ?? 0) : null;
+  });
+
   protected readonly introuvable = computed(() => {
     const erreur = this.carte.error();
     return erreur instanceof HttpErrorResponse && [400, 404].includes(erreur.status);
@@ -66,7 +83,7 @@ export class DetailCarte implements OnDestroy {
   }
 
   protected fermer(): void {
-    void this.router.navigate(['/cartes']);
+    void this.router.navigate([this.retour()]);
   }
 
   /** Touche Échap : on passe par le routeur plutôt que de laisser le navigateur fermer seul la fenêtre. */

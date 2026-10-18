@@ -2,6 +2,8 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
+import { CollectionService } from '../collection/collection.service';
+import { CompteService } from '../compte/compte.service';
 import type { Carte } from './carte';
 import { DetailCarte } from './detail-carte';
 
@@ -68,14 +70,32 @@ describe('DetailCarte', () => {
     );
   });
 
-  it('revient au catalogue quand on ferme la fenêtre', async () => {
+  it('revient au catalogue quand on ferme la fenêtre, même sans donnée de route « retour »', async () => {
     const fixture = creer('26');
+    fixture.componentRef.setInput('retour', undefined);
     TestBed.inject(HttpTestingController).expectOne('/api/v1/cartes/26').flush(SANS_ORIGINE);
     await fixture.whenStable();
     const naviguer = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
     const page = fixture.nativeElement as HTMLElement;
     page.querySelector<HTMLButtonElement>('button')?.click();
     expect(naviguer).toHaveBeenCalledWith(['/cartes']);
+  });
+
+  it('depuis la collection, indique les exemplaires possédés et y revient à la fermeture', async () => {
+    TestBed.inject(CompteService).joueur.set({ id: 'x', pseudo: 'Ada' });
+    TestBed.inject(CollectionService);
+    const fixture = creer('26');
+    fixture.componentRef.setInput('retour', '/collection');
+    const http = TestBed.inject(HttpTestingController);
+    http.expectOne('/api/v1/cartes/26').flush(SANS_ORIGINE);
+    http.expectOne('/api/v1/moi/collection').flush({ cartes: [{ numero: 26, exemplaires: 2 }] });
+    await fixture.whenStable();
+    fixture.detectChanges();
+    const page = fixture.nativeElement as HTMLElement;
+    expect(page.textContent).toContain('Dans votre collection : 2 exemplaires.');
+    const naviguer = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+    page.querySelector<HTMLButtonElement>('button')?.click();
+    expect(naviguer).toHaveBeenCalledWith(['/collection']);
   });
 
   it('annonce une carte introuvable quand l’API répond 404', async () => {
