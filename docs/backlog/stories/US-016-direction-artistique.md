@@ -50,3 +50,10 @@ les images** afin que **les 71 cartes forment un set cohérent, sans risque sur 
   carte à l'autre (peinture texturée, dessin au trait, aplats isométriques, style « mignon ») : sans style verrouillé,
   le bloc de style commun ne suffit pas pour 71 cartes. Piste : la fonction « Créer un style » de Recraft, à partir
   des images retenues. Images et métadonnées de l'essai gardées hors des commits (propriété de Recraft).
+- 2026-10-18 — **style verrouillé** : style personnalisé Recraft « Sunlit Sketches » (fonction « Créer un style »,
+  disponible en offre gratuite) construit sur les 4 images retenues, puis les 4 cartes régénérées avec ce style
+  (modèle V4.1, mode Flexible, consignes réduites au sujet et à la palette de la famille) : **4 crédits par paire**
+  au lieu de 2, 16 crédits, il en reste 36 sur 60. **Résultat** : rendu nettement plus homogène (même fond bleu nuit,
+  même trait, même halo d'une carte à l'autre), images plus légères (6 à 49 Ko). Retenues : FTP gauche, webMethods
+  gauche, Apigee droite, Solace droite. Reste à trancher : l'offre (les images gratuites restent la propriété de
+  Recraft) avant de produire les 71 cartes (US-017).
