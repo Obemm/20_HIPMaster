@@ -1,4 +1,5 @@
 import { adversaire, carteDe, PLATEAU_MAX, possede, raisonDeNePasAttaquer } from './outils.ts';
+import { ciblesDeRenfort } from './effets-composants.ts';
 import { combinaisonsCibles } from './effets.ts';
 import { estPriseEnCharge } from './prise-en-charge.ts';
 import type { Action, Cible, ComposantEnJeu, EtatPartie, IdJoueur } from './types.ts';
@@ -14,8 +15,11 @@ function posesPossibles(etat: EtatPartie, joueur: IdJoueur): Action[] {
         .filter((c) => c.numero === carte.origine)
         .map((origine) => ({ type: 'evoluer', carte: instance.id, origine: origine.id }));
     }
-    if (carte.type !== 'composant') return [];
-    return etatJoueur.plateau.length < PLATEAU_MAX ? [{ type: 'poser', carte: instance.id }] : [];
+    if (carte.type !== 'composant' || etatJoueur.plateau.length >= PLATEAU_MAX) return [];
+    // OpenAPI, AsyncAPI : une pose par composant à renforcer, s'il y en a.
+    const renforts = ciblesDeRenfort(etat, joueur, carte.numero);
+    if (renforts.length === 0) return [{ type: 'poser', carte: instance.id }];
+    return renforts.map((cible) => ({ type: 'poser', carte: instance.id, cible }));
   });
 }
 

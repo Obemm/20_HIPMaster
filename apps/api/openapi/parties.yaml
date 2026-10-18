@@ -196,6 +196,11 @@ components:
           properties:
             type: { const: poser }
             carte: { type: string }
+            cible:
+              type: string
+              description: >
+                Composant renforcé par OpenAPI ou AsyncAPI (+1 attaque), obligatoire quand la carte a une cible
+                possible (US-019).
         - type: object
           required: [type, carte, origine]
           properties:

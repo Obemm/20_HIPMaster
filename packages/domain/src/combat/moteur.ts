@@ -1,4 +1,5 @@
 import { attaquer } from './combat.ts';
+import { ciblesDeRenfort, effetsALaPose } from './effets-composants.ts';
 import { jouer } from './effets.ts';
 import {
   carteDe,
@@ -55,7 +56,12 @@ function verifierPose(
   return null;
 }
 
-function poser(etat: EtatPartie, joueur: IdJoueur, carteId: string): ErreurAction | null {
+function poser(
+  etat: EtatPartie,
+  joueur: IdJoueur,
+  carteId: string,
+  cible: string | undefined,
+): ErreurAction | null {
   const instance = prendreEnMain(etat, joueur, carteId);
   if ('code' in instance) return instance;
   const refus = verifierPose(etat, joueur, instance, 'composant');
@@ -65,11 +71,21 @@ function poser(etat: EtatPartie, joueur: IdJoueur, carteId: string): ErreurActio
     return erreur('plateau-plein', 'Votre plateau est plein (5 composants).');
   }
   const carte = carteDe(instance.numero);
+  const renforts = ciblesDeRenfort(etat, joueur, carte.numero);
+  const cibleAttendue = renforts.length > 0;
+  if (
+    cibleAttendue !== (cible !== undefined) ||
+    (cible !== undefined && !renforts.includes(cible))
+  ) {
+    return erreur('cible-invalide', 'Cette cible ne convient pas à cette carte.');
+  }
   etatJoueur.debit -= carte.cout;
   retirerDeLaMain(etat, joueur, carteId);
-  etatJoueur.plateau.push(nouveauComposant(instance, etatJoueur.tours));
+  const pose = nouveauComposant(instance, etatJoueur.tours);
+  etatJoueur.plateau.push(pose);
   noter(etat, { type: 'pose', joueur, carte: instance });
   piocher(etat, joueur, valeurConnecteur(carte));
+  effetsALaPose(etat, joueur, pose, cible);
   return null;
 }
 
@@ -125,7 +141,7 @@ function executer(etat: EtatPartie, action: Action): ErreurAction | null {
   const joueur = etat.actif;
   switch (action.type) {
     case 'poser':
-      return poser(etat, joueur, action.carte);
+      return poser(etat, joueur, action.carte, action.cible);
     case 'evoluer':
       return evoluer(etat, joueur, action.carte, action.origine);
     case 'decommissionner':

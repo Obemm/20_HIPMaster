@@ -54,5 +54,5 @@ Objectif : un socle outillé, vérifié automatiquement, et une méthode de trav
 | [US-012 — API de partie contre le bot](stories/US-012-api-partie-pve.md)             | EPIC-04 | Must     | M      | Faite     |
 | [US-013 — Écran de partie contre le bot](stories/US-013-ecran-partie-pve.md)         | EPIC-04 | Must     | L      | Faite     |
 | [US-014 — Sorts et incidents](stories/US-014-effets-cartes.md)                       | EPIC-04 | Should   | L      | Faite     |
-| [US-019 — Effets propres des composants](stories/US-019-effets-composants.md)        | EPIC-04 | Should   | M      | À affiner |
+| [US-019 — Effets propres des composants](stories/US-019-effets-composants.md)        | EPIC-04 | Should   | M      | En revue  |
 | [US-020 — Capacités IA et Migration](stories/US-020-capacites-ia.md)                 | EPIC-04 | Should   | L      | À affiner |

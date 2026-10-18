@@ -32,7 +32,7 @@ interface Camp {
 }
 
 export type Action =
-  | { type: 'poser'; carte: string }
+  | { type: 'poser'; carte: string; cible?: string }
   | { type: 'evoluer'; carte: string; origine: string }
   | { type: 'decommissionner'; carte: string }
   | { type: 'attaquer'; attaquant: string; cible: string }

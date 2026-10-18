@@ -89,6 +89,7 @@ export function debuterTour(etat: EtatPartie, joueur: IdJoueur): void {
   etatJoueur.debit = Math.max(0, Math.min(etatJoueur.tours, DEBIT_MAX) - etatJoueur.malusDebit);
   etatJoueur.malusDebit = 0;
   etatJoueur.aDecommissionne = false;
+  etatJoueur.cronUtilise = false;
 
   const nonConformes = etatJoueur.plateau.filter((c) => possede(c, 'non-conforme')).length;
   if (nonConformes > 0) blesserSi(etat, joueur, nonConformes, 'non-conforme');
@@ -126,6 +127,7 @@ function nouveauJoueur(joueur: IdJoueur, deck: readonly number[]): EtatJoueur {
     parade: false,
     siProtegeJusquAuTour: null,
     malusDebit: 0,
+    cronUtilise: false,
   };
 }
 

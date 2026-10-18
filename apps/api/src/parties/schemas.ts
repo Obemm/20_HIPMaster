@@ -4,7 +4,12 @@ import { z } from 'zod';
 // Schémas Zod du contrat apps/api/openapi/parties.yaml.
 
 export const schemaAction = z.discriminatedUnion('type', [
-  z.object({ type: z.literal('poser'), carte: z.string().max(32) }),
+  z.object({
+    type: z.literal('poser'),
+    carte: z.string().max(32),
+    // Composant renforcé par OpenAPI ou AsyncAPI (US-019).
+    cible: z.string().max(32).optional(),
+  }),
   z.object({ type: z.literal('evoluer'), carte: z.string().max(32), origine: z.string().max(32) }),
   z.object({ type: z.literal('decommissionner'), carte: z.string().max(32) }),
   z.object({
