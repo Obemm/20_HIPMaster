@@ -1,0 +1,50 @@
+openapi: 3.1.0
+info:
+  title: HIPMaster — collection
+  version: 1.0.0
+  description: >
+    Collection du joueur connecté (US-024) : les cartes possédées et leur nombre d'exemplaires. Les cartes
+    manquantes se déduisent du catalogue (cartes.yaml). Compte requis (`Authorization: Bearer <jeton>`, voir
+    comptes.yaml).
+servers:
+  - url: /api/v1
+security: [{ jeton: [] }]
+paths:
+  /moi/collection:
+    get:
+      operationId: lireCollection
+      summary: Les cartes possédées, par numéro croissant
+      responses:
+        '200':
+          description: La collection.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [cartes]
+                properties:
+                  cartes:
+                    type: array
+                    items:
+                      type: object
+                      required: [numero, exemplaires]
+                      properties:
+                        numero:
+                          { type: integer, description: Numéro de la carte dans le catalogue. }
+                        exemplaires: { type: integer, minimum: 1 }
+        '401':
+          description: Compte requis (Problem Details).
+          content:
+            application/problem+json:
+              schema:
+                type: object
+                required: [type, title, status]
+                properties:
+                  type: { type: string }
+                  title: { type: string }
+                  status: { type: integer }
+components:
+  securitySchemes:
+    jeton:
+      type: http
+      scheme: bearer

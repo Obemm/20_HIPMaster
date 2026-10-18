@@ -4,6 +4,7 @@ import { RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import type { Carte } from '../cartes/carte';
 import { VignetteCarte } from '../cartes/vignette-carte';
+import { CollectionService } from '../collection/collection.service';
 import { CompteService } from '../compte/compte.service';
 
 // Contrat : apps/api/openapi/boosters.yaml.
@@ -28,6 +29,7 @@ interface Ouverture {
 export class BoostersEcran {
   protected readonly compte = inject(CompteService);
   private readonly http = inject(HttpClient);
+  private readonly collection = inject(CollectionService);
 
   private readonly catalogue = httpResource<Carte[]>(() => '/api/v1/cartes');
   private readonly parNumero = computed(
@@ -74,6 +76,7 @@ export class BoostersEcran {
       );
       this.tirage.set(ouverture.cartes);
       this.afficher(ouverture.boosters);
+      void this.collection.charger();
     } catch (erreur) {
       const vide = erreur instanceof HttpErrorResponse && erreur.status === 409;
       this.erreur.set(

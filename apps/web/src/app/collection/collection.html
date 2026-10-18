@@ -1,0 +1,140 @@
+<main class="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 py-8 sm:px-6">
+  <p>
+    <a routerLink="/" class="text-texte-doux underline underline-offset-4">← Accueil</a>
+  </p>
+  <h1 class="text-3xl font-bold tracking-tight">Ma collection</h1>
+
+  @if (!compte.joueur()) {
+    @if (compte.pret()) {
+      <p>
+        Votre collection se remplit en ouvrant des boosters : il faut un compte pour la garder.
+        <a routerLink="/compte" class="font-semibold underline underline-offset-4"
+          >Créer un compte</a
+        >
+        en un clic (un pseudo suffit) : 5 boosters vous sont offerts.
+      </p>
+    } @else {
+      <p>Vérification de votre session…</p>
+    }
+  } @else if (progression(); as p) {
+    <section aria-labelledby="titre-progression" class="flex flex-col gap-3">
+      <h2 id="titre-progression" class="text-lg font-semibold">
+        Set 1 : {{ p.obtenues }} / {{ p.total }} cartes
+      </h2>
+      <div
+        role="progressbar"
+        class="h-3 overflow-hidden rounded-full bg-surface"
+        aria-labelledby="titre-progression"
+        [attr.aria-valuenow]="p.obtenues"
+        aria-valuemin="0"
+        [attr.aria-valuemax]="p.total"
+      >
+        <div class="h-full bg-accent" [style.width.%]="(p.obtenues / p.total) * 100"></div>
+      </div>
+      <ul class="grid grid-cols-2 gap-2 sm:grid-cols-4">
+        @for (r of p.parRarete; track r.rarete) {
+          <li class="rounded bg-surface px-3 py-2">
+            <span class="block text-sm text-texte-doux"
+              >{{ symbolesRarete[r.rarete] }} {{ r.libelle }}</span
+            >
+            <span class="text-xl font-semibold">{{ r.obtenues }} / {{ r.total }}</span>
+          </li>
+        }
+      </ul>
+      @if (p.obtenues === 0) {
+        <p>
+          Votre collection est vide :
+          <a routerLink="/boosters" class="font-semibold underline underline-offset-4"
+            >ouvrez un booster</a
+          >.
+        </p>
+      }
+    </section>
+
+    <form class="flex flex-col gap-3 sm:flex-row" aria-label="Filtrer la collection">
+      <div class="flex flex-col gap-1">
+        <label for="filtre-possession" class="text-sm font-semibold">Possession</label>
+        <select
+          id="filtre-possession"
+          class="rounded border border-bordure bg-fond px-3 py-2"
+          (change)="choisirPossession($event)"
+        >
+          <option value="">Toutes les cartes</option>
+          <option value="possedees">Possédées</option>
+          <option value="manquantes">Manquantes</option>
+        </select>
+      </div>
+      <div class="flex flex-col gap-1">
+        <label for="filtre-famille" class="text-sm font-semibold">Famille</label>
+        <select
+          id="filtre-famille"
+          class="rounded border border-bordure bg-fond px-3 py-2"
+          (change)="choisirFamille($event)"
+        >
+          <option value="">Toutes les familles</option>
+          @for (f of familles; track f[0]) {
+            <option [value]="f[0]">{{ f[1] }}</option>
+          }
+        </select>
+      </div>
+      <div class="flex flex-col gap-1">
+        <label for="filtre-rarete" class="text-sm font-semibold">Rareté</label>
+        <select
+          id="filtre-rarete"
+          class="rounded border border-bordure bg-fond px-3 py-2"
+          (change)="choisirRarete($event)"
+        >
+          <option value="">Toutes les raretés</option>
+          @for (r of raretes; track r[0]) {
+            <option [value]="r[0]">{{ symbolesRarete[r[0]] }} {{ r[1] }}</option>
+          }
+        </select>
+      </div>
+    </form>
+
+    <p role="status" class="font-semibold">
+      @switch (affichees().length) {
+        @case (0) {
+          Aucune carte ne correspond à ces filtres.
+        }
+        @case (1) {
+          1 carte affichée
+        }
+        @default {
+          {{ affichees().length }} cartes affichées
+        }
+      }
+    </p>
+
+    <ul class="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4 xl:grid-cols-5">
+      @for (l of affichees(); track l.carte.numero) {
+        <li class="flex flex-col gap-1">
+          <p class="text-sm font-semibold">
+            @if (l.exemplaires > 0) {
+              <span class="rounded bg-accent px-2 py-0.5 text-sur-accent"
+                >× {{ l.exemplaires
+                }}<span class="sr-only"> exemplaire{{ l.exemplaires > 1 ? 's' : '' }}</span></span
+              >
+            } @else {
+              <span class="text-texte-doux">Manquante</span>
+            }
+          </p>
+          <hip-vignette-carte
+            [class.grayscale]="l.exemplaires === 0"
+            [carte]="l.carte"
+            [lien]="['/collection', l.carte.numero.toString()]"
+          />
+        </li>
+      }
+    </ul>
+  } @else if (cartes.error()) {
+    <p role="alert" class="text-alerte">
+      La collection n’a pas pu être chargée : l’API ne répond pas.
+    </p>
+  } @else {
+    <p>Chargement de la collection…</p>
+  }
+</main>
+
+<!-- Détail d'une carte, en fenêtre modale au-dessus de la collection (route enfant :numero). -->
+<router-outlet />

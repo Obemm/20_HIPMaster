@@ -67,5 +67,5 @@ récompense de victoire. Les illustrations (EPIC-05) attendent.
 | [US-021 — Niveaux du bot](stories/US-021-niveaux-bot.md)                          | EPIC-04 | Must     | M      | Faite     |
 | [US-022 — Compte invité, sans mot de passe](stories/US-022-compte-invite.md)      | EPIC-02 | Must     | L      | Faite     |
 | [US-023 — Recevoir et ouvrir des boosters](stories/US-023-ouvrir-boosters.md)     | EPIC-03 | Must     | L      | Faite     |
-| [US-024 — Ma collection](stories/US-024-ma-collection.md)                         | EPIC-03 | Must     | M      | À affiner |
+| [US-024 — Ma collection](stories/US-024-ma-collection.md)                         | EPIC-03 | Must     | M      | En revue  |
 | [US-025 — Un booster pour chaque victoire](stories/US-025-recompense-victoire.md) | EPIC-04 | Should   | S      | À affiner |
