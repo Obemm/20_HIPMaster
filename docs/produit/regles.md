@@ -6,7 +6,7 @@ Univers : [univers.md](univers.md). Premier set : [cartes-set-1.md](cartes-set-1
 ## But
 
 Chaque joueur défend son **SI**, qui a **20 points de SLA**. Le premier qui ramène le SLA adverse à 0 gagne.
-Après 20 tours, le joueur qui a le plus de SLA gagne (égalité : partie nulle).
+Après 20 tours (10 pour chaque joueur), le joueur qui a le plus de SLA gagne (égalité : partie nulle).
 
 ## Le deck
 
@@ -37,6 +37,21 @@ Après 20 tours, le joueur qui a le plus de SLA gagne (égalité : partie nulle)
    - Tant que l'adversaire a un composant avec **Garde**, il faut l'attaquer en premier.
 
 Les dégâts restent d'un tour à l'autre. Tout le hasard (pioche, cibles au hasard) est tiré par le serveur (ADR 0004).
+
+## Précisions (tranchées en codant le moteur, US-010)
+
+- **Pioche vide** : le joueur ne pioche pas, sans autre pénalité.
+- **Main pleine** : une carte piochée en trop part à la défausse ; File durable ne peut pas ramener une carte dans
+  une main pleine (elle part à la défausse).
+- **Attaque nulle** : un composant dont l'attaque vaut 0 ne peut pas attaquer.
+- **Évolution** : la carte d'origine part à la défausse ; l'évolution arrive avec ses PV pleins et garde l'état
+  d'attaque de l'origine (posée depuis combien de temps, déjà attaqué ce tour ou non).
+- **Diffusion** : les 2 composants blessés en plus sont tirés au hasard parmi les autres composants adverses.
+- **Réactif** : le dégât est infligé à l'attaquant après l'échange de dégâts, s'il est encore en jeu ; un seul
+  Réactif se déclenche par attaque.
+- **Point unique** : les destructions qu'il provoque peuvent en entraîner d'autres, en cascade.
+- **Non conforme** se cumule (2 cartes : 2 SLA par tour) ; **Sur site** prélève l'entretien automatiquement, carte
+  par carte, tant qu'il reste du Débit.
 
 ## Capacités
 
