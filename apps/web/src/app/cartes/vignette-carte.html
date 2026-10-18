@@ -12,11 +12,26 @@
   </div>
 
   <div
-    class="flex min-h-[18%] flex-1 items-center justify-center rounded-[3cqw] bg-linear-to-br text-white/90"
-    [class]="illustration()"
-    aria-hidden="true"
+    class="relative flex min-h-[18%] flex-1 items-center justify-center overflow-hidden rounded-[3cqw] bg-linear-to-br text-white/90"
+    [class]="fondFamille()"
   >
-    <hip-icone [nom]="c.famille" class="size-[22cqw]" />
+    @if (illustration(); as image) {
+      <picture>
+        <source type="image/avif" [attr.srcset]="image.sources.avif" [attr.sizes]="tailles" />
+        <source type="image/webp" [attr.srcset]="image.sources.webp" [attr.sizes]="tailles" />
+        <img
+          [src]="image.sources.defaut"
+          [alt]="image.alt"
+          width="640"
+          height="480"
+          loading="lazy"
+          decoding="async"
+          class="absolute inset-0 size-full object-cover"
+        />
+      </picture>
+    } @else {
+      <hip-icone [nom]="c.famille" class="size-[22cqw]" aria-hidden="true" />
+    }
   </div>
 
   <div class="flex flex-col gap-[1cqw]">

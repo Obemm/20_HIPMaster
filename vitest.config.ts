@@ -6,6 +6,7 @@ export default defineConfig({
     projects: [
       { test: { name: 'domain', include: ['packages/domain/src/**/*.test.ts'] } },
       { test: { name: 'api', include: ['apps/api/src/**/*.test.ts'] } },
+      { test: { name: 'illustrations', include: ['packages/illustrations/src/**/*.test.ts'] } },
     ],
     coverage: { provider: 'v8', include: ['packages/*/src/**', 'apps/api/src/**'] },
   },
