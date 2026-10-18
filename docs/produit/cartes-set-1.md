@@ -126,3 +126,26 @@ Batch adverse n'inflige rien), **Encodage cassé** (1 — 2 dégâts à un compo
 
 - **FTP** est peut-être trop forte pour une légendaire à 3 de Débit malgré Non conforme : simulations à faire.
 - Les cartes **Autonomes** sans Orchestration sont imprévisibles : vérifier qu'elles restent intéressantes à jouer.
+
+## Équilibrage : simulation du 2026-10-18 (US-011)
+
+`npm run simuler` : 200 parties par duel, graine 1, bot « Batch de nuit » des deux côtés, en alternant les places.
+
+| Deck A   | Deck B   | Victoires A | Victoires B | Nulles | Finies par SLA | Tours moyens |
+| -------- | -------- | ----------- | ----------- | ------ | -------------- | ------------ |
+| Héritage | Héritage | 52 %        | 47 %        | 2 %    | 71 %           | 17.0         |
+| Héritage | Moderne  | 36 %        | 64 %        | 0 %    | 69 %           | 17.7         |
+| Héritage | Hybride  | 57 %        | 42 %        | 1 %    | 74 %           | 17.1         |
+| Moderne  | Moderne  | 54 %        | 44 %        | 3 %    | 50 %           | 18.3         |
+| Moderne  | Hybride  | 82 %        | 19 %        | 0 %    | 74 %           | 17.7         |
+| Hybride  | Hybride  | 45 %        | 54 %        | 2 %    | 61 %           | 17.8         |
+
+Lecture :
+
+- Les duels miroirs sont proches de 50/50 : l'avantage du premier joueur reste faible.
+- Environ 70 % des parties se terminent par un SLA à 0, vers le 17e tour sur 20 : la durée est bonne, mais un tiers
+  des parties va au bout ; à surveiller si les vraies parties traînent.
+- **Moderne domine** (64 % contre Héritage, 82 % contre Hybride) : Apigee (Garde et Quotas), la Diffusion de Solace et
+  la pioche des connecteurs pèsent lourd. **Hybride est le plus faible** : ses LLM, chers et fragiles, et ses Fenêtres
+  de contexte sans attaque ne compensent pas. Pistes : renforcer Hybride (moins de cartes chères), ou rendre les
+  connecteurs un peu plus coûteux.
