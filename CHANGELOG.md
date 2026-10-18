@@ -21,6 +21,9 @@ Toutes les évolutions notables du projet sont consignées ici
 - Monorepo npm workspaces (`apps/web`, `apps/api`, `packages/domain`) ; règles SonarJS et Angular (accessibilité
   comprise) dans ESLint, quality gate `npm run check` (US-006, ADR 0009).
 - Cible d'hébergement Azure documentée (US-006, ADR 0008).
+- Univers du jeu : la plateforme d'intégration hybride d'Elis, du FTP à l'IA agentique, avec ses lignées d'évolution
+  (webMethods, Apigee, Solace) ; règles du combat sur plateau (Débit, SLA, capacités) et brouillon d'un premier set
+  de 64 cartes (US-005, ADR 0010).
 
 ### Modifié
 
