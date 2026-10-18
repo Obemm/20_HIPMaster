@@ -1,7 +1,7 @@
 # US-036 — Abandon et forfait
 
 - **Epic** : EPIC-06
-- **Statut** : En revue
+- **Statut** : Faite
 - **Priorité** : Should
 - **Taille** : S
 - **Branche** : `us-036-abandon-forfait`
@@ -34,3 +34,4 @@ afin que **chaque duel finisse un jour**.
   l'écran de fin et dans « Mes duels » (« Victoire par forfait », « reste 2 j 1 h »). L'écran de duel interroge
   désormais le serveur pendant toute la partie, pour voir un abandon adverse pendant son propre tour. Tests :
   moteur (2), API (3), écrans (2), e2e (1 : abandon vu par l'adversaire sans recharger).
+- 2026-10-19 — livrée : Abandon et forfait des duels : échéance de 72 h évaluée à la lecture
