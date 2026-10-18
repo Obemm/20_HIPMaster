@@ -34,6 +34,13 @@
         >
           C’est noté
         </button>
+        @if (retourSur(); as retour) {
+          <a
+            [routerLink]="retour"
+            class="rounded-lg border-2 border-accent px-3 py-2 font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+            >Code noté : revenir au défi</a
+          >
+        }
       </p>
       <p role="status" class="text-sm text-texte-doux">{{ copie() ? 'Code copié.' : '' }}</p>
     </section>

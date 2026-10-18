@@ -1,7 +1,7 @@
 import { HttpClient, provideHttpClient, withInterceptors } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
+import { provideRouter, Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { CompteEcran } from './compte';
 import { CompteService, intercepteurJeton } from './compte.service';
@@ -77,6 +77,32 @@ describe('Compte', () => {
     await fixture.whenStable();
     fixture.detectChanges();
     expect(page.textContent).toContain('Connecté en tant que Ada');
+  });
+
+  it('après une récupération par code, revient à la page d’où l’on venait (un défi)', async () => {
+    const { fixture, page } = await afficher();
+    fixture.componentRef.setInput('retour', '/duels/abc');
+    const naviguer = vi.spyOn(TestBed.inject(Router), 'navigateByUrl').mockResolvedValue(true);
+    saisir(page, 'code', 'ABCD-EFGH-JKLM');
+    page.querySelectorAll<HTMLFormElement>('form')[1]?.requestSubmit();
+    TestBed.inject(HttpTestingController)
+      .expectOne('/api/v1/sessions')
+      .flush({ joueur: JOUEUR, jeton: 'jeton-3' });
+    await fixture.whenStable();
+    expect(naviguer).toHaveBeenCalledWith('/duels/abc');
+  });
+
+  it('ne suit jamais un retour vers une autre adresse', async () => {
+    const { fixture, page } = await afficher();
+    fixture.componentRef.setInput('retour', '//exemple.com');
+    const naviguer = vi.spyOn(TestBed.inject(Router), 'navigateByUrl').mockResolvedValue(true);
+    saisir(page, 'code', 'ABCD-EFGH-JKLM');
+    page.querySelectorAll<HTMLFormElement>('form')[1]?.requestSubmit();
+    TestBed.inject(HttpTestingController)
+      .expectOne('/api/v1/sessions')
+      .flush({ joueur: JOUEUR, jeton: 'jeton-4' });
+    await fixture.whenStable();
+    expect(naviguer).not.toHaveBeenCalled();
   });
 
   it('envoie le jeton à l’API, et l’oublie si l’API ne reconnaît plus la session', async () => {
