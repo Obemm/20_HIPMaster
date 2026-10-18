@@ -22,6 +22,7 @@ function cibleDe(evenement: Evenement, moi: IdJoueur, nommer: NommerCarte): stri
 }
 
 const CAUSES: Record<string, string> = {
+  couplage: ' (Couplage fort)',
   riposte: ' (riposte)',
   diffusion: ' (Diffusion)',
   reactif: ' (Réactif)',
@@ -36,6 +37,49 @@ function decrireDegats(e: Evenement, moi: IdJoueur, nommer: NommerCarte): string
     return `${si} perd ${e.montant} SLA${cause}.`;
   }
   return `${nommer(e.cible ?? '')} subit ${e.montant} dégât${(e.montant ?? 0) > 1 ? 's' : ''}${cause}.`;
+}
+
+/** Le SI du point de vue du joueur : `pourMoi` vaut vrai si c'est le SI du joueur. */
+const nomSi = (pourMoi: boolean) => (pourMoi ? 'votre SI' : 'le SI du bot');
+
+function decrireJeu(e: Evenement, moi: IdJoueur, nommer: NommerCarte, carte: string): string {
+  const cibles = (e.cibles ?? []).map((id) => (id === 'si' ? nomSi(e.joueur !== moi) : nommer(id)));
+  const sur = cibles.length > 0 ? ` sur ${cibles.join(' et ')}` : '';
+  return `${quiFait(e.joueur, moi, 'jouez', 'joue')} ${carte}${sur}.`;
+}
+
+/** Les statuts posés par les sorts et les incidents (US-014). */
+function decrireStatut(e: Evenement, moi: IdJoueur, nommer: NommerCarte): string | null {
+  const nom = nommer(e.cible ?? '');
+  const pourMoi = e.joueur === moi;
+  switch (e.statut) {
+    case 'immobilise':
+      return `${nom} est immobilisé : pas d’attaque à son prochain tour.`;
+    case 'sans-capacites':
+      return `${nom} perd ses capacités jusqu’à la fin de son prochain tour.`;
+    case 'doublon':
+      return `${nom} subira le double de son prochain dégât (Doublon).`;
+    case 'doublon-annule':
+      return `Doublon annulé sur ${nom}.`;
+    case 'attaque-nulle':
+      return `La prochaine attaque de ${nom} n’infligera aucun dégât.`;
+    case 'couplage':
+      return `${nom} est couplé : il partage ses dégâts.`;
+    case 'bonus-attaque':
+      return `${nom} gagne en attaque.`;
+    case 'bonus-pv':
+      return `${nom} gagne 1 PV.`;
+    case 'attaque-a-nouveau':
+      return `${nom} peut attaquer de nouveau.`;
+    case 'protection-si':
+      return `${pourMoi ? 'Votre SI est protégé' : 'Le SI du bot est protégé'} jusqu’au prochain tour (Circuit Breaker).`;
+    case 'parade':
+      return `Le prochain incident contre ${pourMoi ? 'vous' : 'le bot'} sera sans effet (Human-in-the-loop).`;
+    case 'malus-debit':
+      return `${pourMoi ? 'Vous aurez' : 'Le bot aura'} 2 Débit de moins au prochain tour (Facture de tokens).`;
+    default:
+      return null;
+  }
 }
 
 function decrireFin(e: Evenement, moi: IdJoueur): string {
@@ -80,6 +124,16 @@ export function decrireEvenement(e: Evenement, moi: IdJoueur, nommer: NommerCart
       return e.paye ? null : `${carte} : entretien impayé, pas d’attaque ce tour.`;
     case 'supervision':
       return id ? `Supervision : la prochaine carte du bot est ${carte}.` : null;
+    case 'jeu':
+      return decrireJeu(e, moi, nommer, carte);
+    case 'parade':
+      return `${carte} est sans effet (Human-in-the-loop).`;
+    case 'statut':
+      return decrireStatut(e, moi, nommer);
+    case 'rappel':
+      return `${carte} revient en jeu avec 1 PV (Dead Letter Queue).`;
+    case 'si-protege':
+      return `${e.joueur === moi ? 'Votre SI' : 'Le SI du bot'} ne perd aucun SLA (Circuit Breaker).`;
     case 'fin-partie':
       return decrireFin(e, moi);
     default:

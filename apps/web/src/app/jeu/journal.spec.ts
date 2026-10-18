@@ -53,4 +53,25 @@ describe('decrireEvenement', () => {
     );
     expect(decrire({ type: 'entretien', joueur: 'j1', carte: 'j1-01', paye: true })).toBeNull();
   });
+
+  it('raconte les sorts, les incidents et leurs effets', () => {
+    expect(
+      decrire({ type: 'jeu', joueur: 'j1', carte: { id: 'j1-01', numero: 1 }, cibles: ['j2-04'] }),
+    ).toBe('Vous jouez FTP sur Topic.');
+    expect(
+      decrire({ type: 'jeu', joueur: 'j2', carte: { id: 'j2-03', numero: 18 }, cibles: [] }),
+    ).toBe('Le bot joue Apigee API Gateway.');
+    expect(decrire({ type: 'statut', joueur: 'j2', cible: 'j2-04', statut: 'immobilise' })).toBe(
+      'Topic est immobilisé : pas d’attaque à son prochain tour.',
+    );
+    expect(decrire({ type: 'statut', joueur: 'j1', cible: 'si', statut: 'protection-si' })).toBe(
+      'Votre SI est protégé jusqu’au prochain tour (Circuit Breaker).',
+    );
+    expect(decrire({ type: 'parade', joueur: 'j1', carte: { id: 'j2-04', numero: 36 } })).toBe(
+      'Topic est sans effet (Human-in-the-loop).',
+    );
+    expect(decrire({ type: 'si-protege', joueur: 'j2' })).toBe(
+      'Le SI du bot ne perd aucun SLA (Circuit Breaker).',
+    );
+  });
 });
