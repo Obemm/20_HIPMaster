@@ -14,7 +14,7 @@ import type { Base } from '../db/index.ts';
 // Contrat : apps/api/openapi/comptes.yaml (US-022, ADR 0017).
 
 const PROBLEME = 'application/problem+json';
-const refuser = (reponse: FastifyReply, status: number, title: string) =>
+export const refuser = (reponse: FastifyReply, status: number, title: string) =>
   reponse.status(status).type(PROBLEME).send({ type: 'about:blank', title, status });
 
 const schemaJoueur = z.object({ id: z.uuid(), pseudo: z.string() });

@@ -95,3 +95,16 @@
 html:has(dialog[open]) {
   overflow: hidden;
 }
+
+/* Révélation des cartes d'un booster (US-023) : en moins d'une seconde, et seulement si le mouvement est permis. */
+@keyframes revelation {
+  from {
+    opacity: 0;
+    transform: translateY(0.75rem) rotateY(80deg);
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .revelation {
+    animation: revelation 400ms ease-out both;
+  }
+}

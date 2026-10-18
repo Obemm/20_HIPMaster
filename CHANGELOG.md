@@ -56,6 +56,9 @@ Toutes les évolutions notables du projet sont consignées ici
   pseudo dans le bandeau (US-022, ADR 0017).
 - Base PGlite (PostgreSQL embarqué) en développement et en tests, sans Docker ; migrations appliquées au démarrage
   de l'API (US-022, ADR 0018).
+- Boosters : 5 offerts à la création du compte, puis un toutes les 10 minutes (stock plafonné à 10) ; le serveur
+  tire 5 cartes qui rejoignent la collection, l'écran « Mes boosters » les révèle et signale les nouvelles ; la
+  table provisoire `cartes` est retirée (US-023, ADR 0019).
 - Chaîne des illustrations : un original déposé et décrit devient, en une commande (`npm run illustrations`), quatre
   images AVIF et WebP de moins de 100 Ko et un manifeste ; la carte affiche son illustration, ou son pictogramme de
   famille à défaut. EPIC-05 découpé en US-015 à US-017 (US-015, ADR 0015).
