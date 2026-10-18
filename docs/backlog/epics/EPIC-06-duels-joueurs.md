@@ -1,6 +1,6 @@
 # EPIC-06 — Duels entre joueurs
 
-- **Statut** : À affiner
+- **Statut** : En cours
 - **Priorité** : Should
 
 ## Objectif
