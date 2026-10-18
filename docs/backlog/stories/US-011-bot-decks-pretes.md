@@ -1,7 +1,7 @@
 # US-011 — Bot « Batch de nuit » et decks prêtés
 
 - **Epic** : EPIC-04
-- **Statut** : En revue
+- **Statut** : Faite
 - **Priorité** : Must
 - **Taille** : M
 - **Branche** : `us-011-bot-decks-pretes`
@@ -39,3 +39,4 @@ partie sans rien collectionner d'abord**.
 - 2026-10-18 — rééquilibrage demandé par le porteur du projet : Moderne allégé (Apigee et Event broker 2 → 1),
   Hybride débarrassé de ses cartes mortes (Fenêtres de contexte, un LLM) au profit d'Adaptateur SAP, MQSeries et
   Webhook ; tous les duels entre 42 et 57 % sur 400 parties et deux graines.
+- 2026-10-18 — livrée : bot Batch de nuit, 3 decks prêtés équilibrés par simulation (duels entre 42 et 57 %), npm run simuler

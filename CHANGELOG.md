@@ -33,6 +33,8 @@ Toutes les évolutions notables du projet sont consignées ici
 - Moteur de combat pur et rejouable dans `packages/domain` : création de partie à graine, actions (poser, évoluer,
   décommissionner, attaquer, finir son tour), actions possibles, vue par joueur, 13 capacités et 28 cartes jouables
   (US-010, ADR 0013).
+- Bot « Batch de nuit » qui joue sur sa seule vue de la partie, trois decks prêtés (Héritage, Moderne, Hybride)
+  équilibrés par simulation, validation des decks et simulation « bot contre bot » (`npm run simuler`) (US-011).
 
 ### Modifié
 
