@@ -1,0 +1,101 @@
+<main class="mx-auto flex w-full max-w-5xl flex-col gap-6 px-4 py-8 sm:px-6">
+  <p>
+    <a routerLink="/" class="text-zinc-700 underline underline-offset-4">← Accueil</a>
+  </p>
+  <h1 class="text-3xl font-bold tracking-tight">Catalogue du set 1</h1>
+  <p class="text-zinc-700">
+    « De FTP aux agents » : les technologies, patterns et incidents de la plateforme d’intégration.
+  </p>
+
+  @if (cartes.hasValue()) {
+    <form class="flex flex-col gap-3 sm:flex-row" aria-label="Filtrer les cartes">
+      <div class="flex flex-col gap-1">
+        <label for="filtre-famille" class="text-sm font-semibold">Famille</label>
+        <select
+          id="filtre-famille"
+          class="rounded border border-zinc-400 bg-white px-3 py-2"
+          (change)="choisirFamille($event)"
+        >
+          <option value="">Toutes les familles</option>
+          @for (f of familles; track f[0]) {
+            <option [value]="f[0]">{{ f[1] }}</option>
+          }
+        </select>
+      </div>
+      <div class="flex flex-col gap-1">
+        <label for="filtre-rarete" class="text-sm font-semibold">Rareté</label>
+        <select
+          id="filtre-rarete"
+          class="rounded border border-zinc-400 bg-white px-3 py-2"
+          (change)="choisirRarete($event)"
+        >
+          <option value="">Toutes les raretés</option>
+          @for (r of raretes; track r[0]) {
+            <option [value]="r[0]">{{ symbolesRarete[r[0]] }} {{ r[1] }}</option>
+          }
+        </select>
+      </div>
+    </form>
+
+    <p role="status" class="font-semibold">
+      @switch (cartesAffichees().length) {
+        @case (0) {
+          Aucune carte ne correspond à ces filtres.
+        }
+        @case (1) {
+          1 carte affichée
+        }
+        @default {
+          {{ cartesAffichees().length }} cartes affichées
+        }
+      }
+    </p>
+
+    <ul class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      @for (carte of cartesAffichees(); track carte.numero) {
+        <li
+          class="flex flex-col gap-2 rounded-lg border border-l-8 border-zinc-200 bg-white p-4"
+          [class]="liseres[carte.famille]"
+        >
+          <p class="flex justify-between gap-2 text-sm text-zinc-700">
+            <span>N° {{ carte.numero }} · {{ libellesFamille[carte.famille] }}</span>
+            <span>{{ libelleType(carte) }}</span>
+          </p>
+          <h2 class="text-lg leading-tight font-semibold">
+            <a
+              [routerLink]="['/cartes', carte.numero]"
+              class="underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-900"
+              >{{ carte.nom }}</a
+            >
+          </h2>
+          <p class="text-sm font-semibold">
+            {{ symbolesRarete[carte.rarete] }} {{ libellesRarete[carte.rarete] }}
+          </p>
+          <p class="flex flex-wrap gap-x-4 text-sm">
+            <span>Débit {{ carte.cout }}</span>
+            @if (carte.attaque !== undefined) {
+              <span>Attaque {{ carte.attaque }}</span>
+              <span>PV {{ carte.pv }}</span>
+            }
+          </p>
+          @if (carte.capacites.length) {
+            <ul class="flex flex-wrap gap-1" aria-label="Capacités">
+              @for (capacite of carte.capacites; track capacite.id) {
+                <li class="rounded bg-zinc-100 px-2 py-0.5 text-sm">{{ capacite.nom }}</li>
+              }
+            </ul>
+          }
+          @if (carte.effet) {
+            <p class="text-sm text-zinc-700">{{ carte.effet }}</p>
+          }
+        </li>
+      }
+    </ul>
+  } @else if (cartes.error()) {
+    <p role="alert" class="text-red-800">
+      Le catalogue n’a pas pu être chargé : l’API ne répond pas.
+    </p>
+  } @else {
+    <p>Chargement du catalogue…</p>
+  }
+</main>

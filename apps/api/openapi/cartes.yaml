@@ -1,0 +1,92 @@
+openapi: 3.1.0
+info:
+  title: HIPMaster — catalogue des cartes
+  version: 1.0.0
+  description: >
+    Catalogue en lecture seule des cartes du set 1 (US-008, ADR 0011). Les cartes sont des données versionnées du
+    domaine : aucune écriture n'est exposée.
+servers:
+  - url: /api/v1
+paths:
+  /cartes:
+    get:
+      operationId: listerCartes
+      summary: Liste toutes les cartes, triées par numéro
+      responses:
+        '200':
+          description: Les cartes du set 1.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Carte' }
+  /cartes/{numero}:
+    get:
+      operationId: lireCarte
+      summary: Lit une carte par son numéro
+      parameters:
+        - name: numero
+          in: path
+          required: true
+          schema: { type: integer, minimum: 1 }
+      responses:
+        '200':
+          description: La carte demandée.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Carte' }
+        '400':
+          description: Numéro invalide.
+          content:
+            application/problem+json:
+              schema: { $ref: '#/components/schemas/Probleme' }
+        '404':
+          description: Aucune carte ne porte ce numéro.
+          content:
+            application/problem+json:
+              schema: { $ref: '#/components/schemas/Probleme' }
+components:
+  schemas:
+    Carte:
+      type: object
+      required: [numero, nom, famille, type, rarete, cout, capacites, enVrai]
+      properties:
+        numero: { type: integer, minimum: 1, description: Identifiant stable, jamais renuméroté. }
+        nom: { type: string }
+        famille:
+          type: string
+          enum: [fichiers, esb, api, ipaas, eda, ia, patterns, bestiaire]
+        type:
+          type: string
+          enum: [composant, evolution, sort, incident]
+        rarete:
+          type: string
+          enum: [commune, rare, epique, legendaire]
+        cout: { type: integer, minimum: 0, maximum: 10, description: Coût en Débit. }
+        attaque: { type: integer, minimum: 0, description: Composants et évolutions uniquement. }
+        pv: { type: integer, minimum: 1, description: Composants et évolutions uniquement. }
+        origine:
+          type: integer
+          description: Évolutions uniquement — numéro de la carte d'origine.
+        ia: { type: boolean, description: Incidents uniquement — incident IA. }
+        capacites:
+          type: array
+          items: { $ref: '#/components/schemas/Capacite' }
+        effet: { type: string, description: Effet propre à la carte, s'il y en a un. }
+        enVrai: { type: string, description: Explication pédagogique. }
+    Capacite:
+      type: object
+      required: [id, nom, description]
+      properties:
+        id: { type: string, examples: [garde, connecteur] }
+        nom: { type: string, examples: ['Connecteur (2)'] }
+        description: { type: string }
+        valeur: { type: integer, description: Valeur de la capacité (Connecteur). }
+    Probleme:
+      type: object
+      description: Problem Details (RFC 9457).
+      required: [type, title, status]
+      properties:
+        type: { type: string }
+        title: { type: string }
+        status: { type: integer }

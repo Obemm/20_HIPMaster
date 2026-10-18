@@ -1,13 +1,14 @@
 # Set 1 — « De FTP aux agents » (brouillon)
 
 Brouillon de travail : statistiques **provisoires**, à équilibrer par simulations « bot contre bot ». La version
-jouable sera décrite en données versionnées dans `packages/domain` (story à venir de l'EPIC-01).
+jouable est décrite en données versionnées dans `packages/domain/src/set-1.ts` (US-008, ADR 0011), qui fait foi.
 Règles et capacités : [regles.md](regles.md).
 
 **Repère d'équilibrage** : un composant commun sans capacité vaut environ `attaque + PV = 2 × coût + 1` ; chaque
 capacité retire 1 à 2 points.
 
-**Composition** : 64 cartes — 4 légendaires, 6 épiques, 25 rares, 29 communes.
+**Composition** : 71 cartes — 4 légendaires, 6 épiques, 25 rares, 36 communes (64 dans les tableaux, plus 7 incidents
+complémentaires).
 
 ## Fichiers & Batch (8)
 
@@ -113,7 +114,7 @@ capacité retire 1 à 2 points.
 | 63  | Hallucination         | Incident | Rare    | 2    | **IA** — Un composant IA adverse attaque une cible tirée au hasard, dans n'importe quel camp |
 | 64  | Message poison        | Incident | Commune | 2    | Détruisez un composant adverse de coût 2 ou moins                                            |
 
-Incidents communs complémentaires, numérotés à la suite lors du passage en données :
+Incidents communs complémentaires, numérotés de 65 à 71 dans les données (US-008) :
 **Timeout** (1 — un composant adverse ne peut pas attaquer à son prochain tour), **Doublon** (1 — le prochain dégât
 subi par un composant adverse est doublé), **Fichier vide à 3 h du matin** (1 — la prochaine attaque d'un composant
 Batch adverse n'inflige rien), **Encodage cassé** (1 — 2 dégâts à un composant Fichiers ou ESB), et les incidents IA
@@ -123,6 +124,5 @@ Batch adverse n'inflige rien), **Encodage cassé** (1 — 2 dégâts à un compo
 
 ## Points à trancher pendant l'équilibrage
 
-- Le set compte 64 cartes numérotées plus 7 incidents communs : en garder 64 ou monter à 71.
 - **FTP** est peut-être trop forte pour une légendaire à 3 de Débit malgré Non conforme : simulations à faire.
 - Les cartes **Autonomes** sans Orchestration sont imprévisibles : vérifier qu'elles restent intéressantes à jouer.

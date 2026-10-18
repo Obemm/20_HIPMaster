@@ -1,27 +1,29 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { App, type ChanceRarete } from './app';
+import { provideRouter } from '@angular/router';
+import { Accueil, type ChanceRarete } from './accueil';
 
-describe('App', () => {
+describe('Accueil', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [App],
-      providers: [provideHttpClient(), provideHttpClientTesting()],
+      imports: [Accueil],
+      providers: [provideHttpClient(), provideHttpClientTesting(), provideRouter([])],
     });
   });
 
-  it('affiche le titre du jeu', async () => {
-    const fixture = TestBed.createComponent(App);
+  it('affiche le titre du jeu et un lien vers le catalogue', async () => {
+    const fixture = TestBed.createComponent(Accueil);
     fixture.detectChanges();
     TestBed.inject(HttpTestingController).expectOne('/api/v1/raretes').flush([]);
     await fixture.whenStable();
     const page = fixture.nativeElement as HTMLElement;
     expect(page.querySelector('h1')?.textContent).toContain('HIPMaster');
+    expect(page.querySelector('a[href="/cartes"]')?.textContent).toContain('catalogue');
   });
 
   it('affiche les chances de chaque rareté renvoyées par l’API', async () => {
-    const fixture = TestBed.createComponent(App);
+    const fixture = TestBed.createComponent(Accueil);
     fixture.detectChanges();
     const chances: ChanceRarete[] = [
       { rarete: 'commune', chance: 0.7 },
@@ -37,7 +39,7 @@ describe('App', () => {
   });
 
   it('prévient quand l’API ne répond pas', async () => {
-    const fixture = TestBed.createComponent(App);
+    const fixture = TestBed.createComponent(Accueil);
     fixture.detectChanges();
     TestBed.inject(HttpTestingController)
       .expectOne('/api/v1/raretes')

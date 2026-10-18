@@ -7,7 +7,7 @@ _Dernière mise à jour : 2026-10-18_
 | Epic                                                                     | Priorité | Statut    | Avancement |
 | ------------------------------------------------------------------------ | -------- | --------- | ---------- |
 | [EPIC-00 — Fondations](epics/EPIC-00-fondations.md)                      | Must     | En cours  | 5/6        |
-| [EPIC-01 — Univers et modèle de carte](epics/EPIC-01-univers-cartes.md)  | Must     | En cours  | 1/1        |
+| [EPIC-01 — Univers et modèle de carte](epics/EPIC-01-univers-cartes.md)  | Must     | Terminé   | 2/2        |
 | [EPIC-02 — Comptes joueurs](epics/EPIC-02-comptes-joueurs.md)            | Must     | À affiner | 0/0        |
 | [EPIC-03 — Boosters et collection](epics/EPIC-03-boosters-collection.md) | Must     | À affiner | 0/0        |
 | [EPIC-04 — Combat contre le bot](epics/EPIC-04-combat-bot.md)            | Must     | À affiner | 0/0        |
@@ -33,3 +33,4 @@ Objectif : un socle outillé, vérifié automatiquement, et une méthode de trav
 | Story                                                                 | Epic    | Priorité | Taille | Statut |
 | --------------------------------------------------------------------- | ------- | -------- | ------ | ------ |
 | [US-005 — Univers et règles du jeu](stories/US-005-univers-regles.md) | EPIC-01 | Must     | M      | Faite  |
+| [US-008 — Catalogue du set 1](stories/US-008-catalogue-set-1.md)      | EPIC-01 | Must     | L      | Faite  |
