@@ -1,7 +1,7 @@
 # US-025 — Un booster pour chaque victoire
 
 - **Epic** : EPIC-04
-- **Statut** : En revue
+- **Statut** : Faite
 - **Priorité** : Should
 - **Taille** : S
 - **Branche** : `us-025-recompense-victoire`
@@ -32,3 +32,4 @@ rejouer**.
   fin : « Un booster gagné ! » et « Ouvrir mon booster », plafond atteint, ou invitation à créer un compte. Tests :
   API (5 : unicité, plafond et lendemain, dépassement du plafond de recharge, partie gagnée connectée, partie sans
   compte), écran (3).
+- 2026-10-18 — livrée : Un booster par victoire contre le bot, une fois par partie, 3 par jour au plus
