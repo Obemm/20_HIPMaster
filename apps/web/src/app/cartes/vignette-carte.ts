@@ -1,8 +1,9 @@
-import { Component, computed, input } from '@angular/core';
+import { Component, computed, inject, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Icone } from '../icone';
 import { LIBELLES_RARETE, SYMBOLES_RARETE } from '../libelles';
 import { type Carte, ILLUSTRATIONS_FAMILLE, LIBELLES_FAMILLE, libelleType } from './carte';
+import { ILLUSTRATIONS_CARTES, sourcesIllustration } from './illustrations';
 
 /**
  * Une carte au format portrait, façon carte à jouer (US-009). Les tailles sont relatives à la largeur de la carte
@@ -25,7 +26,17 @@ export class VignetteCarte {
   protected readonly sousTitre = computed(
     () => `${libelleType(this.carte())} · ${LIBELLES_FAMILLE[this.carte().famille]}`,
   );
-  protected readonly illustration = computed(() => ILLUSTRATIONS_FAMILLE[this.carte().famille]);
+  protected readonly fondFamille = computed(() => ILLUSTRATIONS_FAMILLE[this.carte().famille]);
+
+  private readonly illustrations = inject(ILLUSTRATIONS_CARTES);
+  /** L'illustration de la carte, si la chaîne d'US-015 en a produit une ; sinon le pictogramme de famille. */
+  protected readonly illustration = computed(() => {
+    const { numero } = this.carte();
+    const alt = this.illustrations[numero];
+    return alt === undefined ? undefined : { alt, sources: sourcesIllustration(numero) };
+  });
+  /** Largeur affichée : moitié d'écran dans la grille d'un téléphone, 18 rem au plus dans le détail. */
+  protected readonly tailles = '(min-width: 40rem) 18rem, 50vw';
   /** Le texte court de la carte : son effet, sinon le nom de ses capacités. */
   protected readonly texte = computed(
     () =>

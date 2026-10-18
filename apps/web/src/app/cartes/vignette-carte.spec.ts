@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import type { Carte } from './carte';
+import { ILLUSTRATIONS_CARTES } from './illustrations';
 import { VignetteCarte } from './vignette-carte';
 
 const FTP: Carte = {
@@ -76,5 +77,43 @@ describe('VignetteCarte', () => {
     for (const svg of carte.querySelectorAll('svg')) {
       expect(svg.getAttribute('aria-hidden')).toBe('true');
     }
+  });
+
+  it('sans illustration, garde le fond et le pictogramme de la famille', () => {
+    const carte = afficher(FTP);
+    expect(carte.querySelector('img')).toBeNull();
+    expect(carte.querySelector('[class*="from-amber-500"] svg')).not.toBeNull();
+  });
+});
+
+describe('VignetteCarte avec une illustration', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      imports: [VignetteCarte],
+      providers: [
+        provideRouter([]),
+        { provide: ILLUSTRATIONS_CARTES, useValue: { 1: 'Un vieux serveur de fichiers' } },
+      ],
+    });
+  });
+
+  it('affiche l’image optimisée, en AVIF puis WebP, avec son texte alternatif', () => {
+    const carte = afficher(FTP);
+    const sources = [...carte.querySelectorAll('picture source')];
+    expect(sources.map((s) => s.getAttribute('type'))).toEqual(['image/avif', 'image/webp']);
+    expect(sources[0]?.getAttribute('srcset')).toBe(
+      '/cartes/set-1/1-320.avif 320w, /cartes/set-1/1-640.avif 640w',
+    );
+    const image = carte.querySelector('img');
+    expect(image?.getAttribute('alt')).toBe('Un vieux serveur de fichiers');
+    expect(image?.getAttribute('src')).toBe('/cartes/set-1/1-640.webp');
+    expect(image?.getAttribute('loading')).toBe('lazy');
+    expect(image?.getAttribute('width')).toBe('640');
+    expect(image?.getAttribute('height')).toBe('480');
+  });
+
+  it('n’affiche plus le pictogramme de la famille, et ne touche pas aux cartes sans image', () => {
+    expect(afficher(FTP).querySelector('[class*="from-amber-500"] svg')).toBeNull();
+    expect(afficher(TIMEOUT).querySelector('img')).toBeNull();
   });
 });

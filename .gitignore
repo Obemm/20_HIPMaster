@@ -33,3 +33,6 @@ Thumbs.db
 # Caches
 .eslintcache
 *.tsbuildinfo
+
+# Originaux des illustrations : hors du dépôt (ADR 0014)
+packages/illustrations/sources/

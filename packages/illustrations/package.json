@@ -1,0 +1,16 @@
+{
+  "name": "@hipmaster/illustrations",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Chaîne d'import et d'optimisation des illustrations des cartes (US-015, ADR 0014).",
+  "type": "module",
+  "scripts": {
+    "illustrations": "node src/cli.ts",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@hipmaster/domain": "*",
+    "sharp": "^0.35.5",
+    "zod": "^4.6.7"
+  }
+}
