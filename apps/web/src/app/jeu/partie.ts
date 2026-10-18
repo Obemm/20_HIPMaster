@@ -188,7 +188,9 @@ export class PartieEcran implements OnInit, OnDestroy {
     const carte = instance ? this.carteDe(instance.numero) : undefined;
     switch (action.type) {
       case 'poser':
-        return `Poser (${carte?.cout ?? 0} Débit)`;
+        return action.cible
+          ? `Poser et renforcer ${this.nommer(action.cible)} (${carte?.cout ?? 0} Débit)`
+          : `Poser (${carte?.cout ?? 0} Débit)`;
       case 'evoluer':
         return `Faire évoluer ${this.nommer(action.origine)} (${carte?.cout ?? 0} Débit)`;
       case 'decommissionner':

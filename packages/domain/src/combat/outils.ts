@@ -63,6 +63,34 @@ export function attaqueEffective(
   return base + hubs + composant.bonusAttaque;
 }
 
+/** Un effet propre agit tant que la carte est en jeu et que ses capacités ne sont pas suspendues. */
+export function actif(etat: EtatPartie, joueur: IdJoueur, numero: number): boolean {
+  return etat.joueurs[joueur].plateau.some(
+    (c) => c.numero === numero && c.sansCapacitesJusquAuTour === null,
+  );
+}
+
+const CRON = 6;
+
+/** Le composant Batch a attaqué au tour précédent de son propriétaire. */
+const aAttaqueAuTourPrecedent = (etat: EtatPartie, joueur: IdJoueur, composant: ComposantEnJeu) =>
+  possede(composant, 'batch') && composant.dernierTourAttaque === etat.joueurs[joueur].tours - 1;
+
+/** La règle Batch bloque-t-elle l'attaque ? Cron la lève une fois par tour, pour un composant Batch. */
+export function batchBloque(
+  etat: EtatPartie,
+  joueur: IdJoueur,
+  composant: ComposantEnJeu,
+): boolean {
+  if (!aAttaqueAuTourPrecedent(etat, joueur, composant)) return false;
+  return etat.joueurs[joueur].cronUtilise || !actif(etat, joueur, CRON);
+}
+
+/** Note l'usage de Cron quand un composant Batch attaque grâce à lui. */
+export function consommerCron(etat: EtatPartie, joueur: IdJoueur, composant: ComposantEnJeu): void {
+  if (aAttaqueAuTourPrecedent(etat, joueur, composant)) etat.joueurs[joueur].cronUtilise = true;
+}
+
 /** Le composant peut-il attaquer maintenant ? Renvoie la raison sinon. */
 export function raisonDeNePasAttaquer(
   etat: EtatPartie,
@@ -77,7 +105,7 @@ export function raisonDeNePasAttaquer(
   if (composant.immobiliseJusquAuTour !== null && etat.tour <= composant.immobiliseJusquAuTour) {
     return 'Ce composant est immobilisé : pas d’attaque ce tour.';
   }
-  if (possede(composant, 'batch') && composant.dernierTourAttaque === tours - 1) {
+  if (batchBloque(etat, joueur, composant)) {
     return 'Batch : ce composant a attaqué au tour précédent.';
   }
   if (attaqueEffective(etat, joueur, composant) <= 0) return 'Ce composant n’a pas d’attaque.';

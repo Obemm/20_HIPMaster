@@ -1,4 +1,4 @@
-import { DECKS_PRETES } from '@hipmaster/domain';
+import { type Action, DECKS_PRETES } from '@hipmaster/domain';
 import type { FastifyReply } from 'fastify';
 import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
 import { z } from 'zod';
@@ -30,6 +30,13 @@ function refuser(reponse: FastifyReply, resultat: Exclude<ResultatDepot<unknown>
 }
 
 const parametres = z.object({ id: z.string().max(64) });
+
+/** Zod garde `cible: undefined` quand elle est absente ; le domaine attend alors une propriété absente. */
+function versAction(corps: z.infer<typeof schemaAction>): Action {
+  if (corps.type !== 'poser') return corps;
+  const { cible, ...pose } = corps;
+  return cible === undefined ? pose : { ...pose, cible };
+}
 
 export const routesParties: FastifyPluginAsyncZod<{ depot: DepotParties }> = async (
   app,
@@ -69,7 +76,7 @@ export const routesParties: FastifyPluginAsyncZod<{ depot: DepotParties }> = asy
     '/parties/:id/actions',
     { schema: { params: parametres, body: schemaAction, response: { 200: schemaPartie } } },
     async (requete, reponse) => {
-      const resultat = depot.jouer(requete.params.id, requete.body);
+      const resultat = depot.jouer(requete.params.id, versAction(requete.body));
       return resultat.ok ? resultat.valeur : refuser(reponse, resultat);
     },
   );
