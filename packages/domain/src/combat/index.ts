@@ -32,7 +32,14 @@ export {
   type Issue,
   type ResultatAction,
 } from './types.ts';
-export { vueDe, type VueAdversaire, type VueJoueur, type VueMoi } from './vue.ts';
+export {
+  journalDe,
+  vueDe,
+  type ComposantVisible,
+  type VueAdversaire,
+  type VueJoueur,
+  type VueMoi,
+} from './vue.ts';
 export { choisirActionBatchDeNuit } from './bot.ts';
 export {
   DECKS_PRETES,
