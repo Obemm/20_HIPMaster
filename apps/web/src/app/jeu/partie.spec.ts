@@ -13,6 +13,8 @@ const GARDE = {
   description: 'Doit être attaqué avant vos autres composants et votre SI.',
 };
 
+const NIVEAUX = [{ id: 'agent-autonome', nom: 'Agent autonome', description: 'Difficile.' }];
+
 const CATALOGUE: Carte[] = [
   {
     numero: 55,
@@ -91,6 +93,7 @@ const partie = (v: Vue, evenements: Partie['evenements'] = []): Partie => ({
   id: 'p1',
   deck: 'moderne',
   deckAdversaire: 'heritage',
+  niveau: 'agent-autonome',
   vue: v,
   evenements,
 });
@@ -101,6 +104,7 @@ async function ouvrir(v: Vue = vue()) {
   fixture.detectChanges();
   const http = TestBed.inject(HttpTestingController);
   http.expectOne('/api/v1/cartes').flush(CATALOGUE);
+  http.expectOne('/api/v1/niveaux').flush(NIVEAUX);
   http
     .expectOne('/api/v1/parties/p1')
     .flush(partie(v, [{ type: 'pose', joueur: 'j2', carte: { id: 'j2-05', numero: 17 } }]));
@@ -124,6 +128,7 @@ describe('PartieEcran', () => {
 
   it('affiche les deux camps, la main et le journal avec les noms des cartes', async () => {
     const { page } = await ouvrir();
+    expect(page.textContent).toContain('Niveau : Agent autonome');
     expect(page.textContent).toContain('Tour 3 / 20');
     expect(page.textContent).toContain('SLA 20');
     expect(bouton(page, 'API REST')).toBeTruthy();
@@ -308,6 +313,7 @@ describe('PartieEcran', () => {
     fixture.detectChanges();
     const http = TestBed.inject(HttpTestingController);
     http.expectOne('/api/v1/cartes').flush(CATALOGUE);
+    http.expectOne('/api/v1/niveaux').flush(NIVEAUX);
     http.expectOne('/api/v1/parties/perdue').flush(null, { status: 404, statusText: 'Not Found' });
     await fixture.whenStable();
     fixture.detectChanges();
@@ -330,14 +336,22 @@ describe('ChoixDeck', () => {
     http
       .expectOne('/api/v1/decks')
       .flush([{ id: 'moderne', nom: 'Moderne', description: 'API et EDA.', cartes: [] }]);
+    http.expectOne('/api/v1/niveaux').flush([
+      { id: 'batch-de-nuit', nom: 'Batch de nuit', description: 'Facile.' },
+      { id: 'agent-autonome', nom: 'Agent autonome', description: 'Difficile.' },
+    ]);
     await fixture.whenStable();
     fixture.detectChanges();
     const naviguer = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
     const page = fixture.nativeElement as HTMLElement;
+    const radios = page.querySelectorAll<HTMLInputElement>('input[type="radio"]');
+    expect(radios[0]?.checked).toBe(true);
+    radios[1]?.click();
+    fixture.detectChanges();
     expect(page.textContent).toContain('Comment gagner ?');
     bouton(page, 'Jouer avec Moderne')?.click();
     const creation = http.expectOne('/api/v1/parties');
-    expect(creation.request.body).toEqual({ deck: 'moderne' });
+    expect(creation.request.body).toEqual({ deck: 'moderne', niveau: 'agent-autonome' });
     creation.flush(partie(vue()));
     await fixture.whenStable();
     expect(naviguer).toHaveBeenCalledWith(['/jouer', 'p1']);

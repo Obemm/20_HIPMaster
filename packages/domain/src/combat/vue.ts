@@ -4,6 +4,7 @@ import type {
   Action,
   ComposantEnJeu,
   EntreeJournal,
+  EtatJoueur,
   EtatPartie,
   IdJoueur,
   InstanceCarte,
@@ -24,9 +25,24 @@ interface VueCommune {
   pioche: number;
 }
 
+/** Les marqueurs du joueur (usages « une fois par tour », protections) : il les connaît, pas son adversaire. */
+export type MarqueursJoueur = Pick<
+  EtatJoueur,
+  | 'fileDurableUtilisee'
+  | 'parade'
+  | 'siProtegeJusquAuTour'
+  | 'malusDebit'
+  | 'cronUtilise'
+  | 'delegationUtilisee'
+  | 'outillageUtilise'
+  | 'cacheUtilise'
+  | 'routageUtilise'
+>;
+
 export interface VueMoi extends VueCommune {
   main: InstanceCarte[];
   aDecommissionne: boolean;
+  marqueurs: MarqueursJoueur;
 }
 
 export interface VueAdversaire extends VueCommune {
@@ -73,6 +89,17 @@ export function vueDe(etat: EtatPartie, joueur: IdJoueur): VueJoueur {
       ...vueCommune(etat, joueur),
       main: structuredClone(moi.main),
       aDecommissionne: moi.aDecommissionne,
+      marqueurs: {
+        fileDurableUtilisee: moi.fileDurableUtilisee,
+        parade: moi.parade,
+        siProtegeJusquAuTour: moi.siProtegeJusquAuTour,
+        malusDebit: moi.malusDebit,
+        cronUtilise: moi.cronUtilise,
+        delegationUtilisee: moi.delegationUtilisee,
+        outillageUtilise: moi.outillageUtilise,
+        cacheUtilise: moi.cacheUtilise,
+        routageUtilise: moi.routageUtilise,
+      },
     },
     adversaire: { ...vueCommune(etat, autre), main: etat.joueurs[autre].main.length },
     actif: etat.actif,

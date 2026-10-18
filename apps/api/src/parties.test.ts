@@ -45,6 +45,53 @@ describe('decks prêtés', () => {
   });
 });
 
+describe('niveaux du bot', () => {
+  it('GET /api/v1/niveaux liste les trois niveaux, du plus simple au plus fort', async () => {
+    const { app } = appli();
+    const reponse = await app.inject({ method: 'GET', url: '/api/v1/niveaux' });
+    expect(reponse.json<{ id: string }[]>().map((n) => n.id)).toEqual([
+      'batch-de-nuit',
+      'architecte-esb',
+      'agent-autonome',
+    ]);
+  });
+
+  it('crée une partie au niveau demandé (Batch de nuit par défaut), refuse un niveau inconnu', async () => {
+    const { app } = appli();
+    expect((await creer(app)).partie.niveau).toBe('batch-de-nuit');
+    const difficile = await app.inject({
+      method: 'POST',
+      url: '/api/v1/parties',
+      payload: { deck: 'moderne', niveau: 'agent-autonome' },
+    });
+    expect(difficile.json<PartieVisible>().niveau).toBe('agent-autonome');
+    const inconnu = await app.inject({
+      method: 'POST',
+      url: '/api/v1/parties',
+      payload: { deck: 'moderne', niveau: 'expert' },
+    });
+    expect(inconnu.statusCode).toBe(422);
+    expect(inconnu.json()).toMatchObject({ title: 'Niveau de bot inconnu' });
+  });
+
+  it('mène une partie contre l’Agent autonome jusqu’à son terme', async () => {
+    const { app } = appli();
+    const creation = await app.inject({
+      method: 'POST',
+      url: '/api/v1/parties',
+      payload: { deck: 'heritage', niveau: 'agent-autonome' },
+    });
+    let partie = creation.json<PartieVisible>();
+    let tours = 0;
+    while (!partie.vue.issue) {
+      tours += 1;
+      if (tours > 30) throw new Error('La partie ne se termine pas.');
+      partie = (await jouer(app, partie.id, { type: 'finirTour' })).json<PartieVisible>();
+    }
+    expect(partie.vue.issue).not.toBeNull();
+  });
+});
+
 describe('parties contre le bot', () => {
   it('crée une partie : identifiant UUID, vue du joueur, main adverse cachée, et c’est à lui de jouer', async () => {
     const { app } = appli();

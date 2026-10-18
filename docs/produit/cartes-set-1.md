@@ -208,3 +208,17 @@ Héritage contre Moderne : les évolutions restent mortes tant que leur carte d'
 | Hybride  | Hybride  | 49 % (55 %) | 50 % (43 %) | 2 %    | 66 %           | 17.2         |
 
 Tous les duels entre decks différents restent entre 44 et 56 %.
+
+## Niveaux du bot (US-021, 2026-10-18)
+
+`npm run simuler -- 100 101` : 100 parties par deck prêté et par duel (300 au total), même deck des deux côtés pour ne
+mesurer que le jeu.
+
+| Niveau A       | Niveau B       | Victoires A | Victoires B | Nulles |
+| -------------- | -------------- | ----------- | ----------- | ------ |
+| Batch de nuit  | Architecte ESB | 45 %        | 55 %        | 0 %    |
+| Batch de nuit  | Agent autonome | 36 %        | 63 %        | 1 %    |
+| Architecte ESB | Agent autonome | 42 %        | 58 %        | 0 %    |
+
+Les écarts restent modestes : le tirage des cartes pèse lourd dans une partie de 20 tours. Une recherche plus
+profonde, ou qui simule le tour adverse, s'est révélée moins forte (voir la story US-021).
