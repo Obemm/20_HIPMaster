@@ -1,7 +1,7 @@
 # US-005 — Univers et règles du jeu
 
 - **Epic** : EPIC-01
-- **Statut** : En revue
+- **Statut** : Faite
 - **Priorité** : Must
 - **Taille** : M
 - **Branche** : `us-005-univers-regles`
@@ -35,3 +35,4 @@ interdit chez Elis et SFTP progressivement remplacé ; vrais noms de produits, s
 
 - 2026-10-16 — création.
 - 2026-10-16 — univers, règles, brouillon du set 1 et ADR 0010 rédigés ; en revue par le porteur du projet.
+- 2026-10-18 — livrée : univers de la plateforme d'intégration (FTP à l'IA agentique), règles du combat sur plateau, brouillon de 64 cartes, ADR 0010
