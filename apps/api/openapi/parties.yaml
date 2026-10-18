@@ -159,10 +159,11 @@ components:
           allOf:
             - $ref: '#/components/schemas/Camp'
             - type: object
-              required: [main, aDecommissionne]
+              required: [main, aDecommissionne, marqueurs]
               properties:
                 main: { type: array, items: { $ref: '#/components/schemas/Instance' } }
                 aDecommissionne: { type: boolean }
+                marqueurs: { $ref: '#/components/schemas/Marqueurs' }
         adversaire:
           allOf:
             - $ref: '#/components/schemas/Camp'
@@ -184,6 +185,36 @@ components:
           type: array
           description: Actions légales du joueur ; vide quand ce n'est pas son tour.
           items: { $ref: '#/components/schemas/Action' }
+    Marqueurs:
+      type: object
+      description: >
+        Usages « une fois par tour » et protections du joueur, qu'il est seul à voir (US-026).
+      required:
+        [
+          fileDurableUtilisee,
+          parade,
+          siProtegeJusquAuTour,
+          malusDebit,
+          cronUtilise,
+          delegationUtilisee,
+          outillageUtilise,
+          cacheUtilise,
+          routageUtilise,
+        ]
+      properties:
+        fileDurableUtilisee: { type: boolean }
+        parade:
+          { type: boolean, description: Le prochain incident joué contre ce joueur est sans effet. }
+        siProtegeJusquAuTour:
+          type: [integer, 'null']
+          description: Le SI ne perd aucun SLA jusqu'à ce tour inclus (Circuit Breaker).
+        malusDebit:
+          { type: integer, description: Débit retiré au prochain tour (Facture de tokens). }
+        cronUtilise: { type: boolean }
+        delegationUtilisee: { type: boolean }
+        outillageUtilise: { type: boolean }
+        cacheUtilise: { type: boolean }
+        routageUtilise: { type: boolean }
     Camp:
       type: object
       required: [sla, debit, tours, plateau, defausse, pioche]
@@ -214,6 +245,8 @@ components:
             attaquesSubies: { type: integer }
             reactifUtilise: { type: boolean }
             entretienImpaye: { type: boolean }
+            bonusAttaque:
+              { type: integer, description: Bonus d'attaque permanent (Prompt système, Few-shot). }
             immobiliseJusquAuTour:
               type: [integer, 'null']
               description: Ne peut pas attaquer jusqu'à ce tour inclus (Rate limiting, Timeout…).

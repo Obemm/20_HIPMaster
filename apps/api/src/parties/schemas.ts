@@ -48,6 +48,8 @@ const schemaComposant = schemaInstance.extend({
   attaquesSubies: z.number().int(),
   reactifUtilise: z.boolean(),
   entretienImpaye: z.boolean(),
+  // Bonus permanent (Prompt système, Few-shot) : sans lui, un bot ne peut pas recalculer l'attaque (US-026).
+  bonusAttaque: z.number().int(),
   // Statuts posés par les sorts et les incidents (US-014), affichés sur le plateau.
   immobiliseJusquAuTour: z.number().int().nullable(),
   sansCapacitesJusquAuTour: z.number().int().nullable(),
@@ -69,9 +71,26 @@ const schemaCamp = z.object({
 
 const joueur = z.enum(JOUEURS);
 
+/** Usages « une fois par tour » et protections du joueur : lui seul les voit (US-026). */
+const schemaMarqueurs = z.object({
+  fileDurableUtilisee: z.boolean(),
+  parade: z.boolean(),
+  siProtegeJusquAuTour: z.number().int().nullable(),
+  malusDebit: z.number().int(),
+  cronUtilise: z.boolean(),
+  delegationUtilisee: z.boolean(),
+  outillageUtilise: z.boolean(),
+  cacheUtilise: z.boolean(),
+  routageUtilise: z.boolean(),
+});
+
 const schemaVue = z.object({
   joueur,
-  moi: schemaCamp.extend({ main: z.array(schemaInstance), aDecommissionne: z.boolean() }),
+  moi: schemaCamp.extend({
+    main: z.array(schemaInstance),
+    aDecommissionne: z.boolean(),
+    marqueurs: schemaMarqueurs,
+  }),
   adversaire: schemaCamp.extend({ main: z.number().int() }),
   actif: joueur,
   tour: z.number().int(),
