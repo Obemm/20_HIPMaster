@@ -18,5 +18,6 @@ référence the company.
 | [0007](0007-api-rest-monorepo.md)     | API REST Fastify et monorepo npm workspaces              | [ref], [ref]       | Acceptée                      |
 | [0008](0008-hebergement-azure.md)     | Azure comme hébergement cible                            | [ref], 006, 012, 004 | Acceptée                      |
 | [0009](0009-qualite-sonarway.md)      | Qualité de code : règles SonarWay, quality gate bloquant | [ref], 008, 040      | Acceptée                      |
+| [0010](0010-combat-plateau.md)        | Combat sur plateau : Débit, SLA, capacités thématiques   | aucune                 | Acceptée                      |
 
 Modèle : [template.md](template.md).
