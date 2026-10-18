@@ -18,6 +18,8 @@ export class VignetteCarte {
   readonly carte = input.required<Carte>();
   /** Lien vers le détail : toute la carte devient cliquable. Sans lien, la carte est purement visuelle. */
   readonly lien = input<string[]>();
+  /** Nom en titre (h2) ; `false` quand la carte est dans un bouton, où un titre n'a pas sa place. */
+  readonly titre = input(true);
 
   protected readonly libelleRarete = computed(
     () => `${SYMBOLES_RARETE[this.carte().rarete]} ${LIBELLES_RARETE[this.carte().rarete]}`,
