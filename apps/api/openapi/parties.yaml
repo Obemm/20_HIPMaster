@@ -1,0 +1,229 @@
+openapi: 3.1.0
+info:
+  title: HIPMaster — parties contre le bot
+  version: 1.0.0
+  description: >
+    Parties contre le bot « Batch de nuit » (US-012). Le serveur fait foi : il applique les règles (moteur du domaine,
+    ADR 0013), fait jouer le bot et ne renvoie que la vue du joueur. Les parties en cours sont gardées en mémoire
+    (ADR 0014) : elles expirent après 30 minutes sans activité. Le joueur est toujours `j1`, le bot `j2`.
+servers:
+  - url: /api/v1
+paths:
+  /decks:
+    get:
+      operationId: listerDecks
+      summary: Liste les decks prêtés
+      responses:
+        '200':
+          description: Les decks prêtés, jouables contre le bot.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Deck' }
+  /parties:
+    post:
+      operationId: creerPartie
+      summary: Crée une partie contre le bot avec un deck prêté
+      description: Si le bot commence, son premier tour est déjà joué dans la réponse.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [deck]
+              properties:
+                deck: { type: string, examples: [moderne] }
+      responses:
+        '201':
+          description: La partie créée.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Partie' }
+        '400': { $ref: '#/components/responses/Probleme' }
+        '422': { $ref: '#/components/responses/Probleme' }
+  /parties/{id}:
+    get:
+      operationId: lirePartie
+      summary: Lit la vue du joueur ; `evenements` contient tout le journal visible
+      parameters: [{ $ref: '#/components/parameters/IdPartie' }]
+      responses:
+        '200':
+          description: La partie.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Partie' }
+        '404': { $ref: '#/components/responses/Probleme' }
+  /parties/{id}/actions:
+    post:
+      operationId: jouerAction
+      summary: Joue une action du joueur
+      description: >
+        Après `finirTour`, le bot joue tout son tour dans la même requête. `evenements` ne contient que ce qui s'est
+        passé pendant la requête (action du joueur, puis tour du bot).
+      parameters: [{ $ref: '#/components/parameters/IdPartie' }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/Action' }
+      responses:
+        '200':
+          description: La partie après l'action.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Partie' }
+        '400': { $ref: '#/components/responses/Probleme' }
+        '404': { $ref: '#/components/responses/Probleme' }
+        '422':
+          description: Action refusée par les règles (`code` en donne la raison).
+          content:
+            application/problem+json:
+              schema: { $ref: '#/components/schemas/Probleme' }
+components:
+  parameters:
+    IdPartie:
+      name: id
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+  responses:
+    Probleme:
+      description: Erreur au format Problem Details (RFC 9457).
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Probleme' }
+  schemas:
+    Deck:
+      type: object
+      required: [id, nom, description, cartes]
+      properties:
+        id: { type: string }
+        nom: { type: string }
+        description: { type: string }
+        cartes: { type: array, items: { type: integer }, description: Numéros des 20 cartes. }
+    Partie:
+      type: object
+      required: [id, deck, deckAdversaire, vue, evenements]
+      properties:
+        id: { type: string, format: uuid }
+        deck: { type: string, description: Identifiant du deck du joueur. }
+        deckAdversaire: { type: string, description: Identifiant du deck du bot. }
+        vue: { $ref: '#/components/schemas/Vue' }
+        evenements:
+          type: array
+          description: Événements visibles par le joueur (voir `Evenement`).
+          items: { $ref: '#/components/schemas/Evenement' }
+    Vue:
+      type: object
+      required: [joueur, moi, adversaire, actif, tour, issue, actions]
+      properties:
+        joueur: { type: string, enum: [j1, j2] }
+        moi:
+          allOf:
+            - $ref: '#/components/schemas/Camp'
+            - type: object
+              required: [main, aDecommissionne]
+              properties:
+                main: { type: array, items: { $ref: '#/components/schemas/Instance' } }
+                aDecommissionne: { type: boolean }
+        adversaire:
+          allOf:
+            - $ref: '#/components/schemas/Camp'
+            - type: object
+              required: [main]
+              properties:
+                main: { type: integer, description: Nombre de cartes en main (contenu caché). }
+        actif: { type: string, enum: [j1, j2] }
+        tour: { type: integer, description: Tour en cours, tous joueurs confondus (20 au plus). }
+        issue:
+          oneOf:
+            - type: 'null'
+            - type: object
+              required: [gagnant, raison]
+              properties:
+                gagnant: { type: [string, 'null'], enum: [j1, j2, null] }
+                raison: { type: string, enum: [sla, tours] }
+        actions:
+          type: array
+          description: Actions légales du joueur ; vide quand ce n'est pas son tour.
+          items: { $ref: '#/components/schemas/Action' }
+    Camp:
+      type: object
+      required: [sla, debit, tours, plateau, defausse, pioche]
+      properties:
+        sla: { type: integer }
+        debit: { type: integer }
+        tours: { type: integer }
+        plateau: { type: array, items: { $ref: '#/components/schemas/Composant' } }
+        defausse: { type: array, items: { $ref: '#/components/schemas/Instance' } }
+        pioche: { type: integer, description: Nombre de cartes restantes. }
+    Instance:
+      type: object
+      required: [id, numero]
+      properties:
+        id: { type: string, description: Identifiant de la carte dans la partie. }
+        numero: { type: integer, description: Numéro de la carte du catalogue. }
+    Composant:
+      allOf:
+        - $ref: '#/components/schemas/Instance'
+        - type: object
+          required: [pv, attaque, poseAuTour, aAttaqueCeTour]
+          properties:
+            pv: { type: integer }
+            attaque: { type: integer, description: Attaque effective (bonus de Hub compris). }
+            poseAuTour: { type: integer }
+            aAttaqueCeTour: { type: boolean }
+            dernierTourAttaque: { type: [integer, 'null'] }
+            attaquesSubies: { type: integer }
+            reactifUtilise: { type: boolean }
+            entretienImpaye: { type: boolean }
+    Action:
+      oneOf:
+        - type: object
+          required: [type, carte]
+          properties:
+            type: { const: poser }
+            carte: { type: string }
+        - type: object
+          required: [type, carte, origine]
+          properties:
+            type: { const: evoluer }
+            carte: { type: string }
+            origine: { type: string }
+        - type: object
+          required: [type, carte]
+          properties:
+            type: { const: decommissionner }
+            carte: { type: string }
+        - type: object
+          required: [type, attaquant, cible]
+          properties:
+            type: { const: attaquer }
+            attaquant: { type: string }
+            cible: { type: string, description: Identifiant d'un composant adverse, ou `si`. }
+        - type: object
+          required: [type]
+          properties:
+            type: { const: finirTour }
+    Evenement:
+      type: object
+      required: [type]
+      description: >
+        Un événement du journal : debut-tour, pioche, carte-brulee, pose, evolution, decommission, attaque, degats,
+        destruction, retour-main, entretien, supervision, fin-partie. Ses autres champs dépendent du type
+        (packages/domain/src/combat/types.ts).
+      properties:
+        type: { type: string }
+      additionalProperties: true
+    Probleme:
+      type: object
+      required: [type, title, status]
+      properties:
+        type: { type: string }
+        title: { type: string }
+        status: { type: integer }
+        detail: { type: string }
+        code:
+          { type: string, description: Code de refus d'une action (ex. debit-insuffisant, garde). }

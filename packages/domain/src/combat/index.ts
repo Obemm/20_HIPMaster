@@ -32,4 +32,22 @@ export {
   type Issue,
   type ResultatAction,
 } from './types.ts';
-export { vueDe, type VueAdversaire, type VueJoueur, type VueMoi } from './vue.ts';
+export {
+  journalDe,
+  vueDe,
+  type ComposantVisible,
+  type VueAdversaire,
+  type VueJoueur,
+  type VueMoi,
+} from './vue.ts';
+export { choisirActionBatchDeNuit } from './bot.ts';
+export {
+  DECKS_PRETES,
+  EXEMPLAIRES_MAX,
+  EXEMPLAIRES_MAX_LEGENDAIRE,
+  TAILLE_DECK,
+  trouverDeckPrete,
+  validerDeck,
+  type DeckPrete,
+} from './decks.ts';
+export { jouerPartie, simuler, type ResultatSimulation, type Strategie } from './simulation.ts';

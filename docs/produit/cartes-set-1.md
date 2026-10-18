@@ -126,3 +126,34 @@ Batch adverse n'inflige rien), **Encodage cassé** (1 — 2 dégâts à un compo
 
 - **FTP** est peut-être trop forte pour une légendaire à 3 de Débit malgré Non conforme : simulations à faire.
 - Les cartes **Autonomes** sans Orchestration sont imprévisibles : vérifier qu'elles restent intéressantes à jouer.
+
+## Équilibrage des decks prêtés (US-011, 2026-10-18)
+
+`npm run simuler -- 400 1` : 400 parties par duel, bot « Batch de nuit » des deux côtés, en alternant les places.
+Résultats confirmés avec la graine 1000 (écarts de 1 à 5 points).
+
+| Deck A   | Deck B   | Victoires A | Victoires B | Nulles | Finies par SLA | Tours moyens |
+| -------- | -------- | ----------- | ----------- | ------ | -------------- | ------------ |
+| Héritage | Héritage | 52 %        | 47 %        | 2 %    | 69 %           | 17.2         |
+| Héritage | Moderne  | 46 %        | 53 %        | 2 %    | 64 %           | 17.7         |
+| Héritage | Hybride  | 47 %        | 52 %        | 1 %    | 68 %           | 17.2         |
+| Moderne  | Moderne  | 48 %        | 51 %        | 1 %    | 59 %           | 17.9         |
+| Moderne  | Hybride  | 44 %        | 53 %        | 3 %    | 62 %           | 17.6         |
+| Hybride  | Hybride  | 48 %        | 51 %        | 2 %    | 69 %           | 17.2         |
+
+**Avant rééquilibrage** (première version des decks, 200 parties par duel) : Moderne gagnait 64 % contre Héritage et
+82 % contre Hybride.
+
+**Diagnostic**, par le taux de victoire du camp qui pose chaque carte (600 parties) : les cartes bon marché qui font
+piocher (Portail développeur 78 %, Connecteur ERP 77 %, Webhook 76 %) et l'Event broker (75 %) donnaient l'avantage à
+Moderne ; les cartes mortes d'Hybride le plombaient (Fenêtre de contexte 28 %, sans attaque ; Fichier CSV 33 % ;
+LLM 33 %, cher et fragile face à la riposte).
+
+**Rééquilibrage** (composition des decks seulement, aucune statistique de carte modifiée) :
+
+- Moderne : Apigee API Gateway 2 → 1, Event broker 2 → 1, Workflow low-code 1 → 2, File d'attente 1 → 2.
+- Hybride : LLM 2 → 1, Fenêtre de contexte 2 → 0, et ajout d'un Adaptateur SAP, d'un MQSeries et d'un Webhook.
+
+**Lecture** : tous les duels restent entre 42 et 57 % ; les miroirs sont proches de 50/50, donc l'avantage du
+premier joueur est faible. 60 à 74 % des parties se terminent par un SLA à 0, vers le 17e tour sur 20. Héritage est
+désormais le deck le plus faible, de peu (42 à 47 %) : à surveiller.

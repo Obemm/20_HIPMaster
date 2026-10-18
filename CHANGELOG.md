@@ -33,6 +33,10 @@ Toutes les évolutions notables du projet sont consignées ici
 - Moteur de combat pur et rejouable dans `packages/domain` : création de partie à graine, actions (poser, évoluer,
   décommissionner, attaquer, finir son tour), actions possibles, vue par joueur, 13 capacités et 28 cartes jouables
   (US-010, ADR 0013).
+- Bot « Batch de nuit » qui joue sur sa seule vue de la partie, trois decks prêtés (Héritage, Moderne, Hybride)
+  équilibrés par simulation, validation des decks et simulation « bot contre bot » (`npm run simuler`) (US-011).
+- Parties contre le bot côté API : `GET /api/v1/decks`, création, lecture et actions d'une partie ; le bot joue dans
+  la requête, seule la vue du joueur est renvoyée ; parties gardées en mémoire avec expiration (US-012, ADR 0014).
 - Chaîne des illustrations : un original déposé et décrit devient, en une commande (`npm run illustrations`), quatre
   images AVIF et WebP de moins de 100 Ko et un manifeste ; la carte affiche son illustration, ou son pictogramme de
   famille à défaut. EPIC-05 découpé en US-015 à US-017 (US-015, ADR 0015).
