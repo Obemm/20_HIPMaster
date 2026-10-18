@@ -69,6 +69,8 @@ Toutes les évolutions notables du projet sont consignées ici
 - Défier un collègue par lien : on lance un défi depuis « Jouer » et on partage son lien ; le collègue crée au
   besoin son compte, revient au défi et le relève ; un défi sert une fois, s'annule et expire après 7 jours
   (US-033).
+- Écran de duel : le défi relevé, chacun joue sur le plateau habituel, l'adversaire nommé par son pseudo ; pendant
+  son tour, l'écran se met à jour seul ; la fin du duel propose une revanche (US-034).
 - Chaîne des illustrations : un original déposé et décrit devient, en une commande (`npm run illustrations`), quatre
   images AVIF et WebP de moins de 100 Ko et un manifeste ; la carte affiche son illustration, ou son pictogramme de
   famille à défaut. EPIC-05 découpé en US-015 à US-017 (US-015, ADR 0015).

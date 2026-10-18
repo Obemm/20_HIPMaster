@@ -383,3 +383,85 @@ describe('ChoixDeck', () => {
     expect(naviguer).toHaveBeenCalledWith(['/jouer', 'p1']);
   });
 });
+
+describe('PartieEcran en duel (US-034)', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      imports: [PartieEcran],
+      providers: [provideHttpClient(), provideHttpClientTesting(), provideRouter([])],
+    });
+  });
+
+  const duel = (v: Vue, version: number, evenements: Partie['evenements'] = []) => ({
+    id: 'p1',
+    statut: 'en-cours',
+    version,
+    createur: { pseudo: 'Ada' },
+    deckCreateur: 'moderne',
+    adversaire: { pseudo: 'Bob' },
+    moi: 'j1',
+    curseur: 10 + version,
+    vue: v,
+    evenements,
+  });
+
+  async function ouvrirDuel(v: Vue) {
+    const fixture = TestBed.createComponent(PartieEcran);
+    fixture.componentRef.setInput('id', 'p1');
+    fixture.componentRef.setInput('mode', 'duel');
+    fixture.detectChanges();
+    const http = TestBed.inject(HttpTestingController);
+    http.expectOne('/api/v1/cartes').flush(CATALOGUE);
+    http.expectOne('/api/v1/niveaux').flush(NIVEAUX);
+    http.expectOne('/api/v1/duels/p1').flush(duel(v, 4));
+    await fixture.whenStable();
+    fixture.detectChanges();
+    return { fixture, http, page: fixture.nativeElement as HTMLElement };
+  }
+
+  it('sans mode lié par la route (undefined), reste une partie contre le bot', () => {
+    const fixture = TestBed.createComponent(PartieEcran);
+    fixture.componentRef.setInput('id', 'p1');
+    fixture.componentRef.setInput('mode', undefined);
+    fixture.detectChanges();
+    const http = TestBed.inject(HttpTestingController);
+    expect(http.match('/api/v1/parties/p1')).toHaveLength(1);
+    expect(http.match('/api/v1/duels/p1')).toHaveLength(0);
+  });
+
+  it('nomme l’adversaire et envoie ses actions au duel, avec la version connue', async () => {
+    const { fixture, http, page } = await ouvrirDuel(vue());
+    expect(page.querySelector('h1')?.textContent).toContain('Duel contre Bob');
+    expect(page.querySelector('#titre-bot')?.textContent).toContain('Bob');
+    expect(page.textContent).not.toContain('Niveau :');
+
+    bouton(page, 'Finir mon tour')?.click();
+    const action = http.expectOne('/api/v1/duels/p1/actions');
+    expect(action.request.headers.get('If-Match')).toBe('"4"');
+    action.flush(duel(vue({ actif: 'j2', actions: [] }), 5));
+    await fixture.whenStable();
+    fixture.detectChanges();
+    expect(page.textContent).toContain('Au tour de Bob');
+  });
+
+  it('pendant le tour adverse, redemande le duel et affiche les coups de l’adversaire', async () => {
+    // Seul setInterval est simulé : Angular garde ses vrais setTimeout pour se stabiliser.
+    vi.useFakeTimers({ toFake: ['setInterval', 'clearInterval'] });
+    try {
+      const { fixture, http, page } = await ouvrirDuel(vue({ actif: 'j2', actions: [] }));
+      await vi.advanceTimersByTimeAsync(3000);
+      const relecture = http.expectOne((r) => r.url === '/api/v1/duels/p1');
+      expect(relecture.request.params.get('depuis')).toBe('14');
+      expect(relecture.request.headers.get('If-None-Match')).toBe('"4"');
+      relecture.flush(
+        duel(vue(), 6, [{ type: 'pose', joueur: 'j2', carte: { id: 'j2-05', numero: 17 } }]),
+      );
+      await fixture.whenStable();
+      fixture.detectChanges();
+      expect(page.querySelector('[role="log"]')?.textContent).toContain('Bob pose');
+      expect(bouton(page, 'Finir mon tour')?.disabled).toBe(false);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+});

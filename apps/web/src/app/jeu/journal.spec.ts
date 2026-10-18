@@ -1,4 +1,4 @@
-import { decrireEvenement } from './journal';
+import { adversaireNomme, decrireEvenement } from './journal';
 import type { Evenement } from './modele';
 
 const NOMS: Record<string, string> = {
@@ -95,5 +95,37 @@ describe('decrireEvenement', () => {
         carte: { id: 'j2-04', numero: 36 },
       }),
     ).toBe('Migration : FTP est remplacé par Topic.');
+  });
+
+  it('en duel, nomme l’adversaire par son pseudo, avec l’élision devant une voyelle', () => {
+    const ada = adversaireNomme('Ada');
+    const bob = adversaireNomme('Bob');
+    expect(decrireEvenement({ type: 'debut-tour', joueur: 'j2', tour: 4 }, 'j1', nommer, ada)).toBe(
+      'Tour 4 : Ada joue.',
+    );
+    expect(
+      decrireEvenement(
+        { type: 'attaque', joueur: 'j1', attaquant: 'j1-01', cible: 'si' },
+        'j1',
+        nommer,
+        ada,
+      ),
+    ).toBe('FTP attaque le SI d’Ada.');
+    expect(
+      decrireEvenement(
+        { type: 'attaque', joueur: 'j1', attaquant: 'j1-01', cible: 'si' },
+        'j1',
+        nommer,
+        bob,
+      ),
+    ).toBe('FTP attaque le SI de Bob.');
+    expect(
+      decrireEvenement(
+        { type: 'fin-partie', issue: { gagnant: 'j2', raison: 'sla' } },
+        'j1',
+        nommer,
+        bob,
+      ),
+    ).toBe('Fin de la partie : Bob gagne.');
   });
 });

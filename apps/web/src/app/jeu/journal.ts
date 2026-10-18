@@ -3,6 +3,24 @@ import type { Evenement, IdJoueur } from './modele';
 /** Donne le nom d'une carte à partir de son identifiant dans la partie (« j2-05 »). */
 export type NommerCarte = (id: string) => string;
 
+/** Comment le journal désigne l'adversaire : le bot, ou le pseudo d'un joueur en duel (US-034). */
+export interface Adversaire {
+  /** En début de phrase : « Le bot », « Ada ». */
+  sujet: string;
+  /** Dans la phrase : « le bot », « Ada ». */
+  nom: string;
+  /** Complément du nom : « du bot », « d’Ada », « de Bob ». */
+  de: string;
+}
+
+export const BOT: Adversaire = { sujet: 'Le bot', nom: 'le bot', de: 'du bot' };
+
+/** L'adversaire d'un duel, désigné par son pseudo, avec l'élision devant une voyelle (« d’Ada »). */
+export function adversaireNomme(pseudo: string): Adversaire {
+  const elision = /^[aeiouyhàâäéèêëîïôöùûü]/i.test(pseudo);
+  return { sujet: pseudo, nom: pseudo, de: elision ? `d’${pseudo}` : `de ${pseudo}` };
+}
+
 /** Identifiant de la carte d'un événement, quelle que soit sa forme. */
 function idCarte(e: Evenement): string | null {
   if (!e.carte) return null;
@@ -13,12 +31,18 @@ const quiFait = (
   joueur: IdJoueur | undefined,
   moi: IdJoueur,
   verbeMoi: string,
-  verbeBot: string,
-) => (joueur === moi ? `Vous ${verbeMoi}` : `Le bot ${verbeBot}`);
+  verbeAutre: string,
+  autre: Adversaire,
+) => (joueur === moi ? `Vous ${verbeMoi}` : `${autre.sujet} ${verbeAutre}`);
 
-function cibleDe(evenement: Evenement, moi: IdJoueur, nommer: NommerCarte): string {
+function cibleDe(
+  evenement: Evenement,
+  moi: IdJoueur,
+  nommer: NommerCarte,
+  autre: Adversaire,
+): string {
   if (evenement.cible !== 'si') return nommer(evenement.cible ?? '');
-  return evenement.joueur === moi ? 'le SI du bot' : 'votre SI';
+  return evenement.joueur === moi ? `le SI ${autre.de}` : 'votre SI';
 }
 
 const CAUSES: Record<string, string> = {
@@ -30,26 +54,47 @@ const CAUSES: Record<string, string> = {
   'non-conforme': ' (Non conforme)',
 };
 
-function decrireDegats(e: Evenement, moi: IdJoueur, nommer: NommerCarte): string {
+function decrireDegats(
+  e: Evenement,
+  moi: IdJoueur,
+  nommer: NommerCarte,
+  autre: Adversaire,
+): string {
   const cause = CAUSES[e.cause ?? ''] ?? '';
   if (e.cible === 'si') {
-    const si = e.joueur === moi ? 'Votre SI' : 'Le SI du bot';
+    const si = e.joueur === moi ? 'Votre SI' : `Le SI ${autre.de}`;
     return `${si} perd ${e.montant} SLA${cause}.`;
   }
   return `${nommer(e.cible ?? '')} subit ${e.montant} dégât${(e.montant ?? 0) > 1 ? 's' : ''}${cause}.`;
 }
 
-/** Le SI du point de vue du joueur : `pourMoi` vaut vrai si c'est le SI du joueur. */
-const nomSi = (pourMoi: boolean) => (pourMoi ? 'votre SI' : 'le SI du bot');
+/** « Le SI du bot », « Le SI d’Ada » : en début de phrase. */
+const siDe = (autre: Adversaire) => 'Le SI ' + autre.de;
 
-function decrireJeu(e: Evenement, moi: IdJoueur, nommer: NommerCarte, carte: string): string {
-  const cibles = (e.cibles ?? []).map((id) => (id === 'si' ? nomSi(e.joueur !== moi) : nommer(id)));
+/** Le SI du point de vue du joueur : `pourMoi` vaut vrai si c'est le SI du joueur. */
+const nomSi = (pourMoi: boolean, autre: Adversaire) => (pourMoi ? 'votre SI' : `le SI ${autre.de}`);
+
+function decrireJeu(
+  e: Evenement,
+  moi: IdJoueur,
+  nommer: NommerCarte,
+  carte: string,
+  autre: Adversaire,
+): string {
+  const cibles = (e.cibles ?? []).map((id) =>
+    id === 'si' ? nomSi(e.joueur !== moi, autre) : nommer(id),
+  );
   const sur = cibles.length > 0 ? ` sur ${cibles.join(' et ')}` : '';
-  return `${quiFait(e.joueur, moi, 'jouez', 'joue')} ${carte}${sur}.`;
+  return `${quiFait(e.joueur, moi, 'jouez', 'joue', autre)} ${carte}${sur}.`;
 }
 
 /** Les statuts posés par les sorts et les incidents (US-014). */
-function decrireStatut(e: Evenement, moi: IdJoueur, nommer: NommerCarte): string | null {
+function decrireStatut(
+  e: Evenement,
+  moi: IdJoueur,
+  nommer: NommerCarte,
+  autre: Adversaire,
+): string | null {
   const nom = nommer(e.cible ?? '');
   const pourMoi = e.joueur === moi;
   switch (e.statut) {
@@ -72,50 +117,55 @@ function decrireStatut(e: Evenement, moi: IdJoueur, nommer: NommerCarte): string
     case 'attaque-a-nouveau':
       return `${nom} peut attaquer de nouveau.`;
     case 'protection-si':
-      return `${pourMoi ? 'Votre SI est protégé' : 'Le SI du bot est protégé'} jusqu’au prochain tour (Circuit Breaker).`;
+      return `${pourMoi ? 'Votre SI' : siDe(autre)} est protégé jusqu’au prochain tour (Circuit Breaker).`;
     case 'parade':
-      return `Le prochain incident contre ${pourMoi ? 'vous' : 'le bot'} sera sans effet (Human-in-the-loop).`;
+      return `Le prochain incident contre ${pourMoi ? 'vous' : autre.nom} sera sans effet (Human-in-the-loop).`;
     case 'malus-debit':
-      return `${pourMoi ? 'Vous aurez' : 'Le bot aura'} 2 Débit de moins au prochain tour (Facture de tokens).`;
+      return `${pourMoi ? 'Vous aurez' : autre.sujet + ' aura'} 2 Débit de moins au prochain tour (Facture de tokens).`;
     default:
       return null;
   }
 }
 
-function decrireFin(e: Evenement, moi: IdJoueur): string {
+function decrireFin(e: Evenement, moi: IdJoueur, autre: Adversaire): string {
   if (!e.issue) return 'Fin de la partie.';
   if (e.issue.gagnant === null) return 'Fin de la partie : égalité.';
   return e.issue.gagnant === moi
     ? 'Fin de la partie : vous gagnez !'
-    : 'Fin de la partie : le bot gagne.';
+    : `Fin de la partie : ${autre.nom} gagne.`;
 }
 
 /**
  * Traduit un événement en phrase, du point de vue du joueur `moi` ; `null` pour un événement sans intérêt à
  * l'écran. Les noms de cartes viennent du catalogue.
  */
-export function decrireEvenement(e: Evenement, moi: IdJoueur, nommer: NommerCarte): string | null {
+export function decrireEvenement(
+  e: Evenement,
+  moi: IdJoueur,
+  nommer: NommerCarte,
+  autre: Adversaire = BOT,
+): string | null {
   const id = idCarte(e);
   const carte = id ? nommer(id) : '';
   switch (e.type) {
     case 'debut-tour':
       return e.joueur === moi
         ? `Tour ${e.tour} : à vous de jouer.`
-        : `Tour ${e.tour} : le bot joue.`;
+        : `Tour ${e.tour} : ${autre.nom} joue.`;
     case 'pioche':
       return e.joueur === moi ? `Vous piochez ${carte}.` : null;
     case 'carte-brulee':
-      return `${quiFait(e.joueur, moi, 'défaussez', 'défausse')} ${carte} : main pleine.`;
+      return `${quiFait(e.joueur, moi, 'défaussez', 'défausse', autre)} ${carte} : main pleine.`;
     case 'pose':
-      return `${quiFait(e.joueur, moi, 'posez', 'pose')} ${carte}.`;
+      return `${quiFait(e.joueur, moi, 'posez', 'pose', autre)} ${carte}.`;
     case 'evolution':
-      return `${quiFait(e.joueur, moi, 'faites évoluer', 'fait évoluer')} ${nommer(e.origine?.id ?? '')} en ${carte}.`;
+      return `${quiFait(e.joueur, moi, 'faites évoluer', 'fait évoluer', autre)} ${nommer(e.origine?.id ?? '')} en ${carte}.`;
     case 'decommission':
-      return `${quiFait(e.joueur, moi, 'décommissionnez', 'décommissionne')} ${carte} (+${e.debit} Débit).`;
+      return `${quiFait(e.joueur, moi, 'décommissionnez', 'décommissionne', autre)} ${carte} (+${e.debit} Débit).`;
     case 'attaque':
-      return `${nommer(e.attaquant ?? '')} attaque ${cibleDe(e, moi, nommer)}.`;
+      return `${nommer(e.attaquant ?? '')} attaque ${cibleDe(e, moi, nommer, autre)}.`;
     case 'degats':
-      return decrireDegats(e, moi, nommer);
+      return decrireDegats(e, moi, nommer, autre);
     case 'destruction':
       return `Destruction : ${carte}.`;
     case 'retour-main':
@@ -123,25 +173,25 @@ export function decrireEvenement(e: Evenement, moi: IdJoueur, nommer: NommerCart
     case 'entretien':
       return e.paye ? null : `${carte} : entretien impayé, pas d’attaque ce tour.`;
     case 'supervision':
-      return id ? `Supervision : la prochaine carte du bot est ${carte}.` : null;
+      return id ? `Supervision : la prochaine carte ${autre.de} est ${carte}.` : null;
     case 'jeu':
-      return decrireJeu(e, moi, nommer, carte);
+      return decrireJeu(e, moi, nommer, carte, autre);
     case 'parade':
       return `${carte} est sans effet (Human-in-the-loop).`;
     case 'statut':
-      return decrireStatut(e, moi, nommer);
+      return decrireStatut(e, moi, nommer, autre);
     case 'rappel':
       return `${carte} revient en jeu avec 1 PV (Dead Letter Queue).`;
     case 'outillage':
-      return `Outillage : ${e.joueur === moi ? 'vos agents prennent' : 'les agents du bot prennent'} les capacités de ${nommer(e.source ?? '')}.`;
+      return `Outillage : ${e.joueur === moi ? 'vos agents prennent' : 'les agents ' + autre.de + ' prennent'} les capacités de ${nommer(e.source ?? '')}.`;
     case 'routage':
       return `Routage multi-modèles : ${nommer(e.retour?.id ?? '')} revient en main, ${carte} prend sa place.`;
     case 'migration':
       return `Migration : ${nommer(e.origine?.id ?? '')} est remplacé par ${carte}.`;
     case 'si-protege':
-      return `${e.joueur === moi ? 'Votre SI' : 'Le SI du bot'} ne perd aucun SLA (Circuit Breaker).`;
+      return `${e.joueur === moi ? 'Votre SI' : siDe(autre)} ne perd aucun SLA (Circuit Breaker).`;
     case 'fin-partie':
-      return decrireFin(e, moi);
+      return decrireFin(e, moi, autre);
     default:
       return null;
   }

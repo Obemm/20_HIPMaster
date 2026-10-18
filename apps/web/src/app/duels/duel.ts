@@ -4,6 +4,7 @@ import { Component, computed, DestroyRef, effect, inject, input, signal } from '
 import { Router, RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { CompteService } from '../compte/compte.service';
+import { PartieEcran } from '../jeu/partie';
 import type { Deck } from '../jeu/modele';
 import type { Duel } from './modele';
 
@@ -11,12 +12,12 @@ import type { Duel } from './modele';
 const ATTENTE_MS = 5000;
 
 /**
- * Un duel (US-033) : le lien de défi à partager pour son créateur, l'invitation à relever le défi pour un
- * collègue. Le plateau du duel lui-même arrive avec US-034.
+ * Un duel : le lien de défi à partager pour son créateur, l'invitation à relever le défi pour un collègue
+ * (US-033), puis, une fois le défi relevé, le plateau du duel (US-034).
  */
 @Component({
   selector: 'hip-duel',
-  imports: [RouterLink],
+  imports: [RouterLink, PartieEcran],
   templateUrl: './duel.html',
 })
 export class DuelEcran {
@@ -44,12 +45,6 @@ export class DuelEcran {
     const duel = this.duel();
     return duel?.statut === 'attente' && duel.moi === 'j1';
   });
-  protected readonly adversaire = computed(() => {
-    const duel = this.duel();
-    if (!duel) return null;
-    return duel.moi === 'j1' ? duel.adversaire?.pseudo : duel.createur.pseudo;
-  });
-
   constructor() {
     effect(() => {
       if (this.compte.joueur()) void this.charger();

@@ -32,11 +32,56 @@ Après 20 tours (10 pour chaque joueur), le joueur qui a le plus de SLA gagne (�
    - **Évolution de X** : se pose **à la place** de X sur votre plateau, avec ses PV pleins ; elle peut attaquer ce
      tour-ci si X le pouvait.
 4. **Attaquer** : chaque composant peut attaquer une fois, sauf le tour où il est posé.
+   - **Rien n'attaque tout seul** : à chaque tour, pour chaque composant qui doit attaquer, vous choisissez
+     l'**attaquant** (un de vos composants) puis sa **cible** (un composant adverse ou le SI adverse). Poser des
+     cartes ne suffit pas : un tour où vous ne faites que poser ne fait aucun dégât à l'adversaire. Seuls les agents
+     **Autonomes** attaquent sans ordre (voir plus bas).
    - Contre un **composant** : chacun inflige son attaque à l'autre (riposte). À 0 PV, un composant est détruit.
    - Contre le **SI** : le SLA adverse perd l'attaque du composant, sans riposte.
    - Tant que l'adversaire a un composant avec **Garde**, il faut l'attaquer en premier.
+   - Attaquer avant ou après avoir posé des cartes : c'est vous qui choisissez l'ordre.
+5. **Finir le tour** : les composants qui n'ont pas attaqué perdent leur attaque de ce tour (elle ne se reporte pas).
 
 Les dégâts restent d'un tour à l'autre. Tout le hasard (pioche, cibles au hasard) est tiré par le serveur (ADR 0004).
+
+## Résoudre un combat
+
+Une attaque se résout toujours dans cet ordre :
+
+1. **Vérifier que l'attaque est permise.** L'attaquant n'a pas été posé ce tour, n'a pas déjà attaqué, a une attaque
+   supérieure à 0 et n'est pas bloqué (entretien Sur site impayé, immobilisation, Batch). La cible respecte Garde et
+   Quotas.
+2. **Calculer les forces.** La force d'un composant est son attaque imprimée, plus +1 par **Hub** allié en jeu (le
+   Hub ne se compte pas lui-même), plus les bonus permanents (Renfort, Contexte…). La riposte du défenseur se calcule
+   de la même façon, avec les Hubs de **son** camp.
+3. **Échanger les coups, en même temps.** Le défenseur perd la force de l'attaquant, l'attaquant perd la force du
+   défenseur. Le défenseur riposte même s'il tombe à 0 PV : les deux peuvent être détruits ensemble.
+4. **Effets de l'attaque.** Diffusion de l'attaquant, puis un Réactif du défenseur encore en vie (+1 dégât à
+   l'attaquant).
+5. **Destructions.** Tout composant à 0 PV est détruit (Point unique et File durable se déclenchent alors).
+
+Contre le SI, seules les étapes 1 et 2 comptent : le SLA perd la force de l'attaquant, sans riposte ni Réactif.
+
+### Exemples
+
+**Échange qui détruit les deux cartes.** API REST (attaque 3, PV 2) attaque Adaptateur JDBC (attaque 2, PV 3).
+JDBC subit 3 dégâts : 3 − 3 = 0, il est détruit. API REST subit la riposte de 2 : 2 − 2 = 0, elle est détruite aussi.
+
+**Attaque du SI avec un Hub.** Vous avez Universal Messaging (attaque 2) et webMethods Integration Server 10.15
+(Hub) en jeu, posés aux tours précédents. Universal Messaging attaque le SI adverse avec une force de 2 + 1 = 3 :
+le SLA adverse perd 3. webMethods IS (attaque 4) attaque ensuite le SI : il ne profite pas de son propre Hub, le SLA
+perd encore 4. Total du tour : 7 SLA. Si vous vous contentez de poser des cartes, ce tour ne fait aucun dégât.
+
+**Garde, et dégâts qui restent.** L'adversaire a Adaptateur SAP (Garde, attaque 3, PV 5) : vous ne pouvez viser ni
+son SI ni ses autres composants. SOAP / WSDL (attaque 3, PV 4) attaque SAP : SAP passe à 2 PV, SOAP passe à 1 PV.
+Au tour suivant, SAP a toujours 2 PV : une attaque de 2 suffit à le détruire et à rouvrir l'accès au SI.
+
+**Réactif.** L'adversaire a Topic (Réactif, attaque 1, PV 2) et API REST (attaque 3, PV 2). SOAP / WSDL (attaque 3,
+PV 4) attaque API REST : API REST est détruite, SOAP subit 3 de riposte puis 1 de Réactif (Topic est en vie) et
+tombe à 0. Pour garder SOAP, il valait mieux détruire Topic d'abord.
+
+**Évolution.** webMethods IS 10.15, posé au tour précédent, évolue en webMethods.io : la nouvelle carte arrive avec
+ses 7 PV pleins et peut attaquer tout de suite, puisque webMethods IS le pouvait.
 
 ## Précisions (tranchées en codant le moteur, US-010)
 

@@ -82,7 +82,7 @@ describe('DuelEcran', () => {
     expect(naviguer).toHaveBeenCalledWith(['/duels/nouveau']);
   });
 
-  it('invite un collègue à relever le défi avec son deck, puis annonce le duel commencé', async () => {
+  it('invite un collègue à relever le défi avec son deck, puis affiche le plateau du duel', async () => {
     const { fixture, http, page } = await afficher(duel({ moi: null }));
     expect(page.querySelector('h1')?.textContent).toContain('Ada vous défie en duel !');
     expect(page.textContent).toContain('Ada joue le deck Moderne');
@@ -98,10 +98,11 @@ describe('DuelEcran', () => {
         vue: { actif: 'j1' } as Duel['vue'],
       }),
     );
-    await fixture.whenStable();
+    await new Promise((fin) => setTimeout(fin));
     fixture.detectChanges();
-    expect(page.querySelector('h1')?.textContent).toContain('Duel contre Ada');
-    expect(page.textContent).toContain('au tour de Ada');
+    // Le plateau du duel (écran de partie en mode duel) prend le relais et charge le duel.
+    expect(page.querySelector('hip-partie')).not.toBeNull();
+    expect(http.match(`/api/v1/duels/${ID}`)).toHaveLength(1);
   });
 
   it('sans compte, invite à en créer un puis à revenir au défi', async () => {
