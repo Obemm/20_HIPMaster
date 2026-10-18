@@ -37,6 +37,9 @@ Toutes les évolutions notables du projet sont consignées ici
   équilibrés par simulation, validation des decks et simulation « bot contre bot » (`npm run simuler`) (US-011).
 - Parties contre le bot côté API : `GET /api/v1/decks`, création, lecture et actions d'une partie ; le bot joue dans
   la requête, seule la vue du joueur est renvoyée ; parties gardées en mémoire avec expiration (US-012, ADR 0014).
+- **Premier jalon jouable** : écran de partie contre le bot (`/jouer`) — choix d'un deck prêté, plateau en jetons,
+  main en cartes, actions au toucher et au clavier, journal annoncé aux lecteurs d'écran, fin de partie ; règle
+  courte, objectif toujours visible et capacités expliquées en jeu (US-013).
 
 ### Modifié
 

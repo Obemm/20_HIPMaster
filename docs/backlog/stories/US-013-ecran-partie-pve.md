@@ -1,7 +1,7 @@
 # US-013 — Écran de partie contre le bot
 
 - **Epic** : EPIC-04
-- **Statut** : En revue
+- **Statut** : Faite
 - **Priorité** : Must
 - **Taille** : L
 - **Branche** : `us-013-ecran-partie-pve`
@@ -55,3 +55,4 @@ jeu en jouant**.
 - 2026-10-18 — deuxième retour (« on ne sait pas ce qu'est une carte avec Garde ») : Garde expliquée avec un exemple
   dans la règle courte, encadré « Capacités en jeu » (définitions des capacités visibles), aide qui nomme la Garde
   adverse au moment d'attaquer. En revue.
+- 2026-10-18 — livrée : écran de partie contre le bot jouable de bout en bout, avec règle courte et capacités expliquées
