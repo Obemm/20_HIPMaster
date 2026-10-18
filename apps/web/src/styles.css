@@ -1,1 +1,97 @@
 @import 'tailwindcss';
+
+/*
+ * Jetons de couleur (ADR 0012) : thème clair par défaut, sombre si le système le préfère.
+ * Les composants utilisent les classes Tailwind générées (bg-fond, text-texte…), jamais de gris en dur.
+ */
+:root {
+  color-scheme: light dark;
+  --hip-fond: #ffffff;
+  --hip-surface: #f4f4f5;
+  --hip-texte: #18181b;
+  --hip-texte-doux: #3f3f46;
+  --hip-bordure: #d4d4d8;
+  --hip-accent: #18181b;
+  --hip-sur-accent: #ffffff;
+  --hip-alerte: #991b1b;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --hip-fond: #09090b;
+    --hip-surface: #27272a;
+    --hip-texte: #f4f4f5;
+    --hip-texte-doux: #d4d4d8;
+    --hip-bordure: #52525b;
+    --hip-accent: #f4f4f5;
+    --hip-sur-accent: #09090b;
+    --hip-alerte: #fca5a5;
+  }
+}
+
+@theme inline {
+  --color-fond: var(--hip-fond);
+  --color-surface: var(--hip-surface);
+  --color-texte: var(--hip-texte);
+  --color-texte-doux: var(--hip-texte-doux);
+  --color-bordure: var(--hip-bordure);
+  --color-accent: var(--hip-accent);
+  --color-sur-accent: var(--hip-sur-accent);
+  --color-alerte: var(--hip-alerte);
+  --color-cadre: var(--hip-cadre);
+  --color-fond-carte: var(--hip-fond-carte);
+}
+
+/* Cadres de rareté des cartes : bordure, fond et halo, dans chaque thème. */
+@layer components {
+  .cadre-commune {
+    --hip-cadre: #a1a1aa;
+    --hip-fond-carte: #fafafa;
+    --hip-halo: transparent;
+  }
+  .cadre-rare {
+    --hip-cadre: #0284c7;
+    --hip-fond-carte: #f0f9ff;
+    --hip-halo: transparent;
+  }
+  .cadre-epique {
+    --hip-cadre: #7c3aed;
+    --hip-fond-carte: #f5f3ff;
+    --hip-halo: rgb(124 58 237 / 0.35);
+  }
+  .cadre-legendaire {
+    --hip-cadre: #d97706;
+    --hip-fond-carte: #fffbeb;
+    --hip-halo: rgb(217 119 6 / 0.45);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .cadre-commune {
+      --hip-cadre: #71717a;
+      --hip-fond-carte: #27272a;
+    }
+    .cadre-rare {
+      --hip-cadre: #38bdf8;
+      --hip-fond-carte: #0c2a3e;
+    }
+    .cadre-epique {
+      --hip-cadre: #a78bfa;
+      --hip-fond-carte: #261447;
+      --hip-halo: rgb(167 139 250 / 0.35);
+    }
+    .cadre-legendaire {
+      --hip-cadre: #fbbf24;
+      --hip-fond-carte: #3a1d06;
+      --hip-halo: rgb(251 191 36 / 0.4);
+    }
+  }
+
+  .halo-carte {
+    box-shadow: 0 0 0.9rem var(--hip-halo);
+  }
+}
+
+/* La page ne défile pas derrière une fenêtre modale ouverte. */
+html:has(dialog[open]) {
+  overflow: hidden;
+}

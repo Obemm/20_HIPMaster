@@ -39,16 +39,19 @@ export const LIBELLES_FAMILLE: Record<Famille, string> = {
   bestiaire: 'Bestiaire',
 };
 
-/** Liseré de couleur par famille : un repère en plus du libellé, jamais le seul. */
-export const LISERES_FAMILLE: Record<Famille, string> = {
-  fichiers: 'border-l-amber-700',
-  esb: 'border-l-sky-700',
-  api: 'border-l-emerald-700',
-  ipaas: 'border-l-teal-600',
-  eda: 'border-l-violet-700',
-  ia: 'border-l-fuchsia-700',
-  patterns: 'border-l-zinc-500',
-  bestiaire: 'border-l-red-700',
+/**
+ * Fond de la zone d'illustration par famille, en attendant les vraies illustrations (EPIC-05) :
+ * un repère en plus du libellé de famille, jamais le seul.
+ */
+export const ILLUSTRATIONS_FAMILLE: Record<Famille, string> = {
+  fichiers: 'from-amber-500 to-orange-800',
+  esb: 'from-sky-500 to-blue-800',
+  api: 'from-emerald-500 to-emerald-800',
+  ipaas: 'from-teal-400 to-cyan-800',
+  eda: 'from-violet-500 to-indigo-800',
+  ia: 'from-fuchsia-500 to-purple-900',
+  patterns: 'from-slate-400 to-slate-700',
+  bestiaire: 'from-red-500 to-rose-900',
 };
 
 export function libelleType(carte: Carte): string {

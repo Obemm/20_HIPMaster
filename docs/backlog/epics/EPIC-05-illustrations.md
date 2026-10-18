@@ -1,6 +1,6 @@
 # EPIC-05 — Illustrations des cartes
 
-- **Statut** : À affiner
+- **Statut** : En cours
 - **Priorité** : Should
 
 ## Objectif
