@@ -1,7 +1,7 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
+import { provideRouter, Router } from '@angular/router';
 import type { Carte } from './carte';
 import { DetailCarte } from './detail-carte';
 
@@ -26,6 +26,9 @@ const WEBMETHODS_IO: Carte = {
   ],
   enVrai: 'L’intégration en mode iPaaS, sans serveur à maintenir.',
 };
+
+/** Une carte sans origine : pas de seconde requête en attente. */
+const SANS_ORIGINE: Carte = { ...WEBMETHODS_IO, type: 'composant', origine: undefined };
 
 function creer(numero: string) {
   const fixture = TestBed.createComponent(DetailCarte);
@@ -55,13 +58,24 @@ describe('DetailCarte', () => {
     await fixture.whenStable();
 
     const page = fixture.nativeElement as HTMLElement;
-    expect(page.querySelector('h1')?.textContent).toContain('webMethods.io');
+    expect(page.querySelector('dialog')?.getAttribute('aria-labelledby')).toBe('titre-detail');
+    expect(page.querySelector('#titre-detail')?.textContent).toContain('webMethods.io');
     expect(page.textContent).toContain('Connecteur (2)');
     expect(page.textContent).toContain('piochez autant de cartes');
     expect(page.textContent).toContain('sans serveur à maintenir');
     expect(page.querySelector('a[href="/cartes/9"]')?.textContent).toContain(
       'webMethods Integration Server 10.15',
     );
+  });
+
+  it('revient au catalogue quand on ferme la fenêtre', async () => {
+    const fixture = creer('26');
+    TestBed.inject(HttpTestingController).expectOne('/api/v1/cartes/26').flush(SANS_ORIGINE);
+    await fixture.whenStable();
+    const naviguer = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+    const page = fixture.nativeElement as HTMLElement;
+    page.querySelector<HTMLButtonElement>('button')?.click();
+    expect(naviguer).toHaveBeenCalledWith(['/cartes']);
   });
 
   it('annonce une carte introuvable quand l’API répond 404', async () => {
@@ -74,7 +88,7 @@ describe('DetailCarte', () => {
       );
     await fixture.whenStable();
     const page = fixture.nativeElement as HTMLElement;
-    expect(page.querySelector('h1')?.textContent).toContain('Carte introuvable');
+    expect(page.querySelector('#titre-detail')?.textContent).toContain('Carte introuvable');
     expect(page.querySelector('[role="alert"]')?.textContent).toContain('« 72 »');
   });
 });

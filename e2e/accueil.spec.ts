@@ -10,9 +10,14 @@ test('la page d’accueil présente le jeu et les chances calculées par l’API
   await expect(raretes).toContainText('1 %');
 });
 
-test('la page d’accueil ne présente aucune violation d’accessibilité', async ({ page }) => {
-  await page.goto('/');
-  await expect(page.getByRole('listitem').first()).toBeVisible();
-  const { violations } = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
-  expect(violations).toEqual([]);
-});
+for (const theme of ['light', 'dark'] as const) {
+  test(`la page d’accueil ne présente aucune violation d’accessibilité (thème ${theme})`, async ({
+    page,
+  }) => {
+    await page.emulateMedia({ colorScheme: theme });
+    await page.goto('/');
+    await expect(page.getByRole('listitem').first()).toBeVisible();
+    const { violations } = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
+    expect(violations).toEqual([]);
+  });
+}

@@ -20,5 +20,6 @@ référence the company.
 | [0009](0009-qualite-sonarway.md)           | Qualité de code : règles SonarWay, quality gate bloquant    | [ref], 008, 040      | Acceptée                      |
 | [0010](0010-combat-plateau.md)             | Combat sur plateau : Débit, SLA, capacités thématiques      | aucune                 | Acceptée                      |
 | [0011](0011-catalogue-cartes-versionne.md) | Catalogue des cartes versionné dans le domaine, pas en base | [ref] (écarté)       | Acceptée                      |
+| [0012](0012-theme-clair-sombre.md)         | Thème clair ou sombre selon le système, jetons de couleur   | [ref] (adapté)       | Acceptée                      |
 
 Modèle : [template.md](template.md).

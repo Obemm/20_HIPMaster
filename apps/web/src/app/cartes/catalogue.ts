@@ -1,22 +1,20 @@
 import { httpResource } from '@angular/common/http';
 import { Component, computed, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { RouterLink, RouterOutlet } from '@angular/router';
 import { LIBELLES_RARETE, type Rarete, SYMBOLES_RARETE } from '../libelles';
-import { type Carte, type Famille, LIBELLES_FAMILLE, LISERES_FAMILLE, libelleType } from './carte';
+import { type Carte, type Famille, LIBELLES_FAMILLE } from './carte';
+import { VignetteCarte } from './vignette-carte';
 
+/** Catalogue du set 1. Le détail d'une carte s'ouvre par-dessus (route enfant), sans perdre les filtres. */
 @Component({
   selector: 'hip-catalogue',
-  imports: [RouterLink],
+  imports: [RouterLink, RouterOutlet, VignetteCarte],
   templateUrl: './catalogue.html',
 })
 export class Catalogue {
   protected readonly familles = Object.entries(LIBELLES_FAMILLE) as [Famille, string][];
   protected readonly raretes = Object.entries(LIBELLES_RARETE) as [Rarete, string][];
-  protected readonly libellesFamille = LIBELLES_FAMILLE;
-  protected readonly liseres = LISERES_FAMILLE;
-  protected readonly libellesRarete = LIBELLES_RARETE;
   protected readonly symbolesRarete = SYMBOLES_RARETE;
-  protected readonly libelleType = libelleType;
 
   protected readonly cartes = httpResource<Carte[]>(() => '/api/v1/cartes');
   protected readonly famille = signal<Famille | ''>('');

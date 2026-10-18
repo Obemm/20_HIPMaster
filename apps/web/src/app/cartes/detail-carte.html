@@ -1,84 +1,119 @@
-<main class="mx-auto flex w-full max-w-2xl flex-col gap-6 px-4 py-8 sm:px-6">
-  <p>
-    <a routerLink="/cartes" class="text-zinc-700 underline underline-offset-4">← Catalogue</a>
-  </p>
-
-  @if (carte.hasValue()) {
-    @let c = carte.value();
-    <article
-      class="flex flex-col gap-4 rounded-lg border border-l-8 border-zinc-200 bg-white p-5"
-      [class]="liseres[c.famille]"
-      aria-labelledby="nom-carte"
+<dialog
+  #dialogue
+  aria-labelledby="titre-detail"
+  class="m-auto max-h-[92dvh] w-[min(56rem,calc(100%-1.5rem))] overflow-y-auto rounded-2xl border border-bordure bg-fond p-0 text-texte shadow-2xl backdrop:bg-black/70"
+  (cancel)="annuler($event)"
+>
+  <div class="relative flex flex-col gap-6 p-5 sm:flex-row sm:p-6">
+    <button
+      type="button"
+      class="absolute top-3 right-3 rounded-full p-2 text-texte-doux hover:bg-surface focus-visible:outline-2 focus-visible:outline-accent"
+      (click)="fermer()"
     >
-      <p class="flex justify-between gap-2 text-sm text-zinc-700">
-        <span>N° {{ c.numero }} · {{ libellesFamille[c.famille] }}</span>
-        <span>{{ libelleType(c) }}</span>
-      </p>
-      <h1 id="nom-carte" class="text-3xl font-bold tracking-tight">{{ c.nom }}</h1>
-      <p class="font-semibold">{{ symbolesRarete[c.rarete] }} {{ libellesRarete[c.rarete] }}</p>
+      <hip-icone nom="fermer" class="size-5" />
+      <span class="sr-only">Fermer</span>
+    </button>
 
-      <dl class="grid grid-cols-3 gap-2 text-center">
-        <div class="rounded bg-zinc-100 p-2">
-          <dt class="text-sm text-zinc-700">Débit</dt>
-          <dd class="text-xl font-semibold">{{ c.cout }}</dd>
+    @if (carte.hasValue()) {
+      @let c = carte.value();
+      <!-- La grande carte reprend le panneau, qui porte toute l'information : elle est masquée aux lecteurs d'écran. -->
+      <div class="mx-auto w-56 shrink-0 sm:mx-0 sm:w-72" aria-hidden="true">
+        <hip-vignette-carte [carte]="c" />
+      </div>
+
+      <div class="flex min-w-0 flex-1 flex-col gap-5">
+        <div>
+          <h2 id="titre-detail" class="pr-10 text-2xl font-bold tracking-tight">{{ c.nom }}</h2>
+          <p class="mt-2 flex flex-wrap items-center gap-2">
+            <span
+              class="rounded-md border-2 border-cadre bg-fond-carte px-2 py-0.5 text-sm font-semibold"
+              [class]="'cadre-' + c.rarete"
+              >{{ symbolesRarete[c.rarete] }} {{ libellesRarete[c.rarete] }}</span
+            >
+            <span class="text-sm text-texte-doux"
+              >N° {{ c.numero }} · {{ libelleType(c) }} · {{ libellesFamille[c.famille] }}</span
+            >
+          </p>
         </div>
-        @if (c.attaque !== undefined) {
-          <div class="rounded bg-zinc-100 p-2">
-            <dt class="text-sm text-zinc-700">Attaque</dt>
-            <dd class="text-xl font-semibold">{{ c.attaque }}</dd>
+
+        <dl class="grid grid-cols-3 gap-2">
+          <div class="flex flex-col items-center rounded-xl border border-bordure p-2">
+            <dt class="flex items-center gap-1 text-sm text-texte-doux">
+              <hip-icone nom="debit" class="size-4 text-amber-600 dark:text-amber-400" />Débit
+            </dt>
+            <dd class="text-2xl font-bold">{{ c.cout }}</dd>
           </div>
-          <div class="rounded bg-zinc-100 p-2">
-            <dt class="text-sm text-zinc-700">PV</dt>
-            <dd class="text-xl font-semibold">{{ c.pv }}</dd>
-          </div>
+          @if (c.attaque !== undefined) {
+            <div class="flex flex-col items-center rounded-xl border border-bordure p-2">
+              <dt class="flex items-center gap-1 text-sm text-texte-doux">
+                <hip-icone nom="attaque" class="size-4 text-red-600 dark:text-red-400" />Attaque
+              </dt>
+              <dd class="text-2xl font-bold">{{ c.attaque }}</dd>
+            </div>
+            <div class="flex flex-col items-center rounded-xl border border-bordure p-2">
+              <dt class="flex items-center gap-1 text-sm text-texte-doux">
+                <hip-icone nom="pv" class="size-4 text-blue-600 dark:text-blue-400" />PV
+              </dt>
+              <dd class="text-2xl font-bold">{{ c.pv }}</dd>
+            </div>
+          }
+        </dl>
+
+        @if (c.origine !== undefined) {
+          <p>
+            Évolution de
+            <a
+              [routerLink]="['/cartes', c.origine]"
+              class="font-semibold underline underline-offset-4"
+              >{{ origine.hasValue() ? origine.value().nom : 'la carte n° ' + c.origine }}</a
+            >
+            : elle se pose à sa place.
+          </p>
         }
-      </dl>
 
-      @if (c.origine !== undefined) {
-        <p>
-          Évolution de
-          <a
-            [routerLink]="['/cartes', c.origine]"
-            class="font-semibold underline underline-offset-4"
-            >{{ origine.hasValue() ? origine.value().nom : 'la carte n° ' + c.origine }}</a
-          >
-          : elle se pose à sa place.
+        @if (c.capacites.length) {
+          <section aria-labelledby="titre-capacites">
+            <h3 id="titre-capacites" class="mb-2 font-semibold text-texte-doux uppercase">
+              Capacités
+            </h3>
+            <dl class="flex flex-col gap-2">
+              @for (capacite of c.capacites; track capacite.id) {
+                <div>
+                  <dt class="font-semibold">{{ capacite.nom }}</dt>
+                  <dd class="text-texte-doux">{{ capacite.description }}</dd>
+                </div>
+              }
+            </dl>
+          </section>
+        }
+
+        @if (c.effet) {
+          <section aria-labelledby="titre-effet">
+            <h3 id="titre-effet" class="mb-2 font-semibold text-texte-doux uppercase">Effet</h3>
+            <p>{{ c.effet }}</p>
+          </section>
+        }
+
+        <section aria-labelledby="titre-en-vrai" class="rounded-xl bg-surface p-3">
+          <h3 id="titre-en-vrai" class="mb-1 font-semibold">En vrai</h3>
+          <p>{{ c.enVrai }}</p>
+        </section>
+      </div>
+    } @else if (introuvable()) {
+      <div class="flex flex-col gap-2 pr-10">
+        <h2 id="titre-detail" class="text-2xl font-bold">Carte introuvable</h2>
+        <p role="alert">Aucune carte ne porte le numéro « {{ numero() }} ».</p>
+      </div>
+    } @else if (carte.error()) {
+      <div class="flex flex-col gap-2 pr-10">
+        <h2 id="titre-detail" class="text-2xl font-bold">Carte</h2>
+        <p role="alert" class="text-alerte">
+          La carte n’a pas pu être chargée : l’API ne répond pas.
         </p>
-      }
-
-      @if (c.capacites.length) {
-        <section aria-labelledby="titre-capacites">
-          <h2 id="titre-capacites" class="mb-2 text-lg font-semibold">Capacités</h2>
-          <dl class="flex flex-col gap-2">
-            @for (capacite of c.capacites; track capacite.id) {
-              <div>
-                <dt class="font-semibold">{{ capacite.nom }}</dt>
-                <dd class="text-zinc-700">{{ capacite.description }}</dd>
-              </div>
-            }
-          </dl>
-        </section>
-      }
-
-      @if (c.effet) {
-        <section aria-labelledby="titre-effet">
-          <h2 id="titre-effet" class="mb-2 text-lg font-semibold">Effet</h2>
-          <p>{{ c.effet }}</p>
-        </section>
-      }
-
-      <section aria-labelledby="titre-en-vrai" class="rounded bg-zinc-100 p-3">
-        <h2 id="titre-en-vrai" class="mb-1 text-lg font-semibold">En vrai</h2>
-        <p>{{ c.enVrai }}</p>
-      </section>
-    </article>
-  } @else if (introuvable()) {
-    <h1 class="text-3xl font-bold tracking-tight">Carte introuvable</h1>
-    <p role="alert">Aucune carte ne porte le numéro « {{ numero() }} ».</p>
-  } @else if (carte.error()) {
-    <h1 class="text-3xl font-bold tracking-tight">Carte</h1>
-    <p role="alert" class="text-red-800">La carte n’a pas pu être chargée : l’API ne répond pas.</p>
-  } @else {
-    <p>Chargement de la carte…</p>
-  }
-</main>
+      </div>
+    } @else {
+      <h2 id="titre-detail" class="sr-only">Chargement de la carte</h2>
+      <p>Chargement de la carte…</p>
+    }
+  </div>
+</dialog>
