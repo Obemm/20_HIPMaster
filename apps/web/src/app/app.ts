@@ -16,9 +16,12 @@ import { CompteService } from './compte/compte.service';
       >
         <a routerLink="/" class="font-bold tracking-tight">HIPMaster</a>
         @if (compte.joueur(); as joueur) {
-          <a routerLink="/compte" class="underline underline-offset-4">
-            <span class="sr-only">Mon compte : </span>{{ joueur.pseudo }}
-          </a>
+          <span class="flex items-center gap-4">
+            <a routerLink="/boosters" class="underline underline-offset-4">Boosters</a>
+            <a routerLink="/compte" class="underline underline-offset-4">
+              <span class="sr-only">Mon compte : </span>{{ joueur.pseudo }}
+            </a>
+          </span>
         } @else if (compte.pret()) {
           <a routerLink="/compte" class="underline underline-offset-4">Créer un compte</a>
         }

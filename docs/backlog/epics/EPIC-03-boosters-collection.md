@@ -1,6 +1,6 @@
 # EPIC-03 — Boosters et collection
 
-- **Statut** : À affiner
+- **Statut** : En cours
 - **Priorité** : Must
 
 ## Objectif

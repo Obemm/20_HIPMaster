@@ -1,4 +1,5 @@
 import { createHash, randomBytes, randomInt } from 'node:crypto';
+import { REGLES_BOOSTERS } from '@hipmaster/domain';
 import { eq } from 'drizzle-orm';
 import type { Base } from '../db/index.ts';
 import { joueurs, sessions } from '../db/schema.ts';
@@ -44,7 +45,12 @@ export async function creerJoueur(
   const codeRecuperation = nouveauCode();
   const [joueur] = await base
     .insert(joueurs)
-    .values({ pseudo, empreinteCode: empreinte(normaliserCode(codeRecuperation)) })
+    .values({
+      pseudo,
+      empreinteCode: empreinte(normaliserCode(codeRecuperation)),
+      // Cadeau de bienvenue (US-023).
+      boosters: REGLES_BOOSTERS.bienvenue,
+    })
     .returning({ id: joueurs.id, pseudo: joueurs.pseudo });
   if (!joueur) throw new Error('Création du joueur impossible.');
   return { joueur, jeton: await ouvrirSession(base, joueur.id), codeRecuperation };

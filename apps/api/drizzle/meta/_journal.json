@@ -15,6 +15,20 @@
       "when": 1792356340169,
       "tag": "0001_comptes",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1792357020233,
+      "tag": "0002_retrait_cartes",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1792357034851,
+      "tag": "0003_boosters_collection",
+      "breakpoints": true
     }
   ]
 }
