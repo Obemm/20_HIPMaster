@@ -1,7 +1,7 @@
 # US-023 — Recevoir et ouvrir des boosters
 
 - **Epic** : EPIC-03
-- **Statut** : En revue
+- **Statut** : Faite
 - **Priorité** : Must
 - **Taille** : L
 - **Branche** : `us-023-ouvrir-boosters`
@@ -34,3 +34,4 @@ En tant que **joueur connecté**, je veux **ouvrir des boosters de cartes** afin
   `POST /moi/boosters/ouvertures` (409 sans stock). Écran « Mes boosters » (décompte de la recharge, révélation en
   0,8 s désactivée si `prefers-reduced-motion`, badge « Nouvelle ! »), lien « Boosters » dans le bandeau. Tests :
   domaine (répartition des raretés sur 20 000 boosters, recharge), API (6), écran (3), e2e (4, axe compris).
+- 2026-10-18 — livrée : Boosters : 5 offerts, recharge toutes les 10 minutes, tirage serveur et collection en base
