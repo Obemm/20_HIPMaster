@@ -120,4 +120,14 @@ describe('VignetteCarte avec une illustration', () => {
     expect(afficher(FTP).querySelector('[class*="from-amber-500"] svg')).toBeNull();
     expect(afficher(TIMEOUT).querySelector('img')).toBeNull();
   });
+
+  it('rend l’illustration décorative quand la carte est dans un bouton, sans titre', () => {
+    const fixture = TestBed.createComponent(VignetteCarte);
+    fixture.componentRef.setInput('carte', FTP);
+    fixture.componentRef.setInput('titre', false);
+    fixture.detectChanges();
+    expect((fixture.nativeElement as HTMLElement).querySelector('img')?.getAttribute('alt')).toBe(
+      '',
+    );
+  });
 });

@@ -19,6 +19,8 @@ export class VignetteCarte {
   readonly carte = input.required<Carte>();
   /** Lien vers le détail : toute la carte devient cliquable. Sans lien, la carte est purement visuelle. */
   readonly lien = input<string[]>();
+  /** Nom en titre (h2) ; `false` quand la carte est dans un bouton, où un titre n'a pas sa place. */
+  readonly titre = input(true);
 
   protected readonly libelleRarete = computed(
     () => `${SYMBOLES_RARETE[this.carte().rarete]} ${LIBELLES_RARETE[this.carte().rarete]}`,
@@ -29,11 +31,15 @@ export class VignetteCarte {
   protected readonly fondFamille = computed(() => ILLUSTRATIONS_FAMILLE[this.carte().famille]);
 
   private readonly illustrations = inject(ILLUSTRATIONS_CARTES);
-  /** L'illustration de la carte, si la chaîne d'US-015 en a produit une ; sinon le pictogramme de famille. */
+  /**
+   * L'illustration de la carte, si la chaîne d'US-015 en a produit une ; sinon le pictogramme de famille.
+   * Dans un bouton (`titre` à `false`), elle est décorative : son texte alternatif alourdirait le nom du bouton.
+   */
   protected readonly illustration = computed(() => {
     const { numero } = this.carte();
     const alt = this.illustrations[numero];
-    return alt === undefined ? undefined : { alt, sources: sourcesIllustration(numero) };
+    if (alt === undefined) return undefined;
+    return { alt: this.titre() ? alt : '', sources: sourcesIllustration(numero) };
   });
   /** Largeur affichée : moitié d'écran dans la grille d'un téléphone, 18 rem au plus dans le détail. */
   protected readonly tailles = '(min-width: 40rem) 18rem, 50vw';

@@ -43,3 +43,5 @@ en une commande** afin de **pouvoir illustrer les 71 cartes sans retouche à la 
   famille conservé sans image. Essai de bout en bout avec un original de synthèse pour la carte FTP (4 fichiers de 5
   à 11 Ko, AVIF 640 px choisi sur un écran ×2), puis retiré : aucune illustration réelle n'est livrée. 20 tests
   unitaires ajoutés, 18 parcours e2e et audit axe-core au vert. En revue.
+- 2026-10-18 — fusion avec US-013 (écran de partie) : dans un bouton (`titre` à `false`), l'illustration devient
+  décorative (texte alternatif vide) pour ne pas alourdir le nom du bouton ; test ajouté, 28 parcours e2e au vert.
