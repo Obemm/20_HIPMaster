@@ -1,3 +1,5 @@
+import type { IdCapacite } from '../capacites.ts';
+
 /** Types du moteur de combat (ADR 0013) : un état JSON simple, sérialisable et comparable. */
 
 export const JOUEURS = ['j1', 'j2'] as const;
@@ -35,6 +37,10 @@ export interface ComposantEnJeu extends InstanceCarte {
   attaqueNulle: boolean;
   /** Couplage fort : identifiant du composant lié, qui subit les mêmes dégâts. */
   coupleA: string | null;
+  /** Délégation : ce composant a déjà attaqué une seconde fois ce tour. */
+  delegue: boolean;
+  /** Outillage : capacités empruntées jusqu'à la fin du tour. */
+  capacitesEmpruntees: IdCapacite[];
 }
 
 export interface EtatJoueur {
@@ -56,6 +62,11 @@ export interface EtatJoueur {
   malusDebit: number;
   /** Cron a déjà servi ce tour. */
   cronUtilise: boolean;
+  /** Capacités « une fois par tour » déjà utilisées (US-020). */
+  delegationUtilisee: boolean;
+  outillageUtilise: boolean;
+  cacheUtilise: boolean;
+  routageUtilise: boolean;
 }
 
 export interface Issue {
@@ -115,6 +126,9 @@ export type Evenement =
   | { type: 'statut'; joueur: IdJoueur; cible: Cible; statut: Statut }
   | { type: 'rappel'; joueur: IdJoueur; carte: InstanceCarte }
   | { type: 'si-protege'; joueur: IdJoueur }
+  | { type: 'outillage'; joueur: IdJoueur; source: string }
+  | { type: 'routage'; joueur: IdJoueur; retour: InstanceCarte; carte: InstanceCarte }
+  | { type: 'migration'; joueur: IdJoueur; origine: InstanceCarte; carte: InstanceCarte }
   | { type: 'fin-partie'; issue: Issue };
 
 /** Une entrée du journal ; `pour` restreint l'événement à un joueur (carte piochée, Supervision). */
@@ -140,6 +154,12 @@ export type Action =
   | { type: 'attaquer'; attaquant: string; cible: Cible }
   /** Joue un sort ou un incident, avec ses cibles éventuelles (composants, carte de la défausse ou `si`). */
   | { type: 'jouer'; carte: string; cibles: Cible[] }
+  /** Outillage : vos agents empruntent les capacités de ce composant non IA, jusqu'à la fin du tour. */
+  | { type: 'outiller'; source: string }
+  /** Routage multi-modèles : renvoie `retour` en main et pose gratuitement `carte`. */
+  | { type: 'router'; retour: string; carte: string }
+  /** Migration : remplace `source` (SFTP) par `carte`, un composant API ou EDA de la main. */
+  | { type: 'migrer'; source: string; carte: string }
   | { type: 'finirTour' };
 
 export const CODES_ERREUR = [

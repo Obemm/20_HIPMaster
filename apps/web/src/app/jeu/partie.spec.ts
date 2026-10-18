@@ -256,6 +256,29 @@ describe('PartieEcran', () => {
     await fixture.whenStable();
   });
 
+  it('propose la Migration depuis la main et l’Outillage pour les agents', async () => {
+    const v = vue({
+      actions: [
+        { type: 'migrer', source: 'j1-02', carte: 'j1-01' },
+        { type: 'outiller', source: 'j1-02' },
+        { type: 'finirTour' },
+      ],
+    });
+    v.moi.plateau = [
+      { id: 'j1-02', numero: 17, pv: 4, attaque: 3, poseAuTour: 1, aAttaqueCeTour: false },
+    ];
+    const { fixture, http, page } = await ouvrir(v);
+    const outillage = bouton(page, 'Outillage : vos agents prennent les capacités de SOAP / WSDL');
+    expect(outillage).toBeTruthy();
+    page.querySelector<HTMLButtonElement>('section[aria-labelledby="titre-main"] button')?.click();
+    fixture.detectChanges();
+    bouton(page, 'Migrer SOAP / WSDL vers cette carte (0 Débit)')?.click();
+    const requete = http.expectOne('/api/v1/parties/p1/actions');
+    expect(requete.request.body).toEqual({ type: 'migrer', source: 'j1-02', carte: 'j1-01' });
+    requete.flush(partie(vue()));
+    await fixture.whenStable();
+  });
+
   it('affiche le refus du serveur', async () => {
     const { fixture, http, page } = await ouvrir();
     bouton(page, 'Finir mon tour')?.click();

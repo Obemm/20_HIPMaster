@@ -10,6 +10,7 @@ import {
   possede,
 } from './outils.ts';
 import { aCapacite, estPriseEnCharge } from './prise-en-charge.ts';
+import { coutEffectif, consommerCache } from './ia.ts';
 import { piocher } from './tour.ts';
 import type {
   Cible,
@@ -484,14 +485,16 @@ export function jouer(
   const effet = EFFETS.get(carte.numero);
   if (!effet)
     return erreur('carte-non-prise-en-charge', 'Cette carte ne peut pas encore être jouée.');
-  if (carte.cout > etatJoueur.debit) {
+  const cout = coutEffectif(etat, joueur, carte.numero);
+  if (cout > etatJoueur.debit) {
     return erreur('debit-insuffisant', 'Pas assez de Débit pour jouer cette carte.');
   }
   if (!combinaisonsCibles(etat, joueur, carte.numero).some((c) => memesCibles(c, cibles))) {
     return erreur('cible-invalide', 'Ces cibles ne conviennent pas à cette carte.');
   }
 
-  etatJoueur.debit -= carte.cout;
+  consommerCache(etat, joueur, carte.numero);
+  etatJoueur.debit -= cout;
   etatJoueur.main = etatJoueur.main.filter((c) => c.id !== carteId);
   etatJoueur.defausse.push(instance);
   noter(etat, { type: 'jeu', joueur, carte: instance, cibles: [...cibles] });

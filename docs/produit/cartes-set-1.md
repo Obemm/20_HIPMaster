@@ -182,3 +182,29 @@ Les sorts et les incidents sont jouables. Chaque deck prêté en intègre quelqu
 Une première composition (sorts d'immobilisation et Circuit Breaker pour Moderne, Splitter pour Héritage) faisait
 retomber Moderne à 31–38 % : les sorts de destruction pèsent plus que ceux qui immobilisent. Tous les duels restent
 entre 43 et 55 %.
+
+### Mise à jour du 2026-10-18 : les 71 cartes jouables (US-020)
+
+Avec les capacités IA et Migration, toutes les cartes sont jouables, et les decks prêtés en profitent :
+
+- **Moderne** : Apigee AI Gateway et Solace Agent Mesh (les évolutions de ses deux cartes phares), à la place du
+  Content-Based Router et du Message poison ;
+- **Hybride** : SFTP, Agent, RAG et Serveur MCP, à la place de l'Adaptateur JDBC, du SOAP / WSDL, du Couplage fort
+  et du Doublon (un Fichier CSV et un Topic de moins, une API REST de plus) ;
+- **Héritage** : inchangé.
+
+Une première version (SFTP dans Héritage, évolutions IA à la place de composants de Moderne) donnait 58 à 66 % à
+Héritage contre Moderne : les évolutions restent mortes tant que leur carte d'origine n'est pas en jeu.
+
+`npm run simuler -- 400 1` (graine 1000 entre parenthèses quand elle diffère de plus de 2 points) :
+
+| Deck A   | Deck B   | Victoires A | Victoires B | Nulles | Finies par SLA | Tours moyens |
+| -------- | -------- | ----------- | ----------- | ------ | -------------- | ------------ |
+| Héritage | Héritage | 50 %        | 48 %        | 2 %    | 75 %           | 16.6         |
+| Héritage | Moderne  | 51 %        | 49 %        | 1 %    | 70 %           | 17.3         |
+| Héritage | Hybride  | 50 % (56 %) | 48 % (44 %) | 3 %    | 76 %           | 16.7         |
+| Moderne  | Moderne  | 48 %        | 50 %        | 2 %    | 61 %           | 17.9         |
+| Moderne  | Hybride  | 46 % (45 %) | 52 % (54 %) | 2 %    | 67 %           | 17.4         |
+| Hybride  | Hybride  | 49 % (55 %) | 50 % (43 %) | 2 %    | 66 %           | 17.2         |
+
+Tous les duels entre decks différents restent entre 44 et 56 %.

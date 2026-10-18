@@ -46,7 +46,10 @@ export function noter(etat: EtatPartie, entree: EntreeJournal): void {
 /** Le composant a-t-il cette capacité ? Jamais tant que ses capacités sont suspendues. */
 export function possede(composant: ComposantEnJeu, capacite: IdCapacite): boolean {
   if (composant.sansCapacitesJusquAuTour !== null) return false;
-  return aCapacite(carteDe(composant.numero), capacite);
+  return (
+    aCapacite(carteDe(composant.numero), capacite) ||
+    composant.capacitesEmpruntees.includes(capacite)
+  );
 }
 
 /** Attaque d'un composant, bonus de Hub compris (+1 par autre composant allié qui a Hub). */
@@ -60,7 +63,11 @@ export function attaqueEffective(
   const hubs = etat.joueurs[joueur].plateau.filter(
     (allie) => allie.id !== composant.id && possede(allie, 'hub'),
   ).length;
-  return base + hubs + composant.bonusAttaque;
+  // Contexte : +1 par tranche de 2 cartes dans la défausse, +3 au plus.
+  const contexte = possede(composant, 'contexte')
+    ? Math.min(3, Math.floor(etat.joueurs[joueur].defausse.length / 2))
+    : 0;
+  return base + hubs + composant.bonusAttaque + contexte;
 }
 
 /** Un effet propre agit tant que la carte est en jeu et que ses capacités ne sont pas suspendues. */
@@ -91,14 +98,43 @@ export function consommerCron(etat: EtatPartie, joueur: IdJoueur, composant: Com
   if (aAttaqueAuTourPrecedent(etat, joueur, composant)) etat.joueurs[joueur].cronUtilise = true;
 }
 
-/** Le composant peut-il attaquer maintenant ? Renvoie la raison sinon. */
+const SOLACE_AGENT_MESH = 39;
+
+/** Orchestration : le joueur choisit la cible de ses agents (au lieu de les laisser attaquer seuls). */
+export function orchestre(etat: EtatPartie, joueur: IdJoueur): boolean {
+  return etat.joueurs[joueur].plateau.some((c) => possede(c, 'orchestration'));
+}
+
+/**
+ * Délégation : une fois par tour, un agent qui a déjà attaqué peut attaquer une seconde fois, si un autre de vos
+ * composants a Délégation (ou si Solace Agent Mesh est en jeu : « vos agents gagnent Délégation »).
+ */
+export function peutDeleguer(etat: EtatPartie, joueur: IdJoueur, agent: ComposantEnJeu): boolean {
+  const etatJoueur = etat.joueurs[joueur];
+  if (etatJoueur.delegationUtilisee || agent.delegue || !possede(agent, 'autonome')) return false;
+  return (
+    actif(etat, joueur, SOLACE_AGENT_MESH) ||
+    etatJoueur.plateau.some((c) => c.id !== agent.id && possede(c, 'delegation'))
+  );
+}
+
+/**
+ * Le composant peut-il attaquer maintenant ? Renvoie la raison sinon. `autonome` : l'attaque est lancée par le
+ * moteur pour un agent Autonome (sans Orchestration, un agent n'attaque jamais sur ordre).
+ */
 export function raisonDeNePasAttaquer(
   etat: EtatPartie,
   joueur: IdJoueur,
   composant: ComposantEnJeu,
+  options: { autonome?: boolean } = {},
 ): string | null {
   const tours = etat.joueurs[joueur].tours;
-  if (composant.aAttaqueCeTour) return 'Ce composant a déjà attaqué ce tour.';
+  if (possede(composant, 'autonome') && !options.autonome && !orchestre(etat, joueur)) {
+    return 'Autonome : cet agent attaque seul, au début de votre tour.';
+  }
+  if (composant.aAttaqueCeTour && !peutDeleguer(etat, joueur, composant)) {
+    return 'Ce composant a déjà attaqué ce tour.';
+  }
   if (composant.poseAuTour >= tours)
     return 'Un composant ne peut pas attaquer le tour où il est posé.';
   if (composant.entretienImpaye) return 'Entretien sur site impayé : pas d’attaque ce tour.';
@@ -158,5 +194,7 @@ export function nouveauComposant(
     doublon: false,
     attaqueNulle: false,
     coupleA: null,
+    delegue: false,
+    capacitesEmpruntees: [],
   };
 }

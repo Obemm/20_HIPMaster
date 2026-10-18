@@ -132,6 +132,12 @@ export function decrireEvenement(e: Evenement, moi: IdJoueur, nommer: NommerCart
       return decrireStatut(e, moi, nommer);
     case 'rappel':
       return `${carte} revient en jeu avec 1 PV (Dead Letter Queue).`;
+    case 'outillage':
+      return `Outillage : ${e.joueur === moi ? 'vos agents prennent' : 'les agents du bot prennent'} les capacités de ${nommer(e.source ?? '')}.`;
+    case 'routage':
+      return `Routage multi-modèles : ${nommer(e.retour?.id ?? '')} revient en main, ${carte} prend sa place.`;
+    case 'migration':
+      return `Migration : ${nommer(e.origine?.id ?? '')} est remplacé par ${carte}.`;
     case 'si-protege':
       return `${e.joueur === moi ? 'Votre SI' : 'Le SI du bot'} ne perd aucun SLA (Circuit Breaker).`;
     case 'fin-partie':

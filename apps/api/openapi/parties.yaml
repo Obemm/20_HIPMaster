@@ -189,6 +189,12 @@ components:
             attaqueNulle:
               { type: boolean, description: La prochaine attaque n'inflige aucun dégât. }
             coupleA: { type: [string, 'null'], description: Composant lié par Couplage fort. }
+            delegue:
+              { type: boolean, description: A déjà attaqué une seconde fois ce tour (Délégation). }
+            capacitesEmpruntees:
+              type: array
+              items: { type: string }
+              description: Capacités empruntées par Outillage jusqu'à la fin du tour.
     Action:
       oneOf:
         - type: object
@@ -232,6 +238,26 @@ components:
                 (Dead Letter Queue), ou `si`. Vide pour une carte sans cible.
               items: { type: string }
         - type: object
+          required: [type, source]
+          description: Outillage — vos agents empruntent les capacités de ce composant non IA (US-020).
+          properties:
+            type: { const: outiller }
+            source: { type: string }
+        - type: object
+          required: [type, retour, carte]
+          description: Routage multi-modèles — renvoie `retour` en main et pose gratuitement `carte` (US-020).
+          properties:
+            type: { const: router }
+            retour: { type: string }
+            carte: { type: string }
+        - type: object
+          required: [type, source, carte]
+          description: Migration — remplace `source` (SFTP) par `carte`, 2 Débit moins cher (US-020).
+          properties:
+            type: { const: migrer }
+            source: { type: string }
+            carte: { type: string }
+        - type: object
           required: [type]
           properties:
             type: { const: finirTour }
@@ -240,7 +266,8 @@ components:
       required: [type]
       description: >
         Un événement du journal : debut-tour, pioche, carte-brulee, pose, evolution, decommission, attaque, degats,
-        destruction, retour-main, entretien, supervision, jeu, parade, statut, rappel, si-protege, fin-partie. Ses autres champs dépendent du type
+        destruction, retour-main, entretien, supervision, jeu, parade, statut, rappel, si-protege, outillage,
+        routage, migration, fin-partie. Ses autres champs dépendent du type
         (packages/domain/src/combat/types.ts).
       properties:
         type: { type: string }

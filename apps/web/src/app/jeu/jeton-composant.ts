@@ -72,6 +72,9 @@ export function statutsComposant(composant: Composant): string[] {
   if (composant.doublon) statuts.push('Doublon');
   if (composant.attaqueNulle) statuts.push('Attaque nulle');
   if (composant.coupleA) statuts.push('Couplé');
+  if (composant.capacitesEmpruntees?.length) {
+    statuts.push(`Outillé : ${composant.capacitesEmpruntees.length} capacité(s)`);
+  }
   return statuts;
 }
 

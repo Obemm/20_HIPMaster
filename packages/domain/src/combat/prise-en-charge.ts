@@ -20,6 +20,17 @@ export const CAPACITES_PRISES_EN_CHARGE: ReadonlySet<IdCapacite> = new Set<IdCap
   'sur-site',
   'file-durable',
   'supervision',
+  // US-020
+  'migration',
+  'autonome',
+  'orchestration',
+  'outillage',
+  'delegation',
+  'contexte',
+  'garde-fous',
+  'asynchrone',
+  'cache-semantique',
+  'routage-multi-modeles',
 ]);
 
 const idCapacite = (capacite: CapaciteCarte): IdCapacite =>
@@ -36,7 +47,7 @@ export const SORTS_ET_INCIDENTS_PRIS_EN_CHARGE: ReadonlySet<number> = new Set([
  * d'US-019 (Cron, Designer, API Hub, OpenAPI, Event Portal, CDC, AsyncAPI, Base vectorielle).
  */
 export const COMPOSANTS_A_EFFET: ReadonlySet<number> = new Set([
-  6, 8, 14, 19, 20, 23, 32, 34, 38, 49,
+  6, 8, 14, 19, 20, 23, 32, 34, 38, 39, 49,
 ]);
 
 /** Une carte est jouable entièrement : ses capacités et son effet éventuel sont tous appliqués par le moteur. */

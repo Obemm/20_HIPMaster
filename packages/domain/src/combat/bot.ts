@@ -17,6 +17,7 @@ import type { VueJoueur } from './vue.ts';
 export function choisirActionBatchDeNuit(vue: VueJoueur): Action {
   return (
     choisirPose(vue) ??
+    choisirIa(vue) ??
     choisirJeu(vue) ??
     choisirAttaque(vue) ??
     choisirDecommission(vue) ??
@@ -46,6 +47,26 @@ function choisirPose(vue: VueJoueur): Action | null {
       statistiques(b.carte) - statistiques(a.carte),
   );
   return poses[0]?.action ?? null;
+}
+
+/**
+ * Migration (la carte la plus chère vers laquelle migrer) et Outillage (le composant aux capacités les plus
+ * nombreuses) ; le bot ne se sert pas du Routage multi-modèles.
+ */
+function choisirIa(vue: VueJoueur): Action | null {
+  const migrations = vue.actions
+    .filter((a) => a.type === 'migrer')
+    .sort((a, b) => carteEnMain(vue, b.carte).cout - carteEnMain(vue, a.carte).cout);
+  if (migrations[0]) return migrations[0];
+  const capacites = (id: string) => {
+    const source = vue.moi.plateau.find((c) => c.id === id);
+    return source ? carteDe(source.numero).capacites.length : 0;
+  };
+  const outillages = vue.actions
+    .filter((a) => a.type === 'outiller')
+    .filter((a) => capacites(a.source) > 0)
+    .sort((a, b) => capacites(b.source) - capacites(a.source));
+  return outillages[0] ?? null;
 }
 
 function scoreAttaque(vue: VueJoueur, action: Extract<Action, { type: 'attaquer' }>): number {
