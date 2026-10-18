@@ -3,6 +3,7 @@ import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
 import { z } from 'zod';
 import type { Base } from '../db/index.ts';
 import {
+  annulerDuel,
   creerDuel,
   type DuelVisible,
   jouerDuel,
@@ -66,6 +67,8 @@ function refuser(reponse: FastifyReply, resultat: Exclude<ResultatDuel<unknown>,
       return corps(409, 'Ce n’est pas votre tour');
     case 'version-perimee':
       return corps(409, 'Le duel a changé : rechargez-le avant de jouer');
+    case 'expire':
+      return corps(410, 'Ce défi a expiré');
     case 'action-refusee':
       return corps(422, 'Action refusée', {
         detail: resultat.erreur.message,
@@ -114,6 +117,7 @@ export const routesDuels: FastifyPluginAsyncZod<{ base: Base; duels?: OptionsDue
         requete.params.id,
         session.joueur.id,
         requete.query.depuis,
+        options,
       );
       if (!resultat.ok) return refuser(reponse, resultat);
       if (versionDe(requete.headers['if-none-match']) === resultat.valeur.version) {
@@ -122,6 +126,13 @@ export const routesDuels: FastifyPluginAsyncZod<{ base: Base; duels?: OptionsDue
       return envoyer(reponse, 200, resultat.valeur);
     },
   );
+
+  app.delete('/duels/:id', { schema: { params: parametres } }, async (requete, reponse) => {
+    const session = await connecte(requete, reponse);
+    if (!session) return reponse;
+    const resultat = await annulerDuel(base, requete.params.id, session.joueur.id);
+    return resultat.ok ? reponse.status(204).send() : refuser(reponse, resultat);
+  });
 
   app.post(
     '/duels/:id/rejoindre',

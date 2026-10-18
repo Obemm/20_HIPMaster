@@ -183,3 +183,56 @@ describe('duels entre joueurs', () => {
     expect(apres.statusCode).toBe(422);
   });
 });
+
+describe('défis (US-033)', () => {
+  it('le créateur peut annuler un défi tant qu’il n’est pas accepté, pas un autre joueur', async () => {
+    const ada = await joueur('Ada');
+    const bob = await joueur('Bob');
+    const cree = (await requete('POST', '/duels', ada, { deck: 'moderne' })).json<DuelVisible>();
+    const annuler = (entetes: Record<string, string>) =>
+      app.inject({ method: 'DELETE', url: `/api/v1/duels/${cree.id}`, headers: entetes });
+    expect((await annuler(bob)).statusCode).toBe(404);
+    expect((await annuler(ada)).statusCode).toBe(204);
+    expect((await requete('GET', `/duels/${cree.id}`, ada)).statusCode).toBe(404);
+
+    const lance = (await duelLance()).id;
+    const refus = await app.inject({
+      method: 'DELETE',
+      url: `/api/v1/duels/${lance}`,
+      headers: ada,
+    });
+    expect(refus.statusCode).toBe(404);
+  });
+
+  it('un défi commencé ne s’annule plus', async () => {
+    const { ada, id } = await duelLance();
+    const refus = await app.inject({ method: 'DELETE', url: `/api/v1/duels/${id}`, headers: ada });
+    expect(refus.statusCode).toBe(409);
+  });
+
+  it('un défi non accepté expire après 7 jours (410)', async () => {
+    let maintenant = Date.now();
+    const appli = construireApp({ base: ouverte.base, duels: { maintenant: () => maintenant } });
+    const ada = await joueur('Ada');
+    const bob = await joueur('Bob');
+    const cree = (
+      await appli.inject({
+        method: 'POST',
+        url: '/api/v1/duels',
+        headers: ada,
+        payload: { deck: 'moderne' },
+      })
+    ).json<DuelVisible>();
+    maintenant += 7 * 24 * 60 * 60 * 1000 + 60_000;
+    const lu = await appli.inject({ method: 'GET', url: `/api/v1/duels/${cree.id}`, headers: bob });
+    expect(lu.statusCode).toBe(410);
+    const rejoint = await appli.inject({
+      method: 'POST',
+      url: `/api/v1/duels/${cree.id}/rejoindre`,
+      headers: bob,
+      payload: { deck: 'heritage' },
+    });
+    expect(rejoint.statusCode).toBe(410);
+    await appli.close();
+  });
+});

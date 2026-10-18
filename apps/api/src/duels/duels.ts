@@ -46,13 +46,29 @@ export type ResultatDuel<T> =
         | 'son-propre-duel'
         | 'pas-commence'
         | 'pas-ton-tour'
-        | 'version-perimee';
+        | 'version-perimee'
+        | 'expire';
     }
   | { ok: false; raison: 'action-refusee'; erreur: ErreurAction };
 
 export interface OptionsDuels {
   /** Graine de chaque duel, injectable pour des duels reproductibles. */
   tirerGraine?: () => number;
+  /** Horloge, injectable pour les tests. */
+  maintenant?: () => number;
+  /** Durée de vie d'un défi non accepté (7 jours par défaut, US-033). */
+  expirationDefiMs?: number;
+}
+
+const SEPT_JOURS = 7 * 24 * 60 * 60 * 1000;
+
+/** Un défi non accepté expire (US-033) ; l'expiration est évaluée à la lecture, sans tâche de fond (ADR 0020). */
+function defiExpire(ligne: LigneDuel, options: OptionsDuels): boolean {
+  const maintenant = (options.maintenant ?? Date.now)();
+  return (
+    ligne.statut === 'attente' &&
+    maintenant - ligne.creeLe.getTime() > (options.expirationDefiMs ?? SEPT_JOURS)
+  );
 }
 
 const echec = <R extends Exclude<ResultatDuel<never>, { ok: true }>['raison']>(raison: R) =>
@@ -125,11 +141,13 @@ export async function lireDuel(
   id: string,
   joueurId: string,
   depuis = 0,
+  options: OptionsDuels = {},
 ): Promise<ResultatDuel<DuelVisible>> {
   const [ligne] = await base.select().from(duels).where(eq(duels.id, id));
   if (!ligne || (!campDe(ligne, joueurId) && ligne.statut !== 'attente')) {
     return echec('introuvable');
   }
+  if (defiExpire(ligne, options)) return echec('expire');
   return { ok: true, valeur: await visible(base, ligne, joueurId, depuis) };
 }
 
@@ -148,6 +166,7 @@ export async function rejoindreDuel(
     if (!ligne) return echec('introuvable');
     if (ligne.createurId === joueurId) return echec('son-propre-duel');
     if (ligne.statut !== 'attente') return echec('deja-commence');
+    if (defiExpire(ligne, options)) return echec('expire');
     const deckCreateur = trouverDeckPrete(ligne.deckCreateur);
     if (!deckCreateur) throw new Error(`Deck du créateur inconnu : ${ligne.deckCreateur}`);
     const graine = (options.tirerGraine ?? (() => randomInt(0, 2 ** 31)))();
@@ -212,4 +231,19 @@ export async function jouerDuel(
   if (!resultat.ok) return resultat;
   const { ligne, avant } = resultat.valeur;
   return { ok: true, valeur: await visible(base, ligne, joueurId, avant) };
+}
+
+/** Annule un défi pas encore accepté : seul son créateur le peut (US-033). */
+export async function annulerDuel(
+  base: Base,
+  id: string,
+  joueurId: string,
+): Promise<ResultatDuel<null>> {
+  return base.transaction(async (tx) => {
+    const [ligne] = await tx.select().from(duels).where(eq(duels.id, id)).for('update');
+    if (!ligne || ligne.createurId !== joueurId) return echec('introuvable');
+    if (ligne.statut !== 'attente') return echec('deja-commence');
+    await tx.delete(duels).where(eq(duels.id, id));
+    return { ok: true, valeur: null } as const;
+  });
 }

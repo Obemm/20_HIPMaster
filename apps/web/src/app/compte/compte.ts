@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, inject, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Component, computed, inject, input, signal } from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
 import { CompteService } from './compte.service';
 
 /** Page « Mon compte » (US-022) : créer un compte invité, le retrouver avec son code, se déconnecter. */
@@ -11,6 +11,17 @@ import { CompteService } from './compte.service';
 })
 export class CompteEcran {
   protected readonly compte = inject(CompteService);
+  private readonly router = inject(Router);
+
+  /**
+   * Paramètre `?retour=` : la page d'où vient le joueur (un défi, US-033). Seuls les chemins internes sont suivis,
+   * jamais une adresse extérieure.
+   */
+  readonly retour = input<string>();
+  protected readonly retourSur = computed(() => {
+    const retour = this.retour();
+    return retour?.startsWith('/') && !retour.startsWith('//') ? retour : null;
+  });
 
   protected readonly pseudo = signal('');
   protected readonly code = signal('');
@@ -29,10 +40,11 @@ export class CompteEcran {
 
   protected async recuperer(evenement: Event): Promise<void> {
     evenement.preventDefault();
-    await this.agir(
-      () => this.compte.recuperer(this.code()),
-      'Code de récupération inconnu : vérifiez-le, ou créez un nouveau compte.',
-    );
+    await this.agir(async () => {
+      await this.compte.recuperer(this.code());
+      const retour = this.retourSur();
+      if (retour) await this.router.navigateByUrl(retour);
+    }, 'Code de récupération inconnu : vérifiez-le, ou créez un nouveau compte.');
   }
 
   protected async regenerer(): Promise<void> {

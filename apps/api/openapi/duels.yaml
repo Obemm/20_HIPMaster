@@ -62,6 +62,23 @@ paths:
         '304': { description: Rien n'a changé depuis l'ETag fourni. }
         '401': { $ref: '#/components/responses/Probleme' }
         '404': { $ref: '#/components/responses/Probleme' }
+        '410':
+          description: Défi non accepté depuis plus de 7 jours (US-033).
+          content:
+            application/problem+json:
+              schema: { $ref: '#/components/schemas/Probleme' }
+    delete:
+      operationId: annulerDuel
+      summary: Annule un défi pas encore accepté (créateur seulement, US-033)
+      responses:
+        '204': { description: Défi annulé. }
+        '401': { $ref: '#/components/responses/Probleme' }
+        '404': { $ref: '#/components/responses/Probleme' }
+        '409':
+          description: Le duel a déjà commencé (Problem Details).
+          content:
+            application/problem+json:
+              schema: { $ref: '#/components/schemas/Probleme' }
   /duels/{id}/rejoindre:
     parameters: [{ $ref: '#/components/parameters/IdDuel' }]
     post:
@@ -88,6 +105,11 @@ paths:
         '404': { $ref: '#/components/responses/Probleme' }
         '409':
           description: Duel déjà commencé, ou c'est son propre duel (Problem Details).
+          content:
+            application/problem+json:
+              schema: { $ref: '#/components/schemas/Probleme' }
+        '410':
+          description: Défi non accepté depuis plus de 7 jours.
           content:
             application/problem+json:
               schema: { $ref: '#/components/schemas/Probleme' }
