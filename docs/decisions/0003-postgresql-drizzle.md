@@ -1,7 +1,7 @@
 # 0003 — PostgreSQL + Drizzle ORM, Docker en développement
 
 - **Date** : 2026-10-16
-- **Statut** : Acceptée
+- **Statut** : Acceptée — la base de développement sous Docker est remplacée par PGlite ([0018](0018-pglite-developpement.md))
 
 ## Contexte
 

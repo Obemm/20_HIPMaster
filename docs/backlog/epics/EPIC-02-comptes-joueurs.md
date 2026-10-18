@@ -1,6 +1,6 @@
 # EPIC-02 — Comptes joueurs
 
-- **Statut** : À affiner
+- **Statut** : En cours
 - **Priorité** : Must
 
 ## Objectif
@@ -13,7 +13,7 @@ Inscription et connexion en moins de 30 secondes, sans mot de passe à retenir s
 
 ## Stories
 
-- [ ] US-022 — Compte invité, sans mot de passe
+- [x] US-022 — Compte invité, sans mot de passe
 
 Choix du porteur du projet (2026-10-18) : « faisons simple pour le moment » — compte invité avec pseudo et code de
 récupération ; connexion OIDC, profil et avatar plus tard.

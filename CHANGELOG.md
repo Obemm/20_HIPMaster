@@ -51,6 +51,11 @@ Toutes les évolutions notables du projet sont consignées ici
 - Trois niveaux de bot au choix : Batch de nuit (facile), Architecte ESB (moyen), Agent autonome (difficile), qui
   évaluent leurs actions avec le moteur sans tricher ; `GET /api/v1/niveaux` et choix de la difficulté à l'écran
   (US-021).
+- Compte invité sans mot de passe : un pseudo crée le compte, le navigateur garde la session et un code de
+  récupération le retrouve sur un autre appareil ; API `/joueurs`, `/sessions`, `/moi`, page « Mon compte » et
+  pseudo dans le bandeau (US-022, ADR 0017).
+- Base PGlite (PostgreSQL embarqué) en développement et en tests, sans Docker ; migrations appliquées au démarrage
+  de l'API (US-022, ADR 0018).
 - Chaîne des illustrations : un original déposé et décrit devient, en une commande (`npm run illustrations`), quatre
   images AVIF et WebP de moins de 100 Ko et un manifeste ; la carte affiche son illustration, ou son pictogramme de
   famille à défaut. EPIC-05 découpé en US-015 à US-017 (US-015, ADR 0015).
