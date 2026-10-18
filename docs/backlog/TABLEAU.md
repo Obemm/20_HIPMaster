@@ -41,7 +41,7 @@ Objectif : un socle outillé, vérifié automatiquement, et une méthode de trav
 | ------------------------------------------------------------------------------------------------------- | ------- | -------- | ------ | --------- |
 | [US-009 — Design des cartes façon carte à jouer](stories/US-009-design-cartes.md)                       | EPIC-05 | Should   | L      | Faite     |
 | [US-015 — Chaîne d'import et d'optimisation des illustrations](stories/US-015-chaine-illustrations.md)  | EPIC-05 | Should   | M      | En revue  |
-| [US-016 — Direction artistique et choix du générateur d'images](stories/US-016-direction-artistique.md) | EPIC-05 | Should   | M      | À affiner |
+| [US-016 — Direction artistique et choix du générateur d'images](stories/US-016-direction-artistique.md) | EPIC-05 | Should   | M      | En cours  |
 | [US-017 — Illustrations des 71 cartes du set 1](stories/US-017-illustrations-set-1.md)                  | EPIC-05 | Should   | L      | À affiner |
 
 ## Itération 3 (à venir) — jouer contre le bot

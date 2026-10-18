@@ -1,7 +1,7 @@
 # US-016 — Direction artistique et choix du générateur d'images
 
 - **Epic** : EPIC-05
-- **Statut** : À affiner
+- **Statut** : En cours
 - **Priorité** : Should
 - **Taille** : M
 - **Branche** : `us-016-direction-artistique`
@@ -38,3 +38,7 @@ les images** afin que **les 71 cartes forment un set cohérent, sans risque sur 
 ## Journal
 
 - 2026-10-18 — création, au découpage d'EPIC-05.
+- 2026-10-18 — le porteur du projet choisit d'**essayer l'offre gratuite** de Recraft. Conséquences : pas d'API (les
+  images se génèrent à la main dans l'interface web) et images **propriété de Recraft**, publiques : elles servent à
+  juger le style et ne sont **pas commitées** ; le set final demandera une offre payante ou une autre voie.
+  Brouillon de [direction artistique](../../produit/direction-artistique.md) et consignes des 4 cartes d'essai.
