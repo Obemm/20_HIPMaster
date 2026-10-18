@@ -30,6 +30,9 @@ Toutes les évolutions notables du projet sont consignées ici
 - Cartes au design de carte à jouer : format portrait, cadre par rareté, illustration provisoire et pictogramme par
   famille, Débit, Attaque et PV avec icônes ; catalogue en grille de 2 à 5 colonnes et détail en fenêtre modale qui
   garde les filtres ; thème clair ou sombre selon le système, par jetons de couleur (US-009, ADR 0012).
+- Moteur de combat pur et rejouable dans `packages/domain` : création de partie à graine, actions (poser, évoluer,
+  décommissionner, attaquer, finir son tour), actions possibles, vue par joueur, 13 capacités et 28 cartes jouables
+  (US-010, ADR 0013).
 
 ### Modifié
 
