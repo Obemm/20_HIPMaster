@@ -41,6 +41,8 @@ interface Partie {
   deckBot: DeckPrete;
   niveau: NiveauBot;
   derniereActivite: number;
+  /** Le joueur connecté qui a lancé la partie, s'il y en a un : il recevra la récompense (US-025). */
+  joueurId?: string;
 }
 
 /** Réponse de l'API : la vue du joueur, sans son journal, et les événements à afficher. */
@@ -92,7 +94,11 @@ export class DepotParties {
     return this.parties.size;
   }
 
-  creer(idDeck: string, idNiveau: string = NIVEAU_PAR_DEFAUT): ResultatDepot<PartieVisible> {
+  creer(
+    idDeck: string,
+    idNiveau: string = NIVEAU_PAR_DEFAUT,
+    joueurId?: string,
+  ): ResultatDepot<PartieVisible> {
     this.purger();
     const deck = trouverDeckPrete(idDeck);
     if (!deck) return { ok: false, raison: 'deck-inconnu' };
@@ -110,6 +116,7 @@ export class DepotParties {
       deckBot,
       niveau,
       derniereActivite: this.maintenant(),
+      ...(joueurId && { joueurId }),
     };
     this.parties.set(partie.id, partie);
     return { ok: true, valeur: this.visible(partie, 0) };
@@ -129,6 +136,11 @@ export class DepotParties {
     if (!resultat.ok) return { ok: false, raison: 'action-refusee', erreur: resultat.erreur };
     partie.etat = faireJouerLeBot(resultat.etat, partie.niveau.strategie);
     return { ok: true, valeur: this.visible(partie, avant) };
+  }
+
+  /** Le joueur connecté qui a lancé la partie (sans compter comme une activité). */
+  proprietaire(id: string): string | undefined {
+    return this.parties.get(id)?.joueurId;
   }
 
   /** Trouve une partie encore valide et note l'activité. */
