@@ -1,7 +1,7 @@
 # US-035 — Mes duels et « à vous de jouer »
 
 - **Epic** : EPIC-06
-- **Statut** : En revue
+- **Statut** : Faite
 - **Priorité** : Should
 - **Taille** : M
 - **Branche** : `us-035-mes-duels`
@@ -35,3 +35,4 @@ faire attendre mes adversaires**.
   Piège évité : le service n'injecte pas le routeur (dépendance circulaire avec la stratégie de titre), c'est le
   bandeau qui écoute les navigations. Tests : API (3), écran et titre (2), e2e (3, à deux navigateurs, axe en clair
   et en sombre).
+- 2026-10-19 — livrée : Mes duels : liste par priorité, compteur « à vous de jouer » dans le bandeau et le titre
