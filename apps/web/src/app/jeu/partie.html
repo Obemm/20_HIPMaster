@@ -166,7 +166,32 @@
           }}
           SLA final : vous {{ v.moi.sla }}, le bot {{ v.adversaire.sla }}.
         </p>
+        @if (partie()?.recompense; as recompense) {
+          <p class="font-semibold">
+            @if (recompense.booster) {
+              Un booster gagné ! Il vous attend dans vos boosters.
+            } @else {
+              Plafond atteint : 3 boosters gagnés aujourd’hui. Revenez demain pour en gagner
+              d’autres.
+            }
+          </p>
+        } @else if (issue.gagnant === v.joueur && compte.pret() && !compte.joueur()) {
+          <p>
+            Avec un compte, chaque victoire rapporte un booster :
+            <a routerLink="/compte" class="font-semibold underline underline-offset-4"
+              >créer un compte</a
+            >
+            (un pseudo suffit).
+          </p>
+        }
         <p class="flex flex-wrap justify-center gap-3">
+          @if (partie()?.recompense?.booster) {
+            <a
+              routerLink="/boosters"
+              class="rounded-lg bg-accent px-4 py-3 font-semibold text-sur-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+              >Ouvrir mon booster</a
+            >
+          }
           <a
             routerLink="/jouer"
             class="rounded-lg bg-accent px-4 py-3 font-semibold text-sur-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"

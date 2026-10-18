@@ -12,14 +12,17 @@ export interface ReglesBoosters {
   bienvenue: number;
   /** Délai entre deux boosters gratuits, en millisecondes. */
   intervalleMs: number;
-  /** Au-delà, la recharge s'arrête : le stock ne dépasse jamais ce plafond. */
+  /** Au-delà, la recharge s'arrête (un booster gagné, lui, peut faire dépasser ce plafond). */
   plafond: number;
+  /** Boosters gagnés au plus par jour (jour UTC) en battant le bot (US-025). */
+  victoiresParJour: number;
 }
 
 export const REGLES_BOOSTERS: ReglesBoosters = {
   bienvenue: 5,
   intervalleMs: 10 * 60 * 1000,
   plafond: 10,
+  victoiresParJour: 3,
 };
 
 /**

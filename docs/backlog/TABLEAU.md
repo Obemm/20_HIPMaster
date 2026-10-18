@@ -62,10 +62,10 @@ Objectif : un socle outillé, vérifié automatiquement, et une méthode de trav
 Ordre décidé avec le porteur du projet le 2026-10-18 : niveaux du bot, comptes simples, boosters et collection, puis
 récompense de victoire. Les illustrations (EPIC-05) attendent.
 
-| Story                                                                             | Epic    | Priorité | Taille | Statut    |
-| --------------------------------------------------------------------------------- | ------- | -------- | ------ | --------- |
-| [US-021 — Niveaux du bot](stories/US-021-niveaux-bot.md)                          | EPIC-04 | Must     | M      | Faite     |
-| [US-022 — Compte invité, sans mot de passe](stories/US-022-compte-invite.md)      | EPIC-02 | Must     | L      | Faite     |
-| [US-023 — Recevoir et ouvrir des boosters](stories/US-023-ouvrir-boosters.md)     | EPIC-03 | Must     | L      | Faite     |
-| [US-024 — Ma collection](stories/US-024-ma-collection.md)                         | EPIC-03 | Must     | M      | Faite     |
-| [US-025 — Un booster pour chaque victoire](stories/US-025-recompense-victoire.md) | EPIC-04 | Should   | S      | À affiner |
+| Story                                                                             | Epic    | Priorité | Taille | Statut   |
+| --------------------------------------------------------------------------------- | ------- | -------- | ------ | -------- |
+| [US-021 — Niveaux du bot](stories/US-021-niveaux-bot.md)                          | EPIC-04 | Must     | M      | Faite    |
+| [US-022 — Compte invité, sans mot de passe](stories/US-022-compte-invite.md)      | EPIC-02 | Must     | L      | Faite    |
+| [US-023 — Recevoir et ouvrir des boosters](stories/US-023-ouvrir-boosters.md)     | EPIC-03 | Must     | L      | Faite    |
+| [US-024 — Ma collection](stories/US-024-ma-collection.md)                         | EPIC-03 | Must     | M      | Faite    |
+| [US-025 — Un booster pour chaque victoire](stories/US-025-recompense-victoire.md) | EPIC-04 | Should   | S      | En revue |
