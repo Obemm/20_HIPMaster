@@ -74,4 +74,26 @@ describe('decrireEvenement', () => {
       'Le SI du bot ne perd aucun SLA (Circuit Breaker).',
     );
   });
+
+  it('raconte l’Outillage, le Routage et la Migration (US-020)', () => {
+    expect(decrire({ type: 'outillage', joueur: 'j1', source: 'j1-01' })).toBe(
+      'Outillage : vos agents prennent les capacités de FTP.',
+    );
+    expect(
+      decrire({
+        type: 'routage',
+        joueur: 'j2',
+        retour: { id: 'j2-03', numero: 18 },
+        carte: { id: 'j2-04', numero: 36 },
+      }),
+    ).toBe('Routage multi-modèles : Apigee API Gateway revient en main, Topic prend sa place.');
+    expect(
+      decrire({
+        type: 'migration',
+        joueur: 'j1',
+        origine: { id: 'j1-01', numero: 2 },
+        carte: { id: 'j2-04', numero: 36 },
+      }),
+    ).toBe('Migration : FTP est remplacé par Topic.');
+  });
 });

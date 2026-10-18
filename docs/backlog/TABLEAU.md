@@ -47,12 +47,12 @@ Objectif : un socle outillé, vérifié automatiquement, et une méthode de trav
 
 ## Itération 3 (à venir) — jouer contre le bot
 
-| Story                                                                                | Epic    | Priorité | Taille | Statut    |
-| ------------------------------------------------------------------------------------ | ------- | -------- | ------ | --------- |
-| [US-010 — Moteur de combat : règles de base](stories/US-010-moteur-combat.md)        | EPIC-04 | Must     | L      | Faite     |
-| [US-011 — Bot « Batch de nuit » et decks prêtés](stories/US-011-bot-decks-pretes.md) | EPIC-04 | Must     | M      | Faite     |
-| [US-012 — API de partie contre le bot](stories/US-012-api-partie-pve.md)             | EPIC-04 | Must     | M      | Faite     |
-| [US-013 — Écran de partie contre le bot](stories/US-013-ecran-partie-pve.md)         | EPIC-04 | Must     | L      | Faite     |
-| [US-014 — Sorts et incidents](stories/US-014-effets-cartes.md)                       | EPIC-04 | Should   | L      | Faite     |
-| [US-019 — Effets propres des composants](stories/US-019-effets-composants.md)        | EPIC-04 | Should   | M      | Faite     |
-| [US-020 — Capacités IA et Migration](stories/US-020-capacites-ia.md)                 | EPIC-04 | Should   | L      | À affiner |
+| Story                                                                                | Epic    | Priorité | Taille | Statut   |
+| ------------------------------------------------------------------------------------ | ------- | -------- | ------ | -------- |
+| [US-010 — Moteur de combat : règles de base](stories/US-010-moteur-combat.md)        | EPIC-04 | Must     | L      | Faite    |
+| [US-011 — Bot « Batch de nuit » et decks prêtés](stories/US-011-bot-decks-pretes.md) | EPIC-04 | Must     | M      | Faite    |
+| [US-012 — API de partie contre le bot](stories/US-012-api-partie-pve.md)             | EPIC-04 | Must     | M      | Faite    |
+| [US-013 — Écran de partie contre le bot](stories/US-013-ecran-partie-pve.md)         | EPIC-04 | Must     | L      | Faite    |
+| [US-014 — Sorts et incidents](stories/US-014-effets-cartes.md)                       | EPIC-04 | Should   | L      | Faite    |
+| [US-019 — Effets propres des composants](stories/US-019-effets-composants.md)        | EPIC-04 | Should   | M      | Faite    |
+| [US-020 — Capacités IA et Migration](stories/US-020-capacites-ia.md)                 | EPIC-04 | Should   | L      | En revue |

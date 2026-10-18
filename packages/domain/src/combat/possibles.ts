@@ -1,6 +1,7 @@
 import { adversaire, carteDe, PLATEAU_MAX, possede, raisonDeNePasAttaquer } from './outils.ts';
 import { ciblesDeRenfort } from './effets-composants.ts';
 import { combinaisonsCibles } from './effets.ts';
+import { actionsIaPossibles, coutEffectif } from './ia.ts';
 import { estPriseEnCharge } from './prise-en-charge.ts';
 import type { Action, Cible, ComposantEnJeu, EtatPartie, IdJoueur } from './types.ts';
 
@@ -29,7 +30,8 @@ function jeuxPossibles(etat: EtatPartie, joueur: IdJoueur): Action[] {
   return etatJoueur.main.flatMap((instance): Action[] => {
     const carte = carteDe(instance.numero);
     if (carte.type !== 'sort' && carte.type !== 'incident') return [];
-    if (!estPriseEnCharge(carte) || carte.cout > etatJoueur.debit) return [];
+    const cout = coutEffectif(etat, joueur, carte.numero);
+    if (!estPriseEnCharge(carte) || cout > etatJoueur.debit) return [];
     return combinaisonsCibles(etat, joueur, carte.numero).map((cibles) => ({
       type: 'jouer',
       carte: instance.id,
@@ -69,6 +71,7 @@ export function actionsPossibles(etat: EtatPartie): Action[] {
     ...jeuxPossibles(etat, joueur),
     ...decommissions,
     ...attaquesPossibles(etat, joueur),
+    ...actionsIaPossibles(etat, joueur),
     { type: 'finirTour' },
   ];
 }

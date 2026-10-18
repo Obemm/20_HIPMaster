@@ -106,10 +106,7 @@ describe('effets permanents', () => {
 });
 
 describe('cartes prises en charge', () => {
-  it('ne laisse de côté que les cartes d’US-020 (capacités IA et Migration)', () => {
-    const manquantes = Array.from({ length: 71 }, (_, i) => i + 1).filter(
-      (n) => !CARTES_PRISES_EN_CHARGE.includes(n),
-    );
-    expect(manquantes).toEqual([2, 39, 40, 42, 43, 44, 45, 46]);
+  it('couvre les 71 cartes du set 1 depuis US-020', () => {
+    expect(CARTES_PRISES_EN_CHARGE).toEqual(Array.from({ length: 71 }, (_, i) => i + 1));
   });
 });

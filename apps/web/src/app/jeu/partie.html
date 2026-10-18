@@ -216,6 +216,21 @@
         }
       </section>
 
+      @if (actionsOutillage().length) {
+        <div class="flex flex-wrap gap-2" role="group" aria-label="Outillage de vos agents">
+          @for (action of actionsOutillage(); track action.source) {
+            <button
+              type="button"
+              class="rounded-lg border-2 border-accent px-3 py-2 text-sm font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:opacity-60"
+              [disabled]="occupe()"
+              (click)="jouer(action)"
+            >
+              Outillage : vos agents prennent les capacités de {{ nommer(action.source) }}
+            </button>
+          }
+        </div>
+      }
+
       <div class="flex flex-wrap items-center justify-between gap-3">
         <p class="text-sm text-texte-doux">
           {{ monTour() ? aide() : 'Le bot joue…' }}

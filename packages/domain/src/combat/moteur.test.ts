@@ -107,16 +107,13 @@ describe('poser et décommissionner', () => {
     expect(apres.joueurs.j1.plateau.map((c) => [c.id, c.pv])).toEqual([['m1', 4]]);
   });
 
-  it('refuse une pose sans Débit, sur un plateau plein, d’une carte absente ou pas encore jouable', () => {
+  it('refuse une pose sans Débit, sur un plateau plein, d’une carte absente ou d’un mauvais type', () => {
     expect(codeErreur(scenario({ main: [17], debit: 2 }), { type: 'poser', carte: 'm1' })).toBe(
       'debit-insuffisant',
     );
     const plein = scenario({ main: [22], plateau: [4, 4, 4, 4, 4] });
     expect(codeErreur(plein, { type: 'poser', carte: 'm1' })).toBe('plateau-plein');
     expect(codeErreur(scenario(), { type: 'poser', carte: 'm9' })).toBe('carte-absente');
-    expect(codeErreur(scenario({ main: [2] }), { type: 'poser', carte: 'm1' })).toBe(
-      'carte-non-prise-en-charge',
-    );
     expect(codeErreur(scenario({ main: [21] }), { type: 'poser', carte: 'm1' })).toBe(
       'mauvais-type',
     );

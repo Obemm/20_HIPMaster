@@ -22,6 +22,18 @@ export const schemaAction = z.discriminatedUnion('type', [
     carte: z.string().max(32),
     cibles: z.array(z.string().max(32)).max(3),
   }),
+  // Capacités IA et Migration (US-020).
+  z.object({ type: z.literal('outiller'), source: z.string().max(32) }),
+  z.object({
+    type: z.literal('router'),
+    retour: z.string().max(32),
+    carte: z.string().max(32),
+  }),
+  z.object({
+    type: z.literal('migrer'),
+    source: z.string().max(32),
+    carte: z.string().max(32),
+  }),
   z.object({ type: z.literal('finirTour') }),
 ]);
 
@@ -42,6 +54,8 @@ const schemaComposant = schemaInstance.extend({
   doublon: z.boolean(),
   attaqueNulle: z.boolean(),
   coupleA: z.string().nullable(),
+  delegue: z.boolean(),
+  capacitesEmpruntees: z.array(z.string()),
 });
 
 const schemaCamp = z.object({

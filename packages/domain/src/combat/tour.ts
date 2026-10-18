@@ -82,6 +82,8 @@ export function debuterTour(etat: EtatPartie, joueur: IdJoueur): void {
   for (const composant of etatJoueur.plateau) {
     composant.aAttaqueCeTour = false;
     composant.entretienImpaye = false;
+    composant.delegue = false;
+    composant.capacitesEmpruntees = [];
   }
 
   const premierTourDuPremier = joueur === etat.premier && etatJoueur.tours === 1;
@@ -90,6 +92,10 @@ export function debuterTour(etat: EtatPartie, joueur: IdJoueur): void {
   etatJoueur.malusDebit = 0;
   etatJoueur.aDecommissionne = false;
   etatJoueur.cronUtilise = false;
+  etatJoueur.delegationUtilisee = false;
+  etatJoueur.outillageUtilise = false;
+  etatJoueur.cacheUtilise = false;
+  etatJoueur.routageUtilise = false;
 
   const nonConformes = etatJoueur.plateau.filter((c) => possede(c, 'non-conforme')).length;
   if (nonConformes > 0) blesserSi(etat, joueur, nonConformes, 'non-conforme');
@@ -128,6 +134,10 @@ function nouveauJoueur(joueur: IdJoueur, deck: readonly number[]): EtatJoueur {
     siProtegeJusquAuTour: null,
     malusDebit: 0,
     cronUtilise: false,
+    delegationUtilisee: false,
+    outillageUtilise: false,
+    cacheUtilise: false,
+    routageUtilise: false,
   };
 }
 
