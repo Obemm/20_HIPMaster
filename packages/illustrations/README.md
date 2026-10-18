@@ -34,3 +34,11 @@ Chaîne d'import et d'optimisation des illustrations des cartes (US-015,
    les archiver à part (ils seront rangés dans un Azure Storage Account à la mise en ligne).
 
 Retirer une carte de `set-1.json` puis relancer le script supprime ses images servies.
+
+## Illustrations provisoires (US-018)
+
+En attendant de vraies illustrations, `npm run illustrations:provisoires` dessine les 71 cartes par le code
+(`src/vectoriel/`, [ADR 0015](../../docs/decisions/0015-illustrations-provisoires-vectorielles.md)), réécrit
+`set-1.json` puis lance la déclinaison. Le générateur est déterministe : il fait foi, il n'y a pas d'original à
+archiver. Pour remplacer une carte par une vraie illustration, déposer son original et mettre à jour son entrée dans
+`set-1.json`, puis lancer `npm run illustrations` (et non plus `illustrations:provisoires`, qui écraserait l'entrée).

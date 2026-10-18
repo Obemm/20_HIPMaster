@@ -43,7 +43,11 @@ function afficher(carte: Carte, lien?: string[]) {
 
 describe('VignetteCarte', () => {
   beforeEach(() => {
-    TestBed.configureTestingModule({ imports: [VignetteCarte], providers: [provideRouter([])] });
+    // Sans illustration : la carte garde le pictogramme de sa famille (le manifeste réel en a pour toutes).
+    TestBed.configureTestingModule({
+      imports: [VignetteCarte],
+      providers: [provideRouter([]), { provide: ILLUSTRATIONS_CARTES, useValue: {} }],
+    });
   });
 
   it('affiche la rareté en toutes lettres, le coût, le nom et les statistiques nommées', () => {

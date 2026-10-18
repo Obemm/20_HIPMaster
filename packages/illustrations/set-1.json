@@ -1,4 +1,644 @@
 {
   "$commentaire": "Une entrée par carte illustrée du set 1 (US-015, ADR 0014). L'original va dans sources/set-1/<numero>.png.",
-  "illustrations": []
+  "illustrations": [
+    {
+      "numero": 1,
+      "alt": "Illustration provisoire : une pile de documents sur fond bleu nuit, avec un halo doré semé d’étincelles",
+      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "provenance": {
+        "outil": "Générateur vectoriel HIPMaster",
+        "date": "2026-10-18"
+      }
+    },
+    {
+      "numero": 2,
+      "alt": "Illustration provisoire : une pile de documents sur fond bleu nuit, avec un anneau bleu",
+      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "provenance": {
+        "outil": "Générateur vectoriel HIPMaster",
+        "date": "2026-10-18"
+      }
+    },
+    {
+      "numero": 3,
+      "alt": "Illustration provisoire : une pile de documents sur fond bleu nuit, avec un anneau bleu",
+      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "provenance": {
+        "outil": "Générateur vectoriel HIPMaster",
+        "date": "2026-10-18"
+      }
+    },
+    {
+      "numero": 4,
+      "alt": "Illustration provisoire : une pile de documents sur fond bleu nuit",
+      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "provenance": {
+        "outil": "Générateur vectoriel HIPMaster",
+        "date": "2026-10-18"
+      }
+    },
+    {
+      "numero": 5,
+      "alt": "Illustration provisoire : une pile de documents sur fond bleu nuit",
+      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "provenance": {
+        "outil": "Générateur vectoriel HIPMaster",
+        "date": "2026-10-18"
+      }
+    },
+    {
+      "numero": 6,
+      "alt": "Illustration provisoire : une pile de documents sur fond bleu nuit",
+      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "provenance": {
+        "outil": "Générateur vectoriel HIPMaster",
+        "date": "2026-10-18"
+      }
+    },
+    {
+      "numero": 7,
+      "alt": "Illustration provisoire : une pile de documents sur fond bleu nuit",
+      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "provenance": {
+        "outil": "Générateur vectoriel HIPMaster",
+        "date": "2026-10-18"
+      }
+    },
+    {
+      "numero": 8,
+      "alt": "Illustration provisoire : une pile de documents sur fond bleu nuit",
+      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "provenance": {
+        "outil": "Générateur vectoriel HIPMaster",
+        "date": "2026-10-18"
+      }
+    },
+    {
+      "numero": 9,
+      "alt": "Illustration provisoire : un moyeu relié à des connecteurs en étoile sur fond bleu nuit, avec un halo violet",
+      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "provenance": {
+        "outil": "Générateur vectoriel HIPMaster",
+        "date": "2026-10-18"
+      }
+    },
+    {
+      "numero": 10,
+      "alt": "Illustration provisoire : un moyeu relié à des connecteurs en étoile sur fond bleu nuit, avec un anneau bleu",
+      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "provenance": {
+        "outil": "Générateur vectoriel HIPMaster",
+        "date": "2026-10-18"
+      }
+    },
+    {
+      "numero": 11,
+      "alt": "Illustration provisoire : un moyeu relié à des connecteurs en étoile sur fond bleu nuit, avec un anneau bleu",
+      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "provenance": {
+        "outil": "Générateur vectoriel HIPMaster",
+        "date": "2026-10-18"
+      }
+    },
+    {
+      "numero": 12,
+      "alt": "Illustration provisoire : un moyeu relié à des connecteurs en étoile sur fond bleu nuit, avec un anneau bleu",
+      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "provenance": {
+        "outil": "Générateur vectoriel HIPMaster",
+        "date": "2026-10-18"
+      }
+    },
+    {
+      "numero": 13,
+      "alt": "Illustration provisoire : un moyeu relié à des connecteurs en étoile sur fond bleu nuit, avec un anneau bleu",
+      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "provenance": {
+        "outil": "Générateur vectoriel HIPMaster",
+        "date": "2026-10-18"
+      }
+    },
+    {
+      "numero": 14,
+      "alt": "Illustration provisoire : un moyeu relié à des connecteurs en étoile sur fond bleu nuit",
+      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "provenance": {
+        "outil": "Générateur vectoriel HIPMaster",
+        "date": "2026-10-18"
+      }
+    },
+    {
+      "numero": 15,
+      "alt": "Illustration provisoire : un moyeu relié à des connecteurs en étoile sur fond bleu nuit",
+      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "provenance": {
+        "outil": "Générateur vectoriel HIPMaster",
+        "date": "2026-10-18"
+      }
+    },
+    {
+      "numero": 16,
+      "alt": "Illustration provisoire : un moyeu relié à des connecteurs en étoile sur fond bleu nuit",
+      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "provenance": {
+        "outil": "Générateur vectoriel HIPMaster",
+        "date": "2026-10-18"
+      }
+    },
+    {
+      "numero": 17,
+      "alt": "Illustration provisoire : un moyeu relié à des connecteurs en étoile sur fond bleu nuit",
+      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "provenance": {
+        "outil": "Générateur vectoriel HIPMaster",
+        "date": "2026-10-18"
+      }
+    },
+    {
+      "numero": 18,
+      "alt": "Illustration provisoire : une porte fortifiée sur fond bleu nuit, avec un halo violet",
+      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "provenance": {
+        "outil": "Générateur vectoriel HIPMaster",
+        "date": "2026-10-18"
+      }
+    },
+    {
+      "numero": 19,
+      "alt": "Illustration provisoire : une porte fortifiée sur fond bleu nuit, avec un anneau bleu",
+      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "provenance": {
+        "outil": "Générateur vectoriel HIPMaster",
+        "date": "2026-10-18"
+      }
+    },
+    {
+      "numero": 20,
+      "alt": "Illustration provisoire : une porte fortifiée sur fond bleu nuit, avec un anneau bleu",
+      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "provenance": {
+        "outil": "Générateur vectoriel HIPMaster",
+        "date": "2026-10-18"
+      }
+    },
+    {
+      "numero": 21,
+      "alt": "Illustration provisoire : une porte fortifiée sur fond bleu nuit, avec un cercle de runes et un anneau bleu",
+      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "provenance": {
+        "outil": "Générateur vectoriel HIPMaster",
+        "date": "2026-10-18"
+      }
+    },
+    {
+      "numero": 22,
+      "alt": "Illustration provisoire : une porte fortifiée sur fond bleu nuit",
+      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "provenance": {
+        "outil": "Générateur vectoriel HIPMaster",
+        "date": "2026-10-18"
+      }
+    },
+    {
+      "numero": 23,
+      "alt": "Illustration provisoire : une porte fortifiée sur fond bleu nuit",
+      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "provenance": {
+        "outil": "Générateur vectoriel HIPMaster",
+        "date": "2026-10-18"
+      }
+    },
+    {
+      "numero": 24,
+      "alt": "Illustration provisoire : une porte fortifiée sur fond bleu nuit",
+      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "provenance": {
+        "outil": "Générateur vectoriel HIPMaster",
+        "date": "2026-10-18"
+      }
+    },
+    {
+      "numero": 25,
+      "alt": "Illustration provisoire : une porte fortifiée sur fond bleu nuit",
+      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "provenance": {
+        "outil": "Générateur vectoriel HIPMaster",
+        "date": "2026-10-18"
+      }
+    },
+    {
+      "numero": 26,
+      "alt": "Illustration provisoire : un nuage muni d’un connecteur sur fond bleu nuit, avec des chevrons montants et un halo doré semé d’étincelles",
+      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "provenance": {
+        "outil": "Générateur vectoriel HIPMaster",
+        "date": "2026-10-18"
+      }
+    },
+    {
+      "numero": 27,
+      "alt": "Illustration provisoire : un nuage muni d’un connecteur sur fond bleu nuit, avec un anneau bleu",
+      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "provenance": {
+        "outil": "Générateur vectoriel HIPMaster",
+        "date": "2026-10-18"
+      }
+    },
+    {
+      "numero": 28,
+      "alt": "Illustration provisoire : un nuage muni d’un connecteur sur fond bleu nuit",
+      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "provenance": {
+        "outil": "Générateur vectoriel HIPMaster",
+        "date": "2026-10-18"
+      }
+    },
+    {
+      "numero": 29,
+      "alt": "Illustration provisoire : un nuage muni d’un connecteur sur fond bleu nuit",
+      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "provenance": {
+        "outil": "Générateur vectoriel HIPMaster",
+        "date": "2026-10-18"
+      }
+    },
+    {
+      "numero": 30,
+      "alt": "Illustration provisoire : un nuage muni d’un connecteur sur fond bleu nuit, avec un cercle de runes",
+      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "provenance": {
+        "outil": "Générateur vectoriel HIPMaster",
+        "date": "2026-10-18"
+      }
+    },
+    {
+      "numero": 31,
+      "alt": "Illustration provisoire : une source qui émet des ondes sur fond bleu nuit, avec un halo violet",
+      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "provenance": {
+        "outil": "Générateur vectoriel HIPMaster",
+        "date": "2026-10-18"
+      }
+    },
+    {
+      "numero": 32,
+      "alt": "Illustration provisoire : une source qui émet des ondes sur fond bleu nuit, avec un anneau bleu",
+      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "provenance": {
+        "outil": "Générateur vectoriel HIPMaster",
+        "date": "2026-10-18"
+      }
+    },
+    {
+      "numero": 33,
+      "alt": "Illustration provisoire : une source qui émet des ondes sur fond bleu nuit, avec un anneau bleu",
+      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "provenance": {
+        "outil": "Générateur vectoriel HIPMaster",
+        "date": "2026-10-18"
+      }
+    },
+    {
+      "numero": 34,
+      "alt": "Illustration provisoire : une source qui émet des ondes sur fond bleu nuit, avec un anneau bleu",
+      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "provenance": {
+        "outil": "Générateur vectoriel HIPMaster",
+        "date": "2026-10-18"
+      }
+    },
+    {
+      "numero": 35,
+      "alt": "Illustration provisoire : une source qui émet des ondes sur fond bleu nuit",
+      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "provenance": {
+        "outil": "Générateur vectoriel HIPMaster",
+        "date": "2026-10-18"
+      }
+    },
+    {
+      "numero": 36,
+      "alt": "Illustration provisoire : une source qui émet des ondes sur fond bleu nuit",
+      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "provenance": {
+        "outil": "Générateur vectoriel HIPMaster",
+        "date": "2026-10-18"
+      }
+    },
+    {
+      "numero": 37,
+      "alt": "Illustration provisoire : une source qui émet des ondes sur fond bleu nuit",
+      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "provenance": {
+        "outil": "Générateur vectoriel HIPMaster",
+        "date": "2026-10-18"
+      }
+    },
+    {
+      "numero": 38,
+      "alt": "Illustration provisoire : une source qui émet des ondes sur fond bleu nuit",
+      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "provenance": {
+        "outil": "Générateur vectoriel HIPMaster",
+        "date": "2026-10-18"
+      }
+    },
+    {
+      "numero": 39,
+      "alt": "Illustration provisoire : un œil lumineux relié à un réseau de nœuds sur fond bleu nuit, avec des chevrons montants et un halo doré semé d’étincelles",
+      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "provenance": {
+        "outil": "Générateur vectoriel HIPMaster",
+        "date": "2026-10-18"
+      }
+    },
+    {
+      "numero": 40,
+      "alt": "Illustration provisoire : un œil lumineux relié à un réseau de nœuds sur fond bleu nuit, avec des chevrons montants et un halo doré semé d’étincelles",
+      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "provenance": {
+        "outil": "Générateur vectoriel HIPMaster",
+        "date": "2026-10-18"
+      }
+    },
+    {
+      "numero": 41,
+      "alt": "Illustration provisoire : un œil lumineux relié à un réseau de nœuds sur fond bleu nuit, avec un halo violet",
+      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "provenance": {
+        "outil": "Générateur vectoriel HIPMaster",
+        "date": "2026-10-18"
+      }
+    },
+    {
+      "numero": 42,
+      "alt": "Illustration provisoire : un œil lumineux relié à un réseau de nœuds sur fond bleu nuit, avec un anneau bleu",
+      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "provenance": {
+        "outil": "Générateur vectoriel HIPMaster",
+        "date": "2026-10-18"
+      }
+    },
+    {
+      "numero": 43,
+      "alt": "Illustration provisoire : un œil lumineux relié à un réseau de nœuds sur fond bleu nuit, avec un anneau bleu",
+      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "provenance": {
+        "outil": "Générateur vectoriel HIPMaster",
+        "date": "2026-10-18"
+      }
+    },
+    {
+      "numero": 44,
+      "alt": "Illustration provisoire : un œil lumineux relié à un réseau de nœuds sur fond bleu nuit, avec un anneau bleu",
+      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "provenance": {
+        "outil": "Générateur vectoriel HIPMaster",
+        "date": "2026-10-18"
+      }
+    },
+    {
+      "numero": 45,
+      "alt": "Illustration provisoire : un œil lumineux relié à un réseau de nœuds sur fond bleu nuit, avec un anneau bleu",
+      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "provenance": {
+        "outil": "Générateur vectoriel HIPMaster",
+        "date": "2026-10-18"
+      }
+    },
+    {
+      "numero": 46,
+      "alt": "Illustration provisoire : un œil lumineux relié à un réseau de nœuds sur fond bleu nuit, avec un anneau bleu",
+      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "provenance": {
+        "outil": "Générateur vectoriel HIPMaster",
+        "date": "2026-10-18"
+      }
+    },
+    {
+      "numero": 47,
+      "alt": "Illustration provisoire : un œil lumineux relié à un réseau de nœuds sur fond bleu nuit, avec un cercle de runes et un anneau bleu",
+      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "provenance": {
+        "outil": "Générateur vectoriel HIPMaster",
+        "date": "2026-10-18"
+      }
+    },
+    {
+      "numero": 48,
+      "alt": "Illustration provisoire : un œil lumineux relié à un réseau de nœuds sur fond bleu nuit, avec un cercle de runes et un anneau bleu",
+      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "provenance": {
+        "outil": "Générateur vectoriel HIPMaster",
+        "date": "2026-10-18"
+      }
+    },
+    {
+      "numero": 49,
+      "alt": "Illustration provisoire : un œil lumineux relié à un réseau de nœuds sur fond bleu nuit",
+      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "provenance": {
+        "outil": "Générateur vectoriel HIPMaster",
+        "date": "2026-10-18"
+      }
+    },
+    {
+      "numero": 50,
+      "alt": "Illustration provisoire : un œil lumineux relié à un réseau de nœuds sur fond bleu nuit",
+      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "provenance": {
+        "outil": "Générateur vectoriel HIPMaster",
+        "date": "2026-10-18"
+      }
+    },
+    {
+      "numero": 51,
+      "alt": "Illustration provisoire : un œil lumineux relié à un réseau de nœuds sur fond bleu nuit, avec un cercle de runes",
+      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "provenance": {
+        "outil": "Générateur vectoriel HIPMaster",
+        "date": "2026-10-18"
+      }
+    },
+    {
+      "numero": 52,
+      "alt": "Illustration provisoire : un œil lumineux relié à un réseau de nœuds sur fond bleu nuit, avec un cercle de runes",
+      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "provenance": {
+        "outil": "Générateur vectoriel HIPMaster",
+        "date": "2026-10-18"
+      }
+    },
+    {
+      "numero": 53,
+      "alt": "Illustration provisoire : un engrenage sur fond bleu nuit, avec un cercle de runes et un halo violet",
+      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "provenance": {
+        "outil": "Générateur vectoriel HIPMaster",
+        "date": "2026-10-18"
+      }
+    },
+    {
+      "numero": 54,
+      "alt": "Illustration provisoire : un engrenage sur fond bleu nuit, avec un cercle de runes et un anneau bleu",
+      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "provenance": {
+        "outil": "Générateur vectoriel HIPMaster",
+        "date": "2026-10-18"
+      }
+    },
+    {
+      "numero": 55,
+      "alt": "Illustration provisoire : un engrenage sur fond bleu nuit, avec un cercle de runes",
+      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "provenance": {
+        "outil": "Générateur vectoriel HIPMaster",
+        "date": "2026-10-18"
+      }
+    },
+    {
+      "numero": 56,
+      "alt": "Illustration provisoire : un engrenage sur fond bleu nuit, avec un cercle de runes",
+      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "provenance": {
+        "outil": "Générateur vectoriel HIPMaster",
+        "date": "2026-10-18"
+      }
+    },
+    {
+      "numero": 57,
+      "alt": "Illustration provisoire : un engrenage sur fond bleu nuit, avec un cercle de runes",
+      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "provenance": {
+        "outil": "Générateur vectoriel HIPMaster",
+        "date": "2026-10-18"
+      }
+    },
+    {
+      "numero": 58,
+      "alt": "Illustration provisoire : un engrenage sur fond bleu nuit, avec un cercle de runes",
+      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "provenance": {
+        "outil": "Générateur vectoriel HIPMaster",
+        "date": "2026-10-18"
+      }
+    },
+    {
+      "numero": 59,
+      "alt": "Illustration provisoire : une créature menaçante sur fond bleu nuit, avec des fissures et un halo violet",
+      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "provenance": {
+        "outil": "Générateur vectoriel HIPMaster",
+        "date": "2026-10-18"
+      }
+    },
+    {
+      "numero": 60,
+      "alt": "Illustration provisoire : une créature menaçante sur fond bleu nuit, avec des fissures et un anneau bleu",
+      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "provenance": {
+        "outil": "Générateur vectoriel HIPMaster",
+        "date": "2026-10-18"
+      }
+    },
+    {
+      "numero": 61,
+      "alt": "Illustration provisoire : une créature menaçante sur fond bleu nuit, avec des fissures et un anneau bleu",
+      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "provenance": {
+        "outil": "Générateur vectoriel HIPMaster",
+        "date": "2026-10-18"
+      }
+    },
+    {
+      "numero": 62,
+      "alt": "Illustration provisoire : une créature menaçante sur fond bleu nuit, avec des fissures et un anneau bleu",
+      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "provenance": {
+        "outil": "Générateur vectoriel HIPMaster",
+        "date": "2026-10-18"
+      }
+    },
+    {
+      "numero": 63,
+      "alt": "Illustration provisoire : une créature menaçante sur fond bleu nuit, avec des fissures et un anneau bleu",
+      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "provenance": {
+        "outil": "Générateur vectoriel HIPMaster",
+        "date": "2026-10-18"
+      }
+    },
+    {
+      "numero": 64,
+      "alt": "Illustration provisoire : une créature menaçante sur fond bleu nuit, avec des fissures",
+      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "provenance": {
+        "outil": "Générateur vectoriel HIPMaster",
+        "date": "2026-10-18"
+      }
+    },
+    {
+      "numero": 65,
+      "alt": "Illustration provisoire : une créature menaçante sur fond bleu nuit, avec des fissures",
+      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "provenance": {
+        "outil": "Générateur vectoriel HIPMaster",
+        "date": "2026-10-18"
+      }
+    },
+    {
+      "numero": 66,
+      "alt": "Illustration provisoire : une créature menaçante sur fond bleu nuit, avec des fissures",
+      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "provenance": {
+        "outil": "Générateur vectoriel HIPMaster",
+        "date": "2026-10-18"
+      }
+    },
+    {
+      "numero": 67,
+      "alt": "Illustration provisoire : une créature menaçante sur fond bleu nuit, avec des fissures",
+      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "provenance": {
+        "outil": "Générateur vectoriel HIPMaster",
+        "date": "2026-10-18"
+      }
+    },
+    {
+      "numero": 68,
+      "alt": "Illustration provisoire : une créature menaçante sur fond bleu nuit, avec des fissures",
+      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "provenance": {
+        "outil": "Générateur vectoriel HIPMaster",
+        "date": "2026-10-18"
+      }
+    },
+    {
+      "numero": 69,
+      "alt": "Illustration provisoire : une créature menaçante sur fond bleu nuit, avec des fissures",
+      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "provenance": {
+        "outil": "Générateur vectoriel HIPMaster",
+        "date": "2026-10-18"
+      }
+    },
+    {
+      "numero": 70,
+      "alt": "Illustration provisoire : une créature menaçante sur fond bleu nuit, avec des fissures",
+      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "provenance": {
+        "outil": "Générateur vectoriel HIPMaster",
+        "date": "2026-10-18"
+      }
+    },
+    {
+      "numero": 71,
+      "alt": "Illustration provisoire : une créature menaçante sur fond bleu nuit, avec des fissures",
+      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "provenance": {
+        "outil": "Générateur vectoriel HIPMaster",
+        "date": "2026-10-18"
+      }
+    }
+  ]
 }

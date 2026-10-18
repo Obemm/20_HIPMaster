@@ -21,7 +21,8 @@
     "db:migrate": "npm run db:migrate -w @hipmaster/api",
     "db:studio": "npm run db:studio -w @hipmaster/api",
     "prepare": "husky",
-    "illustrations": "npm run illustrations -w @hipmaster/illustrations"
+    "illustrations": "npm run illustrations -w @hipmaster/illustrations",
+    "illustrations:provisoires": "npm run illustrations:provisoires -w @hipmaster/illustrations"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.14.0",
