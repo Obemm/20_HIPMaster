@@ -17,7 +17,8 @@ import type { Carte } from '../cartes/carte';
 import { VignetteCarte } from '../cartes/vignette-carte';
 import { Icone } from '../icone';
 import { decrireComposant, JetonComposant } from './jeton-composant';
-import { decrireEvenement } from './journal';
+import type { Duel } from '../duels/modele';
+import { type Adversaire, adversaireNomme, BOT, decrireEvenement } from './journal';
 import { RegleCourte } from './regle-courte';
 import {
   type Action,
@@ -33,10 +34,12 @@ type ActionCarte = Extract<Action, { carte: string }>;
 
 /** Délai entre deux lignes du journal quand le bot joue (aucun si l'animation est réduite). */
 const DELAI_JOURNAL_MS = 250;
+/** En duel, délai entre deux vérifications pendant le tour de l'adversaire (ADR 0020). */
+const INTERROGATION_DUEL_MS = 3000;
 
 /**
- * Écran d'une partie contre le bot (US-013). Il affiche la vue renvoyée par l'API et n'envoie que des actions de
- * `vue.actions` : aucune règle n'est calculée ici.
+ * Écran d'une partie contre le bot (US-013), ou d'un duel entre joueurs (US-034, `mode` « duel »). Il affiche la
+ * vue renvoyée par l'API et n'envoie que des actions de `vue.actions` : aucune règle n'est calculée ici.
  */
 @Component({
   selector: 'hip-partie',
@@ -46,6 +49,13 @@ const DELAI_JOURNAL_MS = 250;
 export class PartieEcran implements OnInit, OnDestroy {
   /** Paramètre de route `:id`. */
   readonly id = input.required<string>();
+  /**
+   * « bot » : partie contre le bot ; « duel » : duel entre joueurs, rafraîchi pendant le tour adverse. Par la
+   * route, le routeur lie `undefined` à cette entrée absente : on retombe alors sur « bot ».
+   */
+  readonly mode = input<'bot' | 'duel', 'bot' | 'duel' | undefined>('bot', {
+    transform: (valeur) => valeur ?? 'bot',
+  });
 
   private readonly http = inject(HttpClient);
   protected readonly compte = inject(CompteService);
@@ -53,6 +63,15 @@ export class PartieEcran implements OnInit, OnDestroy {
   /** Événements reçus, pas encore affichés : ils passent un par un, toujours dans l'ordre. */
   private readonly enAttente: Evenement[] = [];
   private minuterie: ReturnType<typeof setTimeout> | null = null;
+  private interrogation: ReturnType<typeof setInterval> | null = null;
+  /** En duel : version (ETag) et curseur du journal de la dernière réponse, et pseudo de l'adversaire. */
+  private version = -1;
+  private curseur = 0;
+  protected readonly pseudoAdversaire = signal<string | null>(null);
+  protected readonly autre = computed<Adversaire>(() => {
+    if (this.mode() !== 'duel') return BOT;
+    return adversaireNomme(this.pseudoAdversaire() ?? 'votre adversaire');
+  });
 
   protected readonly TOURS_MAX = TOURS_MAX;
   protected readonly decrireComposant = decrireComposant;
@@ -67,7 +86,7 @@ export class PartieEcran implements OnInit, OnDestroy {
     this.cartes();
     const joueur = this.vue()?.joueur ?? 'j1';
     return this.evenements()
-      .map((e) => decrireEvenement(e, joueur, this.nommer))
+      .map((e) => decrireEvenement(e, joueur, this.nommer, this.autre()))
       .filter((ligne): ligne is string => ligne !== null);
   });
   /** L'aide « Comment jouer ? » est ouverte en début de partie, repliable ensuite. */
@@ -136,9 +155,9 @@ export class PartieEcran implements OnInit, OnDestroy {
     }
     const gardes = this.gardesAdverses();
     if (gardes.length > 0) {
-      return `Le bot est protégé par Garde (${gardes.join(', ')}) : attaquez d’abord ce composant, son SI est inaccessible tant qu’il est en jeu.`;
+      return `${this.autre().sujet} est protégé par Garde (${gardes.join(', ')}) : attaquez d’abord ce composant, son SI est inaccessible tant qu’il est en jeu.`;
     }
-    return 'Choisissez la cible de l’attaque : un composant du bot ou son SI.';
+    return `Choisissez la cible de l’attaque : un composant ${this.autre().de} ou son SI.`;
   });
 
   /**
@@ -165,10 +184,14 @@ export class PartieEcran implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     void this.charger();
+    if (this.mode() === 'duel') {
+      this.interrogation = setInterval(() => void this.actualiserDuel(), INTERROGATION_DUEL_MS);
+    }
   }
 
   ngOnDestroy(): void {
     if (this.minuterie) clearTimeout(this.minuterie);
+    if (this.interrogation) clearInterval(this.interrogation);
   }
 
   protected carteDe(numero: number): Carte | undefined {
@@ -230,7 +253,7 @@ export class PartieEcran implements OnInit, OnDestroy {
   /** « Jouer (2 Débit) », « Jouer sur Adaptateur SAP (2 Débit) », « Jouer sur SOAP / WSDL et EDI (3 Débit) ». */
   private libelleJeu(cibles: readonly string[], cout: number): string {
     if (cibles.length === 0) return `Jouer (${cout} Débit)`;
-    const noms = cibles.map((id) => (id === 'si' ? 'le SI du bot' : this.nommer(id)));
+    const noms = cibles.map((id) => (id === 'si' ? `le SI ${this.autre().de}` : this.nommer(id)));
     return `Jouer sur ${noms.join(' et ')} (${cout} Débit)`;
   }
 
@@ -244,9 +267,18 @@ export class PartieEcran implements OnInit, OnDestroy {
     this.occupe.set(true);
     this.erreur.set(null);
     try {
-      const partie = await firstValueFrom(
-        this.http.post<Partie>(`/api/v1/parties/${this.id()}/actions`, action),
-      );
+      const partie =
+        this.mode() === 'duel'
+          ? this.depuisDuel(
+              await firstValueFrom(
+                this.http.post<Duel>(`/api/v1/duels/${this.id()}/actions`, action, {
+                  headers: { 'If-Match': `"${this.version}"` },
+                }),
+              ),
+            )
+          : await firstValueFrom(
+              this.http.post<Partie>(`/api/v1/parties/${this.id()}/actions`, action),
+            );
       this.carteChoisie.set(null);
       this.attaquant.set(null);
       this.recevoir(partie, true);
@@ -259,7 +291,10 @@ export class PartieEcran implements OnInit, OnDestroy {
 
   private async charger(): Promise<void> {
     try {
-      const partie = await firstValueFrom(this.http.get<Partie>(`/api/v1/parties/${this.id()}`));
+      const partie =
+        this.mode() === 'duel'
+          ? this.depuisDuel(await firstValueFrom(this.http.get<Duel>(`/api/v1/duels/${this.id()}`)))
+          : await firstValueFrom(this.http.get<Partie>(`/api/v1/parties/${this.id()}`));
       this.reglesOuvertes = partie.vue.moi.tours <= 1;
       this.recevoir(partie, false);
     } catch (erreur) {
@@ -267,8 +302,52 @@ export class PartieEcran implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * En duel, pendant le tour de l'adversaire : redemande le duel, sauf si l'onglet est caché. L'API répond 304 si
+   * rien n'a changé ; sinon les coups de l'adversaire défilent dans le journal comme ceux du bot.
+   */
+  private async actualiserDuel(): Promise<void> {
+    const vue = this.vue();
+    if (!vue || vue.issue || this.monTour() || this.occupe()) return;
+    if (globalThis.document?.visibilityState === 'hidden') return;
+    try {
+      const duel = await firstValueFrom(
+        this.http.get<Duel>(`/api/v1/duels/${this.id()}`, {
+          params: { depuis: this.curseur },
+          headers: { 'If-None-Match': `"${this.version}"` },
+        }),
+      );
+      this.recevoir(this.depuisDuel(duel), true);
+    } catch {
+      // 304 (rien de neuf) ou réseau momentanément indisponible : on réessaiera au prochain passage.
+    }
+  }
+
+  /** Un duel vu comme une partie, pour réutiliser tout l'écran ; retient version, curseur et adversaire. */
+  private depuisDuel(duel: Duel): Partie {
+    if (!duel.vue) throw new Error('Le duel n’a pas commencé.');
+    this.version = duel.version;
+    this.curseur = duel.curseur;
+    this.pseudoAdversaire.set(
+      duel.moi === 'j1' ? (duel.adversaire?.pseudo ?? null) : duel.createur.pseudo,
+    );
+    return {
+      id: duel.id,
+      deck: '',
+      deckAdversaire: '',
+      niveau: '',
+      vue: duel.vue,
+      evenements: duel.evenements,
+    };
+  }
+
   private signalerErreur(erreur: unknown): void {
-    if (erreur instanceof HttpErrorResponse && erreur.status === 404) {
+    if (erreur instanceof HttpErrorResponse && erreur.status === 409 && this.mode() === 'duel') {
+      // Le duel a bougé entre-temps (autre onglet) : on le recharge.
+      this.erreur.set('Le duel a changé entre-temps : il vient d’être rechargé.');
+      this.evenements.set([]);
+      void this.charger();
+    } else if (erreur instanceof HttpErrorResponse && erreur.status === 404) {
       this.introuvable.set(true);
     } else if (erreur instanceof HttpErrorResponse && erreur.status === 422) {
       this.erreur.set((erreur.error as { detail?: string } | null)?.detail ?? 'Action refusée.');
