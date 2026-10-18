@@ -21,6 +21,7 @@ référence Elis.
 | [0010](0010-combat-plateau.md)                     | Combat sur plateau : Débit, SLA, capacités thématiques                | aucune                 | Acceptée                      |
 | [0011](0011-catalogue-cartes-versionne.md)         | Catalogue des cartes versionné dans le domaine, pas en base           | ADR-026 (écarté)       | Acceptée                      |
 | [0012](0012-theme-clair-sombre.md)                 | Thème clair ou sombre selon le système, jetons de couleur             | ADR-019 (adapté)       | Acceptée                      |
+| [0013](0013-moteur-combat.md)                      | Moteur de combat : état sérialisable, actions, hasard à graine        | aucune                 | Acceptée                      |
 | [0014](0014-illustrations-statiques-optimisees.md) | Illustrations : fichiers statiques optimisés, originaux hors du dépôt | ADR-012, ADR-030       | Acceptée                      |
 
 Modèle : [template.md](template.md).
