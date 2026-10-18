@@ -1,7 +1,7 @@
 # US-020 — Capacités IA et Migration
 
 - **Epic** : EPIC-04
-- **Statut** : En revue
+- **Statut** : Faite
 - **Priorité** : Should
 - **Taille** : L
 - **Branche** : `us-020-capacites-ia`
@@ -37,3 +37,4 @@ d'Apigee AI Gateway et de toute l'IA agentique du set**.
   Contexte dans les outils du moteur ; actions `outiller`, `router`, `migrer` ; bot (Migration, Outillage) ; decks
   prêtés et simulation ; API (contrat, schémas) et écran (boutons, statuts, journal) ; 13 tests du domaine, 2 tests
   de l'écran. **Les 71 cartes sont jouables.** En revue.
+- 2026-10-18 — livrée : capacités IA et Migration : les 71 cartes du set 1 sont jouables, bot et decks prêtés équilibrés (44 à 56 %)
