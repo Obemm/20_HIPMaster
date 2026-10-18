@@ -9,7 +9,7 @@ _Dernière mise à jour : 2026-10-18_
 | [EPIC-00 — Fondations](epics/EPIC-00-fondations.md)                      | Must     | En cours  | 5/6        |
 | [EPIC-01 — Univers et modèle de carte](epics/EPIC-01-univers-cartes.md)  | Must     | Terminé   | 2/2        |
 | [EPIC-02 — Comptes joueurs](epics/EPIC-02-comptes-joueurs.md)            | Must     | Terminé   | 1/1        |
-| [EPIC-03 — Boosters et collection](epics/EPIC-03-boosters-collection.md) | Must     | En cours  | 1/2        |
+| [EPIC-03 — Boosters et collection](epics/EPIC-03-boosters-collection.md) | Must     | Terminé   | 2/2        |
 | [EPIC-04 — Combat contre le bot](epics/EPIC-04-combat-bot.md)            | Must     | En cours  | 8/9        |
 | [EPIC-05 — Illustrations des cartes](epics/EPIC-05-illustrations.md)     | Should   | En cours  | 3/5        |
 | [EPIC-06 — Duels entre joueurs](epics/EPIC-06-duels-joueurs.md)          | Should   | À affiner | 0/0        |
@@ -67,5 +67,5 @@ récompense de victoire. Les illustrations (EPIC-05) attendent.
 | [US-021 — Niveaux du bot](stories/US-021-niveaux-bot.md)                          | EPIC-04 | Must     | M      | Faite     |
 | [US-022 — Compte invité, sans mot de passe](stories/US-022-compte-invite.md)      | EPIC-02 | Must     | L      | Faite     |
 | [US-023 — Recevoir et ouvrir des boosters](stories/US-023-ouvrir-boosters.md)     | EPIC-03 | Must     | L      | Faite     |
-| [US-024 — Ma collection](stories/US-024-ma-collection.md)                         | EPIC-03 | Must     | M      | En revue  |
+| [US-024 — Ma collection](stories/US-024-ma-collection.md)                         | EPIC-03 | Must     | M      | Faite     |
 | [US-025 — Un booster pour chaque victoire](stories/US-025-recompense-victoire.md) | EPIC-04 | Should   | S      | À affiner |

@@ -1,7 +1,7 @@
 # US-024 — Ma collection
 
 - **Epic** : EPIC-03
-- **Statut** : En revue
+- **Statut** : Faite
 - **Priorité** : Must
 - **Taille** : M
 - **Branche** : `us-024-ma-collection`
@@ -30,3 +30,4 @@ En tant que **joueur connecté**, je veux **voir les cartes que je possède et c
   famille et rareté), détail en fenêtre modale au-dessus de la collection (`/collection/:numero`, donnée de route
   `retour`) qui indique les exemplaires possédés ; lien « Collection » dans le bandeau. Tests : API (collection),
   écran (3), détail (2 de plus), e2e (3, axe en clair et en sombre compris).
+- 2026-10-18 — livrée : Ma collection : progression du set, doubles, cartes manquantes grisées, exemplaires dans le détail

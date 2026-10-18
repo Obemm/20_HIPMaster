@@ -14,7 +14,7 @@ Un booster s'ouvre en moins d'une seconde ; la collection affiche la progression
 ## Stories
 
 - [x] US-023 — Recevoir et ouvrir des boosters
-- [ ] US-024 — Ma collection
+- [x] US-024 — Ma collection
 
 Gestion des doubles et animation plus riche à découper ensuite.
 
