@@ -11,7 +11,7 @@ référence the company.
 | ------------------------------------------------------ | --------------------------------------------------------------------- | ---------------------- | ----------------------------- |
 | [0001](0001-nextjs-tailwind.md)                        | Next.js + React + Tailwind CSS, TypeScript strict                     | —                      | Remplacée par 0006            |
 | [0002](0002-backlog-dans-le-depot.md)                  | Backlog epics/stories en Markdown dans le dépôt                       | —                      | Acceptée                      |
-| [0003](0003-postgresql-drizzle.md)                     | PostgreSQL + Drizzle ORM, Docker en développement                     | aucune                 | Acceptée                      |
+| [0003](0003-postgresql-drizzle.md)                     | PostgreSQL + Drizzle ORM, Docker en développement                     | aucune                 | Acceptée (Docker : 0018)      |
 | [0004](0004-logique-de-jeu-pure.md)                    | Logique de jeu en TypeScript pur, autorité serveur                    | aucune                 | Acceptée (complétée par 0007) |
 | [0005](0005-reference.local.md)                   | Les ADR technologiques the company comme référentiel                         | corpus [tool]             | Acceptée                      |
 | [0006](0006-angular-pwa.md)                            | Angular pour le front, livré en PWA                                   | [ref], [ref]       | Acceptée                      |
@@ -25,5 +25,7 @@ référence the company.
 | [0014](0014-parties-en-memoire.md)                     | État des parties en cours gardé en mémoire par l'API                  | [ref]                | Acceptée                      |
 | [0015](0015-illustrations-statiques-optimisees.md)     | Illustrations : fichiers statiques optimisés, originaux hors du dépôt | [ref], [ref]       | Acceptée                      |
 | [0016](0016-illustrations-provisoires-vectorielles.md) | Illustrations provisoires vectorielles, générées par le code          | aucune ([ref])       | Acceptée                      |
+| [0017](0017-compte-invite.md)                          | Compte invité : pseudo, jeton secret et code de récupération          | [ref], 034 (écartés) | Acceptée                      |
+| [0018](0018-pglite-developpement.md)                   | PGlite en développement et en tests, PostgreSQL en production         | aucune                 | Acceptée                      |
 
 Modèle : [template.md](template.md).

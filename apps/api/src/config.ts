@@ -10,6 +10,10 @@ const schemaConfig = z.object({
   API_HOST: z.string().default('127.0.0.1'),
   API_PORT: z.coerce.number().int().positive().default(3000),
   DATABASE_URL: z.url().optional(),
+  /** Base PGlite quand DATABASE_URL est absente (ADR 0018) : un dossier, ou `memory://`. */
+  BASE_LOCALE: z
+    .string()
+    .default(fileURLToPath(new URL('../../../.donnees/pglite', import.meta.url))),
 });
 
 export type Config = z.infer<typeof schemaConfig>;

@@ -1,0 +1,126 @@
+<main class="mx-auto flex w-full max-w-xl flex-col gap-6 px-4 py-8 sm:px-6">
+  <p>
+    <a routerLink="/" class="text-texte-doux underline underline-offset-4">← Accueil</a>
+  </p>
+  <h1 class="text-3xl font-bold tracking-tight">Mon compte</h1>
+
+  @if (erreur()) {
+    <p role="alert" class="text-alerte">{{ erreur() }}</p>
+  }
+
+  @if (codeAffiche(); as code) {
+    <section
+      aria-labelledby="titre-code"
+      class="flex flex-col gap-3 rounded-xl border-2 border-accent p-4"
+    >
+      <h2 id="titre-code" class="text-lg font-semibold">Votre code de récupération</h2>
+      <p class="font-mono text-2xl font-bold tracking-widest">{{ code }}</p>
+      <p class="text-sm">
+        <strong>Notez-le maintenant</strong> : il ne sera plus jamais affiché. Il permet de
+        retrouver votre compte sur un autre appareil. Sans lui, un compte perdu ne se récupère pas.
+      </p>
+      <p class="flex flex-wrap gap-2">
+        <button
+          type="button"
+          class="rounded-lg border-2 border-accent px-3 py-2 font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+          (click)="copier(code)"
+        >
+          Copier le code
+        </button>
+        <button
+          type="button"
+          class="rounded-lg bg-accent px-3 py-2 font-semibold text-sur-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+          (click)="codeAffiche.set(null)"
+        >
+          C’est noté
+        </button>
+      </p>
+      <p role="status" class="text-sm text-texte-doux">{{ copie() ? 'Code copié.' : '' }}</p>
+    </section>
+  }
+
+  @if (compte.joueur(); as joueur) {
+    <section aria-labelledby="titre-connecte" class="flex flex-col gap-3">
+      <h2 id="titre-connecte" class="text-lg font-semibold">
+        Connecté en tant que {{ joueur.pseudo }}
+      </h2>
+      <p class="text-texte-doux">
+        Votre compte est gardé par ce navigateur. Pour le retrouver ailleurs, utilisez votre code de
+        récupération ; perdu, vous pouvez en générer un nouveau (l’ancien cessera de fonctionner).
+      </p>
+      <p class="flex flex-wrap gap-2">
+        <button
+          type="button"
+          class="rounded-lg border-2 border-accent px-3 py-2 font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:opacity-60"
+          [disabled]="occupe()"
+          (click)="regenerer()"
+        >
+          Générer un nouveau code
+        </button>
+        <button
+          type="button"
+          class="rounded-lg border-2 border-bordure px-3 py-2 font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:opacity-60"
+          [disabled]="occupe()"
+          (click)="deconnecter()"
+        >
+          Se déconnecter
+        </button>
+      </p>
+    </section>
+  } @else if (compte.pret()) {
+    <section aria-labelledby="titre-creer" class="flex flex-col gap-3">
+      <h2 id="titre-creer" class="text-lg font-semibold">Créer mon compte</h2>
+      <p class="text-texte-doux">Un pseudo suffit : ni mot de passe, ni e-mail.</p>
+      <form class="flex flex-col gap-2 sm:flex-row sm:items-end" (submit)="creer($event)">
+        <div class="flex flex-1 flex-col gap-1">
+          <label for="pseudo" class="text-sm font-semibold">Pseudo</label>
+          <input
+            id="pseudo"
+            name="pseudo"
+            autocomplete="nickname"
+            maxlength="24"
+            required
+            class="rounded border border-bordure bg-fond px-3 py-2"
+            [value]="pseudo()"
+            (input)="pseudo.set($any($event.target).value)"
+          />
+        </div>
+        <button
+          type="submit"
+          class="rounded-lg bg-accent px-4 py-2 font-semibold text-sur-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:opacity-60"
+          [disabled]="occupe()"
+        >
+          Créer mon compte
+        </button>
+      </form>
+    </section>
+
+    <section aria-labelledby="titre-retrouver" class="flex flex-col gap-3">
+      <h2 id="titre-retrouver" class="text-lg font-semibold">J’ai déjà un compte</h2>
+      <form class="flex flex-col gap-2 sm:flex-row sm:items-end" (submit)="recuperer($event)">
+        <div class="flex flex-1 flex-col gap-1">
+          <label for="code" class="text-sm font-semibold">Code de récupération</label>
+          <input
+            id="code"
+            name="code"
+            autocomplete="off"
+            placeholder="ABCD-EFGH-JKLM"
+            required
+            class="rounded border border-bordure bg-fond px-3 py-2 font-mono uppercase"
+            [value]="code()"
+            (input)="code.set($any($event.target).value)"
+          />
+        </div>
+        <button
+          type="submit"
+          class="rounded-lg border-2 border-accent px-4 py-2 font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:opacity-60"
+          [disabled]="occupe()"
+        >
+          Retrouver mon compte
+        </button>
+      </form>
+    </section>
+  } @else {
+    <p>Vérification de votre session…</p>
+  }
+</main>

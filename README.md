@@ -10,16 +10,15 @@ PostgreSQL + [Drizzle ORM](https://orm.drizzle.team), TypeScript strict, monorep
 ## Prérequis
 
 - Node.js 24.15 ou plus (voir `.nvmrc`) et npm
-- Docker Desktop (base PostgreSQL locale)
+- Rien d'autre : en développement, la base est PGlite (PostgreSQL embarqué, dans `.donnees/`, ADR 0018) ;
+  Docker Desktop n'est utile que pour tester contre un vrai PostgreSQL (`npm run db:up`, puis `DATABASE_URL`)
 
 ## Démarrage
 
 ```bash
 npm install
 cp .env.example .env
-npm run db:up        # PostgreSQL sur localhost:5433
-npm run db:migrate   # applique les migrations
-npm run dev          # API sur localhost:3000, jeu sur http://localhost:4200
+npm run dev          # migrations appliquées au démarrage ; API sur localhost:3000, jeu sur http://localhost:4200
 ```
 
 ## Scripts
