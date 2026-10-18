@@ -1,7 +1,7 @@
 # US-018 — Illustrations provisoires générées par le code
 
 - **Epic** : EPIC-05
-- **Statut** : En revue
+- **Statut** : Faite
 - **Priorité** : Should
 - **Taille** : M
 - **Branche** : `us-018-illustrations-provisoires`
@@ -43,3 +43,4 @@ cohérente** afin de **reconnaître les cartes d'un coup d'œil sans attendre le
   284 fichiers de 3 à 14 Ko (2,5 Mo). 7 tests du générateur ; check, build et 18 parcours e2e au vert.
   **Limite** : deux cartes de même famille, type et rareté restent proches (orientation, satellites, constellation) ;
   c'est un provisoire, à remplacer par de vraies illustrations (US-017). En revue.
+- 2026-10-18 — livrée : illustrations provisoires des 71 cartes générées par le code, fusionnées par la PR #12

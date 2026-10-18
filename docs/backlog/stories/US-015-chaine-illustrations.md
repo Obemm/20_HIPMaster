@@ -1,7 +1,7 @@
 # US-015 — Chaîne d'import et d'optimisation des illustrations
 
 - **Epic** : EPIC-05
-- **Statut** : En revue
+- **Statut** : Faite
 - **Priorité** : Should
 - **Taille** : M
 - **Branche** : `us-015-chaine-illustrations`
@@ -45,3 +45,4 @@ en une commande** afin de **pouvoir illustrer les 71 cartes sans retouche à la 
   unitaires ajoutés, 18 parcours e2e et audit axe-core au vert. En revue.
 - 2026-10-18 — fusion avec US-013 (écran de partie) : dans un bouton (`titre` à `false`), l'illustration devient
   décorative (texte alternatif vide) pour ne pas alourdir le nom du bouton ; test ajouté, 28 parcours e2e au vert.
+- 2026-10-18 — livrée : chaîne d'import et d'optimisation des illustrations, fusionnée par la PR #12
