@@ -15,6 +15,17 @@ const GARDE = {
 
 const CATALOGUE: Carte[] = [
   {
+    numero: 55,
+    nom: 'Content-Based Router',
+    famille: 'patterns',
+    type: 'sort',
+    rarete: 'commune',
+    cout: 1,
+    capacites: [],
+    effet: 'Infligez 2 dégâts au composant adverse de votre choix.',
+    enVrai: 'Router un message selon son contenu.',
+  },
+  {
     numero: 13,
     nom: 'Adaptateur SAP',
     famille: 'esb',
@@ -194,6 +205,36 @@ describe('PartieEcran', () => {
     bouton(page, 'SOAP / WSDL, attaque 3, PV 4 : attaquer')?.click();
     const requete = http.expectOne('/api/v1/parties/p1/actions');
     expect(requete.request.body).toEqual({ type: 'attaquer', attaquant: 'j1-02', cible: 'j2-05' });
+    requete.flush(partie(vue()));
+    await fixture.whenStable();
+  });
+
+  it('propose « Jouer sur … » pour un sort, et montre les statuts des composants', async () => {
+    const v = vue({
+      actions: [{ type: 'jouer', carte: 'j1-09', cibles: ['j2-05'] }, { type: 'finirTour' }],
+    });
+    v.moi.main = [{ id: 'j1-09', numero: 55 }];
+    v.adversaire.plateau = [
+      {
+        id: 'j2-05',
+        numero: 17,
+        pv: 4,
+        attaque: 3,
+        poseAuTour: 1,
+        aAttaqueCeTour: false,
+        immobiliseJusquAuTour: 4,
+        doublon: true,
+      },
+    ];
+    const { fixture, http, page } = await ouvrir(v);
+    expect(bouton(page, 'SOAP / WSDL')?.getAttribute('aria-label')).toContain(
+      'Immobilisé, Doublon',
+    );
+    bouton(page, 'Content-Based Router')?.click();
+    fixture.detectChanges();
+    bouton(page, 'Jouer sur SOAP / WSDL (1 Débit)')?.click();
+    const requete = http.expectOne('/api/v1/parties/p1/actions');
+    expect(requete.request.body).toEqual({ type: 'jouer', carte: 'j1-09', cibles: ['j2-05'] });
     requete.flush(partie(vue()));
     await fixture.whenStable();
   });

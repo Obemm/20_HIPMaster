@@ -12,6 +12,11 @@ export const schemaAction = z.discriminatedUnion('type', [
     attaquant: z.string().max(32),
     cible: z.string().max(32),
   }),
+  z.object({
+    type: z.literal('jouer'),
+    carte: z.string().max(32),
+    cibles: z.array(z.string().max(32)).max(3),
+  }),
   z.object({ type: z.literal('finirTour') }),
 ]);
 
@@ -26,6 +31,12 @@ const schemaComposant = schemaInstance.extend({
   attaquesSubies: z.number().int(),
   reactifUtilise: z.boolean(),
   entretienImpaye: z.boolean(),
+  // Statuts posés par les sorts et les incidents (US-014), affichés sur le plateau.
+  immobiliseJusquAuTour: z.number().int().nullable(),
+  sansCapacitesJusquAuTour: z.number().int().nullable(),
+  doublon: z.boolean(),
+  attaqueNulle: z.boolean(),
+  coupleA: z.string().nullable(),
 });
 
 const schemaCamp = z.object({

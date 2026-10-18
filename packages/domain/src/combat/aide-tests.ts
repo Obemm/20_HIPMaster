@@ -1,7 +1,7 @@
 import { creerPartie } from './tour.ts';
 import type { Action, ComposantEnJeu, EtatPartie, IdJoueur, InstanceCarte } from './types.ts';
 import { appliquer } from './moteur.ts';
-import { carteDe } from './outils.ts';
+import { nouveauComposant } from './outils.ts';
 
 /** Utilitaires de test du moteur (non exportés par le paquet). */
 
@@ -26,17 +26,13 @@ export interface Scenario {
 
 function composant(prefixe: string, i: number, valeur: number | ComposantDeTest): ComposantEnJeu {
   const def = typeof valeur === 'number' ? { numero: valeur } : valeur;
-  const carte = carteDe(def.numero);
   return {
-    id: `${prefixe}${i + 1}`,
-    numero: def.numero,
-    pv: def.pv ?? ('pv' in carte ? carte.pv : 1),
-    poseAuTour: def.poseAuTour ?? 1,
-    aAttaqueCeTour: false,
+    ...nouveauComposant(
+      { id: `${prefixe}${i + 1}`, numero: def.numero },
+      def.poseAuTour ?? 1,
+      def.pv,
+    ),
     dernierTourAttaque: def.dernierTourAttaque ?? null,
-    attaquesSubies: 0,
-    reactifUtilise: false,
-    entretienImpaye: false,
   };
 }
 

@@ -1,5 +1,13 @@
 import { attaquer } from './combat.ts';
-import { carteDe, DEBIT_DECOMMISSION, erreur, noter, PLATEAU_MAX } from './outils.ts';
+import { jouer } from './effets.ts';
+import {
+  carteDe,
+  DEBIT_DECOMMISSION,
+  erreur,
+  noter,
+  nouveauComposant,
+  PLATEAU_MAX,
+} from './outils.ts';
 import { estPriseEnCharge, valeurConnecteur } from './prise-en-charge.ts';
 import { finirTour, piocher } from './tour.ts';
 import type {
@@ -59,16 +67,7 @@ function poser(etat: EtatPartie, joueur: IdJoueur, carteId: string): ErreurActio
   const carte = carteDe(instance.numero);
   etatJoueur.debit -= carte.cout;
   retirerDeLaMain(etat, joueur, carteId);
-  etatJoueur.plateau.push({
-    ...instance,
-    pv: 'pv' in carte ? carte.pv : 1,
-    poseAuTour: etatJoueur.tours,
-    aAttaqueCeTour: false,
-    dernierTourAttaque: null,
-    attaquesSubies: 0,
-    reactifUtilise: false,
-    entretienImpaye: false,
-  });
+  etatJoueur.plateau.push(nouveauComposant(instance, etatJoueur.tours));
   noter(etat, { type: 'pose', joueur, carte: instance });
   piocher(etat, joueur, valeurConnecteur(carte));
   return null;
@@ -133,6 +132,8 @@ function executer(etat: EtatPartie, action: Action): ErreurAction | null {
       return decommissionner(etat, joueur, action.carte);
     case 'attaquer':
       return attaquer(etat, joueur, action.attaquant, action.cible);
+    case 'jouer':
+      return jouer(etat, joueur, action.carte, action.cibles);
     case 'finirTour':
       finirTour(etat);
       return null;

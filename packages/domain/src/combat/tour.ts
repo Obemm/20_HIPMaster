@@ -12,7 +12,13 @@ import {
   terminer,
   TOURS_MAX,
 } from './outils.ts';
-import { JOUEURS, type EtatJoueur, type EtatPartie, type IdJoueur } from './types.ts';
+import {
+  JOUEURS,
+  type ComposantEnJeu,
+  type EtatJoueur,
+  type EtatPartie,
+  type IdJoueur,
+} from './types.ts';
 
 /** Pioche jusqu'à `nombre` cartes ; une carte qui ne tient pas dans une main pleine part à la défausse. */
 export function piocher(etat: EtatPartie, joueur: IdJoueur, nombre: number): void {
@@ -46,6 +52,19 @@ function superviser(etat: EtatPartie, joueur: IdJoueur): void {
   noter(etat, { type: 'supervision', joueur, carte: dessus, pour: joueur });
 }
 
+/** Lève les statuts arrivés à échéance (immobilisation, capacités suspendues). */
+function expirerStatuts(etat: EtatPartie, composant: ComposantEnJeu): void {
+  if (composant.immobiliseJusquAuTour !== null && etat.tour > composant.immobiliseJusquAuTour) {
+    composant.immobiliseJusquAuTour = null;
+  }
+  if (
+    composant.sansCapacitesJusquAuTour !== null &&
+    etat.tour > composant.sansCapacitesJusquAuTour
+  ) {
+    composant.sansCapacitesJusquAuTour = null;
+  }
+}
+
 /** Étapes automatiques d'un début de tour : pioche, Débit, effets « au début de votre tour ». */
 export function debuterTour(etat: EtatPartie, joueur: IdJoueur): void {
   etat.actif = joueur;
@@ -57,6 +76,7 @@ export function debuterTour(etat: EtatPartie, joueur: IdJoueur): void {
     for (const composant of etat.joueurs[id].plateau) {
       composant.attaquesSubies = 0;
       composant.reactifUtilise = false;
+      expirerStatuts(etat, composant);
     }
   }
   for (const composant of etatJoueur.plateau) {
@@ -66,7 +86,8 @@ export function debuterTour(etat: EtatPartie, joueur: IdJoueur): void {
 
   const premierTourDuPremier = joueur === etat.premier && etatJoueur.tours === 1;
   if (!premierTourDuPremier) piocher(etat, joueur, 1);
-  etatJoueur.debit = Math.min(etatJoueur.tours, DEBIT_MAX);
+  etatJoueur.debit = Math.max(0, Math.min(etatJoueur.tours, DEBIT_MAX) - etatJoueur.malusDebit);
+  etatJoueur.malusDebit = 0;
   etatJoueur.aDecommissionne = false;
 
   const nonConformes = etatJoueur.plateau.filter((c) => possede(c, 'non-conforme')).length;
@@ -102,6 +123,9 @@ function nouveauJoueur(joueur: IdJoueur, deck: readonly number[]): EtatJoueur {
     defausse: [],
     aDecommissionne: false,
     fileDurableUtilisee: false,
+    parade: false,
+    siProtegeJusquAuTour: null,
+    malusDebit: 0,
   };
 }
 

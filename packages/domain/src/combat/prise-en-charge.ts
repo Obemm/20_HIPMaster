@@ -25,11 +25,22 @@ export const CAPACITES_PRISES_EN_CHARGE: ReadonlySet<IdCapacite> = new Set<IdCap
 const idCapacite = (capacite: CapaciteCarte): IdCapacite =>
   typeof capacite === 'string' ? capacite : capacite.id;
 
-/** Une carte est jouable entièrement : un composant ou une évolution, sans effet propre ni capacité inconnue. */
+/** Sorts et incidents dont l'effet est appliqué (US-014) : voir `EFFETS` dans effets.ts. */
+export const SORTS_ET_INCIDENTS_PRIS_EN_CHARGE: ReadonlySet<number> = new Set([
+  21, 30, 47, 48, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70,
+  71,
+]);
+
+/** Composants dont l'effet propre est une parade, appliquée par l'incident visé : Fichier .ok témoin, OAuth2. */
+const COMPOSANTS_PARADES: ReadonlySet<number> = new Set([8, 20]);
+
+/** Une carte est jouable entièrement : ses capacités et son effet éventuel sont tous appliqués par le moteur. */
 export function estPriseEnCharge(carte: Carte): boolean {
+  if (SORTS_ET_INCIDENTS_PRIS_EN_CHARGE.has(carte.numero)) return true;
+  const effetGere = carte.effet === undefined || COMPOSANTS_PARADES.has(carte.numero);
   return (
     (carte.type === 'composant' || carte.type === 'evolution') &&
-    carte.effet === undefined &&
+    effetGere &&
     carte.capacites.every((capacite) => CAPACITES_PRISES_EN_CHARGE.has(idCapacite(capacite)))
   );
 }

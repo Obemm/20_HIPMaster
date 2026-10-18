@@ -39,19 +39,19 @@ const deck = (...lignes: [numero: number, nombre: number][]): number[] =>
 /**
  * Decks prêtés aux joueurs tant que leur collection est petite (US-011). Ils ne contiennent que des cartes que le
  * moteur sait jouer entièrement (`CARTES_PRISES_EN_CHARGE`). Composition équilibrée par simulation : chaque duel
- * reste entre 42 et 57 % de victoires (docs/produit/cartes-set-1.md).
+ * reste entre 43 et 56 % de victoires, sorts et incidents compris (docs/produit/cartes-set-1.md).
  */
 export const DECKS_PRETES: readonly DeckPrete[] = [
   {
     id: 'heritage',
     nom: 'Héritage',
     description:
-      'Fichiers et ESB : lent, solide, un peu non conforme. FTP et webMethods mènent la danse.',
+      'Fichiers et ESB : lent, solide, un peu non conforme. FTP et webMethods mènent la danse, la Dead Letter Queue rattrape les pertes.',
     cartes: deck(
       [1, 1], // FTP
       [3, 2], // EDI
-      [4, 2], // Fichier CSV
-      [5, 2], // Fichier à positions fixes
+      [4, 1], // Fichier CSV
+      [5, 1], // Fichier à positions fixes
       [7, 2], // Répertoire de dépôt
       [9, 2], // webMethods Integration Server 10.15
       [26, 1], // webMethods.io
@@ -59,16 +59,18 @@ export const DECKS_PRETES: readonly DeckPrete[] = [
       [11, 1], // MWS
       [12, 2], // MQSeries
       [13, 1], // Adaptateur SAP
-      [15, 1], // Flow service
       [16, 1], // Adaptateur JDBC
       [17, 1], // SOAP / WSDL
+      [53, 1], // Dead Letter Queue
+      [58, 1], // Retry
+      [64, 1], // Message poison
     ),
   },
   {
     id: 'moderne',
     nom: 'Moderne',
     description:
-      'API, iPaaS et événements : Apigee protège, Solace diffuse, les connecteurs font piocher.',
+      'API, iPaaS et événements : Apigee protège, Solace diffuse, les connecteurs font piocher, le Content-Based Router fait le tri.',
     cartes: deck(
       [18, 1], // Apigee API Gateway
       [22, 2], // API REST
@@ -76,12 +78,14 @@ export const DECKS_PRETES: readonly DeckPrete[] = [
       [25, 2], // Webhook
       [27, 1], // Connecteur ERP
       [28, 2], // Connecteur SaaS
-      [29, 2], // Workflow low-code
+      [29, 1], // Workflow low-code
       [31, 2], // Solace Event Mesh
       [33, 1], // Event broker
       [35, 2], // Pub/Sub
       [36, 2], // Topic
-      [37, 2], // File d’attente
+      [37, 1], // File d’attente
+      [55, 1], // Content-Based Router
+      [64, 1], // Message poison
     ),
   },
   {
@@ -100,13 +104,15 @@ export const DECKS_PRETES: readonly DeckPrete[] = [
       [12, 1], // MQSeries
       [25, 1], // Webhook
       [22, 2], // API REST
-      [4, 2], // Fichier CSV
-      [36, 2], // Topic
+      [4, 1], // Fichier CSV
+      [36, 1], // Topic
       [35, 1], // Pub/Sub
-      [16, 1], // Adaptateur JDBC
       [17, 1], // SOAP / WSDL
       [28, 1], // Connecteur SaaS
-      [37, 1], // File d’attente
+      [47, 1], // Chain of thought
+      [62, 1], // Couplage fort
+      [66, 1], // Doublon
+      [71, 1], // Facture de tokens
     ),
   },
 ];

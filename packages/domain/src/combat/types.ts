@@ -23,6 +23,18 @@ export interface ComposantEnJeu extends InstanceCarte {
   reactifUtilise: boolean;
   /** Sur site : entretien impayé, la carte ne peut pas attaquer ce tour. */
   entretienImpaye: boolean;
+  /** Bonus d'attaque permanent (Prompt système, Few-shot). */
+  bonusAttaque: number;
+  /** Ne peut pas attaquer jusqu'à ce tour inclus (Rate limiting, Timeout…). */
+  immobiliseJusquAuTour: number | null;
+  /** Capacités suspendues jusqu'à ce tour inclus (Certificat expiré, Contexte saturé). */
+  sansCapacitesJusquAuTour: number | null;
+  /** Doublon : le prochain dégât subi est doublé. */
+  doublon: boolean;
+  /** Fichier vide à 3 h du matin : la prochaine attaque n'inflige aucun dégât. */
+  attaqueNulle: boolean;
+  /** Couplage fort : identifiant du composant lié, qui subit les mêmes dégâts. */
+  coupleA: string | null;
 }
 
 export interface EtatJoueur {
@@ -36,6 +48,12 @@ export interface EtatJoueur {
   defausse: InstanceCarte[];
   aDecommissionne: boolean;
   fileDurableUtilisee: boolean;
+  /** Human-in-the-loop : le prochain incident joué contre ce joueur est sans effet. */
+  parade: boolean;
+  /** Circuit Breaker : le SI ne perd aucun SLA jusqu'à ce tour inclus. */
+  siProtegeJusquAuTour: number | null;
+  /** Facture de tokens : Débit retiré au prochain tour. */
+  malusDebit: number;
 }
 
 export interface Issue {
@@ -45,6 +63,31 @@ export interface Issue {
 }
 
 export type Cible = string | 'si';
+
+export type CauseDegats =
+  | 'combat'
+  | 'riposte'
+  | 'diffusion'
+  | 'reactif'
+  | 'point-unique'
+  | 'non-conforme'
+  | 'effet'
+  | 'couplage';
+
+/** Changements d'état annoncés dans le journal (sorts et incidents). */
+export type Statut =
+  | 'immobilise'
+  | 'sans-capacites'
+  | 'doublon'
+  | 'doublon-annule'
+  | 'attaque-nulle'
+  | 'couplage'
+  | 'bonus-attaque'
+  | 'bonus-pv'
+  | 'attaque-a-nouveau'
+  | 'protection-si'
+  | 'parade'
+  | 'malus-debit';
 
 export type Evenement =
   | { type: 'debut-tour'; joueur: IdJoueur; tour: number }
@@ -59,12 +102,17 @@ export type Evenement =
       cible: Cible;
       joueur: IdJoueur;
       montant: number;
-      cause: 'combat' | 'riposte' | 'diffusion' | 'reactif' | 'point-unique' | 'non-conforme';
+      cause: CauseDegats;
     }
   | { type: 'destruction'; joueur: IdJoueur; carte: InstanceCarte }
   | { type: 'retour-main'; joueur: IdJoueur; carte: InstanceCarte }
   | { type: 'entretien'; joueur: IdJoueur; carte: string; paye: boolean }
   | { type: 'supervision'; joueur: IdJoueur; carte: InstanceCarte | null }
+  | { type: 'jeu'; joueur: IdJoueur; carte: InstanceCarte; cibles: Cible[] }
+  | { type: 'parade'; joueur: IdJoueur; carte: InstanceCarte }
+  | { type: 'statut'; joueur: IdJoueur; cible: Cible; statut: Statut }
+  | { type: 'rappel'; joueur: IdJoueur; carte: InstanceCarte }
+  | { type: 'si-protege'; joueur: IdJoueur }
   | { type: 'fin-partie'; issue: Issue };
 
 /** Une entrée du journal ; `pour` restreint l'événement à un joueur (carte piochée, Supervision). */
@@ -87,6 +135,8 @@ export type Action =
   | { type: 'evoluer'; carte: string; origine: string }
   | { type: 'decommissionner'; carte: string }
   | { type: 'attaquer'; attaquant: string; cible: Cible }
+  /** Joue un sort ou un incident, avec ses cibles éventuelles (composants, carte de la défausse ou `si`). */
+  | { type: 'jouer'; carte: string; cibles: Cible[] }
   | { type: 'finirTour' };
 
 export const CODES_ERREUR = [

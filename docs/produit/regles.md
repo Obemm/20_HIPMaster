@@ -53,6 +53,14 @@ Les dégâts restent d'un tour à l'autre. Tout le hasard (pioche, cibles au has
 - **Non conforme** se cumule (2 cartes : 2 SLA par tour) ; **Sur site** prélève l'entretien automatiquement, carte
   par carte, tant qu'il reste du Débit.
 
+## Sorts et incidents (US-014)
+
+- Un sort ou un incident se joue en payant son coût, avec ses cibles éventuelles, puis part à la défausse.
+- « À son prochain tour » : l'effet dure jusqu'à la fin du prochain tour du propriétaire du composant visé.
+- Une **parade** annule l'effet mais pas le coût : la carte est quand même jouée et défaussée.
+- Les effets qui touchent « au hasard » (Hallucination) tirent leur cible dans les deux camps, SI compris, jamais un
+  composant Vétéran.
+
 ## Capacités
 
 | Capacité                  | Effet                                                                                                                                              |

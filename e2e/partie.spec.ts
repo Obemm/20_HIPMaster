@@ -14,7 +14,7 @@ async function commencer(page: Page, deck = 'Hybride') {
   await expect(page.getByText('Comment gagner ?')).toBeVisible();
 }
 
-/** Joue un tour simple : pose la première carte posable de la main, attaque si possible, puis finit le tour. */
+/** Joue un tour simple : pose ou joue la première carte jouable de la main, attaque si possible, puis finit le tour. */
 async function jouerUnTour(page: Page) {
   const main = page
     .getByRole('region', { name: /Votre main/ })
@@ -23,7 +23,8 @@ async function jouerUnTour(page: Page) {
   for (const carte of await main.all()) {
     if (!(await carte.isEnabled())) continue;
     await carte.click();
-    const poser = page.getByRole('button', { name: /^Poser/ });
+    // Poser un composant, ou jouer un sort ou un incident sur sa première cible possible.
+    const poser = page.getByRole('button', { name: /^(Poser|Jouer)/ }).first();
     if (await poser.isVisible()) {
       await poser.click();
       break;
