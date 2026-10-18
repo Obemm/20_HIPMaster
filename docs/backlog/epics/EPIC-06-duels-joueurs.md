@@ -1,6 +1,6 @@
 # EPIC-06 — Duels entre joueurs
 
-- **Statut** : À affiner
+- **Statut** : En cours
 - **Priorité** : Should
 
 ## Objectif
@@ -17,7 +17,7 @@ direct si les deux joueurs sont présents.
 
 ## Stories
 
-- [ ] US-032 — Duels côté serveur : créer, rejoindre, jouer à son tour
+- [x] US-032 — Duels côté serveur : créer, rejoindre, jouer à son tour
 - [ ] US-033 — Défier un collègue par lien
 - [ ] US-034 — Écran de duel
 - [ ] US-035 — Mes duels et « à vous de jouer »
