@@ -11,7 +11,11 @@ export interface ResumeDuel {
   monTour: boolean;
   tour: number | null;
   resultat: 'victoire' | 'defaite' | 'nulle' | null;
+  /** Pour un duel terminé : comment il s'est fini (US-036). */
+  raison: 'sla' | 'tours' | 'abandon' | 'forfait' | null;
   majLe: string;
+  /** Pour un duel en cours : instant limite du coup attendu (US-036). */
+  echeance: string | null;
 }
 
 /** Délai entre deux mises à jour de la liste quand rien d'autre ne la déclenche. */

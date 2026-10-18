@@ -94,7 +94,9 @@ export const schemaVue = z.object({
   adversaire: schemaCamp.extend({ main: z.number().int() }),
   actif: joueur,
   tour: z.number().int(),
-  issue: z.object({ gagnant: joueur.nullable(), raison: z.enum(['sla', 'tours']) }).nullable(),
+  issue: z
+    .object({ gagnant: joueur.nullable(), raison: z.enum(['sla', 'tours', 'abandon', 'forfait']) })
+    .nullable(),
   actions: z.array(schemaAction),
 });
 

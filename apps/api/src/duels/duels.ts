@@ -2,6 +2,7 @@ import { randomInt } from 'node:crypto';
 import {
   type Action,
   appliquer,
+  conceder,
   creerPartie,
   type EntreeJournal,
   type ErreurAction,
@@ -11,7 +12,7 @@ import {
   vueDe,
   type VueJoueur,
 } from '@hipmaster/domain';
-import { desc, eq, inArray, or, sql } from 'drizzle-orm';
+import { and, desc, eq, inArray, lt, or, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import type { Base } from '../db/index.ts';
 import { duels, joueurs } from '../db/schema.ts';
@@ -32,6 +33,8 @@ export interface DuelVisible {
   moi: IdJoueur | null;
   /** Longueur du journal : à repasser dans `depuis` pour ne recevoir que les nouveaux événements. */
   curseur: number;
+  /** Duel en cours : instant limite du coup attendu, au-delà le joueur actif perd par forfait (US-036). */
+  echeance: string | null;
   vue: Omit<VueJoueur, 'journal'> | null;
   evenements: EntreeJournal[];
 }
@@ -48,7 +51,8 @@ export type ResultatDuel<T> =
         | 'pas-commence'
         | 'pas-ton-tour'
         | 'version-perimee'
-        | 'expire';
+        | 'expire'
+        | 'deja-termine';
     }
   | { ok: false; raison: 'action-refusee'; erreur: ErreurAction };
 
@@ -59,9 +63,46 @@ export interface OptionsDuels {
   maintenant?: () => number;
   /** Durée de vie d'un défi non accepté (7 jours par défaut, US-033). */
   expirationDefiMs?: number;
+  /** Délai pour jouer son coup ; au-delà, forfait (72 heures par défaut, US-036). */
+  delaiTourMs?: number;
 }
 
 const SEPT_JOURS = 7 * 24 * 60 * 60 * 1000;
+const SOIXANTE_DOUZE_HEURES = 72 * 60 * 60 * 1000;
+const horloge = (options: OptionsDuels) => (options.maintenant ?? Date.now)();
+
+/** Échéance du duel en cours : le délai de jeu, compté depuis le dernier coup (US-036). */
+function echeanceDe(ligne: LigneDuel, options: OptionsDuels): Date | null {
+  if (ligne.statut !== 'en-cours') return null;
+  return new Date(ligne.majLe.getTime() + (options.delaiTourMs ?? SOIXANTE_DOUZE_HEURES));
+}
+
+/**
+ * Applique le forfait d'un duel dont l'échéance est passée : le joueur actif perd. Évalué à la lecture, sans
+ * tâche de fond (ADR 0020). La mise à jour est conditionnée à la version lue : si le duel a bougé entre-temps,
+ * c'est la version en base qui fait foi.
+ */
+async function avecForfait(
+  base: Base,
+  ligne: LigneDuel,
+  options: OptionsDuels,
+): Promise<LigneDuel> {
+  const echeance = echeanceDe(ligne, options);
+  if (!echeance || !ligne.etat || horloge(options) <= echeance.getTime()) return ligne;
+  const [maj] = await base
+    .update(duels)
+    .set({
+      etat: conceder(ligne.etat, ligne.etat.actif, 'forfait'),
+      statut: 'termine',
+      version: ligne.version + 1,
+      majLe: echeance,
+    })
+    .where(and(eq(duels.id, ligne.id), eq(duels.version, ligne.version)))
+    .returning();
+  if (maj) return maj;
+  const [relue] = await base.select().from(duels).where(eq(duels.id, ligne.id));
+  return relue ?? ligne;
+}
 
 /** Un défi non accepté expire (US-033) ; l'expiration est évaluée à la lecture, sans tâche de fond (ADR 0020). */
 function defiExpire(ligne: LigneDuel, options: OptionsDuels): boolean {
@@ -96,6 +137,7 @@ async function visible(
   ligne: LigneDuel,
   joueurId: string,
   depuis: number,
+  options: OptionsDuels = {},
 ): Promise<DuelVisible> {
   const noms = await pseudos(base, ligne);
   const moi = campDe(ligne, joueurId);
@@ -114,6 +156,7 @@ async function visible(
     adversaire: ligne.adversaireId ? { pseudo: noms.get(ligne.adversaireId) ?? '?' } : null,
     moi,
     curseur: etat?.journal.length ?? 0,
+    echeance: echeanceDe(ligne, options)?.toISOString() ?? null,
     vue,
     evenements: etat && moi ? journalDe(etat.journal.slice(depuis), moi) : [],
   };
@@ -144,12 +187,13 @@ export async function lireDuel(
   depuis = 0,
   options: OptionsDuels = {},
 ): Promise<ResultatDuel<DuelVisible>> {
-  const [ligne] = await base.select().from(duels).where(eq(duels.id, id));
-  if (!ligne || (!campDe(ligne, joueurId) && ligne.statut !== 'attente')) {
+  const [lue] = await base.select().from(duels).where(eq(duels.id, id));
+  if (!lue || (!campDe(lue, joueurId) && lue.statut !== 'attente')) {
     return echec('introuvable');
   }
-  if (defiExpire(ligne, options)) return echec('expire');
-  return { ok: true, valeur: await visible(base, ligne, joueurId, depuis) };
+  if (defiExpire(lue, options)) return echec('expire');
+  const ligne = await avecForfait(base, lue, options);
+  return { ok: true, valeur: await visible(base, ligne, joueurId, depuis, options) };
 }
 
 /** Rejoint un duel en attente : la partie est créée, le tirage désigne qui commence. */
@@ -188,7 +232,7 @@ export async function rejoindreDuel(
     return { ok: true, valeur: maj } as const;
   });
   if (!resultat.ok) return resultat;
-  return { ok: true, valeur: await visible(base, resultat.valeur, joueurId, 0) };
+  return { ok: true, valeur: await visible(base, resultat.valeur, joueurId, 0, options) };
 }
 
 /**
@@ -201,7 +245,11 @@ export async function jouerDuel(
   joueurId: string,
   action: Action,
   versionAttendue?: number,
+  options: OptionsDuels = {},
 ): Promise<ResultatDuel<DuelVisible>> {
+  // Un coup joué après l'échéance arrive trop tard : le forfait passe d'abord, l'action est alors refusée.
+  const [lue] = await base.select().from(duels).where(eq(duels.id, id));
+  if (lue && campDe(lue, joueurId)) await avecForfait(base, lue, options);
   const resultat = await base.transaction(async (tx) => {
     const [ligne] = await tx.select().from(duels).where(eq(duels.id, id)).for('update');
     const camp = ligne ? campDe(ligne, joueurId) : null;
@@ -231,7 +279,38 @@ export async function jouerDuel(
   });
   if (!resultat.ok) return resultat;
   const { ligne, avant } = resultat.valeur;
-  return { ok: true, valeur: await visible(base, ligne, joueurId, avant) };
+  return { ok: true, valeur: await visible(base, ligne, joueurId, avant, options) };
+}
+
+/** Abandonne un duel en cours : l'adversaire gagne (US-036). */
+export async function abandonnerDuel(
+  base: Base,
+  id: string,
+  joueurId: string,
+  options: OptionsDuels = {},
+): Promise<ResultatDuel<DuelVisible>> {
+  const resultat = await base.transaction(async (tx) => {
+    const [ligne] = await tx.select().from(duels).where(eq(duels.id, id)).for('update');
+    const camp = ligne ? campDe(ligne, joueurId) : null;
+    if (!ligne || !camp) return echec('introuvable');
+    if (!ligne.etat) return echec('pas-commence');
+    if (ligne.etat.issue) return echec('deja-termine');
+    const [maj] = await tx
+      .update(duels)
+      .set({
+        etat: conceder(ligne.etat, camp, 'abandon'),
+        statut: 'termine',
+        version: ligne.version + 1,
+        majLe: new Date(),
+      })
+      .where(eq(duels.id, id))
+      .returning();
+    if (!maj) throw new Error('Mise à jour du duel impossible.');
+    return { ok: true, valeur: { ligne: maj, avant: ligne.etat.journal.length } } as const;
+  });
+  if (!resultat.ok) return resultat;
+  const { ligne, avant } = resultat.valeur;
+  return { ok: true, valeur: await visible(base, ligne, joueurId, avant, options) };
 }
 
 /** Annule un défi pas encore accepté : seul son créateur le peut (US-033). */
@@ -256,7 +335,11 @@ export interface ResumeDuel {
   monTour: boolean;
   tour: number | null;
   resultat: 'victoire' | 'defaite' | 'nulle' | null;
+  /** Pour un duel terminé : comment il s'est fini (US-036). */
+  raison: 'sla' | 'tours' | 'abandon' | 'forfait' | null;
   majLe: string;
+  /** Pour un duel en cours : instant limite du coup attendu (US-036). */
+  echeance: string | null;
 }
 
 const TERMINES_MAX = 20;
@@ -281,7 +364,22 @@ function resultatDe(gagnant: string | null, moi: IdJoueur): NonNullable<ResumeDu
 export async function lireMesDuels(
   base: Base,
   joueurId: string,
+  options: OptionsDuels = {},
 ): Promise<{ aMonTour: number; duels: ResumeDuel[] }> {
+  // Les duels dont l'échéance est passée basculent d'abord en forfait (US-036).
+  const delai = options.delaiTourMs ?? SOIXANTE_DOUZE_HEURES;
+  const enRetard = await base
+    .select()
+    .from(duels)
+    .where(
+      and(
+        eq(duels.statut, 'en-cours'),
+        or(eq(duels.createurId, joueurId), eq(duels.adversaireId, joueurId)),
+        lt(duels.majLe, new Date(horloge(options) - delai)),
+      ),
+    );
+  for (const ligne of enRetard) await avecForfait(base, ligne, options);
+
   const createur = alias(joueurs, 'createur');
   const adversaire = alias(joueurs, 'adversaire');
   const lignes = await base
@@ -294,6 +392,7 @@ export async function lireMesDuels(
       actif: sql<string | null>`${duels.etat}->>'actif'`,
       tour: sql<string | null>`${duels.etat}->>'tour'`,
       gagnant: sql<string | null>`${duels.etat}->'issue'->>'gagnant'`,
+      raison: sql<ResumeDuel['raison']>`${duels.etat}->'issue'->>'raison'`,
       majLe: duels.majLe,
     })
     .from(duels)
@@ -315,7 +414,9 @@ export async function lireMesDuels(
       monTour,
       tour: l.tour === null ? null : Number(l.tour),
       resultat,
+      raison: l.statut === 'termine' ? l.raison : null,
       majLe: l.majLe.toISOString(),
+      echeance: l.statut === 'en-cours' ? new Date(l.majLe.getTime() + delai).toISOString() : null,
     };
     return { groupe, resume };
   });

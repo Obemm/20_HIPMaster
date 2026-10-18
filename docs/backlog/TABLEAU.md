@@ -12,7 +12,7 @@ _Dernière mise à jour : 2026-10-19_
 | [EPIC-03 — Boosters et collection](epics/EPIC-03-boosters-collection.md)              | Must     | Terminé   | 2/2        |
 | [EPIC-04 — Combat contre le bot](epics/EPIC-04-combat-bot.md)                         | Must     | En cours  | 10/11      |
 | [EPIC-05 — Illustrations des cartes](epics/EPIC-05-illustrations.md)                  | Should   | En cours  | 3/5        |
-| [EPIC-06 — Duels entre joueurs](epics/EPIC-06-duels-joueurs.md)                       | Should   | En cours  | 4/7        |
+| [EPIC-06 — Duels entre joueurs](epics/EPIC-06-duels-joueurs.md)                       | Should   | En cours  | 5/7        |
 | [EPIC-07 — Vie sociale](epics/EPIC-07-vie-sociale.md)                                 | Could    | À affiner | 0/0        |
 | [EPIC-08 — Cartes proposées par la communauté IT](epics/EPIC-08-cartes-communaute.md) | Should   | À affiner | 0/5        |
 
@@ -83,7 +83,7 @@ le 2026-10-19).
 | [US-033 — Défier un collègue par lien](stories/US-033-defier-par-lien.md)          | EPIC-06 | Must     | M      | Faite     |
 | [US-034 — Écran de duel](stories/US-034-ecran-duel.md)                             | EPIC-06 | Must     | L      | Faite     |
 | [US-035 — Mes duels et « à vous de jouer »](stories/US-035-mes-duels.md)           | EPIC-06 | Should   | M      | Faite     |
-| [US-036 — Abandon et forfait](stories/US-036-abandon-forfait.md)                   | EPIC-06 | Should   | S      | À affiner |
+| [US-036 — Abandon et forfait](stories/US-036-abandon-forfait.md)                   | EPIC-06 | Should   | S      | Faite     |
 | [US-037 — Adversaire au hasard](stories/US-037-adversaire-hasard.md)               | EPIC-06 | Could    | M      | À affiner |
 | [US-038 — Un booster pour une victoire en duel](stories/US-038-recompense-duel.md) | EPIC-06 | Could    | S      | À affiner |
 
