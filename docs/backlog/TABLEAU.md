@@ -33,3 +33,4 @@ Objectif : un socle outillé, vérifié automatiquement, et une méthode de trav
 | Story                                                                 | Epic    | Priorité | Taille | Statut |
 | --------------------------------------------------------------------- | ------- | -------- | ------ | ------ |
 | [US-005 — Univers et règles du jeu](stories/US-005-univers-regles.md) | EPIC-01 | Must     | M      | Faite  |
+| [US-008 — Catalogue du set 1](stories/US-008-catalogue-set-1.md)      | EPIC-01 | Must     | L      | Prête  |
