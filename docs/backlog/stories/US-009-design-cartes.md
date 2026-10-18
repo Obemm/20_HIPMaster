@@ -1,7 +1,7 @@
 # US-009 — Design des cartes façon carte à jouer
 
 - **Epic** : EPIC-05
-- **Statut** : En revue
+- **Statut** : Faite
 - **Priorité** : Should
 - **Taille** : L
 - **Branche** : `us-009-design-cartes`
@@ -69,3 +69,4 @@ collectionner** afin d'**avoir envie de les parcourir, de les collectionner et d
   par famille) ; catalogue en grille de 2 à 5 colonnes ; détail en `<dialog>` natif sur une route enfant du
   catalogue (filtres conservés, Échap, clic sur le fond, focus rendu à la carte) ; 13 tests unitaires du front,
   e2e et audit axe-core en clair et en sombre ; captures jointes. En revue.
+- 2026-10-18 — livrée : cartes au design de carte à jouer (cadre par rareté, illustration provisoire par famille), détail en fenêtre modale, thème clair ou sombre selon le système (ADR 0012)

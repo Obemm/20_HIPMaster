@@ -13,7 +13,7 @@ Toutes les cartes du premier set ont une illustration optimisée (WebP/AVIF, moi
 
 ## Stories
 
-- [ ] US-009 — Design des cartes façon carte à jouer
+- [x] US-009 — Design des cartes façon carte à jouer
 
 À découper ensuite : génération des illustrations
 avec [Recraft](https://www.recraft.ai) (vérifier la licence), chaîne d'import et d'optimisation des images.
