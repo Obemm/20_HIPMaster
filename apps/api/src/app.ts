@@ -4,6 +4,7 @@ import {
   validatorCompiler,
   type ZodTypeProvider,
 } from 'fastify-type-provider-zod';
+import { routesCartes } from './routes/cartes.ts';
 import { routesRaretes } from './routes/raretes.ts';
 import { routesSante } from './routes/sante.ts';
 
@@ -34,6 +35,7 @@ export function construireApp(options: { journaux?: boolean } = {}) {
 
   app.register(routesSante, { prefix: '/api/v1' });
   app.register(routesRaretes, { prefix: '/api/v1' });
+  app.register(routesCartes, { prefix: '/api/v1' });
 
   return app;
 }
