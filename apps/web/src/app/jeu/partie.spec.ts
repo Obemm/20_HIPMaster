@@ -401,6 +401,7 @@ describe('PartieEcran en duel (US-034)', () => {
     adversaire: { pseudo: 'Bob' },
     moi: 'j1',
     curseur: 10 + version,
+    echeance: new Date(Date.now() + 10 * 60 * 60 * 1000 + 30_000).toISOString(),
     vue: v,
     evenements,
   });
@@ -463,5 +464,33 @@ describe('PartieEcran en duel (US-034)', () => {
     } finally {
       vi.useRealTimers();
     }
+  });
+
+  it('affiche l’échéance, et abandonne après confirmation : la fin en donne la raison', async () => {
+    const { fixture, http, page } = await ouvrirDuel(vue());
+    expect(page.textContent).toContain('À vous de jouer dans les 10 h 0 min, sinon forfait.');
+
+    bouton(page, 'Abandonner')?.click();
+    fixture.detectChanges();
+    expect(page.textContent).toContain('Abandonner ce duel ? Bob gagnera.');
+    bouton(page, 'Non, continuer')?.click();
+    fixture.detectChanges();
+    expect(bouton(page, 'Oui, abandonner')).toBeUndefined();
+
+    bouton(page, 'Abandonner')?.click();
+    fixture.detectChanges();
+    bouton(page, 'Oui, abandonner')?.click();
+    const abandon = http.expectOne('/api/v1/duels/p1/abandon');
+    expect(abandon.request.method).toBe('POST');
+    abandon.flush({
+      ...duel(vue({ issue: { gagnant: 'j2', raison: 'abandon' }, actions: [] }), 5),
+      statut: 'termine',
+      echeance: null,
+    });
+    await fixture.whenStable();
+    fixture.detectChanges();
+    expect(page.querySelector('#titre-fin')?.textContent).toContain('Défaite');
+    expect(page.textContent).toContain('Vous avez abandonné.');
+    expect(bouton(page, 'Abandonner')).toBeUndefined();
   });
 });

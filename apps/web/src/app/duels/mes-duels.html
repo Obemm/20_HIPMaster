@@ -46,9 +46,13 @@
                   </span>
                   <span class="text-sm text-texte-doux">
                     @if (d.resultat) {
-                      {{ resultats[d.resultat] }} ·
+                      {{ resultats[d.resultat]
+                      }}{{ d.raison ? (precisions[d.raison] ?? '') : '' }} ·
                     } @else if (d.tour) {
                       Tour {{ d.tour }} ·
+                      @if (resteAvant(d.echeance); as reste) {
+                        reste {{ reste }} ·
+                      }
                     }
                     {{ d.statut === 'attente' ? 'lancé' : 'dernier coup' }} {{ depuis(d.majLe) }}
                   </span>

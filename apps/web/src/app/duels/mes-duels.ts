@@ -2,11 +2,18 @@ import { Component, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CompteService } from '../compte/compte.service';
 import { MesDuelsService, type ResumeDuel } from './mes-duels.service';
+import { resteAvant } from './temps';
 
 const RESULTATS: Record<NonNullable<ResumeDuel['resultat']>, string> = {
   victoire: 'Victoire',
   defaite: 'Défaite',
   nulle: 'Partie nulle',
+};
+
+/** Précision sur la fin d'un duel : par abandon ou par forfait (US-036) ; rien pour une fin de jeu normale. */
+const PRECISIONS: Partial<Record<NonNullable<ResumeDuel['raison']>, string>> = {
+  abandon: ' par abandon',
+  forfait: ' par forfait',
 };
 
 /** « Il y a 5 min », « il y a 2 h », « il y a 3 j ». */
@@ -29,6 +36,8 @@ export class MesDuels {
   private readonly service = inject(MesDuelsService);
 
   protected readonly resultats = RESULTATS;
+  protected readonly precisions = PRECISIONS;
+  protected readonly resteAvant = resteAvant;
   protected readonly depuis = depuis;
   protected readonly groupes = computed(() => {
     const duels = this.service.duels();

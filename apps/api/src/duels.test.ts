@@ -290,3 +290,77 @@ describe('mes duels (US-035)', () => {
     expect((await requete('GET', '/moi/duels', {})).statusCode).toBe(401);
   });
 });
+
+describe('abandon et forfait (US-036)', () => {
+  const HEURE = 60 * 60 * 1000;
+
+  it('abandonner fait gagner l’adversaire ; un duel terminé ne s’abandonne plus', async () => {
+    const { ada, bob, id } = await duelLance();
+    const abandon = await requete('POST', `/duels/${id}/abandon`, ada);
+    expect(abandon.statusCode).toBe(200);
+    expect(abandon.json<DuelVisible>()).toMatchObject({
+      statut: 'termine',
+      echeance: null,
+      vue: { issue: { gagnant: 'j2', raison: 'abandon' } },
+    });
+    expect((await requete('POST', `/duels/${id}/abandon`, bob)).statusCode).toBe(409);
+
+    const deBob = (await requete('GET', '/moi/duels', bob)).json<{
+      duels: { resultat: string; raison: string }[];
+    }>();
+    expect(deBob.duels[0]).toMatchObject({ resultat: 'victoire', raison: 'abandon' });
+  });
+
+  it('un tiers ne peut pas abandonner, et un défi en attente s’annule plutôt qu’il ne s’abandonne', async () => {
+    const { id } = await duelLance();
+    const eve = await joueur('Eve');
+    expect((await requete('POST', `/duels/${id}/abandon`, eve)).statusCode).toBe(404);
+    const ada = await joueur('Ada2');
+    const attente = (await requete('POST', '/duels', ada, { deck: 'moderne' })).json<DuelVisible>();
+    expect((await requete('POST', `/duels/${attente.id}/abandon`, ada)).statusCode).toBe(409);
+  });
+
+  it('sans coup pendant 72 h, le joueur actif perd par forfait, évalué à la lecture', async () => {
+    let maintenant = Date.now();
+    const appli = construireApp({ base: ouverte.base, duels: { maintenant: () => maintenant } });
+    const ada = await joueur('Ada');
+    const bob = await joueur('Bob');
+    const appeler = (method: 'GET' | 'POST', url: string, entetes: object, payload?: object) =>
+      appli.inject({
+        method,
+        url: `/api/v1${url}`,
+        headers: { ...entetes },
+        ...(payload && { payload }),
+      });
+    const cree = (await appeler('POST', '/duels', ada, { deck: 'moderne' })).json<DuelVisible>();
+    const lance = (
+      await appeler('POST', `/duels/${cree.id}/rejoindre`, bob, { deck: 'heritage' })
+    ).json<DuelVisible>();
+    const echeance = new Date(lance.echeance ?? '').getTime();
+    expect(echeance - Date.now()).toBeGreaterThan(71 * HEURE);
+
+    maintenant += 71 * HEURE;
+    expect((await appeler('GET', `/duels/${cree.id}`, ada)).json<DuelVisible>().statut).toBe(
+      'en-cours',
+    );
+
+    maintenant += 2 * HEURE;
+    const perdant = lance.vue?.actif ?? 'j1';
+    const apres = (await appeler('GET', '/moi/duels', ada)).json<{
+      duels: { statut: string; resultat: string; raison: string }[];
+    }>();
+    expect(apres.duels[0]).toMatchObject({
+      statut: 'termine',
+      raison: 'forfait',
+      resultat: perdant === 'j1' ? 'defaite' : 'victoire',
+    });
+    const fin = (await appeler('GET', `/duels/${cree.id}`, bob)).json<DuelVisible>();
+    expect(fin.vue?.issue).toEqual({ gagnant: perdant === 'j1' ? 'j2' : 'j1', raison: 'forfait' });
+
+    // Un coup arrivé trop tard est refusé.
+    const actif = perdant === 'j1' ? ada : bob;
+    const tard = await appeler('POST', `/duels/${cree.id}/actions`, actif, { type: 'finirTour' });
+    expect(tard.statusCode).toBe(422);
+    await appli.close();
+  });
+});

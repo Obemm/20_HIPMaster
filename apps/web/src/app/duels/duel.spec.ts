@@ -21,6 +21,7 @@ const duel = (modifs: Partial<Duel> = {}): Duel => ({
   adversaire: null,
   moi: 'j1',
   curseur: 0,
+  echeance: null,
   vue: null,
   evenements: [],
   ...modifs,
