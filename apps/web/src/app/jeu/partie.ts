@@ -197,8 +197,19 @@ export class PartieEcran implements OnInit, OnDestroy {
         return `Décommissionner (+${this.gainDecommission(carte)} Débit)`;
       case 'jouer':
         return this.libelleJeu(action.cibles, carte?.cout ?? 0);
+      case 'router':
+        return `Routage : renvoyer ${this.nommer(action.retour)} en main et poser cette carte (gratuit)`;
+      case 'migrer':
+        return `Migrer ${this.nommer(action.source)} vers cette carte (${Math.max(0, (carte?.cout ?? 0) - 2)} Débit)`;
     }
   }
+
+  /** Les actions qui ne partent pas d'une carte de la main : l'Outillage (US-020). */
+  protected readonly actionsOutillage = computed(() =>
+    (this.vue()?.actions ?? []).filter(
+      (a): a is Extract<Action, { type: 'outiller' }> => a.type === 'outiller',
+    ),
+  );
 
   /** « Jouer (2 Débit) », « Jouer sur Adaptateur SAP (2 Débit) », « Jouer sur SOAP / WSDL et EDI (3 Débit) ». */
   private libelleJeu(cibles: readonly string[], cout: number): string {

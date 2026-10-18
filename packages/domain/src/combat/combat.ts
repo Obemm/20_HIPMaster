@@ -129,10 +129,11 @@ export function attaquer(
   joueur: IdJoueur,
   attaquantId: string,
   cible: Cible,
+  options: { autonome?: boolean } = {},
 ): ErreurAction | null {
   const attaquant = etat.joueurs[joueur].plateau.find((c) => c.id === attaquantId);
   if (!attaquant) return erreur('carte-absente', 'Ce composant n’est pas sur votre plateau.');
-  const raison = raisonDeNePasAttaquer(etat, joueur, attaquant);
+  const raison = raisonDeNePasAttaquer(etat, joueur, attaquant, options);
   if (raison) return erreur('ne-peut-pas-attaquer', raison);
 
   const defenseurDe = adversaire(joueur);
@@ -142,6 +143,11 @@ export function attaquer(
   const force = attaquant.attaqueNulle ? 0 : attaqueEffective(etat, joueur, attaquant);
   attaquant.attaqueNulle = false;
   consommerCron(etat, joueur, attaquant);
+  if (attaquant.aAttaqueCeTour) {
+    // Seconde attaque du tour : c'est la Délégation qui la permet.
+    attaquant.delegue = true;
+    etat.joueurs[joueur].delegationUtilisee = true;
+  }
   attaquant.aAttaqueCeTour = true;
   attaquant.dernierTourAttaque = etat.joueurs[joueur].tours;
   noter(etat, { type: 'attaque', joueur, attaquant: attaquant.id, cible });

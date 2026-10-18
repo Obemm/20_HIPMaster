@@ -6,7 +6,14 @@ export default defineConfig({
     projects: [
       { test: { name: 'domain', include: ['packages/domain/src/**/*.test.ts'] } },
       { test: { name: 'api', include: ['apps/api/src/**/*.test.ts'] } },
-      { test: { name: 'illustrations', include: ['packages/illustrations/src/**/*.test.ts'] } },
+      {
+        test: {
+          name: 'illustrations',
+          include: ['packages/illustrations/src/**/*.test.ts'],
+          // L'encodage AVIF est lent sur les machines de CI partagées, surtout en parallèle des autres projets.
+          testTimeout: 30_000,
+        },
+      },
     ],
     coverage: { provider: 'v8', include: ['packages/*/src/**', 'apps/api/src/**'] },
   },

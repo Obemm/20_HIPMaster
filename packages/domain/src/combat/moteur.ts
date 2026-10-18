@@ -1,6 +1,7 @@
 import { attaquer } from './combat.ts';
 import { ciblesDeRenfort, effetsALaPose } from './effets-composants.ts';
 import { jouer } from './effets.ts';
+import { executerIa, lancerAgentsAutonomes } from './ia.ts';
 import {
   carteDe,
   DEBIT_DECOMMISSION,
@@ -138,6 +139,8 @@ function decommissionner(etat: EtatPartie, joueur: IdJoueur, carteId: string): E
 }
 
 function executer(etat: EtatPartie, action: Action): ErreurAction | null {
+  const ia = executerIa(etat, action);
+  if (ia !== undefined) return ia;
   const joueur = etat.actif;
   switch (action.type) {
     case 'poser':
@@ -152,6 +155,10 @@ function executer(etat: EtatPartie, action: Action): ErreurAction | null {
       return jouer(etat, joueur, action.carte, action.cibles);
     case 'finirTour':
       finirTour(etat);
+      // Les agents Autonomes du joueur qui commence son tour attaquent seuls (US-020).
+      if (!etat.issue) lancerAgentsAutonomes(etat, etat.actif);
+      return null;
+    default:
       return null;
   }
 }

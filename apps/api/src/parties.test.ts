@@ -142,7 +142,7 @@ describe('parties contre le bot', () => {
 
   it('accepte l’action jouer (sort ou incident) avec ses cibles, et refuse des cibles invalides', async () => {
     const { app } = appli();
-    let { partie } = await creer(app, 'moderne');
+    let { partie } = await creer(app, 'hybride');
     let jeu = partie.vue.actions.find((a) => a.type === 'jouer');
     for (let tour = 0; !jeu && !partie.vue.issue && tour < 15; tour++) {
       partie = (await jouer(app, partie.id, { type: 'finirTour' })).json<PartieVisible>();

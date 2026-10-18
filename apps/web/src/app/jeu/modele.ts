@@ -20,6 +20,7 @@ export interface Composant extends Instance {
   doublon?: boolean;
   attaqueNulle?: boolean;
   coupleA?: string | null;
+  capacitesEmpruntees?: string[];
 }
 
 interface Camp {
@@ -37,6 +38,9 @@ export type Action =
   | { type: 'decommissionner'; carte: string }
   | { type: 'attaquer'; attaquant: string; cible: string }
   | { type: 'jouer'; carte: string; cibles: string[] }
+  | { type: 'outiller'; source: string }
+  | { type: 'router'; retour: string; carte: string }
+  | { type: 'migrer'; source: string; carte: string }
   | { type: 'finirTour' };
 
 export interface Issue {
@@ -70,6 +74,8 @@ export interface Evenement {
   paye?: boolean;
   issue?: Issue;
   cibles?: string[];
+  source?: string;
+  retour?: Instance;
   statut?: string;
 }
 

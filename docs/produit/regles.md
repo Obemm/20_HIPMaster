@@ -72,6 +72,21 @@ Les dégâts restent d'un tour à l'autre. Tout le hasard (pioche, cibles au has
 - Un composant dont les capacités sont suspendues (Certificat expiré, Contexte saturé) perd aussi son effet propre
   permanent.
 
+## Capacités IA et Migration (US-020)
+
+- **Autonome** : sans Orchestration, un agent n'attaque jamais sur ordre ; au début de votre tour, il attaque une
+  cible valide tirée au hasard (Garde et Quotas respectés). Avec **Orchestration**, vous le faites attaquer vous-même.
+- **Délégation** : une fois par tour, un agent qui a déjà attaqué attaque une seconde fois (un agent autonome le fait
+  seul, au hasard) ; Solace Agent Mesh donne cet effet à vos agents.
+- **Outillage** (action « outiller », une fois par tour) : vos agents empruntent les capacités d'un de vos
+  composants non IA jusqu'à la fin du tour ; Solace Agent Mesh donne aussi cet effet.
+- **Routage multi-modèles** (action « router », une fois par tour) : un composant IA (autre que celui qui route)
+  revient en main, et un composant IA de la main, de coût inférieur ou égal, prend sa place gratuitement ; il ne peut
+  pas attaquer ce tour.
+- **Migration** (action « migrer ») : SFTP est remplacé par un composant API ou EDA de la main, qui coûte 2 de moins ;
+  SFTP part à la défausse et la nouvelle carte ne peut pas attaquer ce tour.
+- **Cache sémantique** : votre premier sort IA du tour ne coûte rien.
+
 ## Capacités
 
 | Capacité                  | Effet                                                                                                                                              |
