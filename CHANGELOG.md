@@ -62,6 +62,8 @@ Toutes les évolutions notables du projet sont consignées ici
 - Ma collection : progression du set et par rareté, doubles, cartes manquantes visibles et grisées, filtre
   « possédées / manquantes » ; le détail d'une carte indique les exemplaires possédés ; `GET /api/v1/moi/collection`
   (US-024).
+- Un booster pour chaque victoire contre le bot, partie lancée en étant connecté : une seule récompense par partie,
+  au plus 3 par jour ; l'écran de fin l'annonce et mène à son ouverture (US-025).
 - Chaîne des illustrations : un original déposé et décrit devient, en une commande (`npm run illustrations`), quatre
   images AVIF et WebP de moins de 100 Ko et un manifeste ; la carte affiche son illustration, ou son pictogramme de
   famille à défaut. EPIC-05 découpé en US-015 à US-017 (US-015, ADR 0015).

@@ -87,6 +87,8 @@ export interface Partie {
   niveau: string;
   vue: Vue;
   evenements: Evenement[];
+  /** Présente après une victoire dans une partie lancée en étant connecté (US-025). */
+  recompense?: { booster: boolean; plafondAtteint: boolean };
 }
 
 /** Un niveau du bot, du plus simple au plus fort (US-021). */
