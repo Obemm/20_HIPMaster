@@ -11,7 +11,7 @@ _Dernière mise à jour : 2026-10-18_
 | [EPIC-02 — Comptes joueurs](epics/EPIC-02-comptes-joueurs.md)            | Must     | À affiner | 0/0        |
 | [EPIC-03 — Boosters et collection](epics/EPIC-03-boosters-collection.md) | Must     | À affiner | 0/0        |
 | [EPIC-04 — Combat contre le bot](epics/EPIC-04-combat-bot.md)            | Must     | À affiner | 0/0        |
-| [EPIC-05 — Illustrations des cartes](epics/EPIC-05-illustrations.md)     | Should   | À affiner | 0/0        |
+| [EPIC-05 — Illustrations des cartes](epics/EPIC-05-illustrations.md)     | Should   | En cours  | 1/1        |
 | [EPIC-06 — Duels entre joueurs](epics/EPIC-06-duels-joueurs.md)          | Should   | À affiner | 0/0        |
 | [EPIC-07 — Vie sociale](epics/EPIC-07-vie-sociale.md)                    | Could    | À affiner | 0/0        |
 
@@ -34,3 +34,9 @@ Objectif : un socle outillé, vérifié automatiquement, et une méthode de trav
 | --------------------------------------------------------------------- | ------- | -------- | ------ | ------ |
 | [US-005 — Univers et règles du jeu](stories/US-005-univers-regles.md) | EPIC-01 | Must     | M      | Faite  |
 | [US-008 — Catalogue du set 1](stories/US-008-catalogue-set-1.md)      | EPIC-01 | Must     | L      | Faite  |
+
+## Itération 2 (à venir) — donner envie de jouer
+
+| Story                                                                             | Epic    | Priorité | Taille | Statut |
+| --------------------------------------------------------------------------------- | ------- | -------- | ------ | ------ |
+| [US-009 — Design des cartes façon carte à jouer](stories/US-009-design-cartes.md) | EPIC-05 | Should   | L      | Faite  |

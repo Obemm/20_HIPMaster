@@ -34,36 +34,60 @@ test('depuis l’accueil, le catalogue liste les 71 cartes et se filtre', async 
   await sansDefilementHorizontal(page);
 });
 
-test('le détail d’une évolution décrit ses capacités et mène à sa carte d’origine', async ({
+test('le détail s’ouvre en fenêtre modale et se referme sur le catalogue filtré', async ({
   page,
 }) => {
   await page.goto('/cartes');
-  await page.getByRole('link', { name: 'webMethods.io', exact: true }).click();
-  await expect(page.getByRole('heading', { level: 1, name: 'webMethods.io' })).toBeVisible();
-  await expect(page.getByText('Connecteur (2)')).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'En vrai' })).toBeVisible();
+  await page.getByLabel('Famille').selectOption({ label: 'iPaaS' });
+  const lien = page.getByRole('link', { name: 'webMethods.io', exact: true });
+  await lien.click();
 
-  await page.getByRole('link', { name: 'webMethods Integration Server 10.15' }).click();
+  const fenetre = page.getByRole('dialog', { name: 'webMethods.io' });
+  await expect(fenetre).toBeVisible();
+  await expect(page).toHaveURL(/\/cartes\/26$/);
+  await expect(fenetre.getByText('Connecteur (2)', { exact: true })).toBeVisible();
+  await expect(fenetre.getByRole('heading', { name: 'En vrai' })).toBeVisible();
+  await sansDefilementHorizontal(page);
+
+  await page.keyboard.press('Escape');
+  await expect(fenetre).toBeHidden();
+  await expect(page).toHaveURL(/\/cartes$/);
+  await expect(page.getByRole('status')).toHaveText('5 cartes affichées');
+  await expect(lien).toBeFocused();
+});
+
+test('une évolution mène à sa carte d’origine, et le bouton Fermer referme la fenêtre', async ({
+  page,
+}) => {
+  await page.goto('/cartes/26');
+  const fenetre = page.getByRole('dialog');
+  await fenetre.getByRole('link', { name: 'webMethods Integration Server 10.15' }).click();
   await expect(page).toHaveURL(/\/cartes\/9$/);
   await expect(
-    page.getByRole('heading', { level: 1, name: 'webMethods Integration Server 10.15' }),
+    page.getByRole('dialog', { name: 'webMethods Integration Server 10.15' }),
   ).toBeVisible();
-  await sansDefilementHorizontal(page);
+
+  await fenetre.getByRole('button', { name: 'Fermer' }).click();
+  await expect(page.getByRole('dialog')).toBeHidden();
+  await expect(page).toHaveURL(/\/cartes$/);
 });
 
 test('une carte inconnue est annoncée comme introuvable', async ({ page }) => {
   await page.goto('/cartes/999');
-  await expect(page.getByRole('heading', { level: 1, name: 'Carte introuvable' })).toBeVisible();
+  await expect(page.getByRole('dialog', { name: 'Carte introuvable' })).toBeVisible();
 });
 
-test('le catalogue et le détail ne présentent aucune violation d’accessibilité', async ({
-  page,
-}) => {
-  await page.goto('/cartes');
-  await expect(page.getByRole('status')).toHaveText('71 cartes affichées');
-  await auditer(page);
+for (const theme of ['light', 'dark'] as const) {
+  test(`le catalogue et le détail ne présentent aucune violation d’accessibilité (thème ${theme})`, async ({
+    page,
+  }) => {
+    await page.emulateMedia({ colorScheme: theme });
+    await page.goto('/cartes');
+    await expect(page.getByRole('status')).toHaveText('71 cartes affichées');
+    await auditer(page);
 
-  await page.goto('/cartes/40');
-  await expect(page.getByRole('heading', { level: 1, name: 'Apigee AI Gateway' })).toBeVisible();
-  await auditer(page);
-});
+    await page.goto('/cartes/40');
+    await expect(page.getByRole('dialog', { name: 'Apigee AI Gateway' })).toBeVisible();
+    await auditer(page);
+  });
+}

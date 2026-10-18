@@ -27,6 +27,9 @@ Toutes les évolutions notables du projet sont consignées ici
 - Catalogue du set 1 : 71 cartes et 23 capacités en données typées du domaine (ADR 0011), API
   `GET /api/v1/cartes` et `/api/v1/cartes/{numero}` (contrat OpenAPI), pages Angular du catalogue filtrable par
   famille et rareté et du détail d'une carte, accessibles sur mobile (US-008).
+- Cartes au design de carte à jouer : format portrait, cadre par rareté, illustration provisoire et pictogramme par
+  famille, Débit, Attaque et PV avec icônes ; catalogue en grille de 2 à 5 colonnes et détail en fenêtre modale qui
+  garde les filtres ; thème clair ou sombre selon le système, par jetons de couleur (US-009, ADR 0012).
 
 ### Modifié
 
