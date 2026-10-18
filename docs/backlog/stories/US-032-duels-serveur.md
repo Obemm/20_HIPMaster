@@ -1,7 +1,7 @@
 # US-032 — Duels côté serveur : créer, rejoindre, jouer à son tour
 
 - **Epic** : EPIC-06
-- **Statut** : En revue
+- **Statut** : Faite
 - **Priorité** : Must
 - **Taille** : L
 - **Branche** : `us-032-duels-serveur`
@@ -36,3 +36,4 @@ En tant que **joueur connecté**, je veux **qu'un duel contre un autre joueur so
   verrouillent la ligne) ; routes `/duels` avec `ETag`, `If-None-Match` (304) et `If-Match` (409 si périmé) ; le
   créateur joue j1, l'adversaire j2, le tirage désigne qui commence. Un tiers voit un duel en attente (pour le
   rejoindre, US-033) mais jamais un duel commencé (404). Tests de l'API (8), dont un duel joué jusqu'au bout.
+- 2026-10-19 — livrée : Duels côté serveur : créer, rejoindre, jouer à son tour, état en base
