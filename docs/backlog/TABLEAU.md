@@ -10,7 +10,7 @@ _Dernière mise à jour : 2026-10-19_
 | [EPIC-01 — Univers et modèle de carte](epics/EPIC-01-univers-cartes.md)               | Must     | Terminé   | 2/2        |
 | [EPIC-02 — Comptes joueurs](epics/EPIC-02-comptes-joueurs.md)                         | Must     | Terminé   | 1/1        |
 | [EPIC-03 — Boosters et collection](epics/EPIC-03-boosters-collection.md)              | Must     | Terminé   | 2/2        |
-| [EPIC-04 — Combat contre le bot](epics/EPIC-04-combat-bot.md)                         | Must     | Terminé   | 10/10      |
+| [EPIC-04 — Combat contre le bot](epics/EPIC-04-combat-bot.md)                         | Must     | En cours  | 10/11      |
 | [EPIC-05 — Illustrations des cartes](epics/EPIC-05-illustrations.md)                  | Should   | En cours  | 3/5        |
 | [EPIC-06 — Duels entre joueurs](epics/EPIC-06-duels-joueurs.md)                       | Should   | En cours  | 2/7        |
 | [EPIC-07 — Vie sociale](epics/EPIC-07-vie-sociale.md)                                 | Could    | À affiner | 0/0        |
@@ -81,11 +81,20 @@ le 2026-10-19).
 | ---------------------------------------------------------------------------------- | ------- | -------- | ------ | --------- |
 | [US-032 — Duels côté serveur](stories/US-032-duels-serveur.md)                     | EPIC-06 | Must     | L      | Faite     |
 | [US-033 — Défier un collègue par lien](stories/US-033-defier-par-lien.md)          | EPIC-06 | Must     | M      | Faite     |
-| [US-034 — Écran de duel](stories/US-034-ecran-duel.md)                             | EPIC-06 | Must     | L      | À affiner |
+| [US-034 — Écran de duel](stories/US-034-ecran-duel.md)                             | EPIC-06 | Must     | L      | En revue  |
 | [US-035 — Mes duels et « à vous de jouer »](stories/US-035-mes-duels.md)           | EPIC-06 | Should   | M      | À affiner |
 | [US-036 — Abandon et forfait](stories/US-036-abandon-forfait.md)                   | EPIC-06 | Should   | S      | À affiner |
 | [US-037 — Adversaire au hasard](stories/US-037-adversaire-hasard.md)               | EPIC-06 | Could    | M      | À affiner |
 | [US-038 — Un booster pour une victoire en duel](stories/US-038-recompense-duel.md) | EPIC-06 | Could    | S      | À affiner |
+
+## Retours de partie
+
+Retour du porteur du projet le 2026-10-19 : une partie perdue sans un seul dégât infligé, faute de savoir qu'il faut
+choisir l'attaquant et sa cible.
+
+| Story                                                                                  | Epic    | Priorité | Taille | Statut   |
+| -------------------------------------------------------------------------------------- | ------- | -------- | ------ | -------- |
+| [US-039 — Expliquer les attaques et les combats](stories/US-039-expliquer-attaques.md) | EPIC-04 | Must     | S      | En cours |
 
 ## Plus tard — cartes de la communauté IT
 

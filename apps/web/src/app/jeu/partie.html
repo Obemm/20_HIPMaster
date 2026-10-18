@@ -1,8 +1,12 @@
 <main class="mx-auto flex w-full max-w-3xl flex-col gap-4 px-3 py-4 sm:px-6">
   <header class="flex flex-wrap items-center justify-between gap-2">
     <div>
-      <h1 class="text-xl font-bold tracking-tight">Partie contre le bot</h1>
-      @if (nomNiveau()) {
+      <h1 class="text-xl font-bold tracking-tight">
+        {{
+          mode() === 'duel' ? 'Duel contre ' + (pseudoAdversaire() ?? '…') : 'Partie contre le bot'
+        }}
+      </h1>
+      @if (mode() === 'bot' && nomNiveau()) {
         <p class="text-sm text-texte-doux">Niveau : {{ nomNiveau() }}</p>
       }
     </div>
@@ -16,9 +20,15 @@
 
   @if (introuvable()) {
     <section class="flex flex-col gap-2" aria-labelledby="titre-introuvable">
-      <h2 id="titre-introuvable" class="text-lg font-semibold">Partie introuvable</h2>
+      <h2 id="titre-introuvable" class="text-lg font-semibold">
+        {{ mode() === 'duel' ? 'Duel introuvable' : 'Partie introuvable' }}
+      </h2>
       <p role="alert">
-        Cette partie n’existe plus : elle expire après 30 minutes sans activité.
+        @if (mode() === 'duel') {
+          Ce duel n’existe pas, ou vous n’y participez pas.
+        } @else {
+          Cette partie n’existe plus : elle expire après 30 minutes sans activité.
+        }
         <a routerLink="/jouer" class="underline underline-offset-4">Commencer une nouvelle partie</a
         >.
       </p>
@@ -27,12 +37,12 @@
     @let v = vue()!;
 
     <p class="rounded-lg bg-surface px-3 py-2 text-sm">
-      <strong>Objectif :</strong> faire tomber le SLA du SI du bot à 0. Après 20 tours, le meilleur
-      SLA gagne.
+      <strong>Objectif :</strong> faire tomber le SLA du SI {{ autre().de }} à 0. Après 20 tours, le
+      meilleur SLA gagne.
     </p>
     <details class="rounded-lg border border-bordure px-3 py-2" [open]="reglesOuvertes">
       <summary class="cursor-pointer font-semibold">Comment jouer ?</summary>
-      <div class="pt-2"><hip-regle-courte /></div>
+      <div class="pt-2"><hip-regle-courte [adversaire]="autre()" /></div>
     </details>
     @if (capacitesEnJeu().length) {
       <details class="rounded-lg border border-bordure px-3 py-2">
@@ -50,10 +60,10 @@
       </details>
     }
 
-    <!-- Camp du bot -->
+    <!-- Camp de l'adversaire (le bot, ou un joueur en duel) -->
     <section aria-labelledby="titre-bot" class="flex flex-col gap-2">
       <div class="flex flex-wrap items-center justify-between gap-2">
-        <h2 id="titre-bot" class="font-semibold">Le bot</h2>
+        <h2 id="titre-bot" class="font-semibold">{{ autre().sujet }}</h2>
         <p class="flex gap-3 text-sm text-texte-doux">
           <span><hip-icone nom="debit" class="size-3.5" /> Débit {{ v.adversaire.debit }}</span>
           <span>Main {{ v.adversaire.main }}</span>
@@ -69,13 +79,16 @@
         [disabled]="!ciblesPossibles().has('si') || occupe()"
         (click)="attaquer('si')"
       >
-        <span>SI du bot</span>
+        <span>SI {{ autre().de }}</span>
         <span>SLA {{ v.adversaire.sla }} / 20</span>
         @if (ciblesPossibles().has('si')) {
           <span class="sr-only">: attaquer</span>
         }
       </button>
-      <ul class="grid min-h-24 grid-cols-3 gap-2 sm:grid-cols-5" aria-label="Plateau du bot">
+      <ul
+        class="grid min-h-24 grid-cols-3 gap-2 sm:grid-cols-5"
+        [attr.aria-label]="'Plateau ' + autre().de"
+      >
         @for (c of v.adversaire.plateau; track c.id) {
           @let carte = carteDe(c.numero)!;
           <li>
@@ -164,7 +177,7 @@
               ? 'Un SI est tombé à 0 de SLA.'
               : 'Les 20 tours sont joués : le meilleur SLA l’emporte.'
           }}
-          SLA final : vous {{ v.moi.sla }}, le bot {{ v.adversaire.sla }}.
+          SLA final : vous {{ v.moi.sla }}, {{ autre().nom }} {{ v.adversaire.sla }}.
         </p>
         @if (partie()?.recompense; as recompense) {
           <p class="font-semibold">
@@ -175,7 +188,9 @@
               d’autres.
             }
           </p>
-        } @else if (issue.gagnant === v.joueur && compte.pret() && !compte.joueur()) {
+        } @else if (
+          mode() === 'bot' && issue.gagnant === v.joueur && compte.pret() && !compte.joueur()
+        ) {
           <p>
             Avec un compte, chaque victoire rapporte un booster :
             <a routerLink="/compte" class="font-semibold underline underline-offset-4"
@@ -193,9 +208,9 @@
             >
           }
           <a
-            routerLink="/jouer"
+            [routerLink]="mode() === 'duel' ? '/duels/nouveau' : '/jouer'"
             class="rounded-lg bg-accent px-4 py-3 font-semibold text-sur-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-            >Rejouer</a
+            >{{ mode() === 'duel' ? 'Lancer une revanche' : 'Rejouer' }}</a
           >
           <a routerLink="/" class="px-4 py-3 underline underline-offset-4">Accueil</a>
         </p>
@@ -204,7 +219,8 @@
       <!-- Ma main et mes actions -->
       <section aria-labelledby="titre-main" class="flex flex-col gap-2">
         <h2 id="titre-main" class="font-semibold">Votre main ({{ v.moi.main.length }})</h2>
-        <ul class="flex gap-2 overflow-x-auto pb-2">
+        <!-- Focusable : la main défile au clavier même quand ses cartes sont désactivées (tour adverse). -->
+        <ul class="flex gap-2 overflow-x-auto pb-2" tabindex="0" aria-labelledby="titre-main">
           @for (instance of v.moi.main; track instance.id) {
             <li class="w-28 shrink-0 sm:w-32">
               <button
@@ -263,7 +279,13 @@
 
       <div class="flex flex-wrap items-center justify-between gap-3">
         <p class="text-sm text-texte-doux">
-          {{ monTour() ? aide() : 'Le bot joue…' }}
+          {{
+            monTour()
+              ? aide()
+              : mode() === 'duel'
+                ? 'Au tour de ' + autre().nom + ' : son coup s’affichera ici.'
+                : 'Le bot joue…'
+          }}
         </p>
         <button
           type="button"
