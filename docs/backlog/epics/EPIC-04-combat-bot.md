@@ -18,7 +18,7 @@ Une partie dure moins de 5 minutes ; le bot de niveau moyen gagne environ une pa
 - [x] US-012 — API de partie contre le bot
 - [x] US-013 — Écran de partie contre le bot
 - [x] US-014 — Sorts et incidents
-- [ ] US-019 — Effets propres des composants
+- [x] US-019 — Effets propres des composants
 - [ ] US-020 — Capacités IA et Migration
 
 Premier jalon jouable à la fin d'US-013, avec les cartes que le moteur prend déjà en charge (décision du porteur du

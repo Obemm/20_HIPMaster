@@ -61,6 +61,17 @@ Les dégâts restent d'un tour à l'autre. Tout le hasard (pioche, cibles au has
 - Les effets qui touchent « au hasard » (Hallucination) tirent leur cible dans les deux camps, SI compris, jamais un
   composant Vétéran.
 
+## Effets propres des composants (US-019)
+
+- **Pioche ciblée** (webMethods Designer, Apigee API Hub, Solace Event Portal) : la première carte de la famille voulue
+  dans la pioche passe en main ; s'il n'y en a pas, rien ne se passe.
+- **Renfort** (OpenAPI, AsyncAPI) : la carte se pose sur un de vos composants de la famille (+1 attaque, permanent) ;
+  sans composant de la famille en jeu, elle se pose sans effet.
+- **Cron** : une fois par tour, un de vos composants Batch peut attaquer même s'il a attaqué au tour précédent.
+- **Base vectorielle** : vos agents en jeu gagnent 1 PV à sa pose, comme ceux posés ensuite tant qu'elle est en jeu.
+- Un composant dont les capacités sont suspendues (Certificat expiré, Contexte saturé) perd aussi son effet propre
+  permanent.
+
 ## Capacités
 
 | Capacité                  | Effet                                                                                                                                              |

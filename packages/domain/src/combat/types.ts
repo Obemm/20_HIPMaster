@@ -54,6 +54,8 @@ export interface EtatJoueur {
   siProtegeJusquAuTour: number | null;
   /** Facture de tokens : Débit retiré au prochain tour. */
   malusDebit: number;
+  /** Cron a déjà servi ce tour. */
+  cronUtilise: boolean;
 }
 
 export interface Issue {
@@ -131,7 +133,8 @@ export interface EtatPartie {
 }
 
 export type Action =
-  | { type: 'poser'; carte: string }
+  /** `cible` : le composant renforcé par OpenAPI ou AsyncAPI. */
+  | { type: 'poser'; carte: string; cible?: string }
   | { type: 'evoluer'; carte: string; origine: string }
   | { type: 'decommissionner'; carte: string }
   | { type: 'attaquer'; attaquant: string; cible: Cible }

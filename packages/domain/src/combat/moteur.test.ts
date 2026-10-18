@@ -114,7 +114,7 @@ describe('poser et décommissionner', () => {
     const plein = scenario({ main: [22], plateau: [4, 4, 4, 4, 4] });
     expect(codeErreur(plein, { type: 'poser', carte: 'm1' })).toBe('plateau-plein');
     expect(codeErreur(scenario(), { type: 'poser', carte: 'm9' })).toBe('carte-absente');
-    expect(codeErreur(scenario({ main: [6] }), { type: 'poser', carte: 'm1' })).toBe(
+    expect(codeErreur(scenario({ main: [2] }), { type: 'poser', carte: 'm1' })).toBe(
       'carte-non-prise-en-charge',
     );
     expect(codeErreur(scenario({ main: [21] }), { type: 'poser', carte: 'm1' })).toBe(

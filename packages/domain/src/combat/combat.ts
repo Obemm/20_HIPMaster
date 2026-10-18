@@ -3,6 +3,7 @@ import {
   adversaire,
   attaqueEffective,
   blesserSi,
+  consommerCron,
   erreur,
   MAIN_MAX,
   noter,
@@ -140,6 +141,7 @@ export function attaquer(
 
   const force = attaquant.attaqueNulle ? 0 : attaqueEffective(etat, joueur, attaquant);
   attaquant.attaqueNulle = false;
+  consommerCron(etat, joueur, attaquant);
   attaquant.aAttaqueCeTour = true;
   attaquant.dernierTourAttaque = etat.joueurs[joueur].tours;
   noter(etat, { type: 'attaque', joueur, attaquant: attaquant.id, cible });

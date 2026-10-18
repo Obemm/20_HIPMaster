@@ -31,13 +31,18 @@ export const SORTS_ET_INCIDENTS_PRIS_EN_CHARGE: ReadonlySet<number> = new Set([
   71,
 ]);
 
-/** Composants dont l'effet propre est une parade, appliquée par l'incident visé : Fichier .ok témoin, OAuth2. */
-const COMPOSANTS_PARADES: ReadonlySet<number> = new Set([8, 20]);
+/**
+ * Composants dont l'effet propre est appliqué : les parades d'US-014 (Fichier .ok témoin, OAuth2) et les effets
+ * d'US-019 (Cron, Designer, API Hub, OpenAPI, Event Portal, CDC, AsyncAPI, Base vectorielle).
+ */
+export const COMPOSANTS_A_EFFET: ReadonlySet<number> = new Set([
+  6, 8, 14, 19, 20, 23, 32, 34, 38, 49,
+]);
 
 /** Une carte est jouable entièrement : ses capacités et son effet éventuel sont tous appliqués par le moteur. */
 export function estPriseEnCharge(carte: Carte): boolean {
   if (SORTS_ET_INCIDENTS_PRIS_EN_CHARGE.has(carte.numero)) return true;
-  const effetGere = carte.effet === undefined || COMPOSANTS_PARADES.has(carte.numero);
+  const effetGere = carte.effet === undefined || COMPOSANTS_A_EFFET.has(carte.numero);
   return (
     (carte.type === 'composant' || carte.type === 'evolution') &&
     effetGere &&

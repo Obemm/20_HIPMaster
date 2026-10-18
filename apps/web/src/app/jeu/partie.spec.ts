@@ -239,6 +239,23 @@ describe('PartieEcran', () => {
     await fixture.whenStable();
   });
 
+  it('propose « Poser et renforcer … » pour OpenAPI et envoie la cible', async () => {
+    const v = vue({
+      actions: [{ type: 'poser', carte: 'j1-01', cible: 'j1-02' }, { type: 'finirTour' }],
+    });
+    v.moi.plateau = [
+      { id: 'j1-02', numero: 22, pv: 2, attaque: 3, poseAuTour: 1, aAttaqueCeTour: false },
+    ];
+    const { fixture, http, page } = await ouvrir(v);
+    page.querySelector<HTMLButtonElement>('section[aria-labelledby="titre-main"] button')?.click();
+    fixture.detectChanges();
+    bouton(page, 'Poser et renforcer API REST (2 Débit)')?.click();
+    const requete = http.expectOne('/api/v1/parties/p1/actions');
+    expect(requete.request.body).toEqual({ type: 'poser', carte: 'j1-01', cible: 'j1-02' });
+    requete.flush(partie(vue()));
+    await fixture.whenStable();
+  });
+
   it('affiche le refus du serveur', async () => {
     const { fixture, http, page } = await ouvrir();
     bouton(page, 'Finir mon tour')?.click();
