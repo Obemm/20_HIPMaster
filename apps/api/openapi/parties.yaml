@@ -179,6 +179,16 @@ components:
             attaquesSubies: { type: integer }
             reactifUtilise: { type: boolean }
             entretienImpaye: { type: boolean }
+            immobiliseJusquAuTour:
+              type: [integer, 'null']
+              description: Ne peut pas attaquer jusqu'à ce tour inclus (Rate limiting, Timeout…).
+            sansCapacitesJusquAuTour:
+              type: [integer, 'null']
+              description: Capacités suspendues jusqu'à ce tour inclus (Certificat expiré, Contexte saturé).
+            doublon: { type: boolean, description: Le prochain dégât subi est doublé. }
+            attaqueNulle:
+              { type: boolean, description: La prochaine attaque n'inflige aucun dégât. }
+            coupleA: { type: [string, 'null'], description: Composant lié par Couplage fort. }
     Action:
       oneOf:
         - type: object
@@ -204,6 +214,19 @@ components:
             attaquant: { type: string }
             cible: { type: string, description: Identifiant d'un composant adverse, ou `si`. }
         - type: object
+          required: [type, carte, cibles]
+          description: Joue un sort ou un incident (US-014).
+          properties:
+            type: { const: jouer }
+            carte: { type: string }
+            cibles:
+              type: array
+              maxItems: 3
+              description: >
+                Cibles dans l'ordre attendu par la carte : identifiants de composants, d'une carte de la défausse
+                (Dead Letter Queue), ou `si`. Vide pour une carte sans cible.
+              items: { type: string }
+        - type: object
           required: [type]
           properties:
             type: { const: finirTour }
@@ -212,7 +235,7 @@ components:
       required: [type]
       description: >
         Un événement du journal : debut-tour, pioche, carte-brulee, pose, evolution, decommission, attaque, degats,
-        destruction, retour-main, entretien, supervision, fin-partie. Ses autres champs dépendent du type
+        destruction, retour-main, entretien, supervision, jeu, parade, statut, rappel, si-protege, fin-partie. Ses autres champs dépendent du type
         (packages/domain/src/combat/types.ts).
       properties:
         type: { type: string }

@@ -10,6 +10,7 @@ import type {
   ErreurAction,
   EtatPartie,
   IdJoueur,
+  InstanceCarte,
   Issue,
 } from './types.ts';
 
@@ -42,7 +43,9 @@ export function noter(etat: EtatPartie, entree: EntreeJournal): void {
   etat.journal.push(entree);
 }
 
+/** Le composant a-t-il cette capacité ? Jamais tant que ses capacités sont suspendues. */
 export function possede(composant: ComposantEnJeu, capacite: IdCapacite): boolean {
+  if (composant.sansCapacitesJusquAuTour !== null) return false;
   return aCapacite(carteDe(composant.numero), capacite);
 }
 
@@ -57,7 +60,7 @@ export function attaqueEffective(
   const hubs = etat.joueurs[joueur].plateau.filter(
     (allie) => allie.id !== composant.id && possede(allie, 'hub'),
   ).length;
-  return base + hubs;
+  return base + hubs + composant.bonusAttaque;
 }
 
 /** Le composant peut-il attaquer maintenant ? Renvoie la raison sinon. */
@@ -71,6 +74,9 @@ export function raisonDeNePasAttaquer(
   if (composant.poseAuTour >= tours)
     return 'Un composant ne peut pas attaquer le tour où il est posé.';
   if (composant.entretienImpaye) return 'Entretien sur site impayé : pas d’attaque ce tour.';
+  if (composant.immobiliseJusquAuTour !== null && etat.tour <= composant.immobiliseJusquAuTour) {
+    return 'Ce composant est immobilisé : pas d’attaque ce tour.';
+  }
   if (possede(composant, 'batch') && composant.dernierTourAttaque === tours - 1) {
     return 'Batch : ce composant a attaqué au tour précédent.';
   }
@@ -89,10 +95,40 @@ export function blesserSi(
   etat: EtatPartie,
   joueur: IdJoueur,
   montant: number,
-  cause: 'combat' | 'non-conforme',
+  cause: 'combat' | 'non-conforme' | 'effet',
 ): void {
   const victime = etat.joueurs[joueur];
+  if (victime.siProtegeJusquAuTour !== null && etat.tour <= victime.siProtegeJusquAuTour) {
+    noter(etat, { type: 'si-protege', joueur });
+    return;
+  }
   victime.sla -= montant;
   noter(etat, { type: 'degats', cible: 'si', joueur, montant, cause });
   if (victime.sla <= 0) terminer(etat, { gagnant: adversaire(joueur), raison: 'sla' });
+}
+
+/** Un composant qui arrive en jeu : PV de la carte (ou `pv`), aucun statut. */
+export function nouveauComposant(
+  instance: InstanceCarte,
+  poseAuTour: number,
+  pv?: number,
+): ComposantEnJeu {
+  const carte = carteDe(instance.numero);
+  return {
+    id: instance.id,
+    numero: instance.numero,
+    pv: pv ?? ('pv' in carte ? carte.pv : 1),
+    poseAuTour,
+    aAttaqueCeTour: false,
+    dernierTourAttaque: null,
+    attaquesSubies: 0,
+    reactifUtilise: false,
+    entretienImpaye: false,
+    bonusAttaque: 0,
+    immobiliseJusquAuTour: null,
+    sansCapacitesJusquAuTour: null,
+    doublon: false,
+    attaqueNulle: false,
+    coupleA: null,
+  };
 }

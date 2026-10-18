@@ -193,7 +193,16 @@ export class PartieEcran implements OnInit, OnDestroy {
         return `Faire évoluer ${this.nommer(action.origine)} (${carte?.cout ?? 0} Débit)`;
       case 'decommissionner':
         return `Décommissionner (+${this.gainDecommission(carte)} Débit)`;
+      case 'jouer':
+        return this.libelleJeu(action.cibles, carte?.cout ?? 0);
     }
+  }
+
+  /** « Jouer (2 Débit) », « Jouer sur Adaptateur SAP (2 Débit) », « Jouer sur SOAP / WSDL et EDI (3 Débit) ». */
+  private libelleJeu(cibles: readonly string[], cout: number): string {
+    if (cibles.length === 0) return `Jouer (${cout} Débit)`;
+    const noms = cibles.map((id) => (id === 'si' ? 'le SI du bot' : this.nommer(id)));
+    return `Jouer sur ${noms.join(' et ')} (${cout} Débit)`;
   }
 
   private gainDecommission(carte: Carte | undefined): number {

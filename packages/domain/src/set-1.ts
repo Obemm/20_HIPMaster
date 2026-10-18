@@ -729,7 +729,8 @@ export const SET_1: readonly Carte[] = [
     rarete: 'epique',
     cout: 4,
     capacites: [],
-    effet: 'Prenez le contrôle d’un agent adverse jusqu’à la fin de votre tour.',
+    effet:
+      'Un agent adverse attaque aussitôt une cible de votre choix dans son propre camp (composant ou SI).',
     enVrai: 'Des instructions cachées dans les données détournent l’agent.',
   },
   {
@@ -741,7 +742,7 @@ export const SET_1: readonly Carte[] = [
     rarete: 'rare',
     cout: 2,
     capacites: [],
-    effet: 'Détruisez le FTP adverse ; sinon infligez 2 dégâts à un composant Fichiers.',
+    effet: 'Visez un composant Fichiers adverse : détruit si c’est FTP, sinon il subit 2 dégâts.',
     enVrai: 'FTP transmet les identifiants sans chiffrement.',
   },
   {
@@ -862,7 +863,7 @@ export const SET_1: readonly Carte[] = [
     rarete: 'commune',
     cout: 2,
     capacites: [],
-    effet: 'Deux agents adverses ne peuvent pas attaquer à leur prochain tour.',
+    effet: 'Un ou deux agents adverses ne peuvent pas attaquer à leur prochain tour.',
     enVrai: 'Deux agents qui se délèguent la tâche l’un à l’autre, sans fin.',
   },
   {

@@ -105,21 +105,21 @@ complémentaires).
 
 ## Bestiaire (6, plus 7 incidents à numéroter)
 
-| N°  | Carte                 | Type     | Rareté  | Coût | Effet                                                                                        |
-| --- | --------------------- | -------- | ------- | ---- | -------------------------------------------------------------------------------------------- |
-| 59  | Prompt injection      | Incident | Épique  | 4    | **IA** — Prenez le contrôle d'un agent adverse jusqu'à la fin de votre tour                  |
-| 60  | Mot de passe en clair | Incident | Rare    | 2    | Détruisez le FTP adverse ; sinon infligez 2 dégâts à un composant Fichiers                   |
-| 61  | Certificat expiré     | Incident | Rare    | 2    | Un composant API adverse perd ses capacités et ne peut pas attaquer à son prochain tour      |
-| 62  | Couplage fort         | Incident | Rare    | 3    | Liez deux composants adverses : quand l'un subit des dégâts, l'autre aussi                   |
-| 63  | Hallucination         | Incident | Rare    | 2    | **IA** — Un composant IA adverse attaque une cible tirée au hasard, dans n'importe quel camp |
-| 64  | Message poison        | Incident | Commune | 2    | Détruisez un composant adverse de coût 2 ou moins                                            |
+| N°  | Carte                 | Type     | Rareté  | Coût | Effet                                                                                                      |
+| --- | --------------------- | -------- | ------- | ---- | ---------------------------------------------------------------------------------------------------------- |
+| 59  | Prompt injection      | Incident | Épique  | 4    | **IA** — Un agent adverse attaque aussitôt une cible de votre choix dans son propre camp (composant ou SI) |
+| 60  | Mot de passe en clair | Incident | Rare    | 2    | Visez un composant Fichiers adverse : détruit si c'est FTP, sinon il subit 2 dégâts                        |
+| 61  | Certificat expiré     | Incident | Rare    | 2    | Un composant API adverse perd ses capacités et ne peut pas attaquer à son prochain tour                    |
+| 62  | Couplage fort         | Incident | Rare    | 3    | Liez deux composants adverses : quand l'un subit des dégâts, l'autre aussi                                 |
+| 63  | Hallucination         | Incident | Rare    | 2    | **IA** — Un composant IA adverse attaque une cible tirée au hasard, dans n'importe quel camp               |
+| 64  | Message poison        | Incident | Commune | 2    | Détruisez un composant adverse de coût 2 ou moins                                                          |
 
 Incidents communs complémentaires, numérotés de 65 à 71 dans les données (US-008) :
 **Timeout** (1 — un composant adverse ne peut pas attaquer à son prochain tour), **Doublon** (1 — le prochain dégât
 subi par un composant adverse est doublé), **Fichier vide à 3 h du matin** (1 — la prochaine attaque d'un composant
 Batch adverse n'inflige rien), **Encodage cassé** (1 — 2 dégâts à un composant Fichiers ou ESB), et les incidents IA
 **Contexte saturé** (1 — un composant IA adverse perd ses capacités jusqu'à la fin de son prochain tour),
-**Boucle d'agents** (2 — deux agents adverses ne peuvent pas attaquer à leur prochain tour) et **Facture de tokens**
+**Boucle d'agents** (2 — un ou deux agents adverses ne peuvent pas attaquer à leur prochain tour) et **Facture de tokens**
 (1 — l'adversaire a 2 Débit de moins à son prochain tour).
 
 ## Points à trancher pendant l'équilibrage
@@ -157,3 +157,28 @@ LLM 33 %, cher et fragile face à la riposte).
 **Lecture** : tous les duels restent entre 42 et 57 % ; les miroirs sont proches de 50/50, donc l'avantage du
 premier joueur est faible. 60 à 74 % des parties se terminent par un SLA à 0, vers le 17e tour sur 20. Héritage est
 désormais le deck le plus faible, de peu (42 à 47 %) : à surveiller.
+
+### Mise à jour du 2026-10-18 : sorts et incidents (US-014)
+
+Les sorts et les incidents sont jouables. Chaque deck prêté en intègre quelques-uns de son univers :
+
+- **Héritage** : Dead Letter Queue, Retry, Message poison (à la place d'un Fichier CSV, d'un Fichier à positions
+  fixes et du Flow service ; un MQSeries de plus) ;
+- **Moderne** : Content-Based Router, Message poison (à la place d'un Workflow low-code et d'une File d'attente) ;
+- **Hybride** : Chain of thought, Couplage fort, Doublon, Facture de tokens (à la place d'un Fichier CSV, d'un Topic,
+  de l'Adaptateur JDBC et de la File d'attente).
+
+`npm run simuler -- 400 1` (graine 1000 entre parenthèses quand elle diffère de plus de 2 points) :
+
+| Deck A   | Deck B   | Victoires A | Victoires B | Nulles | Finies par SLA | Tours moyens |
+| -------- | -------- | ----------- | ----------- | ------ | -------------- | ------------ |
+| Héritage | Héritage | 50 %        | 48 %        | 2 %    | 75 %           | 16.6         |
+| Héritage | Moderne  | 53 %        | 46 %        | 2 %    | 69 % (65 %)    | 17.4         |
+| Héritage | Hybride  | 55 %        | 43 % (45 %) | 2 %    | 70 % (74 %)    | 17.1         |
+| Moderne  | Moderne  | 52 %        | 47 %        | 1 %    | 58 % (51 %)    | 18.1         |
+| Moderne  | Hybride  | 51 % (47 %) | 48 % (51 %) | 2 %    | 58 %           | 17.7         |
+| Hybride  | Hybride  | 52 %        | 47 %        | 2 %    | 64 %           | 17.1         |
+
+Une première composition (sorts d'immobilisation et Circuit Breaker pour Moderne, Splitter pour Héritage) faisait
+retomber Moderne à 31–38 % : les sorts de destruction pèsent plus que ceux qui immobilisent. Tous les duels restent
+entre 43 et 55 %.

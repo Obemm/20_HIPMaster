@@ -22,7 +22,12 @@ import type { Composant } from './modele';
         <span class="line-clamp-2">{{ c.nom }}</span>
       </p>
       @if (capacites()) {
-        <p class="truncate text-[10px] text-texte-doux">{{ capacites() }}</p>
+        <p class="truncate text-[10px] text-texte-doux" [class.line-through]="sansCapacites()">
+          {{ capacites() }}
+        </p>
+      }
+      @for (statut of statuts(); track statut) {
+        <p class="text-[10px] leading-tight font-semibold text-alerte">{{ statut }}</p>
       }
       <p class="mt-auto flex items-center justify-between text-sm font-bold">
         <span class="flex items-center gap-0.5">
@@ -49,15 +54,30 @@ export class JetonComposant {
       .capacites.map((c) => c.nom)
       .join(' · '),
   );
+  protected readonly statuts = computed(() => statutsComposant(this.composant()));
+  protected readonly sansCapacites = computed(
+    () => (this.composant().sansCapacitesJusquAuTour ?? null) !== null,
+  );
   protected readonly blesse = computed(() => {
     const carte = this.carte();
     return carte.pv !== undefined && this.composant().pv < carte.pv;
   });
 }
 
+/** Les statuts visibles d'un composant (sorts et incidents), en toutes lettres. */
+export function statutsComposant(composant: Composant): string[] {
+  const statuts: string[] = [];
+  if ((composant.immobiliseJusquAuTour ?? null) !== null) statuts.push('Immobilisé');
+  if ((composant.sansCapacitesJusquAuTour ?? null) !== null) statuts.push('Sans capacités');
+  if (composant.doublon) statuts.push('Doublon');
+  if (composant.attaqueNulle) statuts.push('Attaque nulle');
+  if (composant.coupleA) statuts.push('Couplé');
+  return statuts;
+}
+
 /** Nom accessible d'un composant : tout ce que le jeton montre, en toutes lettres. */
 export function decrireComposant(composant: Composant, carte: Carte): string {
   const parties = [carte.nom, `attaque ${composant.attaque}`, `PV ${composant.pv}`];
-  parties.push(...carte.capacites.map((c) => c.nom));
+  parties.push(...carte.capacites.map((c) => c.nom), ...statutsComposant(composant));
   return parties.join(', ');
 }

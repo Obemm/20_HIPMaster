@@ -14,6 +14,12 @@ export interface Composant extends Instance {
   attaque: number;
   poseAuTour: number;
   aAttaqueCeTour: boolean;
+  /** Statuts posés par les sorts et les incidents (US-014). */
+  immobiliseJusquAuTour?: number | null;
+  sansCapacitesJusquAuTour?: number | null;
+  doublon?: boolean;
+  attaqueNulle?: boolean;
+  coupleA?: string | null;
 }
 
 interface Camp {
@@ -30,6 +36,7 @@ export type Action =
   | { type: 'evoluer'; carte: string; origine: string }
   | { type: 'decommissionner'; carte: string }
   | { type: 'attaquer'; attaquant: string; cible: string }
+  | { type: 'jouer'; carte: string; cibles: string[] }
   | { type: 'finirTour' };
 
 export interface Issue {
@@ -62,6 +69,8 @@ export interface Evenement {
   cause?: string;
   paye?: boolean;
   issue?: Issue;
+  cibles?: string[];
+  statut?: string;
 }
 
 export interface Partie {

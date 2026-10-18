@@ -1,4 +1,5 @@
 import { adversaire, carteDe, PLATEAU_MAX, possede, raisonDeNePasAttaquer } from './outils.ts';
+import { combinaisonsCibles } from './effets.ts';
 import { estPriseEnCharge } from './prise-en-charge.ts';
 import type { Action, Cible, ComposantEnJeu, EtatPartie, IdJoueur } from './types.ts';
 
@@ -13,7 +14,23 @@ function posesPossibles(etat: EtatPartie, joueur: IdJoueur): Action[] {
         .filter((c) => c.numero === carte.origine)
         .map((origine) => ({ type: 'evoluer', carte: instance.id, origine: origine.id }));
     }
+    if (carte.type !== 'composant') return [];
     return etatJoueur.plateau.length < PLATEAU_MAX ? [{ type: 'poser', carte: instance.id }] : [];
+  });
+}
+
+/** Sorts et incidents que le joueur peut payer, avec chaque combinaison de cibles légale. */
+function jeuxPossibles(etat: EtatPartie, joueur: IdJoueur): Action[] {
+  const etatJoueur = etat.joueurs[joueur];
+  return etatJoueur.main.flatMap((instance): Action[] => {
+    const carte = carteDe(instance.numero);
+    if (carte.type !== 'sort' && carte.type !== 'incident') return [];
+    if (!estPriseEnCharge(carte) || carte.cout > etatJoueur.debit) return [];
+    return combinaisonsCibles(etat, joueur, carte.numero).map((cibles) => ({
+      type: 'jouer',
+      carte: instance.id,
+      cibles,
+    }));
   });
 }
 
@@ -45,6 +62,7 @@ export function actionsPossibles(etat: EtatPartie): Action[] {
     : etatJoueur.main.map((instance) => ({ type: 'decommissionner', carte: instance.id }));
   return [
     ...posesPossibles(etat, joueur),
+    ...jeuxPossibles(etat, joueur),
     ...decommissions,
     ...attaquesPossibles(etat, joueur),
     { type: 'finirTour' },
