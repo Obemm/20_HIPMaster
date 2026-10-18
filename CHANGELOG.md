@@ -24,6 +24,9 @@ Toutes les évolutions notables du projet sont consignées ici
 - Univers du jeu : la plateforme d'intégration hybride d'Elis, du FTP à l'IA agentique, avec ses lignées d'évolution
   (webMethods, Apigee, Solace) ; règles du combat sur plateau (Débit, SLA, capacités) et brouillon d'un premier set
   de 64 cartes (US-005, ADR 0010).
+- Catalogue du set 1 : 71 cartes et 23 capacités en données typées du domaine (ADR 0011), API
+  `GET /api/v1/cartes` et `/api/v1/cartes/{numero}` (contrat OpenAPI), pages Angular du catalogue filtrable par
+  famille et rareté et du détail d'une carte, accessibles sur mobile (US-008).
 
 ### Modifié
 

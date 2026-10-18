@@ -18,6 +18,44 @@ describe('API v1', () => {
     expect(raretes.reduce((somme, r) => somme + r.chance, 0)).toBeCloseTo(1);
   });
 
+  it('GET /api/v1/cartes liste les 71 cartes du set 1, triées par numéro, capacités détaillées', async () => {
+    const reponse = await app.inject({ method: 'GET', url: '/api/v1/cartes' });
+    expect(reponse.statusCode).toBe(200);
+    const cartes = reponse.json<{ numero: number; capacites: { nom: string }[] }[]>();
+    expect(cartes).toHaveLength(71);
+    expect(cartes.map((c) => c.numero)).toEqual(Array.from({ length: 71 }, (_, i) => i + 1));
+    expect(cartes[0]?.capacites.map((c) => c.nom)).toEqual(['Batch', 'Vétéran', 'Non conforme']);
+  });
+
+  it('GET /api/v1/cartes/26 renvoie webMethods.io, évolution de la carte 9', async () => {
+    const reponse = await app.inject({ method: 'GET', url: '/api/v1/cartes/26' });
+    expect(reponse.statusCode).toBe(200);
+    expect(reponse.json()).toMatchObject({
+      numero: 26,
+      nom: 'webMethods.io',
+      type: 'evolution',
+      origine: 9,
+      capacites: [{ id: 'hub' }, { id: 'connecteur', nom: 'Connecteur (2)', valeur: 2 }],
+    });
+  });
+
+  it('GET /api/v1/cartes/{numero} répond 404 au format Problem Details pour un numéro inconnu', async () => {
+    const reponse = await app.inject({ method: 'GET', url: '/api/v1/cartes/72' });
+    expect(reponse.statusCode).toBe(404);
+    expect(reponse.headers['content-type']).toContain('application/problem+json');
+    expect(reponse.json()).toEqual({
+      type: 'about:blank',
+      title: 'Carte introuvable',
+      status: 404,
+    });
+  });
+
+  it('GET /api/v1/cartes/{numero} répond 400 pour un numéro invalide', async () => {
+    const reponse = await app.inject({ method: 'GET', url: '/api/v1/cartes/abc' });
+    expect(reponse.statusCode).toBe(400);
+    expect(reponse.headers['content-type']).toContain('application/problem+json');
+  });
+
   it('une route inconnue répond 404 au format Problem Details', async () => {
     const reponse = await app.inject({ method: 'GET', url: '/api/v1/inconnue' });
     expect(reponse.statusCode).toBe(404);
