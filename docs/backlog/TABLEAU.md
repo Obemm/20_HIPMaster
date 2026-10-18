@@ -4,16 +4,17 @@ _Dernière mise à jour : 2026-10-19_
 
 ## Epics
 
-| Epic                                                                     | Priorité | Statut    | Avancement |
-| ------------------------------------------------------------------------ | -------- | --------- | ---------- |
-| [EPIC-00 — Fondations](epics/EPIC-00-fondations.md)                      | Must     | Terminé   | 6/6        |
-| [EPIC-01 — Univers et modèle de carte](epics/EPIC-01-univers-cartes.md)  | Must     | Terminé   | 2/2        |
-| [EPIC-02 — Comptes joueurs](epics/EPIC-02-comptes-joueurs.md)            | Must     | Terminé   | 1/1        |
-| [EPIC-03 — Boosters et collection](epics/EPIC-03-boosters-collection.md) | Must     | Terminé   | 2/2        |
-| [EPIC-04 — Combat contre le bot](epics/EPIC-04-combat-bot.md)            | Must     | Terminé   | 10/10      |
-| [EPIC-05 — Illustrations des cartes](epics/EPIC-05-illustrations.md)     | Should   | En cours  | 3/5        |
-| [EPIC-06 — Duels entre joueurs](epics/EPIC-06-duels-joueurs.md)          | Should   | À affiner | 0/0        |
-| [EPIC-07 — Vie sociale](epics/EPIC-07-vie-sociale.md)                    | Could    | À affiner | 0/0        |
+| Epic                                                                                  | Priorité | Statut    | Avancement |
+| ------------------------------------------------------------------------------------- | -------- | --------- | ---------- |
+| [EPIC-00 — Fondations](epics/EPIC-00-fondations.md)                                   | Must     | Terminé   | 6/6        |
+| [EPIC-01 — Univers et modèle de carte](epics/EPIC-01-univers-cartes.md)               | Must     | Terminé   | 2/2        |
+| [EPIC-02 — Comptes joueurs](epics/EPIC-02-comptes-joueurs.md)                         | Must     | Terminé   | 1/1        |
+| [EPIC-03 — Boosters et collection](epics/EPIC-03-boosters-collection.md)              | Must     | Terminé   | 2/2        |
+| [EPIC-04 — Combat contre le bot](epics/EPIC-04-combat-bot.md)                         | Must     | Terminé   | 10/10      |
+| [EPIC-05 — Illustrations des cartes](epics/EPIC-05-illustrations.md)                  | Should   | En cours  | 3/5        |
+| [EPIC-06 — Duels entre joueurs](epics/EPIC-06-duels-joueurs.md)                       | Should   | À affiner | 0/0        |
+| [EPIC-07 — Vie sociale](epics/EPIC-07-vie-sociale.md)                                 | Could    | À affiner | 0/0        |
+| [EPIC-08 — Cartes proposées par la communauté IT](epics/EPIC-08-cartes-communaute.md) | Should   | À affiner | 0/5        |
 
 ## Itération 0 (en cours) — fondations
 
@@ -70,3 +71,17 @@ récompense de victoire. Les illustrations (EPIC-05) attendent.
 | [US-024 — Ma collection](stories/US-024-ma-collection.md)                           | EPIC-03 | Must     | M      | Faite  |
 | [US-025 — Un booster pour chaque victoire](stories/US-025-recompense-victoire.md)   | EPIC-04 | Should   | S      | Faite  |
 | [US-026 — Vue publique complète pour les bots](stories/US-026-vue-publique-bots.md) | EPIC-04 | Should   | XS     | Faite  |
+
+## Plus tard — cartes de la communauté IT
+
+Demande du porteur du projet (2026-10-19) : permettre à d'autres tech leads et architectes de proposer leurs cartes,
+pour aider à l'acculturation IT. À traiter plus tard ; ADR à prévoir (identité, rôle de relecteur, chemin vers le
+catalogue, set d'accueil).
+
+| Story                                                                                          | Epic    | Priorité | Taille | Statut    |
+| ---------------------------------------------------------------------------------------------- | ------- | -------- | ------ | --------- |
+| [US-027 — Guide du contributeur](stories/US-027-guide-contributeur.md)                         | EPIC-08 | Should   | S      | À affiner |
+| [US-028 — Proposer une carte depuis le jeu](stories/US-028-proposer-carte.md)                  | EPIC-08 | Should   | L      | À affiner |
+| [US-029 — Relire et instruire les propositions](stories/US-029-relire-propositions.md)         | EPIC-08 | Should   | M      | À affiner |
+| [US-030 — Intégrer une carte acceptée au catalogue](stories/US-030-integrer-carte-acceptee.md) | EPIC-08 | Should   | M      | À affiner |
+| [US-031 — Créditer les contributeurs](stories/US-031-crediter-contributeurs.md)                | EPIC-08 | Could    | S      | À affiner |
