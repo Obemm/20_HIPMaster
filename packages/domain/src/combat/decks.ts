@@ -38,7 +38,8 @@ const deck = (...lignes: [numero: number, nombre: number][]): number[] =>
 
 /**
  * Decks prêtés aux joueurs tant que leur collection est petite (US-011). Ils ne contiennent que des cartes que le
- * moteur sait jouer entièrement (`CARTES_PRISES_EN_CHARGE`).
+ * moteur sait jouer entièrement (`CARTES_PRISES_EN_CHARGE`). Composition équilibrée par simulation : chaque duel
+ * reste entre 42 et 57 % de victoires (docs/produit/cartes-set-1.md).
  */
 export const DECKS_PRETES: readonly DeckPrete[] = [
   {
@@ -69,33 +70,35 @@ export const DECKS_PRETES: readonly DeckPrete[] = [
     description:
       'API, iPaaS et événements : Apigee protège, Solace diffuse, les connecteurs font piocher.',
     cartes: deck(
-      [18, 2], // Apigee API Gateway
+      [18, 1], // Apigee API Gateway
       [22, 2], // API REST
       [24, 1], // Portail développeur
       [25, 2], // Webhook
       [27, 1], // Connecteur ERP
       [28, 2], // Connecteur SaaS
-      [29, 1], // Workflow low-code
+      [29, 2], // Workflow low-code
       [31, 2], // Solace Event Mesh
-      [33, 2], // Event broker
+      [33, 1], // Event broker
       [35, 2], // Pub/Sub
       [36, 2], // Topic
-      [37, 1], // File d’attente
+      [37, 2], // File d’attente
     ),
   },
   {
     id: 'hybride',
     nom: 'Hybride',
     description:
-      'Un peu de chaque époque, et un LLM pour frapper fort : la plateforme hybride en un deck.',
+      'Un peu de chaque époque, un LLM pour frapper fort : la plateforme hybride en un deck.',
     cartes: deck(
       [1, 1], // FTP
       [9, 1], // webMethods Integration Server 10.15
       [26, 1], // webMethods.io
       [18, 1], // Apigee API Gateway
       [31, 1], // Solace Event Mesh
-      [41, 2], // LLM
-      [50, 2], // Fenêtre de contexte
+      [41, 1], // LLM
+      [13, 1], // Adaptateur SAP
+      [12, 1], // MQSeries
+      [25, 1], // Webhook
       [22, 2], // API REST
       [4, 2], // Fichier CSV
       [36, 2], // Topic

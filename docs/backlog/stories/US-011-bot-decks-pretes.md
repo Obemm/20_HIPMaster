@@ -36,3 +36,6 @@ partie sans rien collectionner d'abord**.
   (décide sur sa seule vue, sans hasard) ; `jouerPartie` et `simuler` ; script `npm run simuler` ; 11 tests ;
   résultats de la simulation (200 parties par duel) notés dans cartes-set-1.md : Moderne domine, Hybride est le plus
   faible. En revue.
+- 2026-10-18 — rééquilibrage demandé par le porteur du projet : Moderne allégé (Apigee et Event broker 2 → 1),
+  Hybride débarrassé de ses cartes mortes (Fenêtres de contexte, un LLM) au profit d'Adaptateur SAP, MQSeries et
+  Webhook ; tous les duels entre 42 et 57 % sur 400 parties et deux graines.
