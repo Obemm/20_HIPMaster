@@ -12,7 +12,7 @@ _Dernière mise à jour : 2026-10-19_
 | [EPIC-03 — Boosters et collection](epics/EPIC-03-boosters-collection.md)              | Must     | Terminé   | 2/2        |
 | [EPIC-04 — Combat contre le bot](epics/EPIC-04-combat-bot.md)                         | Must     | Terminé   | 10/10      |
 | [EPIC-05 — Illustrations des cartes](epics/EPIC-05-illustrations.md)                  | Should   | En cours  | 3/5        |
-| [EPIC-06 — Duels entre joueurs](epics/EPIC-06-duels-joueurs.md)                       | Should   | À affiner | 0/0        |
+| [EPIC-06 — Duels entre joueurs](epics/EPIC-06-duels-joueurs.md)                       | Should   | À affiner | 0/7        |
 | [EPIC-07 — Vie sociale](epics/EPIC-07-vie-sociale.md)                                 | Could    | À affiner | 0/0        |
 | [EPIC-08 — Cartes proposées par la communauté IT](epics/EPIC-08-cartes-communaute.md) | Should   | À affiner | 0/5        |
 
@@ -71,6 +71,21 @@ récompense de victoire. Les illustrations (EPIC-05) attendent.
 | [US-024 — Ma collection](stories/US-024-ma-collection.md)                           | EPIC-03 | Must     | M      | Faite  |
 | [US-025 — Un booster pour chaque victoire](stories/US-025-recompense-victoire.md)   | EPIC-04 | Should   | S      | Faite  |
 | [US-026 — Vue publique complète pour les bots](stories/US-026-vue-publique-bots.md) | EPIC-04 | Should   | XS     | Faite  |
+
+## Itération 5 (à venir) — duels entre joueurs
+
+Découpage du 2026-10-19 : duels asynchrones, au tour par tour, état en base (ADR 0020, accepté par le porteur du projet
+le 2026-10-19).
+
+| Story                                                                              | Epic    | Priorité | Taille | Statut    |
+| ---------------------------------------------------------------------------------- | ------- | -------- | ------ | --------- |
+| [US-032 — Duels côté serveur](stories/US-032-duels-serveur.md)                     | EPIC-06 | Must     | L      | À affiner |
+| [US-033 — Défier un collègue par lien](stories/US-033-defier-par-lien.md)          | EPIC-06 | Must     | M      | À affiner |
+| [US-034 — Écran de duel](stories/US-034-ecran-duel.md)                             | EPIC-06 | Must     | L      | À affiner |
+| [US-035 — Mes duels et « à vous de jouer »](stories/US-035-mes-duels.md)           | EPIC-06 | Should   | M      | À affiner |
+| [US-036 — Abandon et forfait](stories/US-036-abandon-forfait.md)                   | EPIC-06 | Should   | S      | À affiner |
+| [US-037 — Adversaire au hasard](stories/US-037-adversaire-hasard.md)               | EPIC-06 | Could    | M      | À affiner |
+| [US-038 — Un booster pour une victoire en duel](stories/US-038-recompense-duel.md) | EPIC-06 | Could    | S      | À affiner |
 
 ## Plus tard — cartes de la communauté IT
 
