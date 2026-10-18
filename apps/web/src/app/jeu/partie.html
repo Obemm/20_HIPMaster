@@ -29,6 +29,21 @@
       <summary class="cursor-pointer font-semibold">Comment jouer ?</summary>
       <div class="pt-2"><hip-regle-courte /></div>
     </details>
+    @if (capacitesEnJeu().length) {
+      <details class="rounded-lg border border-bordure px-3 py-2">
+        <summary class="cursor-pointer font-semibold">
+          Capacités en jeu ({{ capacitesEnJeu().length }})
+        </summary>
+        <dl class="flex flex-col gap-2 pt-2 text-sm">
+          @for (capacite of capacitesEnJeu(); track capacite.nom) {
+            <div>
+              <dt class="font-semibold">{{ capacite.nom }}</dt>
+              <dd class="text-texte-doux">{{ capacite.description }}</dd>
+            </div>
+          }
+        </dl>
+      </details>
+    }
 
     <!-- Camp du bot -->
     <section aria-labelledby="titre-bot" class="flex flex-col gap-2">

@@ -105,11 +105,41 @@ export class PartieEcran implements OnInit, OnDestroy {
     );
   });
 
+  /** Les composants du bot qui ont Garde (affichage seulement : le serveur décide des cibles légales). */
+  protected readonly gardesAdverses = computed(() =>
+    (this.vue()?.adversaire.plateau ?? [])
+      .map((c) => this.carteDe(c.numero))
+      .filter((carte) => carte?.capacites.some((capacite) => capacite.id === 'garde'))
+      .map((carte) => carte?.nom ?? ''),
+  );
+
   protected readonly aide = computed(() => {
     if (!this.monTour()) return '';
-    if (this.attaquant())
-      return 'Choisissez la cible de l’attaque : un composant du bot ou son SI.';
-    return 'Choisissez une carte de votre main, ou un composant pour attaquer.';
+    if (!this.attaquant()) {
+      return 'Choisissez une carte de votre main, ou un composant pour attaquer.';
+    }
+    const gardes = this.gardesAdverses();
+    if (gardes.length > 0) {
+      return `Le bot est protégé par Garde (${gardes.join(', ')}) : attaquez d’abord ce composant, son SI est inaccessible tant qu’il est en jeu.`;
+    }
+    return 'Choisissez la cible de l’attaque : un composant du bot ou son SI.';
+  });
+
+  /**
+   * Les capacités des cartes visibles (plateaux et main), avec leur définition : le glossaire de la partie en cours.
+   */
+  protected readonly capacitesEnJeu = computed(() => {
+    const vue = this.vue();
+    if (!vue) return [];
+    const instances = [...vue.moi.main, ...vue.moi.plateau, ...vue.adversaire.plateau];
+    const parId = new Map<string, { nom: string; description: string }>();
+    for (const instance of instances) {
+      for (const capacite of this.carteDe(instance.numero)?.capacites ?? []) {
+        const nom = capacite.nom.replace(/ \(\d+\)$/, '');
+        parId.set(capacite.id, { nom, description: capacite.description });
+      }
+    }
+    return [...parId.values()].sort((a, b) => a.nom.localeCompare(b.nom, 'fr'));
   });
 
   constructor() {

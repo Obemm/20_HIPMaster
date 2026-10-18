@@ -36,7 +36,14 @@ import { Icone } from '../icone';
         </ol>
       </div>
       <ul class="ml-5 list-disc">
-        <li>Un composant avec <strong>Garde</strong> doit être attaqué avant le reste et le SI.</li>
+        <li>
+          Les cartes ont parfois des <strong>capacités</strong>, écrites sous leur nom. La plus
+          importante : <strong>Garde</strong>. Une carte avec Garde protège son camp : tant qu’elle
+          est en jeu, l’adversaire doit l’attaquer <em>avant</em> les autres composants et avant le
+          SI. Exemple : si le bot pose l’Adaptateur SAP (Garde), vous ne pouvez plus attaquer son SI
+          tant que vous ne l’avez pas détruit. Pendant la partie, l’encadré « Capacités en jeu »
+          explique toutes celles des cartes visibles.
+        </li>
         <li>
           Pas assez de Débit ? <strong>Décommissionnez</strong> une carte de votre main (une fois
           par tour) : elle rapporte du Débit tout de suite.

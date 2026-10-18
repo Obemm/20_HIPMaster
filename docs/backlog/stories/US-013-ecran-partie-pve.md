@@ -17,6 +17,9 @@ jeu en jouant**.
 - [x] Une **règle courte** explique comment gagner et le déroulement d'un tour : l'objectif reste visible pendant la
       partie, et l'aide « Comment jouer ? » est ouverte au début et consultable à tout moment (retour du porteur du
       projet après sa première partie, 2026-10-18).
+- [x] Les **capacités** sont expliquées en jeu : définition de chaque capacité des cartes visibles (« Capacités en
+      jeu »), et aide contextuelle quand une Garde adverse bloque l'attaque (« on ne sait pas ce qu'est une carte avec
+      Garde », retour du porteur du projet, 2026-10-18).
 - [x] Le plateau montre les deux SI et leur SLA, le Débit, le nombre de cartes en pioche et en main de l'adversaire,
       les composants posés de chaque camp et ma main, avec les cartes d'US-009.
 - [x] Je joue au toucher, à la souris et **au clavier** : poser une carte, choisir un attaquant puis sa cible,
@@ -49,3 +52,6 @@ jeu en jouant**.
 - 2026-10-18 — composant `hip-regle-courte` (comment gagner, les 4 temps d'un tour, Garde et décommission) sur
   l'écran de choix du deck et dans « Comment jouer ? », ouvert au début de la partie ; objectif toujours visible ;
   SLA affichés « sur 20 ». En revue.
+- 2026-10-18 — deuxième retour (« on ne sait pas ce qu'est une carte avec Garde ») : Garde expliquée avec un exemple
+  dans la règle courte, encadré « Capacités en jeu » (définitions des capacités visibles), aide qui nomme la Garde
+  adverse au moment d'attaquer. En revue.

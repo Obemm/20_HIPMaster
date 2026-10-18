@@ -7,7 +7,25 @@ import { ChoixDeck } from './choix-deck';
 import type { Partie, Vue } from './modele';
 import { PartieEcran } from './partie';
 
+const GARDE = {
+  id: 'garde',
+  nom: 'Garde',
+  description: 'Doit être attaqué avant vos autres composants et votre SI.',
+};
+
 const CATALOGUE: Carte[] = [
+  {
+    numero: 13,
+    nom: 'Adaptateur SAP',
+    famille: 'esb',
+    type: 'composant',
+    rarete: 'rare',
+    cout: 4,
+    attaque: 3,
+    pv: 5,
+    capacites: [GARDE],
+    enVrai: 'Le passage obligé vers l’ERP.',
+  },
   {
     numero: 22,
     nom: 'API REST',
@@ -113,6 +131,33 @@ describe('PartieEcran', () => {
   it('replie « Comment jouer ? » une fois la partie avancée', async () => {
     const { page } = await ouvrir();
     expect(page.querySelector('details')?.open).toBe(false);
+  });
+
+  it('explique Garde quand le bot en a une : aide à l’attaque et capacités en jeu', async () => {
+    const attaquant = {
+      id: 'j1-02',
+      numero: 22,
+      pv: 2,
+      attaque: 3,
+      poseAuTour: 1,
+      aAttaqueCeTour: false,
+    };
+    const v = vue({
+      actions: [{ type: 'attaquer', attaquant: 'j1-02', cible: 'j2-06' }, { type: 'finirTour' }],
+    });
+    v.moi.plateau = [attaquant];
+    v.adversaire.plateau = [
+      { id: 'j2-06', numero: 13, pv: 5, attaque: 3, poseAuTour: 1, aAttaqueCeTour: false },
+    ];
+    const { fixture, page } = await ouvrir(v);
+    const capacites = [...page.querySelectorAll('details')].find((d) =>
+      d.querySelector('summary')?.textContent?.includes('Capacités en jeu'),
+    );
+    expect(capacites?.textContent).toContain('Garde');
+    expect(capacites?.textContent).toContain('Doit être attaqué avant vos autres composants');
+    bouton(page, 'peut attaquer')?.click();
+    fixture.detectChanges();
+    expect(page.textContent).toContain('Le bot est protégé par Garde (Adaptateur SAP)');
   });
 
   it('propose les actions d’une carte choisie, et envoie celle qu’on clique', async () => {
