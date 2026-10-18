@@ -59,11 +59,27 @@
           }
         </dl>
 
+        @if (exemplaires() !== null) {
+          <p class="font-semibold">
+            @switch (exemplaires()) {
+              @case (0) {
+                Pas encore dans votre collection.
+              }
+              @case (1) {
+                Dans votre collection : 1 exemplaire.
+              }
+              @default {
+                Dans votre collection : {{ exemplaires() }} exemplaires.
+              }
+            }
+          </p>
+        }
+
         @if (c.origine !== undefined) {
           <p>
             Évolution de
             <a
-              [routerLink]="['/cartes', c.origine]"
+              [routerLink]="[retour(), c.origine]"
               class="font-semibold underline underline-offset-4"
               >{{ origine.hasValue() ? origine.value().nom : 'la carte n° ' + c.origine }}</a
             >

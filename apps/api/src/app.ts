@@ -8,6 +8,7 @@ import { DepotParties, type OptionsDepot } from './parties/depot.ts';
 import type { OptionsBoosters } from './comptes/boosters.ts';
 import type { Base } from './db/index.ts';
 import { routesBoosters } from './routes/boosters.ts';
+import { routesCollection } from './routes/collection.ts';
 import { routesCartes } from './routes/cartes.ts';
 import { routesComptes } from './routes/comptes.ts';
 import { routesParties } from './routes/parties.ts';
@@ -58,6 +59,7 @@ export function construireApp(
       base: options.base,
       ...(options.boosters && { boosters: options.boosters }),
     });
+    app.register(routesCollection, { prefix: '/api/v1', base: options.base });
   }
   app.register(routesParties, { prefix: '/api/v1', depot: new DepotParties(options.parties) });
 
