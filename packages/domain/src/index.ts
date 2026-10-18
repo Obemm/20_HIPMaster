@@ -15,3 +15,4 @@ export {
 } from './carte.ts';
 export { CHANCES_BOOSTER, RARETES, tirerRarete, type Rarete } from './rarete.ts';
 export { SET_1, trouverCarte } from './set-1.ts';
+export * from './combat/index.ts';
