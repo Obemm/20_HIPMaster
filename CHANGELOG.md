@@ -78,6 +78,8 @@ Toutes les évolutions notables du projet sont consignées ici
 
 - Next.js remplacé par Angular (ADR 0001 remplacé par 0006) ; la logique de jeu passe de `src/domain` à
   `packages/domain` ; Node 24.15 minimum (exigé par Angular 22) (US-006).
+- Base locale : US-004 close, satisfaite par PGlite (US-022, ADR 0018) ; le README précise que `db:up`,
+  `db:migrate` et `db:studio` concernent un vrai PostgreSQL (`DATABASE_URL`) (US-004).
 
 ### Corrigé
 
