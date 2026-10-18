@@ -38,3 +38,6 @@ d'Apigee AI Gateway et de toute l'IA agentique du set**.
   prêtés et simulation ; API (contrat, schémas) et écran (boutons, statuts, journal) ; 13 tests du domaine, 2 tests
   de l'écran. **Les 71 cartes sont jouables.** En revue.
 - 2026-10-18 — livrée : capacités IA et Migration : les 71 cartes du set 1 sont jouables, bot et decks prêtés équilibrés (44 à 56 %)
+- 2026-10-18 — CI : le test « retire les images d'une carte qui n'est plus décrite » (packages/illustrations)
+  dépassait les 5 s par défaut sur GitHub, l'encodage AVIF étant ralenti par les simulations du domaine qui tournent
+  en parallèle ; délai porté à 30 s pour le seul projet illustrations (`vitest.config.ts`).
