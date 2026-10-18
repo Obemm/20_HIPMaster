@@ -147,6 +147,28 @@ paths:
             application/problem+json:
               schema: { $ref: '#/components/schemas/Probleme' }
         '422': { $ref: '#/components/responses/Probleme' }
+  /moi/duels:
+    get:
+      operationId: lireMesDuels
+      summary: Les duels du joueur connecté, ceux qui attendent son tour en premier (US-035)
+      description: >
+        Ordre : à mon tour, au tour de l'adversaire, défis en attente d'adversaire, puis les 20 derniers duels
+        terminés ; dans chaque groupe, le plus récemment joué d'abord. `aMonTour` compte les duels qui attendent le
+        joueur.
+      responses:
+        '200':
+          description: Les duels.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [aMonTour, duels]
+                properties:
+                  aMonTour: { type: integer, minimum: 0 }
+                  duels:
+                    type: array
+                    items: { $ref: '#/components/schemas/ResumeDuel' }
+        '401': { $ref: '#/components/responses/Probleme' }
 components:
   securitySchemes:
     jeton:
@@ -210,3 +232,25 @@ components:
       required: [pseudo]
       properties:
         pseudo: { type: string }
+    ResumeDuel:
+      type: object
+      required: [id, statut, adversaire, monTour, tour, resultat, majLe]
+      properties:
+        id: { type: string, format: uuid }
+        statut: { type: string, enum: [attente, en-cours, termine] }
+        adversaire:
+          oneOf:
+            - type: 'null'
+            - $ref: '#/components/schemas/Participant'
+        monTour: { type: boolean, description: Le duel attend une action du joueur. }
+        tour:
+          {
+            type: [integer, 'null'],
+            description: Tour en cours ; null tant que le duel n'a pas commencé.,
+          }
+        resultat:
+          type: [string, 'null']
+          enum: [victoire, defaite, nulle, null]
+          description: Pour un duel terminé, du point de vue du joueur.
+        majLe:
+          { type: string, format: date-time, description: Dernier coup joué (ou création du défi). }
