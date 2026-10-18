@@ -3,6 +3,7 @@ import { Accueil } from './accueil/accueil';
 import { BoostersEcran } from './boosters/boosters';
 import { CollectionEcran } from './collection/collection';
 import { DuelEcran } from './duels/duel';
+import { MesDuels } from './duels/mes-duels';
 import { NouveauDefi } from './duels/nouveau-defi';
 import { Catalogue } from './cartes/catalogue';
 import { CompteEcran } from './compte/compte';
@@ -35,6 +36,7 @@ export const routes: Routes = [
       },
     ],
   },
+  { path: 'duels', component: MesDuels, title: 'Mes duels — HIPMaster' },
   { path: 'duels/nouveau', component: NouveauDefi, title: 'Défier un collègue — HIPMaster' },
   { path: 'duels/:id', component: DuelEcran, title: 'Duel — HIPMaster' },
   { path: 'compte', component: CompteEcran, title: 'Mon compte — HIPMaster' },

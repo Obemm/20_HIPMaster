@@ -71,6 +71,8 @@ Toutes les évolutions notables du projet sont consignées ici
   (US-033).
 - Écran de duel : le défi relevé, chacun joue sur le plateau habituel, l'adversaire nommé par son pseudo ; pendant
   son tour, l'écran se met à jour seul ; la fin du duel propose une revanche (US-034).
+- Mes duels : la liste des duels, ceux qui attendent le joueur en premier ; le bandeau compte les duels « à vous de
+  jouer » et le titre de l'onglet le reprend ; `GET /api/v1/moi/duels` (US-035).
 - Chaîne des illustrations : un original déposé et décrit devient, en une commande (`npm run illustrations`), quatre
   images AVIF et WebP de moins de 100 Ko et un manifeste ; la carte affiche son illustration, ou son pictogramme de
   famille à défaut. EPIC-05 découpé en US-015 à US-017 (US-015, ADR 0015).

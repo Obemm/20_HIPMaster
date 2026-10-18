@@ -11,7 +11,8 @@ import {
   vueDe,
   type VueJoueur,
 } from '@hipmaster/domain';
-import { eq, inArray } from 'drizzle-orm';
+import { desc, eq, inArray, or, sql } from 'drizzle-orm';
+import { alias } from 'drizzle-orm/pg-core';
 import type { Base } from '../db/index.ts';
 import { duels, joueurs } from '../db/schema.ts';
 
@@ -246,4 +247,84 @@ export async function annulerDuel(
     await tx.delete(duels).where(eq(duels.id, id));
     return { ok: true, valeur: null } as const;
   });
+}
+
+export interface ResumeDuel {
+  id: string;
+  statut: StatutDuel;
+  adversaire: { pseudo: string } | null;
+  monTour: boolean;
+  tour: number | null;
+  resultat: 'victoire' | 'defaite' | 'nulle' | null;
+  majLe: string;
+}
+
+const TERMINES_MAX = 20;
+const ORDRE_GROUPE = { 'mon-tour': 0, 'son-tour': 1, attente: 2, termine: 3 } as const;
+
+function groupeDe(statut: StatutDuel, monTour: boolean): keyof typeof ORDRE_GROUPE {
+  if (statut === 'attente') return 'attente';
+  if (statut === 'termine') return 'termine';
+  return monTour ? 'mon-tour' : 'son-tour';
+}
+
+/** Le résultat d'un duel terminé, du point de vue du joueur (`gagnant` nul : égalité). */
+function resultatDe(gagnant: string | null, moi: IdJoueur): NonNullable<ResumeDuel['resultat']> {
+  if (gagnant === null) return 'nulle';
+  return gagnant === moi ? 'victoire' : 'defaite';
+}
+
+/**
+ * Les duels d'un joueur (US-035), ceux qui l'attendent en premier. Seuls le joueur actif, le tour et le gagnant
+ * sont lus dans l'état du moteur (extraction JSON en base), pas l'état complet.
+ */
+export async function lireMesDuels(
+  base: Base,
+  joueurId: string,
+): Promise<{ aMonTour: number; duels: ResumeDuel[] }> {
+  const createur = alias(joueurs, 'createur');
+  const adversaire = alias(joueurs, 'adversaire');
+  const lignes = await base
+    .select({
+      id: duels.id,
+      statut: duels.statut,
+      createurId: duels.createurId,
+      pseudoCreateur: createur.pseudo,
+      pseudoAdversaire: adversaire.pseudo,
+      actif: sql<string | null>`${duels.etat}->>'actif'`,
+      tour: sql<string | null>`${duels.etat}->>'tour'`,
+      gagnant: sql<string | null>`${duels.etat}->'issue'->>'gagnant'`,
+      majLe: duels.majLe,
+    })
+    .from(duels)
+    .innerJoin(createur, eq(createur.id, duels.createurId))
+    .leftJoin(adversaire, eq(adversaire.id, duels.adversaireId))
+    .where(or(eq(duels.createurId, joueurId), eq(duels.adversaireId, joueurId)))
+    .orderBy(desc(duels.majLe));
+
+  const resumes = lignes.map((l) => {
+    const moi = l.createurId === joueurId ? 'j1' : 'j2';
+    const pseudo = moi === 'j1' ? l.pseudoAdversaire : l.pseudoCreateur;
+    const monTour = l.statut === 'en-cours' && l.actif === moi;
+    const groupe = groupeDe(l.statut, monTour);
+    const resultat = l.statut === 'termine' ? resultatDe(l.gagnant, moi) : null;
+    const resume: ResumeDuel = {
+      id: l.id,
+      statut: l.statut,
+      adversaire: pseudo ? { pseudo } : null,
+      monTour,
+      tour: l.tour === null ? null : Number(l.tour),
+      resultat,
+      majLe: l.majLe.toISOString(),
+    };
+    return { groupe, resume };
+  });
+  // Tri stable : l'ordre « plus récent d'abord » de la requête est gardé dans chaque groupe.
+  resumes.sort((a, b) => ORDRE_GROUPE[a.groupe] - ORDRE_GROUPE[b.groupe]);
+  const termines = resumes.filter((r) => r.groupe === 'termine').slice(0, TERMINES_MAX);
+  const enCours = resumes.filter((r) => r.groupe !== 'termine');
+  return {
+    aMonTour: resumes.filter((r) => r.groupe === 'mon-tour').length,
+    duels: [...enCours, ...termines].map((r) => r.resume),
+  };
 }

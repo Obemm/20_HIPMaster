@@ -1,0 +1,65 @@
+<main class="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 py-8 sm:px-6">
+  <p>
+    <a routerLink="/" class="text-texte-doux underline underline-offset-4">← Accueil</a>
+  </p>
+  <h1 class="text-3xl font-bold tracking-tight">Mes duels</h1>
+
+  @if (!compte.joueur()) {
+    @if (compte.pret()) {
+      <p>
+        Les duels se jouent entre comptes :
+        <a routerLink="/compte" class="font-semibold underline underline-offset-4"
+          >créer un compte</a
+        >
+        en un clic (un pseudo suffit).
+      </p>
+    } @else {
+      <p>Vérification de votre session…</p>
+    }
+  } @else if (groupes(); as liste) {
+    <p>
+      <a
+        routerLink="/duels/nouveau"
+        class="inline-block rounded-lg bg-accent px-4 py-3 font-semibold text-sur-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+        >Défier un collègue</a
+      >
+    </p>
+    @for (groupe of liste; track groupe.id) {
+      <section [attr.aria-labelledby]="'titre-' + groupe.id" class="flex flex-col gap-2">
+        <h2 [id]="'titre-' + groupe.id" class="text-lg font-semibold">
+          {{ groupe.titre }} ({{ groupe.duels.length }})
+        </h2>
+        @if (groupe.duels.length === 0) {
+          <p class="text-sm text-texte-doux">Aucun duel.</p>
+        } @else {
+          <ul class="flex flex-col gap-2">
+            @for (d of groupe.duels; track d.id) {
+              <li>
+                <a
+                  [routerLink]="['/duels', d.id]"
+                  class="flex flex-wrap items-center justify-between gap-2 rounded-xl border-2 p-3 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                  [class.border-accent]="d.monTour"
+                  [class.border-bordure]="!d.monTour"
+                >
+                  <span class="font-semibold">
+                    {{ d.adversaire ? 'Contre ' + d.adversaire.pseudo : 'Défi non relevé' }}
+                  </span>
+                  <span class="text-sm text-texte-doux">
+                    @if (d.resultat) {
+                      {{ resultats[d.resultat] }} ·
+                    } @else if (d.tour) {
+                      Tour {{ d.tour }} ·
+                    }
+                    {{ d.statut === 'attente' ? 'lancé' : 'dernier coup' }} {{ depuis(d.majLe) }}
+                  </span>
+                </a>
+              </li>
+            }
+          </ul>
+        }
+      </section>
+    }
+  } @else {
+    <p>Chargement de vos duels…</p>
+  }
+</main>

@@ -8,6 +8,7 @@ import {
   type DuelVisible,
   jouerDuel,
   lireDuel,
+  lireMesDuels,
   type OptionsDuels,
   rejoindreDuel,
   type ResultatDuel,
@@ -96,6 +97,34 @@ export const routesDuels: FastifyPluginAsyncZod<{ base: Base; duels?: OptionsDue
       if (!session) return reponse;
       const resultat = await creerDuel(base, session.joueur.id, requete.body.deck);
       return resultat.ok ? envoyer(reponse, 201, resultat.valeur) : refuser(reponse, resultat);
+    },
+  );
+
+  app.get(
+    '/moi/duels',
+    {
+      schema: {
+        response: {
+          200: z.object({
+            aMonTour: z.int().min(0),
+            duels: z.array(
+              z.object({
+                id: z.uuid(),
+                statut: z.enum(['attente', 'en-cours', 'termine']),
+                adversaire: z.object({ pseudo: z.string() }).nullable(),
+                monTour: z.boolean(),
+                tour: z.int().nullable(),
+                resultat: z.enum(['victoire', 'defaite', 'nulle']).nullable(),
+                majLe: z.iso.datetime(),
+              }),
+            ),
+          }),
+        },
+      },
+    },
+    async (requete, reponse) => {
+      const session = await connecte(requete, reponse);
+      return session ? lireMesDuels(base, session.joueur.id) : reponse;
     },
   );
 
