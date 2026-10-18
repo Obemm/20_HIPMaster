@@ -1,7 +1,7 @@
 # US-019 — Effets propres des composants
 
 - **Epic** : EPIC-04
-- **Statut** : En revue
+- **Statut** : Faite
 - **Priorité** : Should
 - **Taille** : M
 - **Branche** : `us-019-effets-composants`
@@ -34,3 +34,4 @@ Designer ou CDC comme de vrais rouages de la plateforme**.
 - 2026-10-18 — `effets-composants.ts` (pioche ciblée, renfort, CDC, Base vectorielle), règle Cron dans les outils du
   moteur ; `poser` avec cible ; API (schéma et contrat) et écran (« Poser et renforcer … ») ; 11 tests du domaine,
   1 test de l'écran ; précisions dans regles.md. En revue.
+- 2026-10-18 — livrée : effets propres des composants (pioche ciblée, renfort, CDC, Cron, Base vectorielle) : 63 cartes sur 71 jouables
