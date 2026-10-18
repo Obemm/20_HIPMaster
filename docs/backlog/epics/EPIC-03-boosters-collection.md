@@ -13,8 +13,10 @@ Un booster s'ouvre en moins d'une seconde ; la collection affiche la progression
 
 ## Stories
 
-À découper : tirage serveur d'un booster, recharge à intervalle (ex. 1 toutes les 10 min, stock plafonné),
-animation d'ouverture, page collection filtrable (rareté, famille), gestion des doubles.
+- [ ] US-023 — Recevoir et ouvrir des boosters
+- [ ] US-024 — Ma collection
+
+Gestion des doubles et animation plus riche à découper ensuite.
 
 ## Hors périmètre
 
