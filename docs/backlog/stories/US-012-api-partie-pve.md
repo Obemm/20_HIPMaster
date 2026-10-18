@@ -1,7 +1,7 @@
 # US-012 — API de partie contre le bot
 
 - **Epic** : EPIC-04
-- **Statut** : En revue
+- **Statut** : Faite
 - **Priorité** : Must
 - **Taille** : M
 - **Branche** : `us-012-api-partie-pve`
@@ -40,3 +40,4 @@ que le bot joue selon les mêmes règles que moi**.
   30 min, plafond 1 000, horloge et graine injectables) ; routes `GET /decks`, `POST /parties`, `GET /parties/{id}`,
   `POST /parties/{id}/actions` (le bot joue dans la requête) ; vue du domaine enrichie de l'attaque effective ;
   9 tests dont une partie menée à son terme ; vérifié sur l'API locale. En revue.
+- 2026-10-18 — livrée : parties contre le bot côté serveur : dépôt en mémoire (ADR 0014), contrat OpenAPI, 4 routes, le bot joue dans la requête

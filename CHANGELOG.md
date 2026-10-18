@@ -35,6 +35,8 @@ Toutes les évolutions notables du projet sont consignées ici
   (US-010, ADR 0013).
 - Bot « Batch de nuit » qui joue sur sa seule vue de la partie, trois decks prêtés (Héritage, Moderne, Hybride)
   équilibrés par simulation, validation des decks et simulation « bot contre bot » (`npm run simuler`) (US-011).
+- Parties contre le bot côté API : `GET /api/v1/decks`, création, lecture et actions d'une partie ; le bot joue dans
+  la requête, seule la vue du joueur est renvoyée ; parties gardées en mémoire avec expiration (US-012, ADR 0014).
 
 ### Modifié
 
