@@ -11,7 +11,7 @@ _Dernière mise à jour : 2026-10-18_
 | [EPIC-02 — Comptes joueurs](epics/EPIC-02-comptes-joueurs.md)            | Must     | À affiner | 0/0        |
 | [EPIC-03 — Boosters et collection](epics/EPIC-03-boosters-collection.md) | Must     | À affiner | 0/0        |
 | [EPIC-04 — Combat contre le bot](epics/EPIC-04-combat-bot.md)            | Must     | En cours  | 1/5        |
-| [EPIC-05 — Illustrations des cartes](epics/EPIC-05-illustrations.md)     | Should   | En cours  | 1/4        |
+| [EPIC-05 — Illustrations des cartes](epics/EPIC-05-illustrations.md)     | Should   | En cours  | 1/5        |
 | [EPIC-06 — Duels entre joueurs](epics/EPIC-06-duels-joueurs.md)          | Should   | À affiner | 0/0        |
 | [EPIC-07 — Vie sociale](epics/EPIC-07-vie-sociale.md)                    | Could    | À affiner | 0/0        |
 
@@ -43,6 +43,7 @@ Objectif : un socle outillé, vérifié automatiquement, et une méthode de trav
 | [US-015 — Chaîne d'import et d'optimisation des illustrations](stories/US-015-chaine-illustrations.md)  | EPIC-05 | Should   | M      | En revue  |
 | [US-016 — Direction artistique et choix du générateur d'images](stories/US-016-direction-artistique.md) | EPIC-05 | Should   | M      | En cours  |
 | [US-017 — Illustrations des 71 cartes du set 1](stories/US-017-illustrations-set-1.md)                  | EPIC-05 | Should   | L      | À affiner |
+| [US-018 — Illustrations provisoires générées par le code](stories/US-018-illustrations-provisoires.md)  | EPIC-05 | Should   | M      | En cours  |
 
 ## Itération 3 (à venir) — jouer contre le bot
 
