@@ -10,7 +10,7 @@ _Dernière mise à jour : 2026-10-18_
 | [EPIC-01 — Univers et modèle de carte](epics/EPIC-01-univers-cartes.md)  | Must     | Terminé   | 2/2        |
 | [EPIC-02 — Comptes joueurs](epics/EPIC-02-comptes-joueurs.md)            | Must     | À affiner | 0/0        |
 | [EPIC-03 — Boosters et collection](epics/EPIC-03-boosters-collection.md) | Must     | À affiner | 0/0        |
-| [EPIC-04 — Combat contre le bot](epics/EPIC-04-combat-bot.md)            | Must     | À affiner | 0/0        |
+| [EPIC-04 — Combat contre le bot](epics/EPIC-04-combat-bot.md)            | Must     | À affiner | 0/5        |
 | [EPIC-05 — Illustrations des cartes](epics/EPIC-05-illustrations.md)     | Should   | En cours  | 1/1        |
 | [EPIC-06 — Duels entre joueurs](epics/EPIC-06-duels-joueurs.md)          | Should   | À affiner | 0/0        |
 | [EPIC-07 — Vie sociale](epics/EPIC-07-vie-sociale.md)                    | Could    | À affiner | 0/0        |
@@ -40,3 +40,13 @@ Objectif : un socle outillé, vérifié automatiquement, et une méthode de trav
 | Story                                                                             | Epic    | Priorité | Taille | Statut |
 | --------------------------------------------------------------------------------- | ------- | -------- | ------ | ------ |
 | [US-009 — Design des cartes façon carte à jouer](stories/US-009-design-cartes.md) | EPIC-05 | Should   | L      | Faite  |
+
+## Itération 3 (à venir) — jouer contre le bot
+
+| Story                                                                                        | Epic    | Priorité | Taille | Statut    |
+| -------------------------------------------------------------------------------------------- | ------- | -------- | ------ | --------- |
+| [US-010 — Moteur de combat : règles de base](stories/US-010-moteur-combat.md)                | EPIC-04 | Must     | L      | Prête     |
+| [US-011 — Bot « Batch de nuit » et decks prêtés](stories/US-011-bot-decks-pretes.md)         | EPIC-04 | Must     | M      | À affiner |
+| [US-012 — API de partie contre le bot](stories/US-012-api-partie-pve.md)                     | EPIC-04 | Must     | M      | À affiner |
+| [US-013 — Écran de partie contre le bot](stories/US-013-ecran-partie-pve.md)                 | EPIC-04 | Must     | L      | À affiner |
+| [US-014 — Effets des sorts, des incidents et des cartes IA](stories/US-014-effets-cartes.md) | EPIC-04 | Should   | L      | À affiner |
