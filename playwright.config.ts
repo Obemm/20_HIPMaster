@@ -24,6 +24,8 @@ export default defineConfig({
     {
       command: 'npm start -w @hipmaster/api',
       url: 'http://127.0.0.1:3000/api/v1/sante',
+      // Base en mémoire, vierge à chaque lancement (ADR 0018).
+      env: { BASE_LOCALE: 'memory://' },
       reuseExistingServer: !CI,
     },
     {

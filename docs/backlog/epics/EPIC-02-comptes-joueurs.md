@@ -1,6 +1,6 @@
 # EPIC-02 — Comptes joueurs
 
-- **Statut** : À affiner
+- **Statut** : En cours
 - **Priorité** : Must
 
 ## Objectif

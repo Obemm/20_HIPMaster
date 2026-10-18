@@ -36,3 +36,6 @@ Thumbs.db
 
 # Originaux des illustrations : hors du dépôt (ADR 0015)
 packages/illustrations/sources/
+
+# Base PGlite locale (ADR 0018)
+.donnees/

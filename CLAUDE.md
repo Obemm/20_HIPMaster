@@ -33,7 +33,8 @@ pure en TypeScript, PostgreSQL + Drizzle. TypeScript strict, Node ≥ 24.15.
 - `npm run dev` : API (localhost:3000) + front (localhost:4200, qui relaie `/api` vers l'API). `npm run build`.
 - Vérification complète : `npm run check` (lint + format + typecheck + tests) — doit passer avant tout commit ; c'est
   le quality gate (règles SonarJS incluses, ADR 0009).
-- Base locale : `npm run db:up` (Docker Desktop doit être lancé), `npm run db:migrate` ; toute modification de
+- Base locale : PGlite dans `.donnees/` par défaut (ADR 0018), migrations appliquées au démarrage de l'API ;
+  `DATABASE_URL` bascule sur PostgreSQL (`npm run db:up`, Docker). Toute modification de
   `apps/api/src/db/schema.ts` passe par `npm run db:generate` (migration SQL commitée).
 - **Logique de jeu dans `packages/domain`** : fonctions pures, hasard injecté, aucune dépendance à Angular, Fastify ni
   la base. Le serveur fait foi : jamais de tirage ni de résolution de combat dans le front.

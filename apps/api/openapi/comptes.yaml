@@ -1,0 +1,136 @@
+openapi: 3.1.0
+info:
+  title: HIPMaster — comptes invités
+  version: 1.0.0
+  description: >
+    Comptes invités (US-022, ADR 0017) : un pseudo, un jeton de session gardé par le navigateur et un code de
+    récupération pour retrouver son compte sur un autre appareil. Ni mot de passe ni e-mail. Les routes marquées
+    « compte requis » attendent l'en-tête `Authorization: Bearer <jeton>` et répondent 401 sans jeton valide.
+servers:
+  - url: /api/v1
+paths:
+  /joueurs:
+    post:
+      operationId: creerJoueur
+      summary: Crée un compte invité
+      description: >
+        Renvoie le jeton de session et le code de récupération, affiché une seule fois (le serveur n'en garde que
+        l'empreinte).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [pseudo]
+              properties:
+                pseudo:
+                  type: string
+                  minLength: 2
+                  maxLength: 24
+                  description: Lettres, chiffres, espaces, tirets, points et soulignés.
+      responses:
+        '201':
+          description: Le compte créé.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [joueur, jeton, codeRecuperation]
+                properties:
+                  joueur: { $ref: '#/components/schemas/Joueur' }
+                  jeton: { type: string }
+                  codeRecuperation: { type: string, examples: [ABCD-EFGH-JKLM] }
+        '400': { $ref: '#/components/responses/Probleme' }
+  /sessions:
+    post:
+      operationId: seConnecter
+      summary: Ouvre une session avec un code de récupération (nouvel appareil)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [code]
+              properties:
+                code:
+                  {
+                    type: string,
+                    description: Majuscules,
+                    minuscules,
+                    espaces et tirets sont acceptés.,
+                  }
+      responses:
+        '201':
+          description: La session ouverte.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [joueur, jeton]
+                properties:
+                  joueur: { $ref: '#/components/schemas/Joueur' }
+                  jeton: { type: string }
+        '400': { $ref: '#/components/responses/Probleme' }
+        '401': { $ref: '#/components/responses/Probleme' }
+  /sessions/courante:
+    delete:
+      operationId: seDeconnecter
+      summary: Ferme la session de cet appareil (compte requis)
+      security: [{ jeton: [] }]
+      responses:
+        '204': { description: Session fermée. }
+        '401': { $ref: '#/components/responses/Probleme' }
+  /moi:
+    get:
+      operationId: lireMoi
+      summary: Le joueur connecté (compte requis)
+      security: [{ jeton: [] }]
+      responses:
+        '200':
+          description: Le joueur.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Joueur' }
+        '401': { $ref: '#/components/responses/Probleme' }
+  /moi/code:
+    post:
+      operationId: regenererCode
+      summary: Génère un nouveau code de récupération ; l'ancien cesse de fonctionner (compte requis)
+      security: [{ jeton: [] }]
+      responses:
+        '201':
+          description: Le nouveau code, affiché une seule fois.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [codeRecuperation]
+                properties:
+                  codeRecuperation: { type: string }
+        '401': { $ref: '#/components/responses/Probleme' }
+components:
+  securitySchemes:
+    jeton:
+      type: http
+      scheme: bearer
+  responses:
+    Probleme:
+      description: Erreur au format Problem Details (RFC 9457).
+      content:
+        application/problem+json:
+          schema:
+            type: object
+            required: [type, title, status]
+            properties:
+              type: { type: string }
+              title: { type: string }
+              status: { type: integer }
+  schemas:
+    Joueur:
+      type: object
+      required: [id, pseudo]
+      properties:
+        id: { type: string, format: uuid }
+        pseudo: { type: string }
