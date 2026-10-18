@@ -66,6 +66,9 @@ Toutes les évolutions notables du projet sont consignées ici
   au plus 3 par jour ; l'écran de fin l'annonce et mène à son ouverture (US-025).
 - Duels entre joueurs, côté serveur : créer un duel, le rejoindre, jouer à son tour ; l'état vit en base, chacun
   ne reçoit que sa vue, l'ETag évite de recharger un duel inchangé ; API `/api/v1/duels` (US-032, ADR 0020).
+- Défier un collègue par lien : on lance un défi depuis « Jouer » et on partage son lien ; le collègue crée au
+  besoin son compte, revient au défi et le relève ; un défi sert une fois, s'annule et expire après 7 jours
+  (US-033).
 - Chaîne des illustrations : un original déposé et décrit devient, en une commande (`npm run illustrations`), quatre
   images AVIF et WebP de moins de 100 Ko et un manifeste ; la carte affiche son illustration, ou son pictogramme de
   famille à défaut. EPIC-05 découpé en US-015 à US-017 (US-015, ADR 0015).

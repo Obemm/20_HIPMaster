@@ -1,7 +1,7 @@
 # US-033 — Défier un collègue par lien
 
 - **Epic** : EPIC-06
-- **Statut** : En revue
+- **Statut** : Faite
 - **Priorité** : Must
 - **Taille** : M
 - **Branche** : `us-033-defier-par-lien`
@@ -35,3 +35,4 @@ chercher son pseudo**.
   défi via `?retour=`, limité aux chemins internes). En attendant l'écran de duel (US-034), la page annonce à qui
   est le tour. Tests : API (3 de plus), écrans (6), e2e (4, à deux et trois navigateurs, axe en clair et en
   sombre).
+- 2026-10-19 — livrée : Défier un collègue par lien : défi à partager, invitation, annulation, expiration
