@@ -1,7 +1,7 @@
 # US-014 — Sorts et incidents
 
 - **Epic** : EPIC-04
-- **Statut** : En revue
+- **Statut** : Faite
 - **Priorité** : Should
 - **Taille** : L
 - **Branche** : `us-014-effets-cartes`
@@ -63,3 +63,4 @@ En tant que **joueur**, je veux **jouer les sorts (Patterns, prompting) et les i
   43 et 55 % sur 400 parties) ; API : contrat et schémas (`jouer`, statuts des composants) ; écran : « Jouer sur … »,
   statuts sur les jetons, phrases du journal ; 26 tests d'effets, 1 test d'API, 2 tests de l'écran, parcours e2e
   qui joue aussi des sorts. En revue.
+- 2026-10-18 — livrée : sorts et incidents jouables du moteur à l'écran, bot et decks prêtés équilibrés (43 à 55 %)
