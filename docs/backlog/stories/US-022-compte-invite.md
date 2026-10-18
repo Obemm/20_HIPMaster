@@ -1,7 +1,7 @@
 # US-022 — Compte invité, sans mot de passe
 
 - **Epic** : EPIC-02
-- **Statut** : En revue
+- **Statut** : Faite
 - **Priorité** : Must
 - **Taille** : L
 - **Branche** : `us-022-compte-invite`
@@ -41,3 +41,4 @@ sans retenir de mot de passe**.
   `openapi/comptes.yaml`, tables `joueurs` et `sessions` (migration `0001_comptes`), routes `/joueurs`, `/sessions`,
   `/moi`. Front : page « Mon compte », pseudo dans le bandeau, intercepteur du jeton. Tests API (7), écran (3), e2e
   (création, rechargement, autre appareil, déconnexion) et axe en clair et en sombre au vert.
+- 2026-10-18 — livrée : Compte invité : pseudo, jeton gardé par le navigateur, code de récupération ; PGlite en développement
