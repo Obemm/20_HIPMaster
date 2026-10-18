@@ -74,8 +74,8 @@ récompense de victoire. Les illustrations (EPIC-05) attendent.
 
 ## Itération 5 (à venir) — duels entre joueurs
 
-Découpage du 2026-10-19 : duels asynchrones, au tour par tour, état en base (ADR 0020, **proposé**, à valider par le
-porteur du projet avant de coder US-032).
+Découpage du 2026-10-19 : duels asynchrones, au tour par tour, état en base (ADR 0020, accepté par le porteur du projet
+le 2026-10-19).
 
 | Story                                                                              | Epic    | Priorité | Taille | Statut    |
 | ---------------------------------------------------------------------------------- | ------- | -------- | ------ | --------- |

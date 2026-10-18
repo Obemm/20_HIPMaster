@@ -1,7 +1,7 @@
 # 0020 — Duels entre joueurs : asynchrones, au tour par tour, état en base
 
 - **Date** : 2026-10-19
-- **Statut** : Proposée
+- **Statut** : Acceptée
 - **Référence Elis** : ADR-020 (API REST, réponse en moins de 3 s pour une API front) — retenu ; ADR-013 et ADR-029
   (event streaming et AsyncAPI sur Solace) — écartés : ils régissent les échanges **entre applications**, alors
   que les duels restent internes à HIPMaster

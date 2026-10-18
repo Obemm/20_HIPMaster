@@ -28,6 +28,6 @@ référence Elis.
 | [0017](0017-compte-invite.md)                          | Compte invité : pseudo, jeton secret et code de récupération          | ADR-010, 034 (écartés)         | Acceptée                      |
 | [0018](0018-pglite-developpement.md)                   | PGlite en développement et en tests, PostgreSQL en production         | aucune                         | Acceptée                      |
 | [0019](0019-boosters-recharge-a-la-lecture.md)         | Boosters : tirage serveur, recharge calculée à la lecture             | aucune (ADR-032 écarté)        | Acceptée                      |
-| [0020](0020-duels-asynchrones.md)                      | Duels entre joueurs : asynchrones, au tour par tour, état en base     | ADR-020 (ADR-013, 029 écartés) | Proposée                      |
+| [0020](0020-duels-asynchrones.md)                      | Duels entre joueurs : asynchrones, au tour par tour, état en base     | ADR-020 (ADR-013, 029 écartés) | Acceptée                      |
 
 Modèle : [template.md](template.md).

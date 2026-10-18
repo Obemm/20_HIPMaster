@@ -6,7 +6,7 @@
 ## Objectif
 
 Défier un collègue ou un joueur au hasard. Les duels sont **asynchrones, au tour par tour** (ADR
-[0020](../../decisions/0020-duels-asynchrones.md), proposé) : chacun joue quand il veut, et la partie avance en
+[0020](../../decisions/0020-duels-asynchrones.md), accepté le 2026-10-19) : chacun joue quand il veut, et la partie avance en
 direct si les deux joueurs sont présents.
 
 ## Indicateur de réussite
