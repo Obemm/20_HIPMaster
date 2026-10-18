@@ -5,6 +5,7 @@ import { provideRouter, Router } from '@angular/router';
 import type { Carte } from '../cartes/carte';
 import { ChoixDeck } from './choix-deck';
 import type { Partie, Vue } from './modele';
+import { CompteService } from '../compte/compte.service';
 import { PartieEcran } from './partie';
 
 const GARDE = {
@@ -98,16 +99,17 @@ const partie = (v: Vue, evenements: Partie['evenements'] = []): Partie => ({
   evenements,
 });
 
-async function ouvrir(v: Vue = vue()) {
+async function ouvrir(v: Vue = vue(), complement: Partial<Partie> = {}) {
   const fixture = TestBed.createComponent(PartieEcran);
   fixture.componentRef.setInput('id', 'p1');
   fixture.detectChanges();
   const http = TestBed.inject(HttpTestingController);
   http.expectOne('/api/v1/cartes').flush(CATALOGUE);
   http.expectOne('/api/v1/niveaux').flush(NIVEAUX);
-  http
-    .expectOne('/api/v1/parties/p1')
-    .flush(partie(v, [{ type: 'pose', joueur: 'j2', carte: { id: 'j2-05', numero: 17 } }]));
+  http.expectOne('/api/v1/parties/p1').flush({
+    ...partie(v, [{ type: 'pose', joueur: 'j2', carte: { id: 'j2-05', numero: 17 } }]),
+    ...complement,
+  });
   await fixture.whenStable();
   fixture.detectChanges();
   return { fixture, http, page: fixture.nativeElement as HTMLElement };
@@ -305,6 +307,30 @@ describe('PartieEcran', () => {
     const liens = [...page.querySelectorAll('a[href="/jouer"]')].map((a) => a.textContent?.trim());
     expect(liens).toContain('Rejouer');
     expect(bouton(page, 'Finir mon tour')).toBeUndefined();
+  });
+
+  it('annonce le booster gagné par la victoire et mène à son ouverture', async () => {
+    const v = vue({ issue: { gagnant: 'j1', raison: 'sla' }, actions: [] });
+    const { page } = await ouvrir(v, { recompense: { booster: true, plafondAtteint: false } });
+    expect(page.textContent).toContain('Un booster gagné !');
+    expect(page.querySelector('a[href="/boosters"]')?.textContent?.trim()).toBe(
+      'Ouvrir mon booster',
+    );
+  });
+
+  it('annonce le plafond quotidien de boosters gagnés', async () => {
+    const v = vue({ issue: { gagnant: 'j1', raison: 'sla' }, actions: [] });
+    const { page } = await ouvrir(v, { recompense: { booster: false, plafondAtteint: true } });
+    expect(page.textContent).toContain('Plafond atteint : 3 boosters gagnés aujourd’hui');
+    expect(page.querySelector('a[href="/boosters"]')).toBeNull();
+  });
+
+  it('sans compte, une victoire invite à en créer un pour gagner des boosters', async () => {
+    TestBed.inject(CompteService).pret.set(true);
+    const v = vue({ issue: { gagnant: 'j1', raison: 'sla' }, actions: [] });
+    const { page } = await ouvrir(v);
+    expect(page.textContent).toContain('Avec un compte, chaque victoire rapporte un booster');
+    expect(page.querySelector('a[href="/compte"]')).not.toBeNull();
   });
 
   it('explique qu’une partie expirée n’existe plus', async () => {

@@ -1,4 +1,4 @@
-import { integer, pgTable, primaryKey, text, timestamp, uuid } from 'drizzle-orm/pg-core';
+import { boolean, integer, pgTable, primaryKey, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 
 /** Comptes invités (US-022, ADR 0017) : un pseudo, et l'empreinte du code de récupération. */
 export const joueurs = pgTable('joueurs', {
@@ -35,3 +35,16 @@ export const collection = pgTable(
   },
   (table) => [primaryKey({ columns: [table.joueurId, table.numero] })],
 );
+
+/**
+ * Récompenses de victoire (US-025) : une ligne par partie gagnée, ce qui garantit une seule récompense par partie.
+ * `booster` est faux quand le plafond quotidien était atteint.
+ */
+export const recompenses = pgTable('recompenses', {
+  partieId: uuid().primaryKey(),
+  joueurId: uuid()
+    .notNull()
+    .references(() => joueurs.id, { onDelete: 'cascade' }),
+  booster: boolean().notNull(),
+  accordeeLe: timestamp({ withTimezone: true }).notNull().defaultNow(),
+});

@@ -43,7 +43,9 @@ paths:
     post:
       operationId: creerPartie
       summary: Crée une partie contre le bot avec un deck prêté
-      description: Si le bot commence, son premier tour est déjà joué dans la réponse.
+      description: >
+        Si le bot commence, son premier tour est déjà joué dans la réponse. Avec l'en-tête `Authorization: Bearer`
+        d'un compte (facultatif), une victoire rapportera un booster (US-025, voir `recompense`).
       requestBody:
         required: true
         content:
@@ -138,6 +140,16 @@ components:
           type: array
           description: Événements visibles par le joueur (voir `Evenement`).
           items: { $ref: '#/components/schemas/Evenement' }
+        recompense:
+          type: object
+          description: >
+            Présente quand le joueur a gagné une partie lancée en étant connecté (en-tête `Authorization: Bearer`
+            lors de sa création, voir comptes.yaml) : un booster, au plus 3 par jour UTC, une seule fois par partie
+            (US-025).
+          required: [booster, plafondAtteint]
+          properties:
+            booster: { type: boolean, description: La victoire a rapporté un booster. }
+            plafondAtteint: { type: boolean, description: Le plafond quotidien était déjà atteint. }
     Vue:
       type: object
       required: [joueur, moi, adversaire, actif, tour, issue, actions]

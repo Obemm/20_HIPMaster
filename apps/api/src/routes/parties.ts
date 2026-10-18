@@ -2,8 +2,16 @@ import { type Action, DECKS_PRETES, NIVEAUX_BOT } from '@hipmaster/domain';
 import type { FastifyReply } from 'fastify';
 import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
 import { z } from 'zod';
-import type { DepotParties, ResultatDepot } from '../parties/depot.ts';
+import { joueurDuJeton } from '../comptes/comptes.ts';
+import { type OptionsBoosters, type Recompense, recompenserVictoire } from '../comptes/boosters.ts';
+import type { Base } from '../db/index.ts';
+import type { DepotParties, PartieVisible, ResultatDepot } from '../parties/depot.ts';
+import { jetonDe } from './comptes.ts';
 import { schemaAction, schemaDeck, schemaNiveau, schemaPartie } from '../parties/schemas.ts';
+
+const schemaPartieRecompensee = schemaPartie.extend({
+  recompense: z.object({ booster: z.boolean(), plafondAtteint: z.boolean() }).optional(),
+});
 
 // Contrat : apps/api/openapi/parties.yaml.
 
@@ -40,11 +48,24 @@ function versAction(corps: z.infer<typeof schemaAction>): Action {
   return cible === undefined ? pose : { ...pose, cible };
 }
 
-export const routesParties: FastifyPluginAsyncZod<{ depot: DepotParties }> = async (
-  app,
-  options,
-) => {
-  const { depot } = options;
+export const routesParties: FastifyPluginAsyncZod<{
+  depot: DepotParties;
+  base?: Base;
+  boosters?: OptionsBoosters;
+}> = async (app, options) => {
+  const { depot, base, boosters } = options;
+
+  /** Une partie gagnée par un joueur connecté rapporte un booster, une seule fois (US-025). */
+  async function avecRecompense(
+    partie: PartieVisible,
+  ): Promise<PartieVisible & { recompense?: Recompense }> {
+    const joueurId = depot.proprietaire(partie.id);
+    if (!base || !joueurId || partie.vue.issue?.gagnant !== partie.vue.joueur) return partie;
+    return {
+      ...partie,
+      recompense: await recompenserVictoire(base, partie.id, joueurId, boosters),
+    };
+  }
 
   app.get('/decks', { schema: { response: { 200: z.array(schemaDeck) } } }, async () =>
     DECKS_PRETES.map((deck) => ({ ...deck, cartes: [...deck.cartes] })),
@@ -63,7 +84,10 @@ export const routesParties: FastifyPluginAsyncZod<{ depot: DepotParties }> = asy
       },
     },
     async (requete, reponse) => {
-      const resultat = depot.creer(requete.body.deck, requete.body.niveau);
+      // Connecté, le joueur pourra être récompensé ; sans compte (ou session expirée), la partie reste jouable.
+      const jeton = base ? jetonDe(requete) : null;
+      const joueur = base && jeton ? await joueurDuJeton(base, jeton) : null;
+      const resultat = depot.creer(requete.body.deck, requete.body.niveau, joueur?.id);
       if (!resultat.ok) return refuser(reponse, resultat);
       return reponse.status(201).send(resultat.valeur);
     },
@@ -71,19 +95,25 @@ export const routesParties: FastifyPluginAsyncZod<{ depot: DepotParties }> = asy
 
   app.get(
     '/parties/:id',
-    { schema: { params: parametres, response: { 200: schemaPartie } } },
+    { schema: { params: parametres, response: { 200: schemaPartieRecompensee } } },
     async (requete, reponse) => {
       const resultat = depot.lire(requete.params.id);
-      return resultat.ok ? resultat.valeur : refuser(reponse, resultat);
+      return resultat.ok ? avecRecompense(resultat.valeur) : refuser(reponse, resultat);
     },
   );
 
   app.post(
     '/parties/:id/actions',
-    { schema: { params: parametres, body: schemaAction, response: { 200: schemaPartie } } },
+    {
+      schema: {
+        params: parametres,
+        body: schemaAction,
+        response: { 200: schemaPartieRecompensee },
+      },
+    },
     async (requete, reponse) => {
       const resultat = depot.jouer(requete.params.id, versAction(requete.body));
-      return resultat.ok ? resultat.valeur : refuser(reponse, resultat);
+      return resultat.ok ? avecRecompense(resultat.valeur) : refuser(reponse, resultat);
     },
   );
 };

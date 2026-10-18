@@ -27,6 +27,7 @@ import {
   type Partie,
   TOURS_MAX,
 } from './modele';
+import { CompteService } from '../compte/compte.service';
 
 type ActionCarte = Extract<Action, { carte: string }>;
 
@@ -47,6 +48,7 @@ export class PartieEcran implements OnInit, OnDestroy {
   readonly id = input.required<string>();
 
   private readonly http = inject(HttpClient);
+  protected readonly compte = inject(CompteService);
   private readonly titreFin = viewChild<ElementRef<HTMLElement>>('titreFin');
   /** Événements reçus, pas encore affichés : ils passent un par un, toujours dans l'ordre. */
   private readonly enAttente: Evenement[] = [];

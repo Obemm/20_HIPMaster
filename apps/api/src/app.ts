@@ -61,7 +61,12 @@ export function construireApp(
     });
     app.register(routesCollection, { prefix: '/api/v1', base: options.base });
   }
-  app.register(routesParties, { prefix: '/api/v1', depot: new DepotParties(options.parties) });
+  app.register(routesParties, {
+    prefix: '/api/v1',
+    depot: new DepotParties(options.parties),
+    ...(options.base && { base: options.base }),
+    ...(options.boosters && { boosters: options.boosters }),
+  });
 
   return app;
 }

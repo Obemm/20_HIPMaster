@@ -1,8 +1,8 @@
 import { randomInt } from 'node:crypto';
 import { ouvrirBooster, REGLES_BOOSTERS, type ReglesBoosters, stockA } from '@hipmaster/domain';
-import { and, eq, inArray, sql } from 'drizzle-orm';
+import { and, count, eq, gte, inArray, sql } from 'drizzle-orm';
 import type { Base } from '../db/index.ts';
-import { collection, joueurs } from '../db/schema.ts';
+import { collection, joueurs, recompenses } from '../db/schema.ts';
 
 /** Boosters d'un joueur (US-023, ADR 0019) : le stock se recalcule à chaque lecture, le tirage se fait ici. */
 
@@ -110,5 +110,71 @@ export async function ouvrirUnBooster(
       });
 
     return { cartes, boosters: versEtat(stockA(apres, maintenant, regles), regles) };
+  });
+}
+
+export interface Recompense {
+  /** Vrai si la victoire a rapporté un booster. */
+  booster: boolean;
+  /** Vrai si le plafond quotidien était déjà atteint (pas de booster). */
+  plafondAtteint: boolean;
+}
+
+/**
+ * Récompense une victoire contre le bot (US-025) : un booster, au plus `victoiresParJour` par jour UTC. Une seule
+ * récompense par partie : appelée de nouveau pour la même partie, la fonction renvoie la décision déjà prise.
+ */
+export async function recompenserVictoire(
+  base: Base,
+  partieId: string,
+  joueurId: string,
+  options: OptionsBoosters = {},
+): Promise<Recompense> {
+  const regles = options.regles ?? REGLES_BOOSTERS;
+  return base.transaction(async (tx) => {
+    // Le verrou du joueur sérialise ses récompenses et ses ouvertures de boosters.
+    const [ligne] = await tx
+      .select({ stock: joueurs.boosters, depuis: joueurs.rechargeDepuis })
+      .from(joueurs)
+      .where(eq(joueurs.id, joueurId))
+      .for('update');
+    if (!ligne) throw new Error('Joueur introuvable.');
+
+    const [deja] = await tx
+      .select({ booster: recompenses.booster })
+      .from(recompenses)
+      .where(eq(recompenses.partieId, partieId));
+    if (deja) return { booster: deja.booster, plafondAtteint: !deja.booster };
+
+    const maintenant = (options.maintenant ?? Date.now)();
+    const debutJour = new Date(maintenant);
+    debutJour.setUTCHours(0, 0, 0, 0);
+    const [{ gagnes } = { gagnes: 0 }] = await tx
+      .select({ gagnes: count() })
+      .from(recompenses)
+      .where(
+        and(
+          eq(recompenses.joueurId, joueurId),
+          eq(recompenses.booster, true),
+          gte(recompenses.accordeeLe, debutJour),
+        ),
+      );
+    const booster = gagnes < regles.victoiresParJour;
+    await tx
+      .insert(recompenses)
+      .values({ partieId, joueurId, booster, accordeeLe: new Date(maintenant) });
+    if (booster) {
+      // Le booster gagné s'ajoute au stock rechargé, quitte à dépasser le plafond de recharge.
+      const actuel = stockA(
+        { stock: ligne.stock, depuis: ligne.depuis.getTime() },
+        maintenant,
+        regles,
+      );
+      await tx
+        .update(joueurs)
+        .set({ boosters: actuel.stock + 1, rechargeDepuis: new Date(actuel.depuis) })
+        .where(eq(joueurs.id, joueurId));
+    }
+    return { booster, plafondAtteint: !booster };
   });
 }
