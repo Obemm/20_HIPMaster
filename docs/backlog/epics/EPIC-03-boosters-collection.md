@@ -1,6 +1,6 @@
 # EPIC-03 — Boosters et collection
 
-- **Statut** : À affiner
+- **Statut** : En cours
 - **Priorité** : Must
 
 ## Objectif
@@ -13,7 +13,7 @@ Un booster s'ouvre en moins d'une seconde ; la collection affiche la progression
 
 ## Stories
 
-- [ ] US-023 — Recevoir et ouvrir des boosters
+- [x] US-023 — Recevoir et ouvrir des boosters
 - [ ] US-024 — Ma collection
 
 Gestion des doubles et animation plus riche à découper ensuite.

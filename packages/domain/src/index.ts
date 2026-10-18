@@ -1,3 +1,11 @@
+export {
+  ouvrirBooster,
+  REGLES_BOOSTERS,
+  stockA,
+  TAILLE_BOOSTER,
+  type ReglesBoosters,
+  type StockBoosters,
+} from './booster.ts';
 export { CAPACITES, IDS_CAPACITE, type Capacite, type IdCapacite } from './capacites.ts';
 export {
   detaillerCapacites,

@@ -1,0 +1,112 @@
+{
+  "id": "4bf79f3b-0be4-45f1-a602-94b20b020aa1",
+  "prevId": "e97bb7e2-915b-4f6f-8f9a-4a39ab818144",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.joueurs": {
+      "name": "joueurs",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "pseudo": {
+          "name": "pseudo",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "empreinte_code": {
+          "name": "empreinte_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "cree_le": {
+          "name": "cree_le",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "joueurs_empreinteCode_unique": {
+          "name": "joueurs_empreinteCode_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "empreinte_code"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.sessions": {
+      "name": "sessions",
+      "schema": "",
+      "columns": {
+        "empreinte_jeton": {
+          "name": "empreinte_jeton",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "joueur_id": {
+          "name": "joueur_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "cree_le": {
+          "name": "cree_le",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "sessions_joueur_id_joueurs_id_fk": {
+          "name": "sessions_joueur_id_joueurs_id_fk",
+          "tableFrom": "sessions",
+          "tableTo": "joueurs",
+          "columnsFrom": [
+            "joueur_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}
