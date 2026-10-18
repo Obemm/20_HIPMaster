@@ -2,7 +2,6 @@ import { randomInt, randomUUID } from 'node:crypto';
 import {
   type Action,
   appliquer,
-  choisirActionBatchDeNuit,
   creerPartie,
   DECKS_PRETES,
   type DeckPrete,
@@ -10,7 +9,10 @@ import {
   type ErreurAction,
   type EtatPartie,
   journalDe,
+  NIVEAU_PAR_DEFAUT,
+  type NiveauBot,
   trouverDeckPrete,
+  trouverNiveau,
   vueDe,
   type VueJoueur,
 } from '@hipmaster/domain';
@@ -37,6 +39,7 @@ interface Partie {
   etat: EtatPartie;
   deck: DeckPrete;
   deckBot: DeckPrete;
+  niveau: NiveauBot;
   derniereActivite: number;
 }
 
@@ -45,23 +48,25 @@ export interface PartieVisible {
   id: string;
   deck: string;
   deckAdversaire: string;
+  /** Niveau du bot adverse (US-021). */
+  niveau: string;
   vue: Omit<VueJoueur, 'journal'>;
   evenements: EntreeJournal[];
 }
 
 export type ResultatDepot<T> =
   | { ok: true; valeur: T }
-  | { ok: false; raison: 'partie-inconnue' | 'deck-inconnu' }
+  | { ok: false; raison: 'partie-inconnue' | 'deck-inconnu' | 'niveau-inconnu' }
   | { ok: false; raison: 'action-refusee'; erreur: ErreurAction };
 
 /** Fait jouer le bot tant que c'est son tour. */
-function faireJouerLeBot(etat: EtatPartie): EtatPartie {
+function faireJouerLeBot(etat: EtatPartie, strategie: NiveauBot['strategie']): EtatPartie {
   let courant = etat;
   let actions = 0;
   while (!courant.issue && courant.actif === BOT) {
     actions += 1;
     if (actions > ACTIONS_BOT_MAX) throw new Error('Le bot ne termine pas son tour.');
-    const resultat = appliquer(courant, choisirActionBatchDeNuit(vueDe(courant, BOT)));
+    const resultat = appliquer(courant, strategie(vueDe(courant, BOT)));
     if (!resultat.ok) throw new Error(`Action illégale du bot : ${resultat.erreur.message}`);
     courant = resultat.etat;
   }
@@ -87,20 +92,23 @@ export class DepotParties {
     return this.parties.size;
   }
 
-  creer(idDeck: string): ResultatDepot<PartieVisible> {
+  creer(idDeck: string, idNiveau: string = NIVEAU_PAR_DEFAUT): ResultatDepot<PartieVisible> {
     this.purger();
     const deck = trouverDeckPrete(idDeck);
     if (!deck) return { ok: false, raison: 'deck-inconnu' };
     const graine = this.tirerGraine();
     const deckBot = DECKS_PRETES[graine % DECKS_PRETES.length] ?? deck;
+    const niveau = trouverNiveau(idNiveau);
+    if (!niveau) return { ok: false, raison: 'niveau-inconnu' };
     const initial = creerPartie({ j1: deck.cartes, j2: deckBot.cartes }, graine);
-    const etat = faireJouerLeBot(initial);
+    const etat = faireJouerLeBot(initial, niveau.strategie);
     this.faireDeLaPlace();
     const partie: Partie = {
       id: randomUUID(),
       etat,
       deck,
       deckBot,
+      niveau,
       derniereActivite: this.maintenant(),
     };
     this.parties.set(partie.id, partie);
@@ -119,7 +127,7 @@ export class DepotParties {
     const avant = partie.etat.journal.length;
     const resultat = appliquer(partie.etat, action);
     if (!resultat.ok) return { ok: false, raison: 'action-refusee', erreur: resultat.erreur };
-    partie.etat = faireJouerLeBot(resultat.etat);
+    partie.etat = faireJouerLeBot(resultat.etat, partie.niveau.strategie);
     return { ok: true, valeur: this.visible(partie, avant) };
   }
 
@@ -159,6 +167,7 @@ export class DepotParties {
       id: partie.id,
       deck: partie.deck.id,
       deckAdversaire: partie.deckBot.id,
+      niveau: partie.niveau.id,
       vue: { joueur, moi, adversaire, actif, tour, issue, actions },
       evenements: journalDe(partie.etat.journal.slice(depuis), HUMAIN),
     };

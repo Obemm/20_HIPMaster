@@ -83,8 +83,17 @@ export interface Partie {
   id: string;
   deck: string;
   deckAdversaire: string;
+  /** Niveau du bot adverse (US-021). */
+  niveau: string;
   vue: Vue;
   evenements: Evenement[];
+}
+
+/** Un niveau du bot, du plus simple au plus fort (US-021). */
+export interface Niveau {
+  id: string;
+  nom: string;
+  description: string;
 }
 
 export interface Deck {

@@ -74,6 +74,20 @@ test('le bot joue son tour, annoncé dans le journal', async ({ page }) => {
   expect(debord).toBeLessThanOrEqual(0);
 });
 
+test('on choisit la difficulté du bot avant son deck, et elle est rappelée pendant la partie', async ({
+  page,
+}) => {
+  await page.goto('/jouer');
+  const niveaux = page.getByRole('group', { name: '1. Difficulté du bot' });
+  await expect(niveaux.getByRole('radio')).toHaveCount(3);
+  await expect(niveaux.getByRole('radio', { name: /Batch de nuit/ })).toBeChecked();
+  await niveaux.getByRole('radio', { name: /Agent autonome/ }).check();
+  await page.getByRole('button', { name: 'Jouer avec Moderne' }).click();
+  await expect(page.getByText('Niveau : Agent autonome')).toBeVisible();
+  await page.getByRole('button', { name: 'Finir mon tour' }).click();
+  await expect(page.getByRole('button', { name: 'Finir mon tour' })).toBeEnabled();
+});
+
 test('une partie inconnue est annoncée comme introuvable', async ({ page }) => {
   await page.goto('/jouer/00000000-0000-4000-8000-000000000000');
   await expect(page.getByRole('heading', { name: 'Partie introuvable' })).toBeVisible();

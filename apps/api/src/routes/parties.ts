@@ -1,9 +1,9 @@
-import { type Action, DECKS_PRETES } from '@hipmaster/domain';
+import { type Action, DECKS_PRETES, NIVEAUX_BOT } from '@hipmaster/domain';
 import type { FastifyReply } from 'fastify';
 import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
 import { z } from 'zod';
 import type { DepotParties, ResultatDepot } from '../parties/depot.ts';
-import { schemaAction, schemaDeck, schemaPartie } from '../parties/schemas.ts';
+import { schemaAction, schemaDeck, schemaNiveau, schemaPartie } from '../parties/schemas.ts';
 
 // Contrat : apps/api/openapi/parties.yaml.
 
@@ -21,6 +21,8 @@ function refuser(reponse: FastifyReply, resultat: Exclude<ResultatDepot<unknown>
       return corps(404, 'Partie introuvable ou expirée');
     case 'deck-inconnu':
       return corps(422, 'Deck inconnu');
+    case 'niveau-inconnu':
+      return corps(422, 'Niveau de bot inconnu');
     case 'action-refusee':
       return corps(422, 'Action refusée', {
         detail: resultat.erreur.message,
@@ -48,16 +50,20 @@ export const routesParties: FastifyPluginAsyncZod<{ depot: DepotParties }> = asy
     DECKS_PRETES.map((deck) => ({ ...deck, cartes: [...deck.cartes] })),
   );
 
+  app.get('/niveaux', { schema: { response: { 200: z.array(schemaNiveau) } } }, async () =>
+    NIVEAUX_BOT.map(({ id, nom, description }) => ({ id, nom, description })),
+  );
+
   app.post(
     '/parties',
     {
       schema: {
-        body: z.object({ deck: z.string().max(64) }),
+        body: z.object({ deck: z.string().max(64), niveau: z.string().max(64).optional() }),
         response: { 201: schemaPartie },
       },
     },
     async (requete, reponse) => {
-      const resultat = depot.creer(requete.body.deck);
+      const resultat = depot.creer(requete.body.deck, requete.body.niveau);
       if (!resultat.ok) return refuser(reponse, resultat);
       return reponse.status(201).send(resultat.valeur);
     },

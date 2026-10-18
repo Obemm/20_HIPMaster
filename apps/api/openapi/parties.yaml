@@ -21,6 +21,24 @@ paths:
               schema:
                 type: array
                 items: { $ref: '#/components/schemas/Deck' }
+  /niveaux:
+    get:
+      operationId: listerNiveaux
+      summary: Liste les niveaux du bot, du plus simple au plus fort (US-021)
+      responses:
+        '200':
+          description: Les niveaux du bot.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  required: [id, nom, description]
+                  properties:
+                    id: { type: string, examples: [architecte-esb] }
+                    nom: { type: string }
+                    description: { type: string }
   /parties:
     post:
       operationId: creerPartie
@@ -35,6 +53,10 @@ paths:
               required: [deck]
               properties:
                 deck: { type: string, examples: [moderne] }
+                niveau:
+                  type: string
+                  description: Niveau du bot (voir /niveaux) ; `batch-de-nuit` par défaut.
+                  examples: [agent-autonome]
       responses:
         '201':
           description: La partie créée.
@@ -105,11 +127,12 @@ components:
         cartes: { type: array, items: { type: integer }, description: Numéros des 20 cartes. }
     Partie:
       type: object
-      required: [id, deck, deckAdversaire, vue, evenements]
+      required: [id, deck, deckAdversaire, niveau, vue, evenements]
       properties:
         id: { type: string, format: uuid }
         deck: { type: string, description: Identifiant du deck du joueur. }
         deckAdversaire: { type: string, description: Identifiant du deck du bot. }
+        niveau: { type: string, description: Niveau du bot adverse. }
         vue: { $ref: '#/components/schemas/Vue' }
         evenements:
           type: array

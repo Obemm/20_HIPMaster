@@ -36,6 +36,7 @@ export {
   journalDe,
   vueDe,
   type ComposantVisible,
+  type MarqueursJoueur,
   type VueAdversaire,
   type VueJoueur,
   type VueMoi,
@@ -51,3 +52,7 @@ export {
   type DeckPrete,
 } from './decks.ts';
 export { jouerPartie, simuler, type ResultatSimulation, type Strategie } from './simulation.ts';
+export { choisirActionAgentAutonome, choisirActionArchitecteEsb, evaluer } from './bots-forts.ts';
+export { chercher, POIDS_PAR_DEFAUT, type Poids, type Recherche } from './bots-forts.ts';
+export { NIVEAU_PAR_DEFAUT, NIVEAUX_BOT, trouverNiveau, type NiveauBot } from './niveaux.ts';
+export { reconstituer } from './reconstitution.ts';

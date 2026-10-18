@@ -7,10 +7,33 @@
     <h2 id="titre-regle" class="mb-2 text-lg font-semibold">La règle en bref</h2>
     <hip-regle-courte />
   </section>
-  <p class="text-texte-doux">
-    Choisissez un deck prêté. Votre adversaire, le bot « Batch de nuit », joue avec un deck tiré au
-    sort.
-  </p>
+  @if (niveaux.hasValue()) {
+    <fieldset class="flex flex-col gap-2">
+      <legend class="mb-1 text-lg font-semibold">1. Difficulté du bot</legend>
+      @for (n of niveaux.value(); track n.id) {
+        <label
+          class="flex cursor-pointer gap-3 rounded-xl border-2 p-3 has-[:checked]:border-accent"
+          [class.border-bordure]="niveau() !== n.id"
+        >
+          <input
+            type="radio"
+            name="niveau"
+            class="mt-1 accent-current"
+            [value]="n.id"
+            [checked]="niveau() === n.id"
+            (change)="niveau.set(n.id)"
+          />
+          <span>
+            <span class="block font-semibold">{{ n.nom }}</span>
+            <span class="block text-sm text-texte-doux">{{ n.description }}</span>
+          </span>
+        </label>
+      }
+    </fieldset>
+  }
+
+  <h2 class="text-lg font-semibold">2. Votre deck</h2>
+  <p class="text-texte-doux">Choisissez un deck prêté. Le bot joue avec un deck tiré au sort.</p>
 
   @if (erreur()) {
     <p role="alert" class="text-alerte">{{ erreur() }}</p>
