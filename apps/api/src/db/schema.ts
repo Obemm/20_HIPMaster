@@ -1,4 +1,14 @@
-import { boolean, integer, pgTable, primaryKey, text, timestamp, uuid } from 'drizzle-orm/pg-core';
+import type { EtatPartie } from '@hipmaster/domain';
+import {
+  boolean,
+  integer,
+  jsonb,
+  pgTable,
+  primaryKey,
+  text,
+  timestamp,
+  uuid,
+} from 'drizzle-orm/pg-core';
 
 /** Comptes invités (US-022, ADR 0017) : un pseudo, et l'empreinte du code de récupération. */
 export const joueurs = pgTable('joueurs', {
@@ -47,4 +57,26 @@ export const recompenses = pgTable('recompenses', {
     .references(() => joueurs.id, { onDelete: 'cascade' }),
   booster: boolean().notNull(),
   accordeeLe: timestamp({ withTimezone: true }).notNull().defaultNow(),
+});
+
+/**
+ * Duels entre joueurs (US-032, ADR 0020) : le créateur joue le camp j1, l'adversaire qui rejoint le camp j2 ; le
+ * tirage du moteur désigne qui commence. `version` change à chaque action et à chaque changement de statut.
+ */
+export const duels = pgTable('duels', {
+  id: uuid().primaryKey().defaultRandom(),
+  statut: text({ enum: ['attente', 'en-cours', 'termine'] })
+    .notNull()
+    .default('attente'),
+  version: integer().notNull().default(0),
+  createurId: uuid()
+    .notNull()
+    .references(() => joueurs.id, { onDelete: 'cascade' }),
+  deckCreateur: text().notNull(),
+  adversaireId: uuid().references(() => joueurs.id, { onDelete: 'cascade' }),
+  deckAdversaire: text(),
+  /** État complet du moteur, jamais renvoyé tel quel (seulement la vue de chaque joueur). */
+  etat: jsonb().$type<EtatPartie>(),
+  creeLe: timestamp({ withTimezone: true }).notNull().defaultNow(),
+  majLe: timestamp({ withTimezone: true }).notNull().defaultNow(),
 });

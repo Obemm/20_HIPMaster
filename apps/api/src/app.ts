@@ -7,8 +7,10 @@ import {
 import { DepotParties, type OptionsDepot } from './parties/depot.ts';
 import type { OptionsBoosters } from './comptes/boosters.ts';
 import type { Base } from './db/index.ts';
+import type { OptionsDuels } from './duels/duels.ts';
 import { routesBoosters } from './routes/boosters.ts';
 import { routesCollection } from './routes/collection.ts';
+import { routesDuels } from './routes/duels.ts';
 import { routesCartes } from './routes/cartes.ts';
 import { routesComptes } from './routes/comptes.ts';
 import { routesParties } from './routes/parties.ts';
@@ -25,6 +27,7 @@ export function construireApp(
     parties?: OptionsDepot;
     base?: Base;
     boosters?: OptionsBoosters;
+    duels?: OptionsDuels;
   } = {},
 ) {
   const app = Fastify({
@@ -60,6 +63,11 @@ export function construireApp(
       ...(options.boosters && { boosters: options.boosters }),
     });
     app.register(routesCollection, { prefix: '/api/v1', base: options.base });
+    app.register(routesDuels, {
+      prefix: '/api/v1',
+      base: options.base,
+      ...(options.duels && { duels: options.duels }),
+    });
   }
   app.register(routesParties, {
     prefix: '/api/v1',

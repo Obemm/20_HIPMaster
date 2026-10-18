@@ -1,0 +1,190 @@
+openapi: 3.1.0
+info:
+  title: HIPMaster — duels entre joueurs
+  version: 1.0.0
+  description: >
+    Duels asynchrones, au tour par tour, entre deux comptes (US-032, ADR 0020). Le serveur tient l'état complet du
+    moteur et ne renvoie à chacun que sa vue. Le créateur d'un duel le lance avec son deck ; un autre joueur le
+    rejoint avec le sien, et le tirage désigne qui commence. Compte requis (`Authorization: Bearer <jeton>`, voir
+    comptes.yaml). Les schémas `Vue`, `Action` et `Evenement` sont ceux de parties.yaml.
+servers:
+  - url: /api/v1
+security: [{ jeton: [] }]
+paths:
+  /duels:
+    post:
+      operationId: creerDuel
+      summary: Crée un duel en attente d'adversaire
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [deck]
+              properties:
+                deck: { type: string, description: Identifiant d'un deck prêté (voir GET /decks). }
+      responses:
+        '201':
+          description: Le duel, en attente d'adversaire.
+          headers:
+            ETag: { $ref: '#/components/headers/ETag' }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Duel' }
+        '401': { $ref: '#/components/responses/Probleme' }
+        '422': { $ref: '#/components/responses/Probleme' }
+  /duels/{id}:
+    parameters: [{ $ref: '#/components/parameters/IdDuel' }]
+    get:
+      operationId: lireDuel
+      summary: Le duel vu par le joueur qui demande
+      description: >
+        Un participant reçoit sa vue et les événements visibles depuis l'index `depuis` du journal. Un autre joueur
+        ne voit qu'un duel en attente (qui défie, avec quel deck), pour pouvoir le rejoindre ; un duel commencé lui
+        reste introuvable. Avec `If-None-Match` égal à l'ETag connu, la réponse est 304 si rien n'a changé.
+      parameters:
+        - name: depuis
+          in: query
+          schema: { type: integer, minimum: 0, default: 0 }
+          description: Index du journal à partir duquel renvoyer les événements (`curseur` d'une réponse précédente).
+        - name: If-None-Match
+          in: header
+          schema: { type: string }
+      responses:
+        '200':
+          description: Le duel.
+          headers:
+            ETag: { $ref: '#/components/headers/ETag' }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Duel' }
+        '304': { description: Rien n'a changé depuis l'ETag fourni. }
+        '401': { $ref: '#/components/responses/Probleme' }
+        '404': { $ref: '#/components/responses/Probleme' }
+  /duels/{id}/rejoindre:
+    parameters: [{ $ref: '#/components/parameters/IdDuel' }]
+    post:
+      operationId: rejoindreDuel
+      summary: Rejoint un duel en attente avec son deck ; le duel commence
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [deck]
+              properties:
+                deck: { type: string }
+      responses:
+        '200':
+          description: Le duel commencé.
+          headers:
+            ETag: { $ref: '#/components/headers/ETag' }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Duel' }
+        '401': { $ref: '#/components/responses/Probleme' }
+        '404': { $ref: '#/components/responses/Probleme' }
+        '409':
+          description: Duel déjà commencé, ou c'est son propre duel (Problem Details).
+          content:
+            application/problem+json:
+              schema: { $ref: '#/components/schemas/Probleme' }
+        '422': { $ref: '#/components/responses/Probleme' }
+  /duels/{id}/actions:
+    parameters: [{ $ref: '#/components/parameters/IdDuel' }]
+    post:
+      operationId: jouerActionDuel
+      summary: Joue une action, à son tour seulement
+      description: >
+        Avec `If-Match` égal à l'ETag connu, l'action est refusée (409) si le duel a changé entre-temps. La réponse
+        contient les événements visibles produits par l'action.
+      parameters:
+        - name: If-Match
+          in: header
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: 'parties.yaml#/components/schemas/Action' }
+      responses:
+        '200':
+          description: Le duel après l'action.
+          headers:
+            ETag: { $ref: '#/components/headers/ETag' }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Duel' }
+        '401': { $ref: '#/components/responses/Probleme' }
+        '404': { $ref: '#/components/responses/Probleme' }
+        '409':
+          description: Ce n'est pas votre tour, le duel n'a pas commencé, ou il a changé depuis l'ETag fourni.
+          content:
+            application/problem+json:
+              schema: { $ref: '#/components/schemas/Probleme' }
+        '422': { $ref: '#/components/responses/Probleme' }
+components:
+  securitySchemes:
+    jeton:
+      type: http
+      scheme: bearer
+  parameters:
+    IdDuel:
+      name: id
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+  headers:
+    ETag:
+      description: Version du duel, entre guillemets ; elle change à chaque action et à chaque changement de statut.
+      schema: { type: string, examples: ['"3"'] }
+  responses:
+    Probleme:
+      description: Erreur au format Problem Details (RFC 9457).
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Probleme' }
+  schemas:
+    Probleme:
+      type: object
+      required: [type, title, status]
+      properties:
+        type: { type: string }
+        title: { type: string }
+        status: { type: integer }
+        detail: { type: string }
+        code: { type: string }
+    Duel:
+      type: object
+      required:
+        [id, statut, version, createur, deckCreateur, adversaire, moi, curseur, vue, evenements]
+      properties:
+        id: { type: string, format: uuid }
+        statut: { type: string, enum: [attente, en-cours, termine] }
+        version: { type: integer }
+        createur: { $ref: '#/components/schemas/Participant' }
+        deckCreateur: { type: string }
+        adversaire:
+          oneOf:
+            - type: 'null'
+            - $ref: '#/components/schemas/Participant'
+        moi:
+          type: [string, 'null']
+          enum: [j1, j2, null]
+          description: Le camp du joueur qui demande ; null s'il ne participe pas.
+        curseur: { type: integer, description: Longueur du journal, à repasser dans `depuis`. }
+        vue:
+          description: La vue du joueur qui demande ; null tant que le duel n'a pas commencé ou pour un non-participant.
+          oneOf:
+            - type: 'null'
+            - $ref: 'parties.yaml#/components/schemas/Vue'
+        evenements:
+          type: array
+          items: { $ref: 'parties.yaml#/components/schemas/Evenement' }
+    Participant:
+      type: object
+      required: [pseudo]
+      properties:
+        pseudo: { type: string }

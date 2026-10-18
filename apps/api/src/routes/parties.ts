@@ -42,7 +42,7 @@ function refuser(reponse: FastifyReply, resultat: Exclude<ResultatDepot<unknown>
 const parametres = z.object({ id: z.string().max(64) });
 
 /** Zod garde `cible: undefined` quand elle est absente ; le domaine attend alors une propriété absente. */
-function versAction(corps: z.infer<typeof schemaAction>): Action {
+export function versAction(corps: z.infer<typeof schemaAction>): Action {
   if (corps.type !== 'poser') return corps;
   const { cible, ...pose } = corps;
   return cible === undefined ? pose : { ...pose, cible };

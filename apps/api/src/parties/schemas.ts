@@ -84,7 +84,7 @@ const schemaMarqueurs = z.object({
   routageUtilise: z.boolean(),
 });
 
-const schemaVue = z.object({
+export const schemaVue = z.object({
   joueur,
   moi: schemaCamp.extend({
     main: z.array(schemaInstance),
@@ -99,7 +99,7 @@ const schemaVue = z.object({
 });
 
 /** Les événements gardent tous leurs champs, qui dépendent de leur type (voir le domaine). */
-const schemaEvenement = z.looseObject({ type: z.string() });
+export const schemaEvenement = z.looseObject({ type: z.string() });
 
 export const schemaPartie = z.object({
   id: z.uuid(),
