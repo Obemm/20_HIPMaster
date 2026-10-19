@@ -5,6 +5,7 @@ import type { Base } from '../db/index.ts';
 import {
   abandonnerDuel,
   annulerDuel,
+  chercherAdversaire,
   creerDuel,
   type DuelVisible,
   jouerDuel,
@@ -28,6 +29,7 @@ const schemaDuel = z.object({
   version: z.int(),
   createur: z.object({ pseudo: z.string() }),
   deckCreateur: z.string(),
+  ouvert: z.boolean(),
   adversaire: z.object({ pseudo: z.string() }).nullable(),
   moi: z.enum(['j1', 'j2']).nullable(),
   curseur: z.int(),
@@ -101,6 +103,24 @@ export const routesDuels: FastifyPluginAsyncZod<{ base: Base; duels?: OptionsDue
       if (!session) return reponse;
       const resultat = await creerDuel(base, session.joueur.id, requete.body.deck);
       return resultat.ok ? envoyer(reponse, 201, resultat.valeur) : refuser(reponse, resultat);
+    },
+  );
+
+  app.post(
+    '/duels/hasard',
+    { schema: { body: corpsDeck, response: { 200: schemaDuel, 201: schemaDuel } } },
+    async (requete, reponse) => {
+      const session = await connecte(requete, reponse);
+      if (!session) return reponse;
+      const resultat = await chercherAdversaire(
+        base,
+        session.joueur.id,
+        requete.body.deck,
+        options,
+      );
+      if (!resultat.ok) return refuser(reponse, resultat);
+      // 201 : un duel ouvert a été créé, le joueur attend ; 200 : il a rejoint un duel, qui commence.
+      return envoyer(reponse, resultat.valeur.enAttente ? 201 : 200, resultat.valeur.duel);
     },
   );
 

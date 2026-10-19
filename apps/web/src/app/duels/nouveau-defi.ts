@@ -1,12 +1,15 @@
 import { HttpClient, httpResource } from '@angular/common/http';
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, input, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { CompteService } from '../compte/compte.service';
 import type { Deck } from '../jeu/modele';
 import type { Duel } from './modele';
 
-/** « Défier un collègue » (US-033) : choisir son deck, créer le duel, puis partager son lien. */
+/**
+ * « Défier un collègue » (US-033) : choisir son deck, créer le duel, puis partager son lien. Avec la donnée de route
+ * `hasard` : « Adversaire au hasard » (US-037), le deck choisi rejoint un duel ouvert ou en ouvre un.
+ */
 @Component({
   selector: 'hip-nouveau-defi',
   imports: [RouterLink],
@@ -15,11 +18,18 @@ import type { Duel } from './modele';
       <p>
         <a routerLink="/jouer" class="text-texte-doux underline underline-offset-4">← Jouer</a>
       </p>
-      <h1 class="text-3xl font-bold tracking-tight">Défier un collègue</h1>
+      <h1 class="text-3xl font-bold tracking-tight">
+        {{ hasard() ? 'Adversaire au hasard' : 'Défier un collègue' }}
+      </h1>
       @if (compte.joueur()) {
         <p class="text-texte-doux">
-          Choisissez votre deck : vous obtiendrez un lien à envoyer à votre collègue. Le duel se
-          joue au tour par tour, chacun à son rythme.
+          @if (hasard()) {
+            Choisissez votre deck : vous affronterez le premier joueur qui attend un adversaire, ou
+            vous attendrez le suivant. Le duel se joue au tour par tour, chacun à son rythme.
+          } @else {
+            Choisissez votre deck : vous obtiendrez un lien à envoyer à votre collègue. Le duel se
+            joue au tour par tour, chacun à son rythme.
+          }
         </p>
         @if (erreur()) {
           <p role="alert" class="text-alerte">{{ erreur() }}</p>
@@ -40,7 +50,11 @@ import type { Duel } from './modele';
                   [disabled]="enCours() !== null"
                   (click)="defier(deck)"
                 >
-                  {{ enCours() === deck.id ? 'Création…' : 'Défier avec ' + deck.nom }}
+                  {{
+                    enCours() === deck.id
+                      ? 'Recherche…'
+                      : (hasard() ? 'Jouer avec ' : 'Défier avec ') + deck.nom
+                  }}
                 </button>
               </li>
             }
@@ -52,10 +66,10 @@ import type { Duel } from './modele';
         }
       } @else if (compte.pret()) {
         <p>
-          Pour défier un collègue, il faut un compte.
+          Pour jouer en duel, il faut un compte.
           <a
             routerLink="/compte"
-            [queryParams]="{ retour: '/duels/nouveau' }"
+            [queryParams]="{ retour: hasard() ? '/duels/hasard' : '/duels/nouveau' }"
             class="font-semibold underline underline-offset-4"
             >Créer un compte</a
           >
@@ -72,6 +86,11 @@ export class NouveauDefi {
   private readonly http = inject(HttpClient);
   private readonly router = inject(Router);
 
+  /** Donnée de route : adversaire au hasard (US-037) plutôt que défi par lien. */
+  readonly hasard = input(false, {
+    transform: (valeur: boolean | undefined) => valeur ?? false,
+  });
+
   protected readonly decks = httpResource<Deck[]>(() => '/api/v1/decks');
   protected readonly enCours = signal<string | null>(null);
   protected readonly erreur = signal<string | null>(null);
@@ -80,10 +99,11 @@ export class NouveauDefi {
     this.enCours.set(deck.id);
     this.erreur.set(null);
     try {
-      const duel = await firstValueFrom(this.http.post<Duel>('/api/v1/duels', { deck: deck.id }));
+      const url = this.hasard() ? '/api/v1/duels/hasard' : '/api/v1/duels';
+      const duel = await firstValueFrom(this.http.post<Duel>(url, { deck: deck.id }));
       await this.router.navigate(['/duels', duel.id]);
     } catch {
-      this.erreur.set('Le défi n’a pas pu être créé : réessayez dans un instant.');
+      this.erreur.set('Le duel n’a pas pu être créé : réessayez dans un instant.');
     } finally {
       this.enCours.set(null);
     }

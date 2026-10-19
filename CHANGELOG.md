@@ -75,6 +75,8 @@ Toutes les évolutions notables du projet sont consignées ici
   jouer » et le titre de l'onglet le reprend ; `GET /api/v1/moi/duels` (US-035).
 - Abandon et forfait des duels : on abandonne après confirmation ; sans coup pendant 72 heures, le joueur actif perd
   par forfait ; l'échéance et la raison de la fin s'affichent sur le plateau et dans « Mes duels » (US-036).
+- Adversaire au hasard : on rejoint le plus ancien duel ouvert d'un autre joueur, ou on attend le suivant ; les
+  défis par lien restent privés (US-037).
 - Chaîne des illustrations : un original déposé et décrit devient, en une commande (`npm run illustrations`), quatre
   images AVIF et WebP de moins de 100 Ko et un manifeste ; la carte affiche son illustration, ou son pictogramme de
   famille à défaut. EPIC-05 découpé en US-015 à US-017 (US-015, ADR 0015).

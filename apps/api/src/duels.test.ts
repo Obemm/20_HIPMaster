@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { construireApp } from './app.ts';
 import { creerJoueur } from './comptes/comptes.ts';
 import { type BaseOuverte, ouvrirBase } from './db/index.ts';
+import { duels } from './db/schema.ts';
 import type { DuelVisible } from './duels/duels.ts';
 
 let ouverte: BaseOuverte;
@@ -362,5 +363,84 @@ describe('abandon et forfait (US-036)', () => {
     const tard = await appeler('POST', `/duels/${cree.id}/actions`, actif, { type: 'finirTour' });
     expect(tard.statusCode).toBe(422);
     await appli.close();
+  });
+});
+
+describe('adversaire au hasard (US-037)', () => {
+  const moi = async (entetes: Record<string, string>) =>
+    (await requete('GET', '/moi', entetes)).json<{ id: string }>().id;
+  const hasard = (entetes: Record<string, string>, deck = 'moderne') =>
+    requete('POST', '/duels/hasard', entetes, { deck });
+
+  it('sans personne dans la file, ouvre un duel et attend ; le suivant le rejoint', async () => {
+    const ada = await joueur('Ada');
+    const bob = await joueur('Bob');
+    const attente = await hasard(ada);
+    expect(attente.statusCode).toBe(201);
+    expect(attente.json<DuelVisible>()).toMatchObject({ statut: 'attente', ouvert: true });
+
+    // Ada déjà dans la file y garde sa place.
+    expect((await hasard(ada)).json<DuelVisible>().id).toBe(attente.json<DuelVisible>().id);
+
+    const rejoint = await hasard(bob, 'heritage');
+    expect(rejoint.statusCode).toBe(200);
+    expect(rejoint.json<DuelVisible>()).toMatchObject({
+      id: attente.json<DuelVisible>().id,
+      statut: 'en-cours',
+      createur: { pseudo: 'Ada' },
+      moi: 'j2',
+    });
+  });
+
+  it('ne propose jamais un défi privé, ni son propre duel', async () => {
+    const ada = await joueur('Ada');
+    const prive = (await requete('POST', '/duels', ada, { deck: 'moderne' })).json<DuelVisible>();
+    const bob = await joueur('Bob');
+    const pourBob = (await hasard(bob)).json<DuelVisible>();
+    expect(pourBob.id).not.toBe(prive.id);
+    expect(pourBob).toMatchObject({ statut: 'attente', ouvert: true, moi: 'j1' });
+  });
+
+  it('évite de retomber sur le dernier adversaire quand un autre joueur attend', async () => {
+    const ada = await joueur('Ada');
+    const bob = await joueur('Bob');
+    await hasard(ada);
+    await hasard(bob); // Bob affronte Ada.
+
+    // Deux joueurs attendent (cas rare : chacun rejoint d'ordinaire le premier qui attend) ; Ada depuis plus longtemps.
+    const [idAda, idEve] = await Promise.all([moi(ada), (async () => moi(await joueur('Eve')))()]);
+    await ouverte.base.insert(duels).values([
+      {
+        createurId: idAda,
+        deckCreateur: 'moderne',
+        ouvert: true,
+        creeLe: new Date(Date.now() - 60_000),
+      },
+      { createurId: idEve, deckCreateur: 'hybride', ouvert: true },
+    ]);
+    const pourBob = (await hasard(bob)).json<DuelVisible>();
+    expect(pourBob).toMatchObject({ statut: 'en-cours', createur: { pseudo: 'Eve' } });
+  });
+
+  it('deux joueurs qui cherchent en même temps ne rejoignent pas le même duel', async () => {
+    const ada = await joueur('Ada');
+    await hasard(ada);
+    const [bob, eve] = await Promise.all([joueur('Bob'), joueur('Eve')]);
+    const [a, b] = await Promise.all([hasard(bob), hasard(eve)]);
+    const statuts = [a?.json<DuelVisible>(), b?.json<DuelVisible>()].map((d) => d?.statut).sort();
+    expect(statuts).toEqual(['attente', 'en-cours']);
+  });
+
+  it('on quitte la file en annulant son duel ouvert', async () => {
+    const ada = await joueur('Ada');
+    const ouvert = (await hasard(ada)).json<DuelVisible>();
+    const quitter = await app.inject({
+      method: 'DELETE',
+      url: `/api/v1/duels/${ouvert.id}`,
+      headers: ada,
+    });
+    expect(quitter.statusCode).toBe(204);
+    const bob = await joueur('Bob');
+    expect((await hasard(bob)).statusCode).toBe(201);
   });
 });

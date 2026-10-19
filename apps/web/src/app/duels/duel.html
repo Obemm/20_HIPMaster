@@ -35,7 +35,25 @@
       <h1 class="text-3xl font-bold tracking-tight">Duel</h1>
       <p role="alert" class="text-alerte">Le duel n’a pas pu être chargé : l’API ne répond pas.</p>
     } @else if (duel(); as d) {
-      @if (d.statut === 'attente' && d.moi === 'j1') {
+      @if (d.statut === 'attente' && d.moi === 'j1' && d.ouvert) {
+        <h1 class="text-3xl font-bold tracking-tight">Recherche d’un adversaire…</h1>
+        <p role="status">
+          Personne n’attend pour le moment : vous êtes dans la file. Le duel commencera dès qu’un
+          joueur cherchera un adversaire ; vous pouvez fermer cette page, il vous attendra dans «
+          Mes duels ».
+        </p>
+        <p class="text-texte-doux">Votre deck : {{ nomDeck(d.deckCreateur) }}.</p>
+        <p>
+          <button
+            type="button"
+            class="rounded-lg border-2 border-bordure px-4 py-2 font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:opacity-60"
+            [disabled]="occupe()"
+            (click)="annuler()"
+          >
+            Quitter la file
+          </button>
+        </p>
+      } @else if (d.statut === 'attente' && d.moi === 'j1') {
         <h1 class="text-3xl font-bold tracking-tight">Votre défi est lancé</h1>
         <p>
           Envoyez ce lien au collègue que vous voulez défier. Il servira une seule fois, et expire

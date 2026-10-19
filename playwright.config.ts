@@ -16,7 +16,12 @@ export default defineConfig({
     trace: 'retain-on-failure',
   },
   projects: [
-    { name: 'mobile', use: { ...devices['Pixel 7'], ...navigateur } },
+    {
+      name: 'mobile',
+      use: { ...devices['Pixel 7'], ...navigateur },
+      // File d'appariement commune (US-037) : ses parcours ne tournent que sur le profil bureau.
+      testIgnore: '**/duel-hasard.spec.ts',
+    },
     { name: 'bureau', use: { ...devices['Desktop Chrome'], ...navigateur } },
   ],
   // L'API puis le front Angular, qui lui relaie /api (proxy.conf.json).
