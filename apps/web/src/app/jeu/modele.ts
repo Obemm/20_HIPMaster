@@ -21,6 +21,8 @@ export interface Composant extends Instance {
   attaqueNulle?: boolean;
   coupleA?: string | null;
   capacitesEmpruntees?: string[];
+  /** Pourquoi un de mes composants n'attaque pas, pendant mon tour (US-041) ; `null` s'il le peut. */
+  sansAttaque?: string | null;
 }
 
 interface Camp {

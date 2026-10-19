@@ -58,6 +58,8 @@ const schemaComposant = schemaInstance.extend({
   coupleA: z.string().nullable(),
   delegue: z.boolean(),
   capacitesEmpruntees: z.array(z.string()),
+  // Pourquoi un de ses composants n'attaque pas, pendant son tour (US-041) ; absent chez l'adversaire.
+  sansAttaque: z.string().nullable().optional(),
 });
 
 const schemaCamp = z.object({

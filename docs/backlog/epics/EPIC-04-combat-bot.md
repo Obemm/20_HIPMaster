@@ -25,7 +25,7 @@ Une partie dure moins de 5 minutes ; le bot de niveau moyen gagne environ une pa
 - [x] US-026 — Une vue publique complète, qui suffit à un bot
 - [x] US-039 — Expliquer les attaques et la résolution des combats
 - [x] US-040 — Consulter le détail des cartes de sa main
-- [ ] US-041 — Consulter le détail des cartes du plateau
+- [x] US-041 — Consulter le détail des cartes du plateau
 
 Premier jalon jouable à la fin d'US-013, avec les cartes que le moteur prend déjà en charge (décision du porteur du
 projet, 2026-10-18). Niveaux du bot (US-021) et récompense de victoire (US-025, avec EPIC-02 et EPIC-03) rédigés le 2026-10-18.

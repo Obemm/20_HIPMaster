@@ -85,6 +85,10 @@ Toutes les évolutions notables du projet sont consignées ici
   (US-039).
 - Le détail d'une carte de la main en partie : la toucher l'affiche en grand, avec son effet, ses capacités définies
   sur place et son « En vrai », puis ses actions dessous ; elle se consulte aussi pendant le tour adverse (US-040).
+- Le détail des composants du plateau, les miens comme ceux de l'adversaire, et du SI adverse : les toucher les
+  affiche en grand avec leur état du moment (attaque, PV restants, statuts) et, pour les miens, pourquoi ils
+  n'attaquent pas ; la sélection ne joue jamais, l'attaque se confirme par « Attaquer avec… » sous le détail de la
+  cible (US-041).
 - Chaîne des illustrations : un original déposé et décrit devient, en une commande (`npm run illustrations`), quatre
   images AVIF et WebP de moins de 100 Ko et un manifeste ; la carte affiche son illustration, ou son pictogramme de
   famille à défaut. EPIC-05 découpé en US-015 à US-017 (US-015, ADR 0015).

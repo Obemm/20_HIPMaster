@@ -1,3 +1,4 @@
+import { NgTemplateOutlet } from '@angular/common';
 import { HttpClient, HttpErrorResponse, httpResource } from '@angular/common/http';
 import {
   afterRenderEffect,
@@ -17,7 +18,7 @@ import { type Carte, LIBELLES_FAMILLE, libelleType } from '../cartes/carte';
 import { VignetteCarte } from '../cartes/vignette-carte';
 import { Icone } from '../icone';
 import { LIBELLES_RARETE, SYMBOLES_RARETE } from '../libelles';
-import { decrireComposant, JetonComposant } from './jeton-composant';
+import { decrireComposant, JetonComposant, statutsComposant } from './jeton-composant';
 import type { Duel } from '../duels/modele';
 import { resteAvant } from '../duels/temps';
 import { type Adversaire, adversaireNomme, BOT, decrireEvenement } from './journal';
@@ -35,6 +36,16 @@ import {
 import { CompteService } from '../compte/compte.service';
 
 type ActionCarte = Extract<Action, { carte: string }>;
+type Attaque = Extract<Action, { type: 'attaquer' }>;
+
+/**
+ * Ce que le joueur lit en grand (US-040, US-041) : une carte de sa main, un composant en jeu (le sien ou celui de
+ * l'adversaire, avec son état du moment), ou le SI adverse quand il est visé.
+ */
+type Detail =
+  | { zone: 'main'; id: string; carte: Carte }
+  | { zone: 'moi' | 'adversaire'; id: string; carte: Carte; composant: Composant }
+  | { zone: 'si'; id: 'si' };
 
 /** Délai entre deux lignes du journal quand le bot joue (aucun si l'animation est réduite). */
 const DELAI_JOURNAL_MS = 250;
@@ -47,9 +58,9 @@ const INTERROGATION_DUEL_MS = 3000;
  */
 @Component({
   selector: 'hip-partie',
-  imports: [RouterLink, VignetteCarte, JetonComposant, Icone, RegleCourte],
+  imports: [NgTemplateOutlet, RouterLink, VignetteCarte, JetonComposant, Icone, RegleCourte],
   templateUrl: './partie.html',
-  // Échap referme le détail de la carte choisie (US-040), où que soit le focus dans l'écran.
+  // Échap referme le détail de la carte ou du composant choisi (US-040, US-041), où que soit le focus dans l'écran.
   host: { '(keydown.escape)': 'fermerDetail()' },
 })
 export class PartieEcran implements OnInit, OnDestroy {
@@ -85,6 +96,7 @@ export class PartieEcran implements OnInit, OnDestroy {
 
   protected readonly TOURS_MAX = TOURS_MAX;
   protected readonly decrireComposant = decrireComposant;
+  protected readonly statutsComposant = statutsComposant;
   protected readonly libelleType = libelleType;
   protected readonly libellesFamille = LIBELLES_FAMILLE;
   protected readonly libellesRarete = LIBELLES_RARETE;
@@ -105,7 +117,10 @@ export class PartieEcran implements OnInit, OnDestroy {
   });
   /** L'aide « Comment jouer ? » est ouverte en début de partie, repliable ensuite. */
   protected reglesOuvertes = false;
+  /** La carte de la main choisie (US-040), ou le composant du plateau choisi, `si` compris (US-041) : un seul détail. */
   protected readonly carteChoisie = signal<string | null>(null);
+  protected readonly composantChoisi = signal<string | null>(null);
+  /** L'attaquant désigné parmi mes composants ; l'attaque se confirme sous le détail de la cible (US-041). */
   protected readonly attaquant = signal<string | null>(null);
 
   /** Les cartes du catalogue, par numéro. */
@@ -131,10 +146,32 @@ export class PartieEcran implements OnInit, OnDestroy {
     return vue !== null && vue.actif === vue.joueur && !vue.issue;
   });
 
-  /** La carte de la main choisie, en entier (US-040) ; rien si elle a quitté la main entre-temps. */
-  protected readonly carteDetaillee = computed(() => {
-    const instance = this.vue()?.moi.main.find((c) => c.id === this.carteChoisie());
-    return instance ? this.carteDe(instance.numero) : undefined;
+  /** Ce qui est lu en grand ; rien si la carte ou le composant a quitté le jeu entre-temps. */
+  protected readonly detail = computed((): Detail | null => {
+    const vue = this.vue();
+    if (!vue) return null;
+    const main = this.carteChoisie();
+    if (main) {
+      const instance = vue.moi.main.find((c) => c.id === main);
+      const carte = instance && this.carteDe(instance.numero);
+      return carte ? { zone: 'main', id: main, carte } : null;
+    }
+    const id = this.composantChoisi();
+    if (!id) return null;
+    if (id === 'si') return { zone: 'si', id };
+    const mien = vue.moi.plateau.find((c) => c.id === id);
+    const composant = mien ?? vue.adversaire.plateau.find((c) => c.id === id);
+    const carte = composant && this.carteDe(composant.numero);
+    return carte ? { zone: mien ? 'moi' : 'adversaire', id, carte, composant } : null;
+  });
+
+  /** L'attaque à confirmer : l'attaquant désigné contre la cible choisie, si le serveur la propose. */
+  protected readonly attaqueChoisie = computed((): Attaque | null => {
+    const attaquant = this.attaquant();
+    const cible = this.composantChoisi();
+    return attaquant && cible && this.ciblesPossibles().has(cible)
+      ? { type: 'attaquer', attaquant, cible }
+      : null;
   });
 
   protected readonly actionsCarte = computed((): ActionCarte[] => {
@@ -160,8 +197,8 @@ export class PartieEcran implements OnInit, OnDestroy {
     const noms = [...this.attaquantsPossibles()].map((id) => this.nommer(id));
     if (noms.length === 0) return '';
     return noms.length === 1
-      ? `${noms[0]} peut encore attaquer : sélectionnez-le, puis sa cible.`
-      : `${noms.length} composants peuvent encore attaquer (${noms.join(', ')}) : sélectionnez-les, puis leur cible.`;
+      ? `${noms[0]} peut encore attaquer : sélectionnez-le, puis sa cible, et confirmez.`
+      : `${noms.length} composants peuvent encore attaquer (${noms.join(', ')}) : sélectionnez-les, puis leur cible, et confirmez.`;
   });
   protected readonly ciblesPossibles = computed(() => {
     const attaquant = this.attaquant();
@@ -184,6 +221,9 @@ export class PartieEcran implements OnInit, OnDestroy {
     if (!this.monTour()) return '';
     if (!this.attaquant()) {
       return 'Choisissez une carte de votre main, ou un composant pour attaquer.';
+    }
+    if (this.attaqueChoisie()) {
+      return 'Confirmez l’attaque sous le détail de la cible, ou choisissez-en une autre.';
     }
     const gardes = this.gardesAdverses();
     if (gardes.length > 0) {
@@ -237,28 +277,42 @@ export class PartieEcran implements OnInit, OnDestroy {
 
   protected choisirCarte(id: string): void {
     this.attaquant.set(null);
+    this.composantChoisi.set(null);
     this.carteChoisie.update((actuelle) => (actuelle === id ? null : id));
   }
 
-  /** Referme le détail de la carte choisie et rend le focus à cette carte, dans la main (US-040). */
-  protected fermerDetail(): void {
-    const id = this.carteChoisie();
-    if (!id) return;
+  /**
+   * Sélectionne un composant du plateau (ou le SI adverse) pour le lire en grand : la sélection ne joue jamais
+   * (US-041). Un de mes composants qui peut attaquer devient aussi l'attaquant désigné ; le toucher de nouveau le
+   * désélectionne, attaque comprise.
+   */
+  protected choisirComposant(id: string, camp: 'moi' | 'adversaire'): void {
     this.carteChoisie.set(null);
-    globalThis.document?.getElementById(`main-${id}`)?.focus();
-  }
-
-  protected choisirAttaquant(composant: Composant): void {
-    if (!this.attaquantsPossibles().has(composant.id)) return;
-    this.carteChoisie.set(null);
-    this.attaquant.update((actuel) => (actuel === composant.id ? null : composant.id));
-  }
-
-  protected attaquer(cible: string): void {
-    const attaquant = this.attaquant();
-    if (attaquant && this.ciblesPossibles().has(cible)) {
-      void this.jouer({ type: 'attaquer', attaquant, cible });
+    if (this.composantChoisi() === id) {
+      this.composantChoisi.set(null);
+      if (this.attaquant() === id) this.attaquant.set(null);
+      return;
     }
+    this.composantChoisi.set(id);
+    if (camp === 'moi') this.attaquant.set(this.attaquantsPossibles().has(id) ? id : null);
+  }
+
+  /** Referme le détail et rend le focus à la carte de la main ou au jeton choisi (US-040, US-041). */
+  protected fermerDetail(): void {
+    const main = this.carteChoisie();
+    const composant = this.composantChoisi();
+    let cible: string | null = null;
+    if (main) cible = `main-${main}`;
+    else if (composant) cible = `plateau-${composant}`;
+    if (!cible) return;
+    this.carteChoisie.set(null);
+    this.composantChoisi.set(null);
+    globalThis.document?.getElementById(cible)?.focus();
+  }
+
+  /** « Attaquer avec API REST » : le libellé du bouton qui confirme l'attaque choisie. */
+  protected libelleAttaque(attaque: Attaque): string {
+    return `Attaquer avec ${this.nommer(attaque.attaquant)}`;
   }
 
   protected libelleAction(action: ActionCarte): string {
@@ -320,6 +374,7 @@ export class PartieEcran implements OnInit, OnDestroy {
               this.http.post<Partie>(`/api/v1/parties/${this.id()}/actions`, action),
             );
       this.carteChoisie.set(null);
+      this.composantChoisi.set(null);
       this.attaquant.set(null);
       this.recevoir(partie, true);
     } catch (erreur) {
