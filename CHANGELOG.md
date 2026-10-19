@@ -89,6 +89,10 @@ Toutes les évolutions notables du projet sont consignées ici
   affiche en grand avec leur état du moment (attaque, PV restants, statuts) et, pour les miens, pourquoi ils
   n'attaquent pas ; la sélection ne joue jamais, l'attaque se confirme par « Attaquer avec… » sous le détail de la
   cible (US-041).
+- Parcours e2e des duels fiables sous charge : le duel est préparé par l'API (comptes, défi lancé puis relevé) sauf
+  dans le parcours qui teste le défi par lien, les navigateurs demandent des animations réduites, trois travailleurs
+  Playwright en local pour ménager la mémoire, le seul parcours qui enchaîne plusieurs tours est déclaré lent, et
+  l'adversaire au hasard attend le nom de l'adversaire avant de lire le titre (US-042).
 - Chaîne des illustrations : un original déposé et décrit devient, en une commande (`npm run illustrations`), quatre
   images AVIF et WebP de moins de 100 Ko et un manifeste ; la carte affiche son illustration, ou son pictogramme de
   famille à défaut. EPIC-05 découpé en US-015 à US-017 (US-015, ADR 0015).

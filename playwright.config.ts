@@ -7,6 +7,10 @@ const navigateur = CI ? {} : { channel: 'chrome' };
 export default defineConfig({
   testDir: 'e2e',
   fullyParallel: true,
+  // En local, trois travailleurs : les duels ouvrent deux ou trois navigateurs chacun, et au-delà la mémoire manque
+  // (le serveur Angular et le lanceur ont péri d'un « out of memory » à quatre et six, US-042). En CI, la valeur par
+  // défaut.
+  workers: CI ? undefined : 3,
   forbidOnly: CI,
   retries: CI ? 1 : 0,
   reporter: CI ? 'github' : 'list',
@@ -14,6 +18,8 @@ export default defineConfig({
     baseURL: 'http://localhost:4200',
     locale: 'fr-FR',
     trace: 'retain-on-failure',
+    // Animations réduites, comme pour un joueur qui l'a demandé : le journal de partie s'affiche d'un coup (US-042).
+    reducedMotion: 'reduce',
   },
   projects: [
     {
