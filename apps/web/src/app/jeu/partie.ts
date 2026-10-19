@@ -138,6 +138,18 @@ export class PartieEcran implements OnInit, OnDestroy {
   protected readonly attaquantsPossibles = computed(
     () => new Set(this.attaques().map((a) => a.attaquant)),
   );
+  /**
+   * Avant de finir son tour : les composants qui peuvent encore attaquer (US-039). Déduit des actions `attaquer`
+   * proposées par l'API ; l'avertissement ne bloque pas la fin du tour.
+   */
+  protected readonly attaquesOubliees = computed(() => {
+    if (!this.monTour()) return '';
+    const noms = [...this.attaquantsPossibles()].map((id) => this.nommer(id));
+    if (noms.length === 0) return '';
+    return noms.length === 1
+      ? `${noms[0]} peut encore attaquer : sélectionnez-le, puis sa cible.`
+      : `${noms.length} composants peuvent encore attaquer (${noms.join(', ')}) : sélectionnez-les, puis leur cible.`;
+  });
   protected readonly ciblesPossibles = computed(() => {
     const attaquant = this.attaquant();
     return new Set(

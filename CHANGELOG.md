@@ -79,6 +79,10 @@ Toutes les évolutions notables du projet sont consignées ici
   défis par lien restent privés (US-037).
 - Un booster pour une victoire en duel, dans le même plafond quotidien que contre le bot ; une victoire par abandon ou
   forfait ne compte pas contre un adversaire déjà affronté le jour même (US-038).
+- Les attaques expliquées : les règles disent que rien n'attaque tout seul et détaillent la résolution d'un combat,
+  exemples chiffrés à l'appui ; la règle courte du jeu demande de sélectionner l'attaquant puis sa cible, avec un
+  exemple de riposte ; avant de finir son tour, le joueur est averti des composants qui peuvent encore attaquer
+  (US-039).
 - Chaîne des illustrations : un original déposé et décrit devient, en une commande (`npm run illustrations`), quatre
   images AVIF et WebP de moins de 100 Ko et un manifeste ; la carte affiche son illustration, ou son pictogramme de
   famille à défaut. EPIC-05 découpé en US-015 à US-017 (US-015, ADR 0015).

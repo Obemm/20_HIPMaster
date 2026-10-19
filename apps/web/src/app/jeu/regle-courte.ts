@@ -27,13 +27,18 @@ import { type Adversaire, BOT } from './journal';
             à côté de l’éclair).
           </li>
           <li>
-            <strong>Attaquez</strong> avec les composants posés aux tours précédents : le SI
-            {{ adversaire().de }}
-            (il perd autant de SLA que l’attaque
-            <hip-icone nom="attaque" class="size-3.5 text-red-600 dark:text-red-400" />), ou un
-            composant {{ adversaire().de }}, qui riposte (chacun perd des PV
+            <strong>Attaquez</strong> : rien n’attaque tout seul. Pour chaque composant posé aux
+            tours précédents, <strong>sélectionnez l’attaquant</strong> (un de vos composants), puis
+            <strong>sa cible</strong> : le SI {{ adversaire().de }} (il perd autant de SLA que
+            l’attaque <hip-icone nom="attaque" class="size-3.5 text-red-600 dark:text-red-400" />),
+            ou un composant {{ adversaire().de }}, qui riposte (chacun perd des PV
             <hip-icone nom="pv" class="size-3.5 text-blue-600 dark:text-blue-400" />, à 0 il est
-            détruit).
+            détruit). Un tour où vous ne faites que poser ne fait aucun dégât.
+            <p class="mt-1 text-texte-doux">
+              <em>Exemple de riposte :</em> API REST (attaque 3, PV 2) attaque Adaptateur JDBC
+              (attaque 2, PV 3). JDBC perd 3 PV : détruit. API REST perd 2 PV en riposte : détruite
+              aussi.
+            </p>
           </li>
           <li><strong>Finissez votre tour</strong> : {{ adversaire().nom }} joue à son tour.</li>
         </ol>
