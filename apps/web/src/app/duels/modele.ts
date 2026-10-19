@@ -7,6 +7,8 @@ export interface Duel {
   version: number;
   createur: { pseudo: string };
   deckCreateur: string;
+  /** Duel ouvert à tous (adversaire au hasard, US-037) ; sinon défi privé, rejoint par son lien. */
+  ouvert: boolean;
   adversaire: { pseudo: string } | null;
   /** Le camp du joueur connecté ; `null` s'il ne participe pas (il voit un défi à relever). */
   moi: 'j1' | 'j2' | null;

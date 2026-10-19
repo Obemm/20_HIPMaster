@@ -34,6 +34,40 @@ paths:
               schema: { $ref: '#/components/schemas/Duel' }
         '401': { $ref: '#/components/responses/Probleme' }
         '422': { $ref: '#/components/responses/Probleme' }
+  /duels/hasard:
+    post:
+      operationId: chercherAdversaire
+      summary: Adversaire au hasard (US-037)
+      description: >
+        Rejoint le plus ancien duel ouvert d'un autre joueur (en évitant, si possible, le dernier adversaire) : le
+        duel commence (200). S'il n'y en a pas, ouvre un duel et place le joueur dans la file (201) ; un joueur
+        déjà dans la file y garde sa place. Les défis privés (lien, POST /duels) ne sont jamais proposés.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [deck]
+              properties:
+                deck: { type: string }
+      responses:
+        '200':
+          description: Duel rejoint, il commence.
+          headers:
+            ETag: { $ref: '#/components/headers/ETag' }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Duel' }
+        '201':
+          description: Duel ouvert, en attente d'un adversaire.
+          headers:
+            ETag: { $ref: '#/components/headers/ETag' }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Duel' }
+        '401': { $ref: '#/components/responses/Probleme' }
+        '422': { $ref: '#/components/responses/Probleme' }
   /duels/{id}:
     parameters: [{ $ref: '#/components/parameters/IdDuel' }]
     get:
@@ -229,6 +263,7 @@ components:
           version,
           createur,
           deckCreateur,
+          ouvert,
           adversaire,
           moi,
           curseur,
@@ -242,6 +277,9 @@ components:
         version: { type: integer }
         createur: { $ref: '#/components/schemas/Participant' }
         deckCreateur: { type: string }
+        ouvert:
+          type: boolean
+          description: Duel ouvert à tous (adversaire au hasard, US-037) ; sinon défi privé, rejoint par son lien.
         adversaire:
           oneOf:
             - type: 'null'

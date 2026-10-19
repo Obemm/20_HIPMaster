@@ -18,6 +18,7 @@ const duel = (modifs: Partial<Duel> = {}): Duel => ({
   version: 0,
   createur: { pseudo: 'Ada' },
   deckCreateur: 'moderne',
+  ouvert: false,
   adversaire: null,
   moi: 'j1',
   curseur: 0,
@@ -115,5 +116,16 @@ describe('DuelEcran', () => {
   it('explique un défi introuvable ou expiré', async () => {
     const { page } = await afficher({ status: 410 });
     expect(page.querySelector('h1')?.textContent).toContain('Défi expiré');
+  });
+
+  it('dans la file d’attente (duel ouvert), propose de la quitter, sans lien à partager', async () => {
+    const { fixture, http, page } = await afficher(duel({ ouvert: true }));
+    expect(page.querySelector('h1')?.textContent).toContain('Recherche d’un adversaire');
+    expect(page.querySelector('#lien-defi')).toBeNull();
+    const naviguer = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+    bouton(page, 'Quitter la file')?.click();
+    http.expectOne(`/api/v1/duels/${ID}`).flush(null, { status: 204, statusText: 'No Content' });
+    await fixture.whenStable();
+    expect(naviguer).toHaveBeenCalledWith(['/jouer']);
   });
 });

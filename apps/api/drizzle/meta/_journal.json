@@ -43,6 +43,13 @@
       "when": 1792363584977,
       "tag": "0005_duels",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1792367603616,
+      "tag": "0006_duels_ouverts",
+      "breakpoints": true
     }
   ]
 }

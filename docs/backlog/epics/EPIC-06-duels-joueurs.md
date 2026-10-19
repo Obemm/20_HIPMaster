@@ -22,7 +22,7 @@ direct si les deux joueurs sont présents.
 - [x] US-034 — Écran de duel
 - [x] US-035 — Mes duels et « à vous de jouer »
 - [x] US-036 — Abandon et forfait
-- [ ] US-037 — Adversaire au hasard
+- [x] US-037 — Adversaire au hasard
 - [ ] US-038 — Un booster pour une victoire en duel
 
 Ordre suggéré : US-032, US-033 et US-034 forment le premier duel jouable de bout en bout ; US-035 et US-036 le
