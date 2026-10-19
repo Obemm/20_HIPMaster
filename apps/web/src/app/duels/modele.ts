@@ -1,4 +1,4 @@
-import type { Evenement, Vue } from '../jeu/modele';
+import type { Evenement, Recompense, Vue } from '../jeu/modele';
 
 // Forme des duels renvoyés par l'API (contrat : apps/api/openapi/duels.yaml, US-032).
 export interface Duel {
@@ -17,4 +17,6 @@ export interface Duel {
   echeance: string | null;
   vue: Vue | null;
   evenements: Evenement[];
+  /** Duel gagné : le booster gagné, ou pourquoi il ne l'est pas (US-038). */
+  recompense?: Recompense;
 }

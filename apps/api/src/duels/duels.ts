@@ -15,6 +15,7 @@ import {
 } from '@hipmaster/domain';
 import { and, asc, desc, eq, gt, inArray, isNotNull, lt, ne, or, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
+import { type OptionsBoosters, type Recompense, recompenserVictoire } from '../comptes/boosters.ts';
 import type { Base } from '../db/index.ts';
 import { duels, joueurs } from '../db/schema.ts';
 
@@ -42,6 +43,8 @@ export interface DuelVisible {
   echeance: string | null;
   vue: Omit<VueJoueur, 'journal'> | null;
   evenements: EntreeJournal[];
+  /** Duel gagné par le joueur qui demande : le booster gagné, ou pourquoi il ne l'est pas (US-038). */
+  recompense?: Recompense;
 }
 
 export type ResultatDuel<T> =
@@ -70,6 +73,8 @@ export interface OptionsDuels {
   expirationDefiMs?: number;
   /** Délai pour jouer son coup ; au-delà, forfait (72 heures par défaut, US-036). */
   delaiTourMs?: number;
+  /** Règles et horloge des boosters gagnés (US-038). */
+  boosters?: OptionsBoosters;
 }
 
 const SEPT_JOURS = 7 * 24 * 60 * 60 * 1000;
@@ -137,6 +142,43 @@ async function pseudos(base: Base, ligne: LigneDuel): Promise<Map<string, string
   return new Map(lignes.map((l) => [l.id, l.pseudo]));
 }
 
+/**
+ * La récompense d'un duel gagné par `joueurId` (US-038), décidée une seule fois. Une victoire par abandon ou forfait
+ * ne rapporte rien contre un adversaire déjà affronté le même jour (UTC), pour décourager les arrangements.
+ */
+async function recompenseDuel(
+  base: Base,
+  ligne: LigneDuel,
+  joueurId: string,
+  options: OptionsDuels,
+): Promise<Recompense | undefined> {
+  const issue = ligne.etat?.issue;
+  const moi = campDe(ligne, joueurId);
+  if (ligne.statut !== 'termine' || !issue || !moi || issue.gagnant !== moi) return undefined;
+  const autre = moi === 'j1' ? ligne.adversaireId : ligne.createurId;
+  let refus: 'adversaire-deja-affronte' | undefined;
+  if (autre && (issue.raison === 'abandon' || issue.raison === 'forfait')) {
+    const debutJour = new Date(horloge(options));
+    debutJour.setUTCHours(0, 0, 0, 0);
+    const [autreDuel] = await base
+      .select({ id: duels.id })
+      .from(duels)
+      .where(
+        and(
+          ne(duels.id, ligne.id),
+          gt(duels.creeLe, debutJour),
+          or(
+            and(eq(duels.createurId, joueurId), eq(duels.adversaireId, autre)),
+            and(eq(duels.createurId, autre), eq(duels.adversaireId, joueurId)),
+          ),
+        ),
+      )
+      .limit(1);
+    if (autreDuel) refus = 'adversaire-deja-affronte';
+  }
+  return recompenserVictoire(base, ligne.id, joueurId, options.boosters, refus);
+}
+
 async function visible(
   base: Base,
   ligne: LigneDuel,
@@ -146,6 +188,7 @@ async function visible(
 ): Promise<DuelVisible> {
   const noms = await pseudos(base, ligne);
   const moi = campDe(ligne, joueurId);
+  const recompense = await recompenseDuel(base, ligne, joueurId, options);
   const etat = ligne.etat;
   let vue: DuelVisible['vue'] = null;
   if (etat && moi) {
@@ -165,6 +208,7 @@ async function visible(
     echeance: echeanceDe(ligne, options)?.toISOString() ?? null,
     vue,
     evenements: etat && moi ? journalDe(etat.journal.slice(depuis), moi) : [],
+    ...(recompense && { recompense }),
   };
 }
 

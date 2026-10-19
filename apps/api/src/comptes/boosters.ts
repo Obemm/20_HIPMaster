@@ -118,17 +118,27 @@ export interface Recompense {
   booster: boolean;
   /** Vrai si le plafond quotidien était déjà atteint (pas de booster). */
   plafondAtteint: boolean;
+  /** Sans booster : pourquoi (plafond quotidien, ou adversaire déjà affronté le jour même en duel, US-038). */
+  motif: 'plafond' | 'adversaire-deja-affronte' | null;
 }
 
+const decision = (booster: boolean, motif: Recompense['motif']): Recompense => ({
+  booster,
+  plafondAtteint: motif === 'plafond',
+  motif,
+});
+
 /**
- * Récompense une victoire contre le bot (US-025) : un booster, au plus `victoiresParJour` par jour UTC. Une seule
- * récompense par partie : appelée de nouveau pour la même partie, la fonction renvoie la décision déjà prise.
+ * Récompense une victoire contre le bot (US-025) ou en duel (US-038) : un booster, au plus `victoiresParJour` par
+ * jour UTC, tous modes confondus. Une seule récompense par partie : appelée de nouveau pour la même partie, la
+ * fonction renvoie la décision déjà prise. `refus` enregistre une victoire sans booster (adversaire déjà affronté).
  */
 export async function recompenserVictoire(
   base: Base,
   partieId: string,
   joueurId: string,
   options: OptionsBoosters = {},
+  refus?: 'adversaire-deja-affronte',
 ): Promise<Recompense> {
   const regles = options.regles ?? REGLES_BOOSTERS;
   return base.transaction(async (tx) => {
@@ -141,12 +151,23 @@ export async function recompenserVictoire(
     if (!ligne) throw new Error('Joueur introuvable.');
 
     const [deja] = await tx
-      .select({ booster: recompenses.booster })
+      .select({ booster: recompenses.booster, motif: recompenses.motif })
       .from(recompenses)
       .where(eq(recompenses.partieId, partieId));
-    if (deja) return { booster: deja.booster, plafondAtteint: !deja.booster };
+    // Les récompenses d'avant US-038 n'ont pas de motif : sans booster, c'était le plafond.
+    if (deja) return decision(deja.booster, deja.booster ? null : (deja.motif ?? 'plafond'));
 
     const maintenant = (options.maintenant ?? Date.now)();
+    if (refus) {
+      await tx.insert(recompenses).values({
+        partieId,
+        joueurId,
+        booster: false,
+        motif: refus,
+        accordeeLe: new Date(maintenant),
+      });
+      return decision(false, refus);
+    }
     const debutJour = new Date(maintenant);
     debutJour.setUTCHours(0, 0, 0, 0);
     const [{ gagnes } = { gagnes: 0 }] = await tx
@@ -160,9 +181,13 @@ export async function recompenserVictoire(
         ),
       );
     const booster = gagnes < regles.victoiresParJour;
-    await tx
-      .insert(recompenses)
-      .values({ partieId, joueurId, booster, accordeeLe: new Date(maintenant) });
+    await tx.insert(recompenses).values({
+      partieId,
+      joueurId,
+      booster,
+      motif: booster ? null : 'plafond',
+      accordeeLe: new Date(maintenant),
+    });
     if (booster) {
       // Le booster gagné s'ajoute au stock rechargé, quitte à dépasser le plafond de recharge.
       const actuel = stockA(
@@ -175,6 +200,6 @@ export async function recompenserVictoire(
         .set({ boosters: actuel.stock + 1, rechargeDepuis: new Date(actuel.depuis) })
         .where(eq(joueurs.id, joueurId));
     }
-    return { booster, plafondAtteint: !booster };
+    return decision(booster, booster ? null : 'plafond');
   });
 }

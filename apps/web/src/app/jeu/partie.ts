@@ -382,6 +382,7 @@ export class PartieEcran implements OnInit, OnDestroy {
       niveau: '',
       vue: duel.vue,
       evenements: duel.evenements,
+      ...(duel.recompense && { recompense: duel.recompense }),
     };
   }
 

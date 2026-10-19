@@ -47,7 +47,8 @@ export const collection = pgTable(
 );
 
 /**
- * Récompenses de victoire (US-025) : une ligne par partie gagnée, ce qui garantit une seule récompense par partie.
+ * Récompenses de victoire (US-025, US-038) : une ligne par partie contre le bot ou par duel gagné (`partieId` porte
+ * l'un ou l'autre identifiant), ce qui garantit une seule récompense par partie.
  * `booster` est faux quand le plafond quotidien était atteint.
  */
 export const recompenses = pgTable('recompenses', {
@@ -56,6 +57,8 @@ export const recompenses = pgTable('recompenses', {
     .notNull()
     .references(() => joueurs.id, { onDelete: 'cascade' }),
   booster: boolean().notNull(),
+  /** Sans booster : pourquoi (plafond quotidien, ou adversaire déjà affronté le jour même, US-038). */
+  motif: text({ enum: ['plafond', 'adversaire-deja-affronte'] }),
   accordeeLe: timestamp({ withTimezone: true }).notNull().defaultNow(),
 });
 

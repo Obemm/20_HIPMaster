@@ -66,7 +66,8 @@ export function construireApp(
     app.register(routesDuels, {
       prefix: '/api/v1',
       base: options.base,
-      ...(options.duels && { duels: options.duels }),
+      // Les boosters gagnés en duel suivent les mêmes règles que contre le bot (US-038).
+      duels: { ...options.duels, ...(options.boosters && { boosters: options.boosters }) },
     });
   }
   app.register(routesParties, {

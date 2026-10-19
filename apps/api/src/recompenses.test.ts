@@ -38,10 +38,12 @@ describe('récompense de victoire', () => {
     expect(await recompenserVictoire(ouverte.base, partie, joueur.id, options())).toEqual({
       booster: true,
       plafondAtteint: false,
+      motif: null,
     });
     expect(await recompenserVictoire(ouverte.base, partie, joueur.id, options())).toEqual({
       booster: true,
       plafondAtteint: false,
+      motif: null,
     });
     expect(await stock(joueur.id)).toBe(6);
   });
@@ -55,6 +57,7 @@ describe('récompense de victoire', () => {
     expect(await recompenserVictoire(ouverte.base, randomUUID(), joueur.id, options())).toEqual({
       booster: false,
       plafondAtteint: true,
+      motif: 'plafond',
     });
     expect(await stock(joueur.id)).toBe(8);
 
