@@ -1,20 +1,16 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { construireApp } from './app.ts';
-import { type BaseOuverte, ouvrirBase } from './db/index.ts';
+import { baseDeTest } from './db/base-de-test.ts';
 import { joueurs, sessions } from './db/schema.ts';
 
 type App = ReturnType<typeof construireApp>;
-let ouverte: BaseOuverte;
+const ouverte = baseDeTest();
 let app: App;
 
-beforeEach(async () => {
-  ouverte = await ouvrirBase({ url: null, locale: 'memory://' });
+beforeEach(() => {
   app = construireApp({ base: ouverte.base });
 });
-afterEach(async () => {
-  await app.close();
-  await ouverte.fermer();
-});
+afterEach(() => app.close());
 
 interface Creation {
   joueur: { id: string; pseudo: string };

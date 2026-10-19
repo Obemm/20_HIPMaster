@@ -2,22 +2,18 @@ import { choisirActionBatchDeNuit, type VueJoueur } from '@hipmaster/domain';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { construireApp } from './app.ts';
 import { creerJoueur } from './comptes/comptes.ts';
-import { type BaseOuverte, ouvrirBase } from './db/index.ts';
+import { baseDeTest } from './db/base-de-test.ts';
 import { duels } from './db/schema.ts';
 import type { DuelVisible } from './duels/duels.ts';
 
-let ouverte: BaseOuverte;
+const ouverte = baseDeTest();
 let app: ReturnType<typeof construireApp>;
 
-beforeEach(async () => {
-  ouverte = await ouvrirBase({ url: null, locale: 'memory://' });
+beforeEach(() => {
   let graine = 0;
   app = construireApp({ base: ouverte.base, duels: { tirerGraine: () => ++graine } });
 });
-afterEach(async () => {
-  await app.close();
-  await ouverte.fermer();
-});
+afterEach(() => app.close());
 
 async function joueur(pseudo: string) {
   const { jeton } = await creerJoueur(ouverte.base, pseudo);
