@@ -1,7 +1,7 @@
 # US-039 — Expliquer les attaques et la résolution des combats
 
 - **Epic** : EPIC-04
-- **Statut** : En cours
+- **Statut** : Faite
 - **Priorité** : Must
 - **Taille** : S
 - **Branche** : `us-039-expliquer-attaques`
@@ -20,11 +20,11 @@ des cartes**.
       échange simultané, Diffusion et Réactif, destructions), conforme au moteur (`packages/domain/src/combat`).
 - [x] Des exemples chiffrés avec des cartes du set 1 : échange qui détruit les deux cartes, attaque du SI avec un
       Hub, Garde et dégâts persistants, Réactif, Évolution.
-- [ ] La règle courte du jeu (`hip-regle-courte`) dit qu'il faut, à chaque tour, sélectionner l'attaquant puis la
+- [x] La règle courte du jeu (`hip-regle-courte`) dit qu'il faut, à chaque tour, sélectionner l'attaquant puis la
       cible, et renvoie vers un exemple court de combat (riposte).
-- [ ] Avant de finir son tour, le joueur qui a des composants prêts à attaquer et n'a pas attaqué en est averti
+- [x] Avant de finir son tour, le joueur qui a des composants prêts à attaquer et n'a pas attaqué en est averti
       (sans bloquer la fin du tour).
-- [ ] Tests de l'écran ; `npm run check` passe ; `npm run test:e2e` passe.
+- [x] Tests de l'écran ; `npm run check` passe ; `npm run test:e2e` passe.
 
 ## Notes
 
@@ -41,3 +41,4 @@ des cartes**.
 
 - 2026-10-19 — création, après le retour du porteur du projet. Règles complétées : « rien n'attaque tout seul »,
   section « Résoudre un combat » et cinq exemples vérifiés dans le moteur. La partie dans le jeu attend US-034.
+- 2026-10-19 — livrée : règle courte (attaquant puis cible, exemple de riposte) et avertissement non bloquant avant de finir son tour quand des composants peuvent encore attaquer ; tests de l'écran, check et e2e verts
