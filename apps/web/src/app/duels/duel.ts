@@ -67,8 +67,9 @@ export class DuelEcran {
 
   protected async annuler(): Promise<void> {
     await this.agir(async () => {
+      const ouvert = this.duel()?.ouvert;
       await firstValueFrom(this.http.delete(`/api/v1/duels/${this.id()}`));
-      await this.router.navigate(['/duels/nouveau']);
+      await this.router.navigate([ouvert ? '/jouer' : '/duels/nouveau']);
     });
   }
 

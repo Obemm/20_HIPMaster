@@ -8,11 +8,12 @@ import {
   type ErreurAction,
   type IdJoueur,
   journalDe,
+  type DeckPrete,
   trouverDeckPrete,
   vueDe,
   type VueJoueur,
 } from '@hipmaster/domain';
-import { and, desc, eq, inArray, lt, or, sql } from 'drizzle-orm';
+import { and, asc, desc, eq, gt, inArray, isNotNull, lt, ne, or, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import type { Base } from '../db/index.ts';
 import { duels, joueurs } from '../db/schema.ts';
@@ -20,6 +21,8 @@ import { duels, joueurs } from '../db/schema.ts';
 /** Duels entre joueurs (US-032, ADR 0020) : l'état vit en base, chacun ne reçoit que sa vue. */
 
 type LigneDuel = typeof duels.$inferSelect;
+/** Une transaction ouverte sur la base. */
+type Transaction = Parameters<Parameters<Base['transaction']>[0]>[0];
 export type StatutDuel = LigneDuel['statut'];
 
 export interface DuelVisible {
@@ -28,6 +31,8 @@ export interface DuelVisible {
   version: number;
   createur: { pseudo: string };
   deckCreateur: string;
+  /** Duel ouvert à tous (adversaire au hasard, US-037) ; sinon défi privé, rejoint par son lien. */
+  ouvert: boolean;
   adversaire: { pseudo: string } | null;
   /** Le camp du joueur qui demande ; `null` s'il ne participe pas. */
   moi: IdJoueur | null;
@@ -153,6 +158,7 @@ async function visible(
     version: ligne.version,
     createur: { pseudo: noms.get(ligne.createurId) ?? '?' },
     deckCreateur: ligne.deckCreateur,
+    ouvert: ligne.ouvert,
     adversaire: ligne.adversaireId ? { pseudo: noms.get(ligne.adversaireId) ?? '?' } : null,
     moi,
     curseur: etat?.journal.length ?? 0,
@@ -196,6 +202,112 @@ export async function lireDuel(
   return { ok: true, valeur: await visible(base, ligne, joueurId, depuis, options) };
 }
 
+/** Lance un duel en attente (ligne déjà verrouillée) : la partie est créée, le tirage désigne qui commence. */
+async function lancer(
+  tx: Transaction,
+  ligne: LigneDuel,
+  joueurId: string,
+  deck: DeckPrete,
+  options: OptionsDuels,
+): Promise<LigneDuel> {
+  const deckCreateur = trouverDeckPrete(ligne.deckCreateur);
+  if (!deckCreateur) throw new Error(`Deck du créateur inconnu : ${ligne.deckCreateur}`);
+  const graine = (options.tirerGraine ?? (() => randomInt(0, 2 ** 31)))();
+  const etat = creerPartie({ j1: deckCreateur.cartes, j2: deck.cartes }, graine);
+  const [maj] = await tx
+    .update(duels)
+    .set({
+      statut: 'en-cours',
+      version: ligne.version + 1,
+      adversaireId: joueurId,
+      deckAdversaire: deck.id,
+      etat,
+      majLe: new Date(),
+    })
+    .where(eq(duels.id, ligne.id))
+    .returning();
+  if (!maj) throw new Error('Mise à jour du duel impossible.');
+  return maj;
+}
+
+/** Le dernier joueur affronté, pour éviter de retomber sur lui au hasard (US-037). */
+async function dernierAdversaire(tx: Transaction, joueurId: string): Promise<string | null> {
+  const [dernier] = await tx
+    .select({ createurId: duels.createurId, adversaireId: duels.adversaireId })
+    .from(duels)
+    .where(
+      and(
+        isNotNull(duels.adversaireId),
+        or(eq(duels.createurId, joueurId), eq(duels.adversaireId, joueurId)),
+      ),
+    )
+    .orderBy(desc(duels.majLe))
+    .limit(1);
+  if (!dernier) return null;
+  return dernier.createurId === joueurId ? dernier.adversaireId : dernier.createurId;
+}
+
+/**
+ * Adversaire au hasard (US-037) : rejoint le plus ancien duel ouvert d'un autre joueur (en évitant, si possible,
+ * le dernier adversaire), ou ouvre un duel et attend. Un joueur déjà dans la file y garde sa place. `SKIP LOCKED` :
+ * deux joueurs qui cherchent en même temps ne rejoignent jamais le même duel.
+ */
+export async function chercherAdversaire(
+  base: Base,
+  joueurId: string,
+  idDeck: string,
+  options: OptionsDuels = {},
+): Promise<ResultatDuel<{ duel: DuelVisible; enAttente: boolean }>> {
+  const deck = trouverDeckPrete(idDeck);
+  if (!deck) return echec('deck-inconnu');
+  const limite = new Date(horloge(options) - (options.expirationDefiMs ?? SEPT_JOURS));
+  const ligne = await base.transaction(async (tx) => {
+    const [dejaLa] = await tx
+      .select()
+      .from(duels)
+      .where(
+        and(
+          eq(duels.createurId, joueurId),
+          eq(duels.statut, 'attente'),
+          eq(duels.ouvert, true),
+          gt(duels.creeLe, limite),
+        ),
+      )
+      .limit(1);
+    if (dejaLa) return dejaLa;
+    const dernier = await dernierAdversaire(tx, joueurId);
+    const candidats = await tx
+      .select()
+      .from(duels)
+      .where(
+        and(
+          eq(duels.statut, 'attente'),
+          eq(duels.ouvert, true),
+          ne(duels.createurId, joueurId),
+          gt(duels.creeLe, limite),
+        ),
+      )
+      .orderBy(asc(duels.creeLe))
+      .limit(10)
+      .for('update', { skipLocked: true });
+    const choisi = candidats.find((c) => c.createurId !== dernier) ?? candidats[0];
+    if (choisi) return lancer(tx, choisi, joueurId, deck, options);
+    const [ouvert] = await tx
+      .insert(duels)
+      .values({ createurId: joueurId, deckCreateur: deck.id, ouvert: true })
+      .returning();
+    if (!ouvert) throw new Error('Création du duel impossible.');
+    return ouvert;
+  });
+  return {
+    ok: true,
+    valeur: {
+      duel: await visible(base, ligne, joueurId, 0, options),
+      enAttente: ligne.statut === 'attente',
+    },
+  };
+}
+
 /** Rejoint un duel en attente : la partie est créée, le tirage désigne qui commence. */
 export async function rejoindreDuel(
   base: Base,
@@ -212,24 +324,7 @@ export async function rejoindreDuel(
     if (ligne.createurId === joueurId) return echec('son-propre-duel');
     if (ligne.statut !== 'attente') return echec('deja-commence');
     if (defiExpire(ligne, options)) return echec('expire');
-    const deckCreateur = trouverDeckPrete(ligne.deckCreateur);
-    if (!deckCreateur) throw new Error(`Deck du créateur inconnu : ${ligne.deckCreateur}`);
-    const graine = (options.tirerGraine ?? (() => randomInt(0, 2 ** 31)))();
-    const etat = creerPartie({ j1: deckCreateur.cartes, j2: deck.cartes }, graine);
-    const [maj] = await tx
-      .update(duels)
-      .set({
-        statut: 'en-cours',
-        version: ligne.version + 1,
-        adversaireId: joueurId,
-        deckAdversaire: deck.id,
-        etat,
-        majLe: new Date(),
-      })
-      .where(eq(duels.id, id))
-      .returning();
-    if (!maj) throw new Error('Mise à jour du duel impossible.');
-    return { ok: true, valeur: maj } as const;
+    return { ok: true, valeur: await lancer(tx, ligne, joueurId, deck, options) } as const;
   });
   if (!resultat.ok) return resultat;
   return { ok: true, valeur: await visible(base, resultat.valeur, joueurId, 0, options) };

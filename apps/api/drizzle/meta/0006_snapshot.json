@@ -1,0 +1,350 @@
+{
+  "id": "105788f7-f14a-4554-a06b-1f8953481d59",
+  "prevId": "4cec127a-ffa3-40b1-9449-e6a5bb103078",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.collection": {
+      "name": "collection",
+      "schema": "",
+      "columns": {
+        "joueur_id": {
+          "name": "joueur_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "numero": {
+          "name": "numero",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "exemplaires": {
+          "name": "exemplaires",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "obtenue_le": {
+          "name": "obtenue_le",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "collection_joueur_id_joueurs_id_fk": {
+          "name": "collection_joueur_id_joueurs_id_fk",
+          "tableFrom": "collection",
+          "tableTo": "joueurs",
+          "columnsFrom": [
+            "joueur_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "collection_joueur_id_numero_pk": {
+          "name": "collection_joueur_id_numero_pk",
+          "columns": [
+            "joueur_id",
+            "numero"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.duels": {
+      "name": "duels",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "statut": {
+          "name": "statut",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'attente'"
+        },
+        "version": {
+          "name": "version",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "createur_id": {
+          "name": "createur_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "deck_createur": {
+          "name": "deck_createur",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "ouvert": {
+          "name": "ouvert",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "adversaire_id": {
+          "name": "adversaire_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "deck_adversaire": {
+          "name": "deck_adversaire",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "etat": {
+          "name": "etat",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cree_le": {
+          "name": "cree_le",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "maj_le": {
+          "name": "maj_le",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "duels_createur_id_joueurs_id_fk": {
+          "name": "duels_createur_id_joueurs_id_fk",
+          "tableFrom": "duels",
+          "tableTo": "joueurs",
+          "columnsFrom": [
+            "createur_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "duels_adversaire_id_joueurs_id_fk": {
+          "name": "duels_adversaire_id_joueurs_id_fk",
+          "tableFrom": "duels",
+          "tableTo": "joueurs",
+          "columnsFrom": [
+            "adversaire_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.joueurs": {
+      "name": "joueurs",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "pseudo": {
+          "name": "pseudo",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "empreinte_code": {
+          "name": "empreinte_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "cree_le": {
+          "name": "cree_le",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "boosters": {
+          "name": "boosters",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 5
+        },
+        "recharge_depuis": {
+          "name": "recharge_depuis",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "joueurs_empreinteCode_unique": {
+          "name": "joueurs_empreinteCode_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "empreinte_code"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.recompenses": {
+      "name": "recompenses",
+      "schema": "",
+      "columns": {
+        "partie_id": {
+          "name": "partie_id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "joueur_id": {
+          "name": "joueur_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "booster": {
+          "name": "booster",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "accordee_le": {
+          "name": "accordee_le",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "recompenses_joueur_id_joueurs_id_fk": {
+          "name": "recompenses_joueur_id_joueurs_id_fk",
+          "tableFrom": "recompenses",
+          "tableTo": "joueurs",
+          "columnsFrom": [
+            "joueur_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.sessions": {
+      "name": "sessions",
+      "schema": "",
+      "columns": {
+        "empreinte_jeton": {
+          "name": "empreinte_jeton",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "joueur_id": {
+          "name": "joueur_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "cree_le": {
+          "name": "cree_le",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "sessions_joueur_id_joueurs_id_fk": {
+          "name": "sessions_joueur_id_joueurs_id_fk",
+          "tableFrom": "sessions",
+          "tableTo": "joueurs",
+          "columnsFrom": [
+            "joueur_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

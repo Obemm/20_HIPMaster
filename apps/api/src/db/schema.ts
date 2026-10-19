@@ -73,6 +73,8 @@ export const duels = pgTable('duels', {
     .notNull()
     .references(() => joueurs.id, { onDelete: 'cascade' }),
   deckCreateur: text().notNull(),
+  /** Duel ouvert à tous (adversaire au hasard, US-037) ; sinon défi privé, rejoint par son lien (US-033). */
+  ouvert: boolean().notNull().default(false),
   adversaireId: uuid().references(() => joueurs.id, { onDelete: 'cascade' }),
   deckAdversaire: text(),
   /** État complet du moteur, jamais renvoyé tel quel (seulement la vue de chaque joueur). */

@@ -1,0 +1,1 @@
+ALTER TABLE "duels" ADD COLUMN "ouvert" boolean DEFAULT false NOT NULL;
