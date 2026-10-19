@@ -24,6 +24,7 @@ direct si les deux joueurs sont présents.
 - [x] US-036 — Abandon et forfait
 - [x] US-037 — Adversaire au hasard
 - [x] US-038 — Un booster pour une victoire en duel
+- [x] US-042 — Des parcours e2e de duel fiables sous charge
 
 Ordre suggéré : US-032, US-033 et US-034 forment le premier duel jouable de bout en bout ; US-035 et US-036 le
 rendent vivable au quotidien ; US-037 et US-038 viennent ensuite.

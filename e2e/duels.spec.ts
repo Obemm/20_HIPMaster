@@ -1,16 +1,12 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, type Page, test } from '@playwright/test';
+import { creerCompteParApi } from './duel-api';
 
-async function creerCompte(page: Page, pseudo: string) {
-  await page.goto('/compte');
-  await page.getByLabel('Pseudo').fill(pseudo);
-  await page.getByRole('button', { name: 'Créer mon compte' }).click();
-  await expect(page.getByRole('heading', { name: `Connecté en tant que ${pseudo}` })).toBeVisible();
-}
+// Seul Bob crée son compte par l'interface : c'est le parcours testé. Les autres comptes viennent de l'API (US-042).
 
 /** Ada lance un défi et renvoie son lien. */
 async function lancerDefi(page: Page): Promise<string> {
-  await creerCompte(page, 'Ada e2e');
+  await creerCompteParApi(page, 'Ada e2e');
   await page.goto('/jouer');
   await page.getByRole('link', { name: 'Défier un collègue' }).click();
   await page.getByRole('button', { name: 'Défier avec Moderne' }).click();
@@ -50,7 +46,7 @@ test('défier un collègue par lien : il crée son compte, revient au défi et l
   // Le lien ne sert qu'une fois.
   const troisieme = await browser.newContext();
   const intrus = await troisieme.newPage();
-  await creerCompte(intrus, 'Eve e2e');
+  await creerCompteParApi(intrus, 'Eve e2e');
   await intrus.goto(new URL(lien).pathname);
   await expect(intrus.getByRole('heading', { name: 'Défi introuvable' })).toBeVisible();
   await autre.close();
@@ -75,7 +71,7 @@ for (const theme of ['light', 'dark'] as const) {
 
     const autre = await browser.newContext({ colorScheme: theme });
     const collegue = await autre.newPage();
-    await creerCompte(collegue, `Invité ${theme}`);
+    await creerCompteParApi(collegue, `Invité ${theme}`);
     await collegue.goto(new URL(lien).pathname);
     await expect(collegue.getByRole('heading', { name: /vous défie en duel/ })).toBeVisible();
     const invitation = await new AxeBuilder({ page: collegue })

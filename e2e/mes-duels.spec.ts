@@ -1,28 +1,8 @@
 import AxeBuilder from '@axe-core/playwright';
-import { type Browser, expect, type Page, test } from '@playwright/test';
+import { expect, type Page, test } from '@playwright/test';
+import { duelParApi } from './duel-api';
 
-async function creerCompte(page: Page, pseudo: string) {
-  await page.goto('/compte');
-  await page.getByLabel('Pseudo').fill(pseudo);
-  await page.getByRole('button', { name: 'Créer mon compte' }).click();
-  await expect(page.getByRole('heading', { name: `Connecté en tant que ${pseudo}` })).toBeVisible();
-}
-
-async function duelEntre(page: Page, browser: Browser, suffixe: string) {
-  await creerCompte(page, `Ada ${suffixe}`);
-  await page.goto('/duels/nouveau');
-  await page.getByRole('button', { name: 'Défier avec Moderne' }).click();
-  const lien = await page.getByLabel('Lien du défi').inputValue();
-  const contexte = await browser.newContext();
-  const bob = await contexte.newPage();
-  await creerCompte(bob, `Bob ${suffixe}`);
-  await bob.goto(new URL(lien).pathname);
-  await bob.getByRole('button', { name: 'Relever le défi avec Héritage' }).click();
-  await expect(
-    bob.getByRole('heading', { level: 1, name: `Duel contre Ada ${suffixe}` }),
-  ).toBeVisible();
-  return { ada: page, bob, contexte };
-}
+// Le duel est préparé par l'API (US-042) : ces parcours vérifient « Mes duels » et le bandeau, rien d'autre.
 
 const lienDuels = (page: Page) =>
   page
@@ -33,7 +13,7 @@ test('le joueur dont c’est le tour le voit dans le bandeau, le titre de l’on
   page,
   browser,
 }) => {
-  const { ada, bob, contexte } = await duelEntre(page, browser, 'liste');
+  const { ada, bob, contexte } = await duelParApi(page, browser, 'liste');
   await ada.goto('/');
   await bob.goto('/');
   // On attend que l'un des deux bandeaux affiche son compteur avant de savoir qui commence.
@@ -62,7 +42,7 @@ for (const theme of ['light', 'dark'] as const) {
     browser,
   }) => {
     await page.emulateMedia({ colorScheme: theme });
-    const { ada, contexte } = await duelEntre(page, browser, `axe ${theme}`);
+    const { ada, contexte } = await duelParApi(page, browser, `axe ${theme}`);
     await ada.goto('/duels');
     await expect(ada.getByRole('heading', { name: /^Au tour|^À vous/ }).first()).toBeVisible();
     const { violations } = await new AxeBuilder({ page: ada })

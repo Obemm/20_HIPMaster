@@ -20,7 +20,8 @@ async function chercher(page: Page): Promise<string> {
   await page.getByRole('button', { name: 'Jouer avec Hybride' }).click();
   await page.waitForURL(/\/duels\/[0-9a-f-]{36}$/);
   const titre = page.getByRole('heading', { level: 1 });
-  await expect(titre).toHaveText(/Recherche d’un adversaire|Duel contre/);
+  // « Duel contre … » le temps du chargement : on attend le nom de l'adversaire (US-042).
+  await expect(titre).toHaveText(/Recherche d’un adversaire|Duel contre [^…]/);
   return (await titre.textContent()) ?? '';
 }
 
