@@ -1,7 +1,7 @@
 # US-038 — Un booster pour une victoire en duel
 
 - **Epic** : EPIC-06
-- **Statut** : En revue
+- **Statut** : Faite
 - **Priorité** : Could
 - **Taille** : S
 - **Branche** : `us-038-recompense-duel`
@@ -32,3 +32,4 @@ de défier mes collègues**.
   une fois. Victoire par abandon ou forfait sans booster s'il existe un autre duel entre les deux joueurs créé le
   même jour UTC. Écran de fin : booster gagné, plafond, ou « ne compte qu'une fois par jour contre le même
   adversaire ». Tests : API (2), écran (1), e2e (booster annoncé au vainqueur d'un abandon).
+- 2026-10-19 — livrée : Booster pour une victoire en duel, plafond commun, garde-fou contre les arrangements
