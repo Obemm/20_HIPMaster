@@ -311,7 +311,9 @@ describe('PartieEcran', () => {
 
   it('annonce le booster gagné par la victoire et mène à son ouverture', async () => {
     const v = vue({ issue: { gagnant: 'j1', raison: 'sla' }, actions: [] });
-    const { page } = await ouvrir(v, { recompense: { booster: true, plafondAtteint: false } });
+    const { page } = await ouvrir(v, {
+      recompense: { booster: true, plafondAtteint: false, motif: null },
+    });
     expect(page.textContent).toContain('Un booster gagné !');
     expect(page.querySelector('a[href="/boosters"]')?.textContent?.trim()).toBe(
       'Ouvrir mon booster',
@@ -320,7 +322,9 @@ describe('PartieEcran', () => {
 
   it('annonce le plafond quotidien de boosters gagnés', async () => {
     const v = vue({ issue: { gagnant: 'j1', raison: 'sla' }, actions: [] });
-    const { page } = await ouvrir(v, { recompense: { booster: false, plafondAtteint: true } });
+    const { page } = await ouvrir(v, {
+      recompense: { booster: false, plafondAtteint: true, motif: 'plafond' },
+    });
     expect(page.textContent).toContain('Plafond atteint : 3 boosters gagnés aujourd’hui');
     expect(page.querySelector('a[href="/boosters"]')).toBeNull();
   });
@@ -492,5 +496,27 @@ describe('PartieEcran en duel (US-034)', () => {
     expect(page.querySelector('#titre-fin')?.textContent).toContain('Défaite');
     expect(page.textContent).toContain('Vous avez abandonné.');
     expect(bouton(page, 'Abandonner')).toBeUndefined();
+  });
+
+  it('annonce la victoire par abandon, et pourquoi elle ne rapporte pas de booster', async () => {
+    const fixture = TestBed.createComponent(PartieEcran);
+    fixture.componentRef.setInput('id', 'p1');
+    fixture.componentRef.setInput('mode', 'duel');
+    fixture.detectChanges();
+    const http = TestBed.inject(HttpTestingController);
+    http.expectOne('/api/v1/cartes').flush(CATALOGUE);
+    http.expectOne('/api/v1/niveaux').flush(NIVEAUX);
+    http.expectOne('/api/v1/duels/p1').flush({
+      ...duel(vue({ issue: { gagnant: 'j1', raison: 'abandon' }, actions: [] }), 7),
+      statut: 'termine',
+      echeance: null,
+      recompense: { booster: false, plafondAtteint: false, motif: 'adversaire-deja-affronte' },
+    });
+    await fixture.whenStable();
+    fixture.detectChanges();
+    const page = fixture.nativeElement as HTMLElement;
+    expect(page.querySelector('#titre-fin')?.textContent).toContain('Victoire !');
+    expect(page.textContent).toContain('Bob a abandonné.');
+    expect(page.textContent).toContain('ne compte qu’une fois par jour contre le même adversaire');
   });
 });

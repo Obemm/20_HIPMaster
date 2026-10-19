@@ -79,6 +79,13 @@ export interface Evenement {
   statut?: string;
 }
 
+/** Le booster gagné par une victoire (US-025, US-038), ou pourquoi il ne l'est pas. */
+export interface Recompense {
+  booster: boolean;
+  plafondAtteint: boolean;
+  motif: 'plafond' | 'adversaire-deja-affronte' | null;
+}
+
 export interface Partie {
   id: string;
   deck: string;
@@ -88,7 +95,7 @@ export interface Partie {
   vue: Vue;
   evenements: Evenement[];
   /** Présente après une victoire dans une partie lancée en étant connecté (US-025). */
-  recompense?: { booster: boolean; plafondAtteint: boolean };
+  recompense?: Recompense;
 }
 
 /** Un niveau du bot, du plus simple au plus fort (US-021). */

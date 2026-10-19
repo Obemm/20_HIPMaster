@@ -303,6 +303,20 @@ components:
         evenements:
           type: array
           items: { $ref: 'parties.yaml#/components/schemas/Evenement' }
+        recompense:
+          type: object
+          description: >
+            Présente quand le joueur qui demande a gagné le duel (US-038) : un booster, dans le même plafond quotidien
+            que les victoires contre le bot, une seule fois par duel. Une victoire par abandon ou forfait ne rapporte
+            rien contre un adversaire déjà affronté le même jour (UTC).
+          required: [booster, plafondAtteint, motif]
+          properties:
+            booster: { type: boolean }
+            plafondAtteint: { type: boolean }
+            motif:
+              type: [string, 'null']
+              enum: [plafond, adversaire-deja-affronte, null]
+              description: Sans booster, pourquoi.
     Participant:
       type: object
       required: [pseudo]

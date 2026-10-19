@@ -50,6 +50,13 @@
       "when": 1792367603616,
       "tag": "0006_duels_ouverts",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1792368407907,
+      "tag": "0007_motif_recompense",
+      "breakpoints": true
     }
   ]
 }

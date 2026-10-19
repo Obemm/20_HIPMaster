@@ -146,10 +146,14 @@ components:
             Présente quand le joueur a gagné une partie lancée en étant connecté (en-tête `Authorization: Bearer`
             lors de sa création, voir comptes.yaml) : un booster, au plus 3 par jour UTC, une seule fois par partie
             (US-025).
-          required: [booster, plafondAtteint]
+          required: [booster, plafondAtteint, motif]
           properties:
             booster: { type: boolean, description: La victoire a rapporté un booster. }
             plafondAtteint: { type: boolean, description: Le plafond quotidien était déjà atteint. }
+            motif:
+              type: [string, 'null']
+              enum: [plafond, adversaire-deja-affronte, null]
+              description: Sans booster, pourquoi (« adversaire-deja-affronte » ne concerne que les duels, US-038).
     Vue:
       type: object
       required: [joueur, moi, adversaire, actif, tour, issue, actions]

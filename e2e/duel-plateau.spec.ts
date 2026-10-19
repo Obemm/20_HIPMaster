@@ -90,6 +90,9 @@ test('abandonner un duel, après confirmation : l’adversaire voit sa victoire 
 
   await expect(bob.getByRole('heading', { name: 'Victoire !' })).toBeVisible({ timeout: 10_000 });
   await expect(bob.getByText('Ada abandon a abandonné.')).toBeVisible();
+  // Première victoire du jour contre Ada : elle rapporte un booster (US-038).
+  await expect(bob.getByText('Un booster gagné !')).toBeVisible();
+  await expect(bob.getByRole('link', { name: 'Ouvrir mon booster' })).toBeVisible();
   await contexte.close();
 });
 

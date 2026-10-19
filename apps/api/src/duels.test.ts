@@ -444,3 +444,37 @@ describe('adversaire au hasard (US-037)', () => {
     expect((await hasard(bob)).statusCode).toBe(201);
   });
 });
+
+describe('booster pour une victoire en duel (US-038)', () => {
+  it('le vainqueur gagne un booster, une seule fois ; le perdant rien', async () => {
+    const { ada, bob, id } = await duelLance();
+    const perdant = (await requete('POST', `/duels/${id}/abandon`, ada)).json<DuelVisible>();
+    expect(perdant.recompense).toBeUndefined();
+
+    const gagnant = (await requete('GET', `/duels/${id}`, bob)).json<DuelVisible>();
+    expect(gagnant.recompense).toEqual({ booster: true, plafondAtteint: false, motif: null });
+    const relu = (await requete('GET', `/duels/${id}`, bob)).json<DuelVisible>();
+    expect(relu.recompense?.booster).toBe(true);
+    const stock = (await requete('GET', '/moi/boosters', bob)).json<{ stock: number }>();
+    expect(stock.stock).toBe(6);
+  });
+
+  it('une victoire par abandon ne rapporte rien contre un adversaire déjà affronté le même jour', async () => {
+    const { ada, bob, id } = await duelLance();
+    await requete('POST', `/duels/${id}/abandon`, ada);
+    expect(
+      (await requete('GET', `/duels/${id}`, bob)).json<DuelVisible>().recompense?.booster,
+    ).toBe(true);
+
+    // Deuxième duel entre les mêmes joueurs, abandonné aussitôt : pas de booster.
+    const second = (await requete('POST', '/duels', ada, { deck: 'moderne' })).json<DuelVisible>();
+    await requete('POST', `/duels/${second.id}/rejoindre`, bob, { deck: 'heritage' });
+    await requete('POST', `/duels/${second.id}/abandon`, ada);
+    const fin = (await requete('GET', `/duels/${second.id}`, bob)).json<DuelVisible>();
+    expect(fin.recompense).toEqual({
+      booster: false,
+      plafondAtteint: false,
+      motif: 'adversaire-deja-affronte',
+    });
+  });
+});

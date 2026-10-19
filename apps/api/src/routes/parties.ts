@@ -10,7 +10,13 @@ import { jetonDe } from './comptes.ts';
 import { schemaAction, schemaDeck, schemaNiveau, schemaPartie } from '../parties/schemas.ts';
 
 const schemaPartieRecompensee = schemaPartie.extend({
-  recompense: z.object({ booster: z.boolean(), plafondAtteint: z.boolean() }).optional(),
+  recompense: z
+    .object({
+      booster: z.boolean(),
+      plafondAtteint: z.boolean(),
+      motif: z.enum(['plafond', 'adversaire-deja-affronte']).nullable(),
+    })
+    .optional(),
 });
 
 // Contrat : apps/api/openapi/parties.yaml.
