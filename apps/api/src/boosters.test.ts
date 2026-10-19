@@ -2,25 +2,21 @@ import { trouverCarte } from '@hipmaster/domain';
 import { eq } from 'drizzle-orm';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { construireApp } from './app.ts';
-import { type BaseOuverte, ouvrirBase } from './db/index.ts';
+import { baseDeTest } from './db/base-de-test.ts';
 import { collection, joueurs } from './db/schema.ts';
 
 const MINUTE = 60 * 1000;
-let ouverte: BaseOuverte;
+const ouverte = baseDeTest();
 let app: ReturnType<typeof construireApp>;
 let maintenant: number;
 
-beforeEach(async () => {
-  ouverte = await ouvrirBase({ url: null, locale: 'memory://' });
+beforeEach(() => {
   // Horloge pilotée par le test (calée sur la création du compte) ; hasard réel (le tirage est testé dans
   // le domaine).
   maintenant = Date.now();
   app = construireApp({ base: ouverte.base, boosters: { maintenant: () => maintenant } });
 });
-afterEach(async () => {
-  await app.close();
-  await ouverte.fermer();
-});
+afterEach(() => app.close());
 
 interface Boosters {
   stock: number;

@@ -98,6 +98,10 @@ Toutes les évolutions notables du projet sont consignées ici
 
 ### Corrigé
 
+- Tests de l'API : une seule base PGlite en mémoire par fichier (tables vidées avant chaque test) au lieu d'une
+  par test, car chaque ouverture charge ≈ 1,6 s de WASM et occupe ≈ 550 Mo ; fichiers de l'API exécutés l'un
+  après l'autre ; délais relevés et justifiés pour ce chargement et pour les deux tests qui simulent une dizaine
+  de parties. `npm run check` passe sur un poste saturé (US-043).
 - La vue de partie renvoyée par l'API perdait le bonus d'attaque des composants et les marqueurs du joueur : un bot
   du domaine joué depuis l'API (Agent autonome) évaluait tout à `NaN` et ne gagnait plus aucune partie. Le schéma et
   le contrat OpenAPI les exposent ; la vue de l'API suffit désormais à reconstituer la partie (US-026).

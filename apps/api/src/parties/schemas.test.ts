@@ -35,17 +35,22 @@ describe('vue publique d’une partie (US-026)', () => {
     }
   });
 
-  it('l’Agent autonome joué depuis la vue de l’API bat le Batch de nuit', () => {
-    const agent: Strategie = (vue) => choisirActionAgentAutonome(commeLApi(vue));
-    let victoires = 0;
-    const parties = 10;
-    for (let graine = 1; graine <= parties; graine++) {
-      const fin = jouerPartie({ j1: moderne.cartes, j2: moderne.cartes }, graine, {
-        j1: agent,
-        j2: choisirActionBatchDeNuit,
-      });
-      if (fin.issue?.gagnant === 'j1') victoires += 1;
-    }
-    expect(victoires).toBeGreaterThanOrEqual(parties / 2);
-  });
+  // Dix parties complètes : plusieurs secondes sur un poste chargé, sans rapport avec une régression (US-043).
+  it(
+    'l’Agent autonome joué depuis la vue de l’API bat le Batch de nuit',
+    { timeout: 30_000 },
+    () => {
+      const agent: Strategie = (vue) => choisirActionAgentAutonome(commeLApi(vue));
+      let victoires = 0;
+      const parties = 10;
+      for (let graine = 1; graine <= parties; graine++) {
+        const fin = jouerPartie({ j1: moderne.cartes, j2: moderne.cartes }, graine, {
+          j1: agent,
+          j2: choisirActionBatchDeNuit,
+        });
+        if (fin.issue?.gagnant === 'j1') victoires += 1;
+      }
+      expect(victoires).toBeGreaterThanOrEqual(parties / 2);
+    },
+  );
 });
