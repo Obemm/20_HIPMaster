@@ -190,6 +190,50 @@ describe('PartieEcran', () => {
     await fixture.whenStable();
   });
 
+  it('affiche en grand la carte choisie, avec ses actions dessous, et Échap rend le focus à la main', async () => {
+    const { fixture, page } = await ouvrir();
+    bouton(page, 'API REST')?.click();
+    fixture.detectChanges();
+    const detail = page.querySelector<HTMLElement>('#detail-main');
+    expect(detail?.querySelector('h3')?.textContent).toContain('API REST');
+    expect(detail?.textContent).toContain('Composant');
+    expect(detail?.textContent).toContain('Attaque 3');
+    expect(detail?.textContent).toContain('Des ressources et des verbes HTTP.');
+    expect(detail?.querySelector('[role="group"]')?.textContent).toContain('Poser (2 Débit)');
+    expect(bouton(page, 'API REST')?.getAttribute('aria-controls')).toBe('detail-main');
+
+    detail?.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+    fixture.detectChanges();
+    expect(page.querySelector('#detail-main')).toBeNull();
+    expect(document.activeElement).toBe(page.querySelector('#main-j1-01'));
+  });
+
+  it('définit les capacités de la carte choisie là où on la lit', async () => {
+    const v = vue();
+    v.moi.main = [{ id: 'j1-04', numero: 13 }];
+    const { fixture, page } = await ouvrir(v);
+    bouton(page, 'Adaptateur SAP')?.click();
+    fixture.detectChanges();
+    expect(page.querySelector('#detail-main dl')?.textContent).toContain(
+      'Doit être attaqué avant vos autres composants et votre SI.',
+    );
+    bouton(page, 'Fermer le détail')?.click();
+    fixture.detectChanges();
+    expect(page.querySelector('#detail-main')).toBeNull();
+  });
+
+  it('pendant le tour adverse, la carte se consulte quand même, sans actions', async () => {
+    const { fixture, page } = await ouvrir(vue({ actif: 'j2', actions: [] }));
+    const carte = bouton(page, 'API REST');
+    expect(carte?.disabled).toBe(false);
+    carte?.click();
+    fixture.detectChanges();
+    const detail = page.querySelector('#detail-main');
+    expect(detail?.textContent).toContain('API REST');
+    expect(detail?.querySelector('[role="group"]')).toBeNull();
+    expect(detail?.textContent).toContain('vous pourrez jouer cette carte au prochain');
+  });
+
   it('choisit un attaquant puis sa cible, seulement parmi les attaques proposées', async () => {
     const attaquant = {
       id: 'j1-02',

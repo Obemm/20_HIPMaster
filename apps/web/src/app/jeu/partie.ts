@@ -13,9 +13,10 @@ import {
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
-import type { Carte } from '../cartes/carte';
+import { type Carte, LIBELLES_FAMILLE, libelleType } from '../cartes/carte';
 import { VignetteCarte } from '../cartes/vignette-carte';
 import { Icone } from '../icone';
+import { LIBELLES_RARETE, SYMBOLES_RARETE } from '../libelles';
 import { decrireComposant, JetonComposant } from './jeton-composant';
 import type { Duel } from '../duels/modele';
 import { resteAvant } from '../duels/temps';
@@ -48,6 +49,8 @@ const INTERROGATION_DUEL_MS = 3000;
   selector: 'hip-partie',
   imports: [RouterLink, VignetteCarte, JetonComposant, Icone, RegleCourte],
   templateUrl: './partie.html',
+  // Échap referme le détail de la carte choisie (US-040), où que soit le focus dans l'écran.
+  host: { '(keydown.escape)': 'fermerDetail()' },
 })
 export class PartieEcran implements OnInit, OnDestroy {
   /** Paramètre de route `:id`. */
@@ -82,6 +85,10 @@ export class PartieEcran implements OnInit, OnDestroy {
 
   protected readonly TOURS_MAX = TOURS_MAX;
   protected readonly decrireComposant = decrireComposant;
+  protected readonly libelleType = libelleType;
+  protected readonly libellesFamille = LIBELLES_FAMILLE;
+  protected readonly libellesRarete = LIBELLES_RARETE;
+  protected readonly symbolesRarete = SYMBOLES_RARETE;
 
   protected readonly partie = signal<Partie | null>(null);
   protected readonly introuvable = signal(false);
@@ -122,6 +129,12 @@ export class PartieEcran implements OnInit, OnDestroy {
   protected readonly monTour = computed(() => {
     const vue = this.vue();
     return vue !== null && vue.actif === vue.joueur && !vue.issue;
+  });
+
+  /** La carte de la main choisie, en entier (US-040) ; rien si elle a quitté la main entre-temps. */
+  protected readonly carteDetaillee = computed(() => {
+    const instance = this.vue()?.moi.main.find((c) => c.id === this.carteChoisie());
+    return instance ? this.carteDe(instance.numero) : undefined;
   });
 
   protected readonly actionsCarte = computed((): ActionCarte[] => {
@@ -225,6 +238,14 @@ export class PartieEcran implements OnInit, OnDestroy {
   protected choisirCarte(id: string): void {
     this.attaquant.set(null);
     this.carteChoisie.update((actuelle) => (actuelle === id ? null : id));
+  }
+
+  /** Referme le détail de la carte choisie et rend le focus à cette carte, dans la main (US-040). */
+  protected fermerDetail(): void {
+    const id = this.carteChoisie();
+    if (!id) return;
+    this.carteChoisie.set(null);
+    globalThis.document?.getElementById(`main-${id}`)?.focus();
   }
 
   protected choisirAttaquant(composant: Composant): void {

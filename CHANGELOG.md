@@ -83,6 +83,8 @@ Toutes les évolutions notables du projet sont consignées ici
   exemples chiffrés à l'appui ; la règle courte du jeu demande de sélectionner l'attaquant puis sa cible, avec un
   exemple de riposte ; avant de finir son tour, le joueur est averti des composants qui peuvent encore attaquer
   (US-039).
+- Le détail d'une carte de la main en partie : la toucher l'affiche en grand, avec son effet, ses capacités définies
+  sur place et son « En vrai », puis ses actions dessous ; elle se consulte aussi pendant le tour adverse (US-040).
 - Chaîne des illustrations : un original déposé et décrit devient, en une commande (`npm run illustrations`), quatre
   images AVIF et WebP de moins de 100 Ko et un manifeste ; la carte affiche son illustration, ou son pictogramme de
   famille à défaut. EPIC-05 découpé en US-015 à US-017 (US-015, ADR 0015).
