@@ -1,7 +1,7 @@
 # US-037 — Adversaire au hasard
 
 - **Epic** : EPIC-06
-- **Statut** : En revue
+- **Statut** : Faite
 - **Priorité** : Could
 - **Taille** : M
 - **Branche** : `us-037-adversaire-hasard`
@@ -32,3 +32,4 @@ quand j'en ai envie**.
   duel (201) ; déjà dans la file, on y garde sa place. Front : « un adversaire au hasard » depuis « Jouer »
   (`/duels/hasard`, même écran que le défi), écran « Recherche d'un adversaire… » avec « Quitter la file ». Tests :
   API (5, dont la concurrence), écrans (3), e2e (3, profil bureau seulement et en série : file commune).
+- 2026-10-19 — livrée : Adversaire au hasard : file des duels ouverts, défis privés à part
