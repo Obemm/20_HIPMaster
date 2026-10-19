@@ -5,4 +5,6 @@ coverage
 playwright-report
 test-results
 apps/api/drizzle
+# Worktrees Git créés par l'app Claude Desktop (US-044)
+.claude/worktrees
 package-lock.json
