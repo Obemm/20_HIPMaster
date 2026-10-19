@@ -335,11 +335,21 @@
           type="button"
           class="rounded-lg bg-accent px-4 py-3 font-semibold text-sur-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:opacity-60"
           [disabled]="!monTour() || occupe()"
+          [attr.aria-describedby]="attaquesOubliees() ? 'attaques-oubliees' : null"
           (click)="jouer({ type: 'finirTour' })"
         >
           Finir mon tour
         </button>
       </div>
+      @if (attaquesOubliees()) {
+        <p
+          id="attaques-oubliees"
+          class="rounded-lg border-2 border-amber-600 px-3 py-2 text-sm dark:border-amber-400"
+        >
+          <strong>Attention :</strong> {{ attaquesOubliees() }} Si vous finissez votre tour, ces
+          attaques sont perdues.
+        </p>
+      }
     }
 
     @if (erreur()) {

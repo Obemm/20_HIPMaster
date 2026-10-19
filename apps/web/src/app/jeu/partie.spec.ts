@@ -216,6 +216,68 @@ describe('PartieEcran', () => {
     await fixture.whenStable();
   });
 
+  it('dit dans la règle courte qu’il faut choisir l’attaquant puis sa cible, avec un exemple de riposte', async () => {
+    const debut = vue();
+    debut.moi.tours = 1;
+    const { page } = await ouvrir(debut);
+    const regle = page.querySelector('hip-regle-courte')?.textContent ?? '';
+    expect(regle).toContain('rien n’attaque tout seul');
+    expect(regle).toContain('sélectionnez l’attaquant');
+    expect(regle).toContain('Exemple de riposte');
+  });
+
+  it('avertit, sans bloquer, des composants qui peuvent encore attaquer avant de finir le tour', async () => {
+    const composant = (id: string, numero: number) => ({
+      id,
+      numero,
+      pv: 2,
+      attaque: 3,
+      poseAuTour: 1,
+      aAttaqueCeTour: false,
+    });
+    const v = vue({
+      actions: [
+        { type: 'attaquer', attaquant: 'j1-02', cible: 'j2-05' },
+        { type: 'attaquer', attaquant: 'j1-02', cible: 'si' },
+        { type: 'finirTour' },
+      ],
+    });
+    v.moi.plateau = [composant('j1-02', 22)];
+    const { fixture, http, page } = await ouvrir(v);
+    const finir = bouton(page, 'Finir mon tour');
+    expect(page.querySelector('#attaques-oubliees')?.textContent).toContain(
+      'API REST peut encore attaquer',
+    );
+    expect(finir?.getAttribute('aria-describedby')).toBe('attaques-oubliees');
+    expect(finir?.disabled).toBe(false);
+    finir?.click();
+    const requete = http.expectOne('/api/v1/parties/p1/actions');
+    expect(requete.request.body).toEqual({ type: 'finirTour' });
+    requete.flush(partie(vue()));
+    await fixture.whenStable();
+    fixture.detectChanges();
+    expect(page.querySelector('#attaques-oubliees')).toBeNull();
+    expect(bouton(page, 'Finir mon tour')?.hasAttribute('aria-describedby')).toBe(false);
+  });
+
+  it('compte les composants qui peuvent encore attaquer quand il y en a plusieurs', async () => {
+    const v = vue({
+      actions: [
+        { type: 'attaquer', attaquant: 'j1-02', cible: 'si' },
+        { type: 'attaquer', attaquant: 'j1-03', cible: 'si' },
+        { type: 'finirTour' },
+      ],
+    });
+    v.moi.plateau = [
+      { id: 'j1-02', numero: 22, pv: 2, attaque: 3, poseAuTour: 1, aAttaqueCeTour: false },
+      { id: 'j1-03', numero: 13, pv: 5, attaque: 3, poseAuTour: 1, aAttaqueCeTour: false },
+    ];
+    const { page } = await ouvrir(v);
+    expect(page.querySelector('#attaques-oubliees')?.textContent).toContain(
+      '2 composants peuvent encore attaquer (API REST, Adaptateur SAP)',
+    );
+  });
+
   it('propose « Jouer sur … » pour un sort, et montre les statuts des composants', async () => {
     const v = vue({
       actions: [{ type: 'jouer', carte: 'j1-09', cibles: ['j2-05'] }, { type: 'finirTour' }],
