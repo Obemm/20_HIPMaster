@@ -224,6 +224,9 @@
           <p class="font-semibold">
             @if (recompense.booster) {
               Un booster gagné ! Il vous attend dans vos boosters.
+            } @else if (recompense.motif === 'adversaire-deja-affronte') {
+              Pas de booster cette fois : une victoire par abandon ou forfait ne compte qu’une fois
+              par jour contre le même adversaire.
             } @else {
               Plafond atteint : 3 boosters gagnés aujourd’hui. Revenez demain pour en gagner
               d’autres.

@@ -36,6 +36,13 @@ const schemaDuel = z.object({
   echeance: z.iso.datetime().nullable(),
   vue: schemaVue.nullable(),
   evenements: z.array(schemaEvenement),
+  recompense: z
+    .object({
+      booster: z.boolean(),
+      plafondAtteint: z.boolean(),
+      motif: z.enum(['plafond', 'adversaire-deja-affronte']).nullable(),
+    })
+    .optional(),
 });
 
 const parametres = z.object({ id: z.uuid() });

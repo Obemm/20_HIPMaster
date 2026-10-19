@@ -1,0 +1,1 @@
+ALTER TABLE "recompenses" ADD COLUMN "motif" text;

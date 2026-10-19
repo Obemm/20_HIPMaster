@@ -77,15 +77,15 @@ récompense de victoire. Les illustrations (EPIC-05) attendent.
 Découpage du 2026-10-19 : duels asynchrones, au tour par tour, état en base (ADR 0020, accepté par le porteur du projet
 le 2026-10-19).
 
-| Story                                                                              | Epic    | Priorité | Taille | Statut    |
-| ---------------------------------------------------------------------------------- | ------- | -------- | ------ | --------- |
-| [US-032 — Duels côté serveur](stories/US-032-duels-serveur.md)                     | EPIC-06 | Must     | L      | Faite     |
-| [US-033 — Défier un collègue par lien](stories/US-033-defier-par-lien.md)          | EPIC-06 | Must     | M      | Faite     |
-| [US-034 — Écran de duel](stories/US-034-ecran-duel.md)                             | EPIC-06 | Must     | L      | Faite     |
-| [US-035 — Mes duels et « à vous de jouer »](stories/US-035-mes-duels.md)           | EPIC-06 | Should   | M      | Faite     |
-| [US-036 — Abandon et forfait](stories/US-036-abandon-forfait.md)                   | EPIC-06 | Should   | S      | Faite     |
-| [US-037 — Adversaire au hasard](stories/US-037-adversaire-hasard.md)               | EPIC-06 | Could    | M      | Faite     |
-| [US-038 — Un booster pour une victoire en duel](stories/US-038-recompense-duel.md) | EPIC-06 | Could    | S      | À affiner |
+| Story                                                                              | Epic    | Priorité | Taille | Statut   |
+| ---------------------------------------------------------------------------------- | ------- | -------- | ------ | -------- |
+| [US-032 — Duels côté serveur](stories/US-032-duels-serveur.md)                     | EPIC-06 | Must     | L      | Faite    |
+| [US-033 — Défier un collègue par lien](stories/US-033-defier-par-lien.md)          | EPIC-06 | Must     | M      | Faite    |
+| [US-034 — Écran de duel](stories/US-034-ecran-duel.md)                             | EPIC-06 | Must     | L      | Faite    |
+| [US-035 — Mes duels et « à vous de jouer »](stories/US-035-mes-duels.md)           | EPIC-06 | Should   | M      | Faite    |
+| [US-036 — Abandon et forfait](stories/US-036-abandon-forfait.md)                   | EPIC-06 | Should   | S      | Faite    |
+| [US-037 — Adversaire au hasard](stories/US-037-adversaire-hasard.md)               | EPIC-06 | Could    | M      | Faite    |
+| [US-038 — Un booster pour une victoire en duel](stories/US-038-recompense-duel.md) | EPIC-06 | Could    | S      | En revue |
 
 ## Retours de partie
 
