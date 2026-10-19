@@ -19,6 +19,7 @@ Disposer d'un socle de développement propre, outillé et traçable.
 - [x] US-004 — Base de données locale
 - [x] US-006 — Socle Angular aligné sur le référentiel Elis
 - [x] US-007 — Dependabot ne propose que des versions compatibles
+- [x] US-043 — Tests de l'API robustes sur un poste chargé
 
 ## Hors périmètre
 

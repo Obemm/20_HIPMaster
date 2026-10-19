@@ -5,20 +5,16 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { construireApp } from './app.ts';
 import { recompenserVictoire } from './comptes/boosters.ts';
 import { creerJoueur } from './comptes/comptes.ts';
-import { type BaseOuverte, ouvrirBase } from './db/index.ts';
+import { baseDeTest } from './db/base-de-test.ts';
 import { joueurs } from './db/schema.ts';
 import type { PartieVisible } from './parties/depot.ts';
 
 const HEURE = 60 * 60 * 1000;
-let ouverte: BaseOuverte;
+const ouverte = baseDeTest();
 let maintenant: number;
 
-beforeEach(async () => {
-  ouverte = await ouvrirBase({ url: null, locale: 'memory://' });
+beforeEach(() => {
   maintenant = Date.now();
-});
-afterEach(async () => {
-  await ouverte.fermer();
 });
 
 const stock = async (id: string) =>

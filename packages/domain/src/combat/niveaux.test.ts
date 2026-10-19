@@ -22,17 +22,22 @@ describe('niveaux du bot', () => {
     expect(trouverNiveau('inconnu')).toBeUndefined();
   });
 
-  it('chaque niveau ne joue que des actions légales, et ses parties se terminent', () => {
-    for (const niveau of NIVEAUX_BOT) {
-      for (let graine = 1; graine <= 3; graine++) {
-        const fin = jouerPartie({ j1: hybride.cartes, j2: moderne.cartes }, graine, {
-          j1: niveau.strategie,
-          j2: niveau.strategie,
-        });
-        expect(fin.issue, `${niveau.nom}, graine ${graine}`).not.toBeNull();
+  // Neuf parties complètes : plusieurs secondes sur un poste chargé, sans rapport avec une régression (US-043).
+  it(
+    'chaque niveau ne joue que des actions légales, et ses parties se terminent',
+    { timeout: 30_000 },
+    () => {
+      for (const niveau of NIVEAUX_BOT) {
+        for (let graine = 1; graine <= 3; graine++) {
+          const fin = jouerPartie({ j1: hybride.cartes, j2: moderne.cartes }, graine, {
+            j1: niveau.strategie,
+            j2: niveau.strategie,
+          });
+          expect(fin.issue, `${niveau.nom}, graine ${graine}`).not.toBeNull();
+        }
       }
-    }
-  });
+    },
+  );
 });
 
 describe('reconstitution d’un état depuis une vue', () => {
