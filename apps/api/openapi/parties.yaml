@@ -270,6 +270,11 @@ components:
               type: array
               items: { type: string }
               description: Capacités empruntées par Outillage jusqu'à la fin du tour.
+            sansAttaque:
+              type: [string, 'null']
+              description: >
+                Pourquoi ce composant ne peut pas attaquer maintenant (US-041), null s'il le peut. Seulement sur ses
+                propres composants, pendant son tour ; absent sinon.
     Action:
       oneOf:
         - type: object

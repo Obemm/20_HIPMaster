@@ -234,7 +234,7 @@ describe('PartieEcran', () => {
     expect(detail?.textContent).toContain('vous pourrez jouer cette carte au prochain');
   });
 
-  it('choisit un attaquant puis sa cible, seulement parmi les attaques proposées', async () => {
+  it('choisit un attaquant, puis sa cible, et confirme l’attaque sous le détail de la cible (US-041)', async () => {
     const attaquant = {
       id: 'j1-02',
       numero: 22,
@@ -242,22 +242,92 @@ describe('PartieEcran', () => {
       attaque: 3,
       poseAuTour: 1,
       aAttaqueCeTour: false,
+      sansAttaque: null,
     };
     const v = vue({
       actions: [{ type: 'attaquer', attaquant: 'j1-02', cible: 'j2-05' }, { type: 'finirTour' }],
     });
     v.moi.plateau = [attaquant];
     const { fixture, http, page } = await ouvrir(v);
-    const si = bouton(page, 'SI du bot');
-    expect(si?.disabled).toBe(true);
+    // Le SI n'est pas une cible proposée (Garde) : il se consulte, mais ne s'attaque pas.
+    bouton(page, 'SI du bot')?.click();
+    fixture.detectChanges();
+    expect(page.querySelector('#detail-plateau h3')?.textContent).toContain('SI du bot');
+    expect(bouton(page, 'Attaquer avec')).toBeUndefined();
+
     bouton(page, 'peut attaquer')?.click();
     fixture.detectChanges();
-    expect(si?.disabled).toBe(true);
-    bouton(page, 'SOAP / WSDL, attaque 3, PV 4 : attaquer')?.click();
+    expect(page.querySelector('#detail-plateau')?.textContent).toContain('Attaquant désigné');
+    const cible = bouton(page, 'SOAP / WSDL, attaque 3, PV 4 : cible possible');
+    cible?.click();
+    fixture.detectChanges();
+    // Regarder ne joue rien : aucune requête, le détail de la cible s'affiche avec son état.
+    http.expectNone('/api/v1/parties/p1/actions');
+    expect(cible?.getAttribute('aria-pressed')).toBe('true');
+    const detail = page.querySelector('#detail-plateau');
+    expect(detail?.querySelector('h3')?.textContent).toContain('SOAP / WSDL');
+    expect(detail?.textContent).toContain('attaque 3, PV 4 / 4');
+    expect(detail?.textContent).toContain('Le service web d’avant REST.');
+    expect(page.textContent).toContain('Confirmez l’attaque sous le détail de la cible');
+
+    bouton(page, 'Attaquer avec API REST')?.click();
     const requete = http.expectOne('/api/v1/parties/p1/actions');
     expect(requete.request.body).toEqual({ type: 'attaquer', attaquant: 'j1-02', cible: 'j2-05' });
     requete.flush(partie(vue()));
     await fixture.whenStable();
+    fixture.detectChanges();
+    expect(page.querySelector('#detail-plateau')).toBeNull();
+  });
+
+  it('dit pourquoi un de mes composants n’attaque pas, avec les mots du serveur', async () => {
+    const v = vue();
+    v.moi.plateau = [
+      {
+        id: 'j1-02',
+        numero: 22,
+        pv: 1,
+        attaque: 3,
+        poseAuTour: 2,
+        aAttaqueCeTour: false,
+        sansAttaque: 'Un composant ne peut pas attaquer le tour où il est posé.',
+      },
+    ];
+    const { fixture, page } = await ouvrir(v);
+    const jeton = bouton(page, 'API REST, attaque 3, PV 1');
+    expect(jeton?.disabled).toBe(false);
+    jeton?.click();
+    fixture.detectChanges();
+    const detail = page.querySelector('#detail-plateau');
+    expect(detail?.textContent).toContain('PV 1 / 2');
+    expect(detail?.textContent).toContain('le tour où il est posé');
+    expect(detail?.querySelector('[role="group"]')).toBeNull();
+
+    // Échap referme le détail et rend le focus au jeton.
+    detail?.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+    fixture.detectChanges();
+    expect(page.querySelector('#detail-plateau')).toBeNull();
+    expect(document.activeElement).toBe(page.querySelector('#plateau-j1-02'));
+  });
+
+  it('pendant le tour adverse, un composant adverse se consulte quand même, sans attaque', async () => {
+    const v = vue({ actif: 'j2', actions: [] });
+    v.adversaire.plateau[0] = { ...v.adversaire.plateau[0]!, pv: 2, aAttaqueCeTour: true };
+    const { fixture, page } = await ouvrir(v);
+    const jeton = bouton(page, 'SOAP / WSDL');
+    expect(jeton?.disabled).toBe(false);
+    jeton?.click();
+    fixture.detectChanges();
+    const detail = page.querySelector('#detail-plateau');
+    expect(detail?.textContent).toContain('PV 2 / 4');
+    expect(detail?.textContent).toContain('A déjà attaqué ce tour');
+    expect(detail?.textContent).toContain('vous pourrez attaquer au prochain');
+    expect(bouton(page, 'Attaquer avec')).toBeUndefined();
+
+    // Un seul détail à la fois : choisir une carte de la main remplace celui du plateau.
+    bouton(page, 'API REST')?.click();
+    fixture.detectChanges();
+    expect(page.querySelector('#detail-plateau')).toBeNull();
+    expect(page.querySelector('#detail-main')).not.toBeNull();
   });
 
   it('dit dans la règle courte qu’il faut choisir l’attaquant puis sa cible, avec un exemple de riposte', async () => {
@@ -267,6 +337,7 @@ describe('PartieEcran', () => {
     const regle = page.querySelector('hip-regle-courte')?.textContent ?? '';
     expect(regle).toContain('rien n’attaque tout seul');
     expect(regle).toContain('sélectionnez l’attaquant');
+    expect(regle).toContain('confirmez');
     expect(regle).toContain('Exemple de riposte');
   });
 

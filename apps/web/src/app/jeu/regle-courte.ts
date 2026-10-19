@@ -33,7 +33,10 @@ import { type Adversaire, BOT } from './journal';
             l’attaque <hip-icone nom="attaque" class="size-3.5 text-red-600 dark:text-red-400" />),
             ou un composant {{ adversaire().de }}, qui riposte (chacun perd des PV
             <hip-icone nom="pv" class="size-3.5 text-blue-600 dark:text-blue-400" />, à 0 il est
-            détruit). Un tour où vous ne faites que poser ne fait aucun dégât.
+            détruit). Puis <strong>confirmez</strong> avec le bouton « Attaquer avec… » sous le
+            détail de la cible. Toucher une carte ou un composant ne fait que l’afficher en grand :
+            regardez tout, attaquez quand vous voulez. Un tour où vous ne faites que poser ne fait
+            aucun dégât.
             <p class="mt-1 text-texte-doux">
               <em>Exemple de riposte :</em> API REST (attaque 3, PV 2) attaque Adaptateur JDBC
               (attaque 2, PV 3). JDBC perd 3 PV : détruit. API REST perd 2 PV en riposte : détruite

@@ -31,11 +31,15 @@ async function jouerUnTour(page: Page) {
     }
     await carte.click();
   }
+  // Attaquer : l'attaquant, puis sa cible (qui s'affiche en grand), puis la confirmation (US-041).
   const attaquant = page.getByRole('button', { name: /peut attaquer$/ }).first();
   if (await attaquant.isVisible()) {
     await attaquant.click();
-    const cible = page.getByRole('button', { name: /: attaquer$/ }).first();
-    if (await cible.isEnabled()) await cible.click();
+    const cible = page.getByRole('button', { name: /: cible possible$/ }).first();
+    if (await cible.isVisible()) {
+      await cible.click();
+      await page.getByRole('button', { name: /^Attaquer avec / }).click();
+    }
   }
   const finir = page.getByRole('button', { name: 'Finir mon tour' });
   if (await finir.isVisible()) await finir.click();
