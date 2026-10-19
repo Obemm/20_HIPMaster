@@ -332,6 +332,17 @@ describe('actions possibles, vue et rejouabilité', () => {
     expect(vueDe(etat, actif).actions.length).toBeGreaterThan(0);
   });
 
+  it('dit au joueur actif pourquoi chacun de ses composants n’attaque pas, et rien à l’adversaire (US-041)', () => {
+    const etat = scenario({ plateau: [22, { numero: 22, poseAuTour: 3 }], plateauAdverse: [17] });
+    const vue = vueDe(etat, 'j1');
+    expect(vue.moi.plateau.map((c) => c.sansAttaque)).toEqual([
+      null,
+      'Un composant ne peut pas attaquer le tour où il est posé.',
+    ]);
+    expect(vue.adversaire.plateau[0]).not.toHaveProperty('sansAttaque');
+    expect(vueDe(etat, 'j2').moi.plateau[0]).not.toHaveProperty('sansAttaque');
+  });
+
   it('renvoie une erreur typée sans lever d’exception', () => {
     const resultat = appliquer(scenario(), { type: 'attaquer', attaquant: 'zz', cible: 'si' });
     expect(resultat).toEqual({

@@ -1,4 +1,4 @@
-import { adversaire, attaqueEffective } from './outils.ts';
+import { adversaire, attaqueEffective, raisonDeNePasAttaquer } from './outils.ts';
 import { actionsPossibles } from './possibles.ts';
 import type {
   Action,
@@ -14,6 +14,11 @@ import type {
 /** Un composant tel qu'on le voit sur le plateau, avec son attaque effective (bonus de Hub compris). */
 export interface ComposantVisible extends ComposantEnJeu {
   attaque: number;
+  /**
+   * Pourquoi ce composant ne peut pas attaquer maintenant (US-041) ; `null` s'il le peut. Seulement pour ses propres
+   * composants, pendant son tour : c'est le serveur qui explique, l'écran ne fait qu'afficher (ADR 0004).
+   */
+  sansAttaque?: string | null;
 }
 
 interface VueCommune {
@@ -83,10 +88,16 @@ function vueCommune(etat: EtatPartie, joueur: IdJoueur): VueCommune {
 export function vueDe(etat: EtatPartie, joueur: IdJoueur): VueJoueur {
   const autre = adversaire(joueur);
   const moi = etat.joueurs[joueur];
+  const commune = vueCommune(etat, joueur);
+  const plateau =
+    etat.actif === joueur && !etat.issue
+      ? commune.plateau.map((c) => ({ ...c, sansAttaque: raisonDeNePasAttaquer(etat, joueur, c) }))
+      : commune.plateau;
   return {
     joueur,
     moi: {
-      ...vueCommune(etat, joueur),
+      ...commune,
+      plateau,
       main: structuredClone(moi.main),
       aDecommissionne: moi.aDecommissionne,
       marqueurs: {
