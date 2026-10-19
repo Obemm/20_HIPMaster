@@ -92,11 +92,11 @@ le 2026-10-19).
 Retour du porteur du projet le 2026-10-19 : une partie perdue sans un seul dégât infligé, faute de savoir qu'il faut
 choisir l'attaquant et sa cible.
 
-| Story                                                                                  | Epic    | Priorité | Taille | Statut    |
-| -------------------------------------------------------------------------------------- | ------- | -------- | ------ | --------- |
-| [US-039 — Expliquer les attaques et les combats](stories/US-039-expliquer-attaques.md) | EPIC-04 | Must     | S      | Faite     |
-| [US-040 — Détail des cartes de la main](stories/US-040-detail-cartes-main.md)          | EPIC-04 | Should   | M      | Faite     |
-| [US-041 — Détail des cartes du plateau](stories/US-041-detail-cartes-plateau.md)       | EPIC-04 | Should   | M      | À affiner |
+| Story                                                                                  | Epic    | Priorité | Taille | Statut |
+| -------------------------------------------------------------------------------------- | ------- | -------- | ------ | ------ |
+| [US-039 — Expliquer les attaques et les combats](stories/US-039-expliquer-attaques.md) | EPIC-04 | Must     | S      | Faite  |
+| [US-040 — Détail des cartes de la main](stories/US-040-detail-cartes-main.md)          | EPIC-04 | Should   | M      | Faite  |
+| [US-041 — Détail des cartes du plateau](stories/US-041-detail-cartes-plateau.md)       | EPIC-04 | Should   | M      | Prête  |
 
 ## Plus tard — cartes de la communauté IT
 
