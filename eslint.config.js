@@ -15,6 +15,8 @@ export default defineConfig([
     'apps/api/drizzle/',
     'playwright-report/',
     'test-results/',
+    // Worktrees Git créés par l'app Claude Desktop : une copie du dépôt, pas notre code (US-044).
+    '.claude/worktrees/',
   ]),
   {
     files: ['**/*.{js,ts}'],

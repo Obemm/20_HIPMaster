@@ -112,6 +112,9 @@ Toutes les évolutions notables du projet sont consignées ici
 
 ### Corrigé
 
+- Le quality gate ignore les worktrees Git que l'app Claude Desktop crée sous `.claude/worktrees/` : Prettier et
+  ESLint ne parcourent plus cette copie du dépôt (`prettier --check .` échouait sur ses migrations Drizzle, ESLint
+  lintait 286 fichiers au lieu de 149), et `.gitignore` l'exclut pour tout clone (US-044).
 - Tests de l'API : une seule base PGlite en mémoire par fichier (tables vidées avant chaque test) au lieu d'une
   par test, car chaque ouverture charge ≈ 1,6 s de WASM et occupe ≈ 550 Mo ; fichiers de l'API exécutés l'un
   après l'autre ; délais relevés et justifiés pour ce chargement et pour les deux tests qui simulent une dizaine

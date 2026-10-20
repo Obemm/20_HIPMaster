@@ -39,3 +39,6 @@ packages/illustrations/sources/
 
 # Base PGlite locale (ADR 0018)
 .donnees/
+
+# Worktrees Git créés par l'app Claude Desktop dans le dossier du projet (US-044)
+.claude/worktrees/
