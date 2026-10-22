@@ -14,7 +14,7 @@ const GARDE = {
   description: 'Doit être attaqué avant vos autres composants et votre SI.',
 };
 
-const NIVEAUX = [{ id: 'agent-autonome', nom: 'Agent autonome', description: 'Difficile.' }];
+const NIVEAUX = [{ id: 'agent-autonome', nom: 'Agent autonome', description: 'Expert.' }];
 
 const CATALOGUE: Carte[] = [
   {
@@ -544,8 +544,8 @@ describe('ChoixDeck', () => {
       .expectOne('/api/v1/decks')
       .flush([{ id: 'moderne', nom: 'Moderne', description: 'API et EDA.', cartes: [] }]);
     http.expectOne('/api/v1/niveaux').flush([
-      { id: 'batch-de-nuit', nom: 'Batch de nuit', description: 'Facile.' },
-      { id: 'agent-autonome', nom: 'Agent autonome', description: 'Difficile.' },
+      { id: 'stagiaire', nom: 'Stagiaire', description: 'Facile.' },
+      { id: 'agent-autonome', nom: 'Agent autonome', description: 'Expert.' },
     ]);
     await fixture.whenStable();
     fixture.detectChanges();

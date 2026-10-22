@@ -1,26 +1,48 @@
 /**
- * Simulation « bot contre bot » des decks prêtés (US-011), pour l'équilibrage.
+ * Simulations « bot contre bot » pour l'équilibrage (US-011, US-021, US-064).
  * Usage : npm run simuler -- [parties par duel, 200 par défaut] [graine, 1 par défaut]
- * Compare aussi les niveaux du bot (US-021).
- * Affiche un tableau Markdown, à reporter dans docs/produit/cartes-set-1.md.
+ * 1. Decks prêtés : Batch de nuit des deux côtés, en alternant les places (US-011).
+ * 2. Niveaux du bot deux à deux, même deck des deux côtés pour isoler le jeu (US-021).
+ * 3. Avantage du premier joueur : chaque niveau, et le profil débutant, contre lui-même (US-064).
+ * 4. Chaque niveau contre un joueur débutant et contre un joueur du niveau de Batch de nuit (US-064).
+ * Les mesures 3 et 4 croisent les decks prêtés : `parties` parties pour chacune des 9 paires de decks.
+ * Affiche des tableaux Markdown, à reporter dans docs/produit/cartes-set-1.md. Compter une dizaine de minutes à 200.
  */
-import { DECKS_PRETES, NIVEAUX_BOT, simuler } from '../packages/domain/src/index.ts';
+import {
+  choisirActionBatchDeNuit,
+  choisirActionDebutant,
+  DECKS_PRETES,
+  NIVEAUX_BOT,
+  type ResultatSimulation,
+  simuler,
+  simulerCroise,
+  type Strategie,
+} from '../packages/domain/src/index.ts';
 
 const parties = Number(process.argv[2] ?? 200);
 const graine = Number(process.argv[3] ?? 1);
-const pourcent = (n: number) => `${Math.round((n / parties) * 100)} %`;
+const pourcent = (n: number, total = parties) =>
+  total ? `${Math.round((n / total) * 100)} %` : '—';
+const ligne = (cellules: (string | number)[]) => console.log(`| ${cellules.join(' | ')} |`);
+function entete(titres: string[]): void {
+  ligne(titres);
+  ligne(titres.map((titre) => '-'.repeat(titre.length)));
+}
 
 console.log(`Simulation : ${parties} parties par duel, graine ${graine}, bot Batch de nuit.\n`);
-console.log(
-  '| Deck A | Deck B | Victoires A | Victoires B | Nulles | Finies par SLA | Tours moyens |',
-);
-console.log(
-  '| ------ | ------ | ----------- | ----------- | ------ | -------------- | ------------ |',
-);
+entete([
+  'Deck A',
+  'Deck B',
+  'Victoires A',
+  'Victoires B',
+  'Nulles',
+  'Finies par SLA',
+  'Tours moyens',
+]);
 for (const [i, a] of DECKS_PRETES.entries()) {
   for (const b of DECKS_PRETES.slice(i)) {
     const r = simuler(a.cartes, b.cartes, parties, graine);
-    const cellules = [
+    ligne([
       a.nom,
       b.nom,
       pourcent(r.victoiresA),
@@ -28,17 +50,13 @@ for (const [i, a] of DECKS_PRETES.entries()) {
       pourcent(r.nulles),
       pourcent(r.finiesParSla),
       r.toursMoyens.toFixed(1),
-    ];
-    console.log(`| ${cellules.join(' | ')} |`);
+    ]);
   }
 }
 
-// Niveaux du bot (US-021) : chaque niveau contre le précédent, deck identique des deux côtés pour isoler le jeu.
-console.log(`
-Niveaux du bot : ${parties} parties par duel et par deck prêté.
-`);
-console.log('| Niveau A | Niveau B | Victoires A | Victoires B | Nulles |');
-console.log('| -------- | -------- | ----------- | ----------- | ------ |');
+// Niveaux du bot (US-021) : chaque niveau contre les suivants, deck identique des deux côtés pour isoler le jeu.
+console.log(`\nNiveaux du bot : ${parties} parties par duel et par deck prêté.\n`);
+entete(['Niveau A', 'Niveau B', 'Victoires A', 'Victoires B', 'Nulles']);
 for (const [i, a] of NIVEAUX_BOT.entries()) {
   for (const b of NIVEAUX_BOT.slice(i + 1)) {
     let victoiresA = 0;
@@ -51,9 +69,63 @@ for (const [i, a] of NIVEAUX_BOT.entries()) {
       nulles += r.nulles;
     }
     const total = parties * DECKS_PRETES.length;
-    const pct = (n: number) => `${Math.round((n / total) * 100)} %`;
-    console.log(
-      `| ${a.nom} | ${b.nom} | ${pct(victoiresA)} | ${pct(victoiresB)} | ${pct(nulles)} |`,
-    );
+    ligne([
+      a.nom,
+      b.nom,
+      pourcent(victoiresA, total),
+      pourcent(victoiresB, total),
+      pourcent(nulles, total),
+    ]);
   }
+}
+
+const decks = DECKS_PRETES.map((deck) => deck.cartes);
+const croiser = (a: Strategie, b: Strategie = a) => simulerCroise(decks, parties, graine, a, b);
+const parMesure = parties * decks.length ** 2;
+
+// Avantage du premier joueur (US-064) : en miroir, le premier et le second devraient gagner chacun près de 50 %.
+console.log(
+  `\nPremier et second joueur, chacun contre lui-même : ${parMesure} parties par ligne, decks prêtés croisés.\n`,
+);
+entete(['Joueurs', 'Victoires du premier', 'Victoires du second', 'Nulles']);
+const profils: [string, Strategie][] = [
+  ['Profil débutant', choisirActionDebutant],
+  ...NIVEAUX_BOT.map((n): [string, Strategie] => [n.nom, n.strategie]),
+];
+for (const [nom, strategie] of profils) {
+  const r = croiser(strategie);
+  ligne([
+    nom,
+    pourcent(r.victoiresPremier, r.parties),
+    pourcent(r.victoiresSecond, r.parties),
+    pourcent(r.nulles, r.parties),
+  ]);
+}
+
+/** Victoires de A : en tout, quand il commence, quand il joue en second. */
+const victoiresDeA = (r: ResultatSimulation) => [
+  pourcent(r.victoiresA, r.parties),
+  pourcent(r.victoiresAPremier, r.partiesAPremier),
+  pourcent(r.victoiresA - r.victoiresAPremier, r.parties - r.partiesAPremier),
+];
+
+// Chaque niveau contre deux joueurs de référence (US-064) : un débutant, et un joueur du niveau de Batch de nuit.
+console.log(
+  `\nVictoires d'un joueur contre chaque niveau : ${parMesure} parties par mesure, decks prêtés croisés.\n`,
+);
+entete([
+  'Niveau du bot',
+  'Débutant',
+  'en commençant',
+  'en second',
+  'Joueur « Batch de nuit »',
+  'en commençant',
+  'en second',
+]);
+for (const niveau of NIVEAUX_BOT) {
+  ligne([
+    niveau.nom,
+    ...victoiresDeA(croiser(choisirActionDebutant, niveau.strategie)),
+    ...victoiresDeA(croiser(choisirActionBatchDeNuit, niveau.strategie)),
+  ]);
 }

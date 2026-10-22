@@ -17,6 +17,9 @@ Après 20 tours (10 pour chaque joueur), le joueur qui a le plus de SLA gagne (�
 
 - Au début de chacun de ses tours, le joueur reçoit du **Débit** : 1 au premier tour, puis +1 par tour (maximum 10).
   Le Débit non dépensé est perdu.
+- Le joueur qui joue **en second** reçoit **1 Débit de plus à son premier tour seulement** : 2 au lieu de 1, puis 2,
+  3, 4… comme l'autre joueur. Commencer ne décide ainsi pas de la partie
+  ([ADR 0026](../decisions/0026-debit-du-second-joueur.md)).
 - Une fois par tour, on peut **décommissionner** une carte de sa main : elle part à la défausse et rapporte du Débit
   pour ce tour (+1 commune ou rare, +2 épique, +3 légendaire).
 
@@ -164,5 +167,6 @@ ses 7 PV pleins et peut attaquer tout de suite, puisque webMethods IS le pouvait
 
 ## Le bot
 
-Ses niveaux suivent les époques : **Batch de nuit** (fichiers), **Architecte ESB**, **Architecte EDA**, puis le boss
-**Agent autonome**. Mode « bot contre bot » à regarder, qui sert aussi à équilibrer les cartes.
+Quatre niveaux, du plus simple au plus fort : **Stagiaire** (facile : il joue comme un débutant), **Batch de nuit**
+(moyen), **Architecte ESB** (difficile) et le boss **Agent autonome** (expert). Un niveau **Architecte EDA** reste
+possible. Mode « bot contre bot » à regarder, qui sert aussi à équilibrer les cartes ([cartes-set-1.md](cartes-set-1.md)).
