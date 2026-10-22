@@ -6,6 +6,10 @@ import type { Carte } from '../cartes/carte';
 import { VignetteCarte } from '../cartes/vignette-carte';
 import { CollectionService } from '../collection/collection.service';
 import { CompteService } from '../compte/compte.service';
+import { EtatSession } from '../compte/etat-session';
+import { PresenceService } from '../presence';
+import { ErreurChargement } from '../reseau/erreur-chargement';
+import { expliquer } from '../reseau/reseau';
 
 // Contrat : apps/api/openapi/boosters.yaml.
 export interface Boosters {
@@ -20,24 +24,33 @@ interface Ouverture {
   boosters: Boosters;
 }
 
-/** Page « Mes boosters » (US-023) : le stock, la recharge, et l'ouverture qui révèle 5 cartes. */
+/**
+ * Page « Mes boosters » (US-023) : le stock, la recharge, et l'ouverture qui révèle 5 cartes. Sans le catalogue, rien
+ * ne s'ouvre : les cartes tirées ne pourraient pas être montrées (US-055).
+ */
 @Component({
   selector: 'hip-boosters',
-  imports: [RouterLink, VignetteCarte],
+  imports: [RouterLink, VignetteCarte, ErreurChargement, EtatSession],
   templateUrl: './boosters.html',
 })
 export class BoostersEcran {
   protected readonly compte = inject(CompteService);
   private readonly http = inject(HttpClient);
   private readonly collection = inject(CollectionService);
+  private readonly presence = inject(PresenceService);
 
-  private readonly catalogue = httpResource<Carte[]>(() => '/api/v1/cartes');
+  protected readonly catalogue = httpResource<Carte[]>(() => '/api/v1/cartes');
   private readonly parNumero = computed(
     () =>
       new Map((this.catalogue.hasValue() ? this.catalogue.value() : []).map((c) => [c.numero, c])),
   );
 
   protected readonly boosters = signal<Boosters | null>(null);
+  /** Lecture du stock en cours, et l'échec de la dernière (US-055). */
+  protected readonly lectureStock = signal(false);
+  protected readonly erreurStock = signal<unknown>(null);
+  /** Une recharge est due : le stock sera relu dès que le joueur sera là. */
+  private readonly rechargeDue = signal(false);
   /** Les cartes du dernier booster ouvert, avec leur fiche dès que le catalogue est chargé. */
   private readonly tirage = signal<Ouverture['cartes']>([]);
   protected readonly revelees = computed(() =>
@@ -63,6 +76,13 @@ export class BoostersEcran {
     effect(() => {
       if (this.compte.joueur()) void this.charger();
     });
+    // Le stock se relit à la recharge, sauf pour un onglet caché ou délaissé : il réveillerait la base gratuite
+    // (ADR 0021, US-055). Il se relira au retour du joueur.
+    effect(() => {
+      if (!this.rechargeDue() || !this.presence.present()) return;
+      this.rechargeDue.set(false);
+      void this.charger();
+    });
     const minuterie = setInterval(() => this.decompter(), 1000);
     inject(DestroyRef).onDestroy(() => clearInterval(minuterie));
   }
@@ -82,19 +102,25 @@ export class BoostersEcran {
       this.erreur.set(
         vide
           ? 'Plus de booster en stock : attendez la prochaine recharge.'
-          : 'L’API ne répond pas : réessayez dans un instant.',
+          : `Le booster n’a pas pu être ouvert. ${expliquer(erreur)}`,
       );
-      if (vide) await this.charger();
+      // Sans réponse, l'ouverture a pu aboutir quand même : le stock et la collection sont relus.
+      if (!vide) void this.collection.charger();
+      await this.charger();
     } finally {
       this.occupe.set(false);
     }
   }
 
-  private async charger(): Promise<void> {
+  protected async charger(): Promise<void> {
+    this.lectureStock.set(true);
     try {
       this.afficher(await firstValueFrom(this.http.get<Boosters>('/api/v1/moi/boosters')));
-    } catch {
-      this.erreur.set('Le stock de boosters n’a pas pu être lu.');
+      this.erreurStock.set(null);
+    } catch (erreur) {
+      this.erreurStock.set(erreur);
+    } finally {
+      this.lectureStock.set(false);
     }
   }
 
@@ -108,7 +134,7 @@ export class BoostersEcran {
     if (secondes === null) return;
     if (secondes <= 1) {
       this.restant.set(null);
-      void this.charger();
+      this.rechargeDue.set(true);
     } else {
       this.restant.set(secondes - 1);
     }

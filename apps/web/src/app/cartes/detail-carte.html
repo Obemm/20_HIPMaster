@@ -123,9 +123,12 @@
     } @else if (carte.error()) {
       <div class="flex flex-col gap-2 pr-10">
         <h2 id="titre-detail" class="text-2xl font-bold">Carte</h2>
-        <p role="alert" class="text-alerte">
-          La carte n’a pas pu être chargée : l’API ne répond pas.
-        </p>
+        <hip-erreur-chargement
+          quoi="La carte n’a pas pu être chargée."
+          [erreur]="carte.error()"
+          [enCours]="carte.isLoading()"
+          (reessayer)="carte.reload()"
+        />
       </div>
     } @else {
       <h2 id="titre-detail" class="sr-only">Chargement de la carte</h2>

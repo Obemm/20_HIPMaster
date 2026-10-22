@@ -1,13 +1,15 @@
-import Fastify, { type FastifyError } from 'fastify';
+import Fastify, { type FastifyBaseLogger, type FastifyError } from 'fastify';
 import {
   serializerCompiler,
   validatorCompiler,
   type ZodTypeProvider,
 } from 'fastify-type-provider-zod';
+import type { Logger } from 'pino';
 import { DepotParties, type OptionsDepot } from './parties/depot.ts';
 import type { OptionsBoosters } from './comptes/boosters.ts';
 import type { Base } from './db/index.ts';
 import type { OptionsDuels } from './duels/duels.ts';
+import { champsTrace, messageErreur } from './journaux.ts';
 import { routesBoosters } from './routes/boosters.ts';
 import { routesCollection } from './routes/collection.ts';
 import { routesDuels } from './routes/duels.ts';
@@ -23,15 +25,27 @@ const probleme = (status: number, title: string) => ({ type: 'about:blank', titl
 /** Construit l'application sans l'écouter : les tests l'interrogent avec `app.inject()`. */
 export function construireApp(
   options: {
-    journaux?: boolean;
+    /** Journal de l'API (`creerJournal`) ; aucun journal par défaut (tests). */
+    journal?: Logger;
+    /** Projet Google Cloud : chaque journal d'une requête porte alors sa trace (US-046). */
+    projet?: string | null;
     parties?: OptionsDepot;
     base?: Base;
     boosters?: OptionsBoosters;
     duels?: OptionsDuels;
   } = {},
 ) {
+  const { journal, projet = null } = options;
   const app = Fastify({
-    logger: options.journaux ?? false,
+    ...(journal && {
+      loggerInstance: journal as FastifyBaseLogger,
+      // Les journaux d'une même requête portent la trace posée par Cloud Run, pour les regrouper.
+      childLoggerFactory: (parent, liaisons, reglages, requete) =>
+        parent.child(
+          { ...liaisons, ...champsTrace(requete.headers['x-cloud-trace-context'], projet) },
+          reglages,
+        ),
+    }),
     // Limites posées dès le départ (ADR 0007, inspiré d'ADR-020 Elis).
     bodyLimit: 1024 * 1024,
     requestTimeout: 10_000,
@@ -41,8 +55,12 @@ export function construireApp(
   app.setSerializerCompiler(serializerCompiler);
 
   // Erreurs au format Problem Details (RFC 9457).
-  app.setErrorHandler<FastifyError>((erreur, _requete, reponse) => {
+  app.setErrorHandler<FastifyError>((erreur, requete, reponse) => {
     const statut = erreur.statusCode ?? 500;
+    // Ce gestionnaire remplace celui de Fastify, le seul qui journalisait (US-046) : une erreur 500 laisse ici son
+    // message et sa pile ; une requête refusée, son seul code (le message d'une erreur de syntaxe JSON cite le corps).
+    if (statut >= 500) requete.log.error({ err: erreur }, messageErreur(erreur));
+    else requete.log.info({ code: erreur.code, statut }, 'Requête refusée');
     const titre = statut >= 500 ? 'Erreur interne' : erreur.message;
     return reponse.status(statut).type(PROBLEME).send(probleme(statut, titre));
   });

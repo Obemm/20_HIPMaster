@@ -99,6 +99,26 @@ Toutes les évolutions notables du projet sont consignées ici
 - Illustrations provisoires des 71 cartes, dessinées par le code (`npm run illustrations:provisoires`) : un emblème
   par famille, un motif par type, une intensité par rareté, sans texte ni logo, en attendant de vraies illustrations
   (US-018, ADR 0016).
+- API prête pour Cloud Run : image Docker multi-étapes construite depuis la racine (API, domaine et migrations
+  seulement, ni PGlite ni `.env`, utilisateur non root), écoute `0.0.0.0:$PORT`, arrêt propre sur SIGTERM ; journaux
+  JSON au format Cloud Logging (`severity`, `message`, trace de la requête, `LOG_LEVEL`) qui gardent la trace des
+  erreurs 500, sans jeton ni corps de requête ; en production, PostgreSQL obligatoire, pool court qui laisse dormir la
+  base Neon, certificat vérifié, et migrations par une commande dédiée sous verrou (`node apps/api/src/migrer.ts`)
+  (US-046, ADR 0023).
+- Infrastructure de la mise en ligne, créée et vérifiée par un script idempotent qui dit ce qui existait déjà
+  (`scripts/gcp/infrastructure.sh`, mode `--simulation`) :
+  - un projet Google Cloud `hipmaster` relié à la facturation ;
+  - un dépôt d'images qui garde les 2 dernières versions ;
+  - un bucket de sauvegardes vidé après 30 jours ;
+  - les comptes de service de l'API et du déploiement, sans clé ;
+  - Workload Identity Federation, limitée au dépôt et à `main` ;
+  - un budget qui alerte dès 1 € ;
+  - Firebase et son site Hosting ;
+  - une base Neon PostgreSQL 18 plafonnée à 0,25 CU, dont l'URL est rangée dans Secret Manager.
+
+  Le script n'utilise jamais la configuration `gcloud` du poste. Un guide d'exploitation l'accompagne (US-049,
+  ADR 0024).
+
 - Un niveau de bot facile, « Stagiaire », présélectionné : il ne pose qu'une carte par tour, la plus chère, et
   attaque le SI dès qu'il peut, sans sort ni calcul ; un joueur débutant le bat plus d'une fois sur deux (54 à 56 %
   en simulation, contre 14 % face à Batch de nuit). `npm run simuler` mesure aussi un profil débutant, la part de
@@ -107,6 +127,9 @@ Toutes les évolutions notables du projet sont consignées ici
 
 ### Modifié
 
+- `npm run db:migrate` passe par la commande de migration de l'API (verrou, bilan des migrations appliquées) au lieu de
+  `drizzle-kit migrate` ; PGlite devient une dépendance de développement ; Dependabot surveille l'image de base de
+  l'API (US-046).
 - Le joueur qui joue en second reçoit 1 Débit de plus à son premier tour (2 au lieu de 1), contre le bot comme en
   duel : chacun contre lui-même, le joueur qui commençait gagnait de 62 à 73 % des parties ; le premier et le second
   en gagnent désormais chacun entre 46 et 54 %. Le journal de partie l'annonce, les règles et l'aide « Comment
@@ -114,7 +137,6 @@ Toutes les évolutions notables du projet sont consignées ici
 - Niveaux du bot : Batch de nuit devient Moyen, Architecte ESB Difficile et Agent autonome Expert, avec des
   descriptions à jour ; Architecte ESB étudie 4 actions candidates au lieu de 3, sans quoi le joueur qui commence
   gardait 56 % des parties en miroir (US-064).
-
 - Dependabot ne propose plus TypeScript 6.1 ou plus (incompatible avec Angular 22) ni de version majeure de
   `@types/node` (qui suit Node 24) (US-007).
 
@@ -125,6 +147,16 @@ Toutes les évolutions notables du projet sont consignées ici
 
 ### Corrigé
 
+- Le front tient au démarrage à froid et aux sessions expirées : une panne du serveur ne fait plus perdre son
+  compte (seul un 401 oublie la session, avec « Session expirée » puis retour à sa page après reconnexion, et aucun
+  écran ne propose de créer un compte tant qu'un jeton est gardé) ; une lecture en panne passagère est retentée deux
+  fois (après 1 s puis 3 s) et aucun « Chargement… » ne dure sans fin ; chaque écran en erreur dit pourquoi aux
+  joueurs (serveur injoignable, attente demandée par un 429) et propose « Réessayer », à la place du message de
+  développeur de l'accueil ; « Ouvrir un booster » attend le catalogue ; les identifiants de partie et de duel tirés
+  de l'URL sont vérifiés (UUID) et encodés ; les interrogations périodiques s'arrêtent quand l'onglet est caché ou
+  sans geste depuis 10 minutes ; `index.html` affiche un texte de chargement et un `<noscript>`, et déclare
+  `color-scheme` ; une déconnexion dans un autre onglet est suivie ; navigateurs pris en charge écrits dans le README
+  (US-055).
 - `npm run dev` ne fait plus redémarrer l'API en boucle sur un poste chargé : la surveillance se limite à
   `apps/api/src`, `apps/api/drizzle` et `packages/domain/src` au lieu de tout le graphe des modules,
   `node_modules` compris (3 redémarrages en 45 s sans modification avant, aucun après) (US-045).

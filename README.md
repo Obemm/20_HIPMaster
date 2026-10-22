@@ -13,6 +13,12 @@ PostgreSQL + [Drizzle ORM](https://orm.drizzle.team), TypeScript strict, monorep
 - Rien d'autre : en développement, la base est PGlite (PostgreSQL embarqué, dans `.donnees/`, ADR 0018) ;
   Docker Desktop n'est utile que pour tester contre un vrai PostgreSQL (`npm run db:up`, puis `DATABASE_URL`)
 
+## Navigateurs pris en charge
+
+Ceux qu'exige Tailwind CSS 4 : **Safari 16.4** (iOS et iPadOS 16.4 compris), **Chrome et Edge 111**, **Firefox 128**,
+ou plus récents. Sur un navigateur plus ancien, les styles du jeu ne s'appliquent pas correctement. Le jeu a besoin de
+JavaScript ; sans lui, la page le dit (US-055).
+
 ## Démarrage
 
 ```bash
@@ -40,6 +46,22 @@ npm run dev          # migrations appliquées au démarrage ; API sur localhost:
 | `npm run db:studio`                 | Explore la base PostgreSQL (`DATABASE_URL`) dans le navigateur        |
 | `npm run illustrations`             | Décline les illustrations des cartes (voir `packages/illustrations`)  |
 | `npm run illustrations:provisoires` | Dessine les illustrations provisoires des 71 cartes, puis les décline |
+
+## Image Docker de l'API
+
+L'API part en production sous forme d'image Docker, sur Cloud Run (ADR 0021). L'image se construit depuis la racine du
+dépôt (les workspaces npm s'y trouvent) et ne contient que l'API, `packages/domain`, les migrations et les dépendances
+de production :
+
+```bash
+docker build -t hipmaster-api .
+npm run db:up        # PostgreSQL local, port 5433
+docker run --rm -e DATABASE_URL=postgres://hipmaster:hipmaster@host.docker.internal:5433/hipmaster hipmaster-api node apps/api/src/migrer.ts
+docker run --rm -p 8080:8080 -e DATABASE_URL=postgres://hipmaster:hipmaster@host.docker.internal:5433/hipmaster hipmaster-api
+```
+
+En production (`NODE_ENV=production`, posé par l'image), l'API ne migre plus au démarrage : la commande
+`node apps/api/src/migrer.ts` s'en charge avant chaque déploiement (ADR 0023). Variables : voir `.env.example`.
 
 ## Organisation du code
 
