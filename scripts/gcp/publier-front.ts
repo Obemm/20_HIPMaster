@@ -129,15 +129,15 @@ async function publier(): Promise<void> {
   }
 
   const jeton = await lireEntree();
-  if (!jeton)
+  if (!jeton) {
     throw new Error(
       'jeton d’accès attendu sur l’entrée standard (gcloud auth print-access-token).',
     );
+  }
   const appeler = client(jeton, projet);
   const commit = options.commit;
   const version = await appeler<Version>('POST', `${API}/sites/${site}/versions`, {
     config: configuration,
-    ...(commit ? { labels: { commit } } : {}),
   });
   console.log(`Version créée : ${version.name}`);
   let publiee = false;
