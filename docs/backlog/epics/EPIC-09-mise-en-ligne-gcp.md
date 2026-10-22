@@ -1,6 +1,6 @@
 # EPIC-09 — Mise en ligne sur Google Cloud
 
-- **Statut** : À affiner
+- **Statut** : En cours
 - **Priorité** : Must
 
 ## Objectif
@@ -25,7 +25,7 @@ gratuite, que Claude installe, déploie et maintient en ligne de commande
 - [ ] US-046 — Une API prête pour Cloud Run
 - [ ] US-047 — Les protections indispensables avant l'ouverture
 - [ ] US-048 — Inscription sur invitation
-- [ ] US-049 — Infrastructure gratuite et reproductible
+- [x] US-049 — Infrastructure gratuite et reproductible
 - [ ] US-050 — Déploiement continu vers Cloud Run et Firebase Hosting
 - [ ] US-051 — Supervision, sauvegardes vérifiées et scan de sécurité
 - [ ] US-052 — Parties contre le bot gardées en base

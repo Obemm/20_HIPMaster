@@ -99,6 +99,19 @@ Toutes les évolutions notables du projet sont consignées ici
 - Illustrations provisoires des 71 cartes, dessinées par le code (`npm run illustrations:provisoires`) : un emblème
   par famille, un motif par type, une intensité par rareté, sans texte ni logo, en attendant de vraies illustrations
   (US-018, ADR 0016).
+- Infrastructure de la mise en ligne, créée et vérifiée par un script idempotent qui dit ce qui existait déjà
+  (`scripts/gcp/infrastructure.sh`, mode `--simulation`) :
+  - un projet Google Cloud `hipmaster` relié à la facturation ;
+  - un dépôt d'images qui garde les 2 dernières versions ;
+  - un bucket de sauvegardes vidé après 30 jours ;
+  - les comptes de service de l'API et du déploiement, sans clé ;
+  - Workload Identity Federation, limitée au dépôt et à `main` ;
+  - un budget qui alerte dès 1 € ;
+  - Firebase et son site Hosting ;
+  - une base Neon PostgreSQL 18 plafonnée à 0,25 CU, dont l'URL est rangée dans Secret Manager.
+
+  Le script n'utilise jamais la configuration `gcloud` du poste. Un guide d'exploitation l'accompagne (US-049,
+  ADR 0024).
 
 ### Modifié
 
