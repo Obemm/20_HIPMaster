@@ -32,5 +32,6 @@ référence Elis.
 | [0021](0021-hebergement-gcp.md)                        | Hébergement quasi gratuit : Firebase Hosting, Cloud Run, Neon         | ADR-030 écarté, 006, 012, 004  | Acceptée                      |
 | [0022](0022-depot-public.md)                           | Dépôt GitHub public                                                   | ADR-011, 039, 033              | Acceptée                      |
 | [0023](0023-postgresql-production.md)                  | PostgreSQL en production : migrations dédiées, connexions courtes     | aucune                         | Acceptée                      |
+| [0024](0024-infrastructure-script-gcloud.md)           | Infrastructure créée par un script `gcloud` idempotent, pas Terraform | ADR-023 adapté, ADR-033 retenu | Acceptée                      |
 
 Modèle : [template.md](template.md).
