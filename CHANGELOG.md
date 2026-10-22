@@ -93,6 +93,10 @@ Toutes les évolutions notables du projet sont consignées ici
   dans le parcours qui teste le défi par lien, les navigateurs demandent des animations réduites, trois travailleurs
   Playwright en local pour ménager la mémoire, le seul parcours qui enchaîne plusieurs tours est déclaré lent, et
   l'adversaire au hasard attend le nom de l'adversaire avant de lire le titre (US-042).
+- La CI fait aussi passer les tests de l'API sur PostgreSQL 18, la version de la base de production, chaque fichier
+  dans sa propre base ; de vrais tests concurrents (ouvertures de booster, récompenses, appariement, actions de duel)
+  y mettent les verrous à l'épreuve, ce que PGlite ne peut pas faire, et les migrations y sont vérifiées sur une base
+  vide puis relancées sans effet (US-056).
 - Chaîne des illustrations : un original déposé et décrit devient, en une commande (`npm run illustrations`), quatre
   images AVIF et WebP de moins de 100 Ko et un manifeste ; la carte affiche son illustration, ou son pictogramme de
   famille à défaut. EPIC-05 découpé en US-015 à US-017 (US-015, ADR 0015).
