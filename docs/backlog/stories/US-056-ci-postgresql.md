@@ -1,7 +1,7 @@
 # US-056 — La CI teste l'API sur un vrai PostgreSQL
 
 - **Epic** : EPIC-09
-- **Statut** : En cours
+- **Statut** : Faite
 - **Priorité** : Must
 - **Taille** : S
 - **Branche** : `us-056-ci-postgresql`
@@ -20,15 +20,15 @@ PostgreSQL chez Neon (ADR 0021).
 
 ## Critères d'acceptation
 
-- [ ] **Étant donné** une pull request, **quand** la CI s'exécute, **alors** un job lance la suite de l'API avec un
+- [x] **Étant donné** une pull request, **quand** la CI s'exécute, **alors** un job lance la suite de l'API avec un
       service `postgres` de la même version majeure que la base de production et `DATABASE_URL` renseignée, en plus de la suite
       PGlite actuelle.
-- [ ] **Étant donné** ce job, **alors** les migrations sont appliquées sur une base vide, puis une seconde fois sans
+- [x] **Étant donné** ce job, **alors** les migrations sont appliquées sur une base vide, puis une seconde fois sans
       effet.
-- [ ] **Étant donné** les opérations concurrentes (ouverture de booster, récompense de victoire, appariement des
+- [x] **Étant donné** les opérations concurrentes (ouverture de booster, récompense de victoire, appariement des
       duels, action de duel), **alors** des tests les lancent vraiment en parallèle sur PostgreSQL et vérifient qu'aucun
       gain n'est doublé et qu'aucun duel n'est rejoint deux fois.
-- [ ] Le temps de la CI reste raisonnable (le job tourne en parallèle des autres).
+- [x] Le temps de la CI reste raisonnable (le job tourne en parallèle des autres).
 
 ## Notes
 
@@ -67,7 +67,11 @@ le remarquent :
 | `FOR UPDATE` de l'action de duel                  | les deux tests, 3 sur 3  | passe           |
 | aucun                                             | 6 tests passent, 3 sur 3 | 6 tests passent |
 
+En CI (PR #43, 2026-10-22) : le job « Tests de l'API sur PostgreSQL 18 » a duré 46 s, image et `npm ci` compris,
+en parallèle des deux autres jobs, pour 9 fichiers et 73 tests, dont les migrations et les tests concurrents.
+
 ## Journal
 
 - 2026-10-22 — création, issue de la revue de l'API avant mise en ligne.
 - 2026-10-22 — prise en charge (lot 1, session API) ; PostgreSQL 18 retenu, comme la base Neon de production.
+- 2026-10-22 — livrée : job de CI « Tests de l'API sur PostgreSQL 18 » (version de la base Neon de production), une base par fichier de tests, vrais tests concurrents (boosters, récompenses, appariement, actions de duel) qui échouent sur PostgreSQL dès qu'un verrou manque, migrations vérifiées sur une base vide puis relancées sans effet
