@@ -34,6 +34,14 @@ export interface OptionsDepot {
   tirerGraine?: () => number;
 }
 
+/** Le joueur connecté qui a lancé une partie, et la session d'où il l'a lancée. */
+export interface Proprietaire {
+  /** Il recevra la récompense d'une victoire (US-025). */
+  joueurId: string;
+  /** Empreinte du jeton de la session : seule cette session lit et joue la partie (US-047, ADR 0025). */
+  session: string;
+}
+
 interface Partie {
   id: string;
   etat: EtatPartie;
@@ -41,8 +49,8 @@ interface Partie {
   deckBot: DeckPrete;
   niveau: NiveauBot;
   derniereActivite: number;
-  /** Le joueur connecté qui a lancé la partie, s'il y en a un : il recevra la récompense (US-025). */
-  joueurId?: string;
+  /** Absent pour une partie anonyme, qui appartient à qui connaît son identifiant (ADR 0014). */
+  proprietaire?: Proprietaire;
 }
 
 /** Réponse de l'API : la vue du joueur, sans son journal, et les événements à afficher. */
@@ -75,7 +83,10 @@ function faireJouerLeBot(etat: EtatPartie, strategie: NiveauBot['strategie']): E
   return courant;
 }
 
-/** Dépôt en mémoire des parties en cours (ADR 0014) : expiration et plafond. */
+/**
+ * Dépôt en mémoire des parties en cours (ADR 0014) : expiration et plafond. Une partie lancée par un joueur connecté
+ * n'est visible que de sa session (ADR 0025) : pour toute autre requête, elle est inconnue.
+ */
 export class DepotParties {
   private readonly parties = new Map<string, Partie>();
   private readonly dureeVieMs: number;
@@ -97,7 +108,7 @@ export class DepotParties {
   creer(
     idDeck: string,
     idNiveau: string = NIVEAU_PAR_DEFAUT,
-    joueurId?: string,
+    proprietaire?: Proprietaire,
   ): ResultatDepot<PartieVisible> {
     this.purger();
     const deck = trouverDeckPrete(idDeck);
@@ -116,20 +127,21 @@ export class DepotParties {
       deckBot,
       niveau,
       derniereActivite: this.maintenant(),
-      ...(joueurId && { joueurId }),
+      ...(proprietaire && { proprietaire }),
     };
     this.parties.set(partie.id, partie);
     return { ok: true, valeur: this.visible(partie, 0) };
   }
 
-  lire(id: string): ResultatDepot<PartieVisible> {
-    const partie = this.trouver(id);
+  /** `session` : empreinte du jeton de la requête (`null` sans jeton). */
+  lire(id: string, session: string | null): ResultatDepot<PartieVisible> {
+    const partie = this.trouver(id, session);
     if (!partie) return { ok: false, raison: 'partie-inconnue' };
     return { ok: true, valeur: this.visible(partie, 0) };
   }
 
-  jouer(id: string, action: Action): ResultatDepot<PartieVisible> {
-    const partie = this.trouver(id);
+  jouer(id: string, action: Action, session: string | null): ResultatDepot<PartieVisible> {
+    const partie = this.trouver(id, session);
     if (!partie) return { ok: false, raison: 'partie-inconnue' };
     const avant = partie.etat.journal.length;
     const resultat = appliquer(partie.etat, action);
@@ -140,13 +152,15 @@ export class DepotParties {
 
   /** Le joueur connecté qui a lancé la partie (sans compter comme une activité). */
   proprietaire(id: string): string | undefined {
-    return this.parties.get(id)?.joueurId;
+    return this.parties.get(id)?.proprietaire?.joueurId;
   }
 
-  /** Trouve une partie encore valide et note l'activité. */
-  private trouver(id: string): Partie | undefined {
+  /** Trouve une partie encore valide, visible de cette session, et note l'activité. */
+  private trouver(id: string, session: string | null): Partie | undefined {
     this.purger();
     const partie = this.parties.get(id);
+    // Celle d'un joueur connecté reste inconnue de toute autre session.
+    if (partie?.proprietaire && partie.proprietaire.session !== session) return undefined;
     if (partie) partie.derniereActivite = this.maintenant();
     return partie;
   }
@@ -158,18 +172,31 @@ export class DepotParties {
     }
   }
 
-  /** Au plafond, retire la partie la moins récemment jouée. */
+  /**
+   * Au plafond, retire la partie anonyme la moins récemment jouée, et seulement à défaut celle d'un joueur connecté
+   * (ADR 0025) : un afflux de parties anonymes ne fait pas perdre la sienne à un joueur connecté.
+   */
   private faireDeLaPlace(): void {
     while (this.parties.size >= this.partiesMax) {
-      let plusAncienne: Partie | undefined;
-      for (const partie of this.parties.values()) {
-        if (!plusAncienne || partie.derniereActivite < plusAncienne.derniereActivite) {
-          plusAncienne = partie;
-        }
-      }
-      if (!plusAncienne) return;
-      this.parties.delete(plusAncienne.id);
+      const partie =
+        this.plusAncienne((p) => p.proprietaire === undefined) ?? this.plusAncienne(() => true);
+      if (!partie) return;
+      this.parties.delete(partie.id);
     }
+  }
+
+  /** La partie la moins récemment jouée parmi celles qui satisfont `critere`. */
+  private plusAncienne(critere: (partie: Partie) => boolean): Partie | undefined {
+    let plusAncienne: Partie | undefined;
+    for (const partie of this.parties.values()) {
+      if (
+        critere(partie) &&
+        (!plusAncienne || partie.derniereActivite < plusAncienne.derniereActivite)
+      ) {
+        plusAncienne = partie;
+      }
+    }
+    return plusAncienne;
   }
 
   /** La vue du joueur, et les événements visibles depuis l'index `depuis` du journal. */

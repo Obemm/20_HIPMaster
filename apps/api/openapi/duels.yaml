@@ -1,12 +1,16 @@
 openapi: 3.1.0
 info:
   title: HIPMaster — duels entre joueurs
-  version: 1.0.0
+  version: 1.1.0
   description: >
     Duels asynchrones, au tour par tour, entre deux comptes (US-032, ADR 0020). Le serveur tient l'état complet du
     moteur et ne renvoie à chacun que sa vue. Le créateur d'un duel le lance avec son deck ; un autre joueur le
     rejoint avec le sien, et le tirage désigne qui commence. Compte requis (`Authorization: Bearer <jeton>`, voir
     comptes.yaml). Les schémas `Vue`, `Action` et `Evenement` sont ceux de parties.yaml.
+
+    Protections (US-047, ADR 0025) : chaque route est limitée par adresse IP (valeurs de production dans sa
+    description, multipliées par le réglage `LIMITES_DEBIT` de l'API), 429 avec `Retry-After` au-delà ; réponses en
+    `Cache-Control: no-store` ; corps de 16 Ko au plus (413).
 servers:
   - url: /api/v1
 security: [{ jeton: [] }]
@@ -15,6 +19,7 @@ paths:
     post:
       operationId: creerDuel
       summary: Crée un duel en attente d'adversaire
+      description: 'Limite : 60 duels par heure et par adresse.'
       requestBody:
         required: true
         content:
@@ -33,7 +38,9 @@ paths:
             application/json:
               schema: { $ref: '#/components/schemas/Duel' }
         '401': { $ref: '#/components/responses/Probleme' }
+        '413': { $ref: '#/components/responses/Probleme' }
         '422': { $ref: '#/components/responses/Probleme' }
+        '429': { $ref: '#/components/responses/TropDeRequetes' }
   /duels/hasard:
     post:
       operationId: chercherAdversaire
@@ -41,7 +48,8 @@ paths:
       description: >
         Rejoint le plus ancien duel ouvert d'un autre joueur (en évitant, si possible, le dernier adversaire) : le
         duel commence (200). S'il n'y en a pas, ouvre un duel et place le joueur dans la file (201) ; un joueur
-        déjà dans la file y garde sa place. Les défis privés (lien, POST /duels) ne sont jamais proposés.
+        déjà dans la file y garde sa place. Les défis privés (lien, POST /duels) ne sont jamais proposés. Limite : 60
+        recherches par heure et par adresse.
       requestBody:
         required: true
         content:
@@ -67,7 +75,9 @@ paths:
             application/json:
               schema: { $ref: '#/components/schemas/Duel' }
         '401': { $ref: '#/components/responses/Probleme' }
+        '413': { $ref: '#/components/responses/Probleme' }
         '422': { $ref: '#/components/responses/Probleme' }
+        '429': { $ref: '#/components/responses/TropDeRequetes' }
   /duels/{id}:
     parameters: [{ $ref: '#/components/parameters/IdDuel' }]
     get:
@@ -76,7 +86,8 @@ paths:
       description: >
         Un participant reçoit sa vue et les événements visibles depuis l'index `depuis` du journal. Un autre joueur
         ne voit qu'un duel en attente (qui défie, avec quel deck), pour pouvoir le rejoindre ; un duel commencé lui
-        reste introuvable. Avec `If-None-Match` égal à l'ETag connu, la réponse est 304 si rien n'a changé.
+        reste introuvable. Avec `If-None-Match` égal à l'ETag connu, la réponse est 304 si rien n'a changé. Limite :
+        600 lectures par minute et par adresse.
       parameters:
         - name: depuis
           in: query
@@ -101,9 +112,11 @@ paths:
           content:
             application/problem+json:
               schema: { $ref: '#/components/schemas/Probleme' }
+        '429': { $ref: '#/components/responses/TropDeRequetes' }
     delete:
       operationId: annulerDuel
       summary: Annule un défi pas encore accepté (créateur seulement, US-033)
+      description: 'Limite : 300 requêtes par minute et par adresse.'
       responses:
         '204': { description: Défi annulé. }
         '401': { $ref: '#/components/responses/Probleme' }
@@ -113,11 +126,13 @@ paths:
           content:
             application/problem+json:
               schema: { $ref: '#/components/schemas/Probleme' }
+        '429': { $ref: '#/components/responses/TropDeRequetes' }
   /duels/{id}/rejoindre:
     parameters: [{ $ref: '#/components/parameters/IdDuel' }]
     post:
       operationId: rejoindreDuel
       summary: Rejoint un duel en attente avec son deck ; le duel commence
+      description: 'Limite : 300 requêtes par minute et par adresse.'
       requestBody:
         required: true
         content:
@@ -147,12 +162,15 @@ paths:
           content:
             application/problem+json:
               schema: { $ref: '#/components/schemas/Probleme' }
+        '413': { $ref: '#/components/responses/Probleme' }
         '422': { $ref: '#/components/responses/Probleme' }
+        '429': { $ref: '#/components/responses/TropDeRequetes' }
   /duels/{id}/abandon:
     parameters: [{ $ref: '#/components/parameters/IdDuel' }]
     post:
       operationId: abandonnerDuel
       summary: Abandonne un duel en cours ; l'adversaire gagne (US-036)
+      description: 'Limite : 300 requêtes par minute et par adresse.'
       responses:
         '200':
           description: Le duel terminé.
@@ -168,6 +186,7 @@ paths:
           content:
             application/problem+json:
               schema: { $ref: '#/components/schemas/Probleme' }
+        '429': { $ref: '#/components/responses/TropDeRequetes' }
   /duels/{id}/actions:
     parameters: [{ $ref: '#/components/parameters/IdDuel' }]
     post:
@@ -175,7 +194,7 @@ paths:
       summary: Joue une action, à son tour seulement
       description: >
         Avec `If-Match` égal à l'ETag connu, l'action est refusée (409) si le duel a changé entre-temps. La réponse
-        contient les événements visibles produits par l'action.
+        contient les événements visibles produits par l'action. Limite : 300 actions par minute et par adresse.
       parameters:
         - name: If-Match
           in: header
@@ -200,7 +219,9 @@ paths:
           content:
             application/problem+json:
               schema: { $ref: '#/components/schemas/Probleme' }
+        '413': { $ref: '#/components/responses/Probleme' }
         '422': { $ref: '#/components/responses/Probleme' }
+        '429': { $ref: '#/components/responses/TropDeRequetes' }
   /moi/duels:
     get:
       operationId: lireMesDuels
@@ -208,7 +229,7 @@ paths:
       description: >
         Ordre : à mon tour, au tour de l'adversaire, défis en attente d'adversaire, puis les 20 derniers duels
         terminés ; dans chaque groupe, le plus récemment joué d'abord. `aMonTour` compte les duels qui attendent le
-        joueur.
+        joueur. Limite : 600 lectures par minute et par adresse.
       responses:
         '200':
           description: Les duels.
@@ -223,6 +244,7 @@ paths:
                     type: array
                     items: { $ref: '#/components/schemas/ResumeDuel' }
         '401': { $ref: '#/components/responses/Probleme' }
+        '429': { $ref: '#/components/responses/TropDeRequetes' }
 components:
   securitySchemes:
     jeton:
@@ -244,6 +266,7 @@ components:
       content:
         application/problem+json:
           schema: { $ref: '#/components/schemas/Probleme' }
+    TropDeRequetes: { $ref: 'comptes.yaml#/components/responses/TropDeRequetes' }
   schemas:
     Probleme:
       type: object

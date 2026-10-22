@@ -161,3 +161,22 @@ Toutes les évolutions notables du projet sont consignées ici
 - La vue de partie renvoyée par l'API perdait le bonus d'attaque des composants et les marqueurs du joueur : un bot
   du domaine joué depuis l'API (Agent autonome) évaluait tout à `NaN` et ne gagnait plus aucune partie. Le schéma et
   le contrat OpenAPI les exposent ; la vue de l'API suffit désormais à reconstituer la partie (US-026).
+
+### Sécurité
+
+- Protections de l'API avant l'ouverture (US-047, ADR 0025) :
+  - limitation de débit par adresse (IPv6 : par /64) sur la création de compte (30 par heure), la connexion par code
+    (10 par minute), les parties contre le bot (20 créations et 300 actions par minute) et chaque route de duel ;
+    au-delà, un 429 Problem Details avec `Retry-After`. Les limites, documentées dans les contrats OpenAPI, se règlent
+    par `LIMITES_DEBIT` (actives par défaut en production seulement) ;
+  - l'adresse du joueur est lue derrière Firebase Hosting et Cloud Run, sans qu'un `X-Forwarded-For` ajouté puisse la
+    fausser (`PROXYS_DE_CONFIANCE`, obligatoire en production) ;
+  - codes de récupération gardés sous HMAC-SHA-256, avec une clé tirée au hasard dans Secret Manager
+    (`cle-codes-recuperation`, créée par le script d'infrastructure) ; sans elle, l'API refuse de démarrer en
+    production ;
+  - un nouveau code de récupération ferme les autres sessions du compte, et « Mon compte » propose « Déconnecter mes
+    autres appareils » ;
+  - une partie contre le bot lancée par un joueur connecté n'est visible que de sa session ; au plafond, le dépôt en
+    mémoire évince d'abord les parties anonymes ;
+  - toutes les réponses portent `X-Content-Type-Options: nosniff` et, sauf politique propre à une route,
+    `Cache-Control: no-store` ; corps de requête limités à 16 Ko (413).
