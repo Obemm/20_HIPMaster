@@ -11,6 +11,7 @@ export default defineConfig({
           include: ['apps/api/src/**/*.test.ts'],
           // Chaque fichier ouvre une base PGlite en mémoire dans un `beforeAll` (US-043) : le chargement du WASM
           // prend ≈ 1,6 s au repos et bien plus quand tous les projets tournent en parallèle sur un poste chargé.
+          // Avec DATABASE_URL (job « API sur PostgreSQL » de la CI), c'est une base PostgreSQL créée pour lui (US-056).
           hookTimeout: 30_000,
           // Un PGlite occupe ≈ 550 Mo : cinq fichiers de front saturaient la mémoire du poste et Node tuait un
           // processus de travail. Les fichiers de l'API s'enchaînent donc (une base à la fois) ; le domaine et les
