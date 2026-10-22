@@ -26,10 +26,11 @@ référence the company.
 | [0015](0015-illustrations-statiques-optimisees.md)     | Illustrations : fichiers statiques optimisés, originaux hors du dépôt | [ref], [ref]               | Acceptée                      |
 | [0016](0016-illustrations-provisoires-vectorielles.md) | Illustrations provisoires vectorielles, générées par le code          | aucune ([ref])               | Acceptée                      |
 | [0017](0017-compte-invite.md)                          | Compte invité : pseudo, jeton secret et code de récupération          | [ref], 034 (écartés)         | Acceptée                      |
-| [0018](0018-pglite-developpement.md)                   | PGlite en développement et en tests, PostgreSQL en production         | aucune                         | Acceptée                      |
+| [0018](0018-pglite-developpement.md)                   | PGlite en développement et en tests, PostgreSQL en production         | aucune                         | Acceptée (complétée par 0023) |
 | [0019](0019-boosters-recharge-a-la-lecture.md)         | Boosters : tirage serveur, recharge calculée à la lecture             | aucune ([ref] écarté)        | Acceptée                      |
 | [0020](0020-duels-asynchrones.md)                      | Duels entre joueurs : asynchrones, au tour par tour, état en base     | [ref] ([ref], 029 écartés) | Acceptée                      |
 | [0021](0021-hebergement-gcp.md)                        | Hébergement quasi gratuit : Firebase Hosting, Cloud Run, Neon         | [ref] écarté, 006, 012, 004  | Acceptée                      |
 | [0022](0022-depot-public.md)                           | Dépôt GitHub public                                                   | [ref], 039, 033              | Acceptée                      |
+| [0023](0023-postgresql-production.md)                  | PostgreSQL en production : migrations dédiées, connexions courtes     | aucune                         | Acceptée                      |
 
 Modèle : [template.md](template.md).

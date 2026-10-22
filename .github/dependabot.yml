@@ -18,3 +18,12 @@ updates:
     directory: /
     schedule:
       interval: monthly
+  # Image de base de l'API (Dockerfile, US-046) : correctifs de Node et d'Alpine.
+  - package-ecosystem: docker
+    directory: /
+    schedule:
+      interval: weekly
+    ignore:
+      # L'image suit la version majeure de Node (.nvmrc) : à lever au passage à Node 26, comme @types/node.
+      - dependency-name: node
+        update-types: ['version-update:semver-major']
