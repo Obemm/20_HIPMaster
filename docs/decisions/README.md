@@ -16,8 +16,8 @@ référence Elis.
 | [0005](0005-referentiel-adr-elis.md)                   | Les ADR technologiques Elis comme référentiel                         | corpus ATR                     | Acceptée                      |
 | [0006](0006-angular-pwa.md)                            | Angular pour le front, livré en PWA                                   | ADR-005, ADR-016               | Acceptée                      |
 | [0007](0007-api-rest-monorepo.md)                      | API REST Fastify et monorepo npm workspaces                           | ADR-007, ADR-020               | Acceptée                      |
-| [0008](0008-hebergement-azure.md)                      | Azure comme hébergement cible                                         | ADR-030, 006, 012, 004         | Acceptée                      |
-| [0009](0009-qualite-sonarway.md)                       | Qualité de code : règles SonarWay, quality gate bloquant              | ADR-039, 008, 040              | Acceptée                      |
+| [0008](0008-hebergement-azure.md)                      | Azure comme hébergement cible                                         | ADR-030, 006, 012, 004         | Remplacée par 0021            |
+| [0009](0009-qualite-sonarway.md)                       | Qualité de code : règles SonarWay, quality gate bloquant              | ADR-039, 008, 040              | Acceptée (complétée par 0022) |
 | [0010](0010-combat-plateau.md)                         | Combat sur plateau : Débit, SLA, capacités thématiques                | aucune                         | Acceptée                      |
 | [0011](0011-catalogue-cartes-versionne.md)             | Catalogue des cartes versionné dans le domaine, pas en base           | ADR-026 (écarté)               | Acceptée                      |
 | [0012](0012-theme-clair-sombre.md)                     | Thème clair ou sombre selon le système, jetons de couleur             | ADR-019 (adapté)               | Acceptée                      |
@@ -29,5 +29,7 @@ référence Elis.
 | [0018](0018-pglite-developpement.md)                   | PGlite en développement et en tests, PostgreSQL en production         | aucune                         | Acceptée                      |
 | [0019](0019-boosters-recharge-a-la-lecture.md)         | Boosters : tirage serveur, recharge calculée à la lecture             | aucune (ADR-032 écarté)        | Acceptée                      |
 | [0020](0020-duels-asynchrones.md)                      | Duels entre joueurs : asynchrones, au tour par tour, état en base     | ADR-020 (ADR-013, 029 écartés) | Acceptée                      |
+| [0021](0021-hebergement-gcp.md)                        | Hébergement quasi gratuit : Firebase Hosting, Cloud Run, Neon         | ADR-030 écarté, 006, 012, 004  | Acceptée                      |
+| [0022](0022-depot-public.md)                           | Dépôt GitHub public                                                   | ADR-011, 039, 033              | Acceptée                      |
 
 Modèle : [template.md](template.md).

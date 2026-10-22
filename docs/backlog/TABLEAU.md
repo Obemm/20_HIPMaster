@@ -1,20 +1,22 @@
 # Tableau de suivi
 
-_Dernière mise à jour : 2026-10-19_
+_Dernière mise à jour : 2026-10-22_
 
 ## Epics
 
-| Epic                                                                                  | Priorité | Statut    | Avancement |
-| ------------------------------------------------------------------------------------- | -------- | --------- | ---------- |
-| [EPIC-00 — Fondations](epics/EPIC-00-fondations.md)                                   | Must     | Terminé   | 8/8        |
-| [EPIC-01 — Univers et modèle de carte](epics/EPIC-01-univers-cartes.md)               | Must     | Terminé   | 2/2        |
-| [EPIC-02 — Comptes joueurs](epics/EPIC-02-comptes-joueurs.md)                         | Must     | Terminé   | 1/1        |
-| [EPIC-03 — Boosters et collection](epics/EPIC-03-boosters-collection.md)              | Must     | Terminé   | 2/2        |
-| [EPIC-04 — Combat contre le bot](epics/EPIC-04-combat-bot.md)                         | Must     | Terminé   | 13/13      |
-| [EPIC-05 — Illustrations des cartes](epics/EPIC-05-illustrations.md)                  | Should   | En cours  | 3/5        |
-| [EPIC-06 — Duels entre joueurs](epics/EPIC-06-duels-joueurs.md)                       | Should   | Terminé   | 8/8        |
-| [EPIC-07 — Vie sociale](epics/EPIC-07-vie-sociale.md)                                 | Could    | À affiner | 0/0        |
-| [EPIC-08 — Cartes proposées par la communauté IT](epics/EPIC-08-cartes-communaute.md) | Should   | À affiner | 0/5        |
+| Epic                                                                                              | Priorité | Statut    | Avancement |
+| ------------------------------------------------------------------------------------------------- | -------- | --------- | ---------- |
+| [EPIC-00 — Fondations](epics/EPIC-00-fondations.md)                                               | Must     | Terminé   | 8/8        |
+| [EPIC-01 — Univers et modèle de carte](epics/EPIC-01-univers-cartes.md)                           | Must     | Terminé   | 2/2        |
+| [EPIC-02 — Comptes joueurs](epics/EPIC-02-comptes-joueurs.md)                                     | Must     | Terminé   | 1/1        |
+| [EPIC-03 — Boosters et collection](epics/EPIC-03-boosters-collection.md)                          | Must     | Terminé   | 2/2        |
+| [EPIC-04 — Combat contre le bot](epics/EPIC-04-combat-bot.md)                                     | Must     | Terminé   | 13/13      |
+| [EPIC-05 — Illustrations des cartes](epics/EPIC-05-illustrations.md)                              | Should   | En cours  | 3/5        |
+| [EPIC-06 — Duels entre joueurs](epics/EPIC-06-duels-joueurs.md)                                   | Should   | Terminé   | 8/8        |
+| [EPIC-07 — Vie sociale](epics/EPIC-07-vie-sociale.md)                                             | Could    | À affiner | 0/0        |
+| [EPIC-08 — Cartes proposées par la communauté IT](epics/EPIC-08-cartes-communaute.md)             | Should   | À affiner | 0/5        |
+| [EPIC-09 — Mise en ligne sur Google Cloud](epics/EPIC-09-mise-en-ligne-gcp.md)                    | Must     | À affiner | 0/13       |
+| [EPIC-10 — Identité visuelle et confort sur téléphone](epics/EPIC-10-identite-visuelle-mobile.md) | Should   | À affiner | 0/5        |
 
 ## Itération 0 (en cours) — fondations
 
@@ -100,6 +102,33 @@ choisir l'attaquant et sa cible.
 | [US-039 — Expliquer les attaques et les combats](stories/US-039-expliquer-attaques.md) | EPIC-04 | Must     | S      | Faite  |
 | [US-040 — Détail des cartes de la main](stories/US-040-detail-cartes-main.md)          | EPIC-04 | Should   | M      | Faite  |
 | [US-041 — Détail des cartes du plateau](stories/US-041-detail-cartes-plateau.md)       | EPIC-04 | Should   | M      | Faite  |
+
+## Itération 6 (à venir) — mise en ligne
+
+Revue du 2026-10-22 ([revue avant mise en ligne](../revues/2026-10-22-revue-mise-en-ligne.md)) : hébergement sur
+Google Cloud, Firebase Hosting et une base Neon gratuite (ADR 0021, accepté le 2026-10-22), jeu ouvert aux collègues **sur invitation** (choix du porteur du projet le
+2026-10-22). Lot 1 avant la première mise en ligne, lot 2 avant d'envoyer les invitations, lot 3 ensuite.
+
+| Story                                                                                                                                 | Epic    | Priorité | Taille | Lot | Statut    |
+| ------------------------------------------------------------------------------------------------------------------------------------- | ------- | -------- | ------ | --- | --------- |
+| [US-046 — Une API prête pour Cloud Run](stories/US-046-api-prete-cloud-run.md)                                                        | EPIC-09 | Must     | L      | 1   | À affiner |
+| [US-056 — La CI teste l'API sur un vrai PostgreSQL](stories/US-056-ci-postgresql.md)                                                  | EPIC-09 | Must     | S      | 1   | À affiner |
+| [US-047 — Les protections indispensables avant l'ouverture](stories/US-047-protections-avant-ouverture.md)                            | EPIC-09 | Must     | M      | 1   | À affiner |
+| [US-048 — Inscription sur invitation](stories/US-048-inscription-sur-invitation.md)                                                   | EPIC-09 | Must     | M      | 1   | À affiner |
+| [US-055 — Un front robuste au démarrage à froid et aux sessions expirées](stories/US-055-front-robuste.md)                            | EPIC-09 | Must     | M      | 1   | À affiner |
+| [US-049 — Infrastructure gratuite et reproductible](stories/US-049-infrastructure-gcp.md)                                             | EPIC-09 | Must     | M      | 1   | À affiner |
+| [US-050 — Déploiement continu vers Cloud Run et Firebase Hosting](stories/US-050-deploiement-continu.md)                              | EPIC-09 | Must     | M      | 1   | À affiner |
+| [US-052 — Parties contre le bot gardées en base](stories/US-052-parties-bot-en-base.md)                                               | EPIC-09 | Must     | M      | 2   | À affiner |
+| [US-051 — Supervision, sauvegardes vérifiées et scan de sécurité](stories/US-051-supervision-sauvegardes-securite.md)                 | EPIC-09 | Must     | S      | 2   | À affiner |
+| [US-053 — Page de confidentialité et suppression de son compte](stories/US-053-confidentialite-suppression-compte.md)                 | EPIC-09 | Should   | S      | 2   | À affiner |
+| [US-059 — Un plateau de partie qui tient dans un écran de téléphone](stories/US-059-plateau-mobile-un-ecran.md)                       | EPIC-10 | Should   | M      | 2   | À affiner |
+| [US-060 — Une navigation pensée pour le téléphone](stories/US-060-navigation-mobile.md)                                               | EPIC-10 | Should   | S      | 2   | À affiner |
+| [US-054 — Des sessions qui expirent et des données qui ne s'accumulent pas](stories/US-054-sessions-purge.md)                         | EPIC-09 | Should   | M      | 3   | À affiner |
+| [US-057 — Des requêtes légères : index, lectures bornées, cache et chargement à la demande](stories/US-057-requetes-legeres-cache.md) | EPIC-09 | Should   | M      | 3   | À affiner |
+| [US-058 — Des duels équitables : hasard imprévisible et appariement sûr](stories/US-058-duels-equitables.md)                          | EPIC-09 | Should   | S      | 3   | À affiner |
+| [US-061 — Une identité visuelle et un accueil qui donnent envie](stories/US-061-accueil-identite-visuelle.md)                         | EPIC-10 | Should   | M      | 3   | À affiner |
+| [US-063 — Installer le jeu sur son téléphone (PWA)](stories/US-063-pwa-installable.md)                                                | EPIC-10 | Could    | S      | 3   | À affiner |
+| [US-062 — Ouvrir un booster, un vrai moment](stories/US-062-ouverture-booster-mise-en-scene.md)                                       | EPIC-10 | Could    | M      | 3   | À affiner |
 
 ## Plus tard — cartes de la communauté IT
 
