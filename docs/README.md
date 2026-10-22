@@ -8,4 +8,5 @@
 | [produit/inspirations.md](produit/inspirations.md) | Jeux et outils de référence (WikiMasters, Async TCG, Recraft) |
 | [decisions/](decisions/README.md)                  | Décisions d'architecture (ADR) : quoi, pourquoi, alternatives |
 | [revues/](revues/)                                 | Revues d'ensemble datées (architecture, design, sécurité)     |
+| [exploitation/](exploitation/README.md)            | Mise en ligne : infrastructure, déploiement, sauvegardes      |
 | [../CHANGELOG.md](../CHANGELOG.md)                 | Ce qui a changé, version par version                          |
