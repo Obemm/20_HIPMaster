@@ -104,6 +104,31 @@ describe('Mes duels', () => {
     expect(page.querySelector('li a')?.getAttribute('href')).toBe('/duels/a');
   });
 
+  it('si la liste n’a pas pu être lue, dit pourquoi et la relit quand on réessaie (US-055)', async () => {
+    TestBed.inject(CompteService).joueur.set({ id: 'x', pseudo: 'Ada' });
+    const fixture = TestBed.createComponent(MesDuels);
+    fixture.detectChanges();
+    const http = TestBed.inject(HttpTestingController);
+    http.expectOne('/api/v1/moi/duels').flush(null, {
+      status: 429,
+      statusText: 'Too Many Requests',
+      headers: { 'Retry-After': '20' },
+    });
+    await fixture.whenStable();
+    fixture.detectChanges();
+    const page = fixture.nativeElement as HTMLElement;
+    expect(page.querySelector('[role="alert"]')?.textContent).toContain(
+      'Vos duels n’ont pas pu être chargés. Trop de demandes en peu de temps : patientez 20 s',
+    );
+    expect(page.textContent).not.toContain('Chargement de vos duels');
+
+    [...page.querySelectorAll('button')].find((b) => b.textContent?.includes('Réessayer'))?.click();
+    http.expectOne('/api/v1/moi/duels').flush({ aMonTour: 1, duels: DUELS });
+    await fixture.whenStable();
+    fixture.detectChanges();
+    expect(page.querySelector('h2')?.textContent).toContain('À vous de jouer (1)');
+  });
+
   it('préfixe le titre de l’onglet par le nombre de duels qui attendent le joueur', async () => {
     await afficher();
     await TestBed.inject(Router).navigateByUrl('/duels');

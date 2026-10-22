@@ -2,13 +2,15 @@ import { HttpClient, httpResource } from '@angular/common/http';
 import { Component, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
+import { ErreurChargement } from '../reseau/erreur-chargement';
+import { expliquer } from '../reseau/reseau';
 import type { Deck, Niveau, Partie } from './modele';
 import { RegleCourte } from './regle-courte';
 
 /** Choix d'un deck prêté, puis création de la partie contre le bot (US-013). */
 @Component({
   selector: 'hip-choix-deck',
-  imports: [RouterLink, RegleCourte],
+  imports: [RouterLink, RegleCourte, ErreurChargement],
   templateUrl: './choix-deck.html',
 })
 export class ChoixDeck {
@@ -30,8 +32,8 @@ export class ChoixDeck {
         this.http.post<Partie>('/api/v1/parties', { deck: deck.id, niveau: this.niveau() }),
       );
       await this.router.navigate(['/jouer', partie.id]);
-    } catch {
-      this.erreur.set('La partie n’a pas pu être créée : l’API ne répond pas.');
+    } catch (erreur) {
+      this.erreur.set(`La partie n’a pas pu être créée. ${expliquer(erreur)}`);
     } finally {
       this.enCours.set(null);
     }

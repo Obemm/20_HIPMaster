@@ -2,13 +2,14 @@ import { httpResource } from '@angular/common/http';
 import { Component, computed, signal } from '@angular/core';
 import { RouterLink, RouterOutlet } from '@angular/router';
 import { LIBELLES_RARETE, type Rarete, SYMBOLES_RARETE } from '../libelles';
+import { ErreurChargement } from '../reseau/erreur-chargement';
 import { type Carte, type Famille, LIBELLES_FAMILLE } from './carte';
 import { VignetteCarte } from './vignette-carte';
 
 /** Catalogue du set 1. Le détail d'une carte s'ouvre par-dessus (route enfant), sans perdre les filtres. */
 @Component({
   selector: 'hip-catalogue',
-  imports: [RouterLink, RouterOutlet, VignetteCarte],
+  imports: [RouterLink, RouterOutlet, VignetteCarte, ErreurChargement],
   templateUrl: './catalogue.html',
 })
 export class Catalogue {

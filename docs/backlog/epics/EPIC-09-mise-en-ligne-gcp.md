@@ -22,16 +22,16 @@ gratuite, que Claude installe, déploie et maintient en ligne de commande
 
 ## Stories
 
-- [ ] US-046 — Une API prête pour Cloud Run
+- [x] US-046 — Une API prête pour Cloud Run
 - [ ] US-047 — Les protections indispensables avant l'ouverture
 - [ ] US-048 — Inscription sur invitation
-- [ ] US-049 — Infrastructure gratuite et reproductible
+- [x] US-049 — Infrastructure gratuite et reproductible
 - [ ] US-050 — Déploiement continu vers Cloud Run et Firebase Hosting
 - [ ] US-051 — Supervision, sauvegardes vérifiées et scan de sécurité
 - [ ] US-052 — Parties contre le bot gardées en base
 - [ ] US-053 — Page de confidentialité et suppression de son compte
 - [ ] US-054 — Des sessions qui expirent et des données qui ne s'accumulent pas
-- [ ] US-055 — Un front robuste au démarrage à froid et aux sessions expirées
+- [x] US-055 — Un front robuste au démarrage à froid et aux sessions expirées
 - [x] US-056 — La CI teste l'API sur un vrai PostgreSQL
 - [ ] US-057 — Des requêtes légères : index, lectures bornées, cache et chargement à la demande
 - [ ] US-058 — Des duels équitables : hasard imprévisible et appariement sûr

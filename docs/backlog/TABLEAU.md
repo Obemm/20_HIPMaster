@@ -15,7 +15,7 @@ _Dernière mise à jour : 2026-10-22_
 | [EPIC-06 — Duels entre joueurs](epics/EPIC-06-duels-joueurs.md)                                   | Should   | Terminé   | 8/8        |
 | [EPIC-07 — Vie sociale](epics/EPIC-07-vie-sociale.md)                                             | Could    | À affiner | 0/0        |
 | [EPIC-08 — Cartes proposées par la communauté IT](epics/EPIC-08-cartes-communaute.md)             | Should   | À affiner | 0/5        |
-| [EPIC-09 — Mise en ligne sur Google Cloud](epics/EPIC-09-mise-en-ligne-gcp.md)                    | Must     | En cours  | 1/13       |
+| [EPIC-09 — Mise en ligne sur Google Cloud](epics/EPIC-09-mise-en-ligne-gcp.md)                    | Must     | En cours  | 4/13       |
 | [EPIC-10 — Identité visuelle et confort sur téléphone](epics/EPIC-10-identite-visuelle-mobile.md) | Should   | À affiner | 0/5        |
 
 ## Itération 0 (en cours) — fondations
@@ -112,12 +112,12 @@ Google Cloud, Firebase Hosting et une base Neon gratuite (ADR 0021, accepté le 
 
 | Story                                                                                                                                 | Epic    | Priorité | Taille | Lot | Statut    |
 | ------------------------------------------------------------------------------------------------------------------------------------- | ------- | -------- | ------ | --- | --------- |
-| [US-046 — Une API prête pour Cloud Run](stories/US-046-api-prete-cloud-run.md)                                                        | EPIC-09 | Must     | L      | 1   | À affiner |
+| [US-046 — Une API prête pour Cloud Run](stories/US-046-api-prete-cloud-run.md)                                                        | EPIC-09 | Must     | L      | 1   | Faite     |
 | [US-056 — La CI teste l'API sur un vrai PostgreSQL](stories/US-056-ci-postgresql.md)                                                  | EPIC-09 | Must     | S      | 1   | Faite     |
 | [US-047 — Les protections indispensables avant l'ouverture](stories/US-047-protections-avant-ouverture.md)                            | EPIC-09 | Must     | M      | 1   | À affiner |
 | [US-048 — Inscription sur invitation](stories/US-048-inscription-sur-invitation.md)                                                   | EPIC-09 | Must     | M      | 1   | À affiner |
-| [US-055 — Un front robuste au démarrage à froid et aux sessions expirées](stories/US-055-front-robuste.md)                            | EPIC-09 | Must     | M      | 1   | À affiner |
-| [US-049 — Infrastructure gratuite et reproductible](stories/US-049-infrastructure-gcp.md)                                             | EPIC-09 | Must     | M      | 1   | À affiner |
+| [US-055 — Un front robuste au démarrage à froid et aux sessions expirées](stories/US-055-front-robuste.md)                            | EPIC-09 | Must     | M      | 1   | Faite     |
+| [US-049 — Infrastructure gratuite et reproductible](stories/US-049-infrastructure-gcp.md)                                             | EPIC-09 | Must     | M      | 1   | Faite     |
 | [US-050 — Déploiement continu vers Cloud Run et Firebase Hosting](stories/US-050-deploiement-continu.md)                              | EPIC-09 | Must     | M      | 1   | À affiner |
 | [US-052 — Parties contre le bot gardées en base](stories/US-052-parties-bot-en-base.md)                                               | EPIC-09 | Must     | M      | 2   | À affiner |
 | [US-051 — Supervision, sauvegardes vérifiées et scan de sécurité](stories/US-051-supervision-sauvegardes-securite.md)                 | EPIC-09 | Must     | S      | 2   | À affiner |

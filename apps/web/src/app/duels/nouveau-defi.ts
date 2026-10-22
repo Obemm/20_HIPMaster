@@ -3,7 +3,10 @@ import { Component, inject, input, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { CompteService } from '../compte/compte.service';
+import { EtatSession } from '../compte/etat-session';
 import type { Deck } from '../jeu/modele';
+import { ErreurChargement } from '../reseau/erreur-chargement';
+import { expliquer } from '../reseau/reseau';
 import type { Duel } from './modele';
 
 /**
@@ -12,7 +15,7 @@ import type { Duel } from './modele';
  */
 @Component({
   selector: 'hip-nouveau-defi',
-  imports: [RouterLink],
+  imports: [RouterLink, ErreurChargement, EtatSession],
   template: `
     <main class="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 py-8 sm:px-6">
       <p>
@@ -60,7 +63,12 @@ import type { Duel } from './modele';
             }
           </ul>
         } @else if (decks.error()) {
-          <p role="alert" class="text-alerte">Les decks n’ont pas pu être chargés.</p>
+          <hip-erreur-chargement
+            quoi="Les decks n’ont pas pu être chargés."
+            [erreur]="decks.error()"
+            [enCours]="decks.isLoading()"
+            (reessayer)="decks.reload()"
+          />
         } @else {
           <p>Chargement des decks…</p>
         }
@@ -76,7 +84,7 @@ import type { Duel } from './modele';
           en un clic (un pseudo suffit).
         </p>
       } @else {
-        <p>Vérification de votre session…</p>
+        <hip-etat-session />
       }
     </main>
   `,
@@ -102,8 +110,8 @@ export class NouveauDefi {
       const url = this.hasard() ? '/api/v1/duels/hasard' : '/api/v1/duels';
       const duel = await firstValueFrom(this.http.post<Duel>(url, { deck: deck.id }));
       await this.router.navigate(['/duels', duel.id]);
-    } catch {
-      this.erreur.set('Le duel n’a pas pu être créé : réessayez dans un instant.');
+    } catch (erreur) {
+      this.erreur.set(`Le duel n’a pas pu être créé. ${expliquer(erreur)}`);
     } finally {
       this.enCours.set(null);
     }
