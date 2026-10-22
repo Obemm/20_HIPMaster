@@ -1,7 +1,7 @@
 # US-056 — La CI teste l'API sur un vrai PostgreSQL
 
 - **Epic** : EPIC-09
-- **Statut** : À affiner
+- **Statut** : En cours
 - **Priorité** : Must
 - **Taille** : S
 - **Branche** : `us-056-ci-postgresql`
@@ -34,7 +34,40 @@ PostgreSQL chez Neon (ADR 0021).
 
 - Le code sait déjà utiliser PostgreSQL via `DATABASE_URL` (ADR 0018) ; il faut donner une base propre à chaque
   fichier de tests (schéma ou base par fichier).
+- **PostgreSQL 18**, et non 17 comme envisagé au lancement du lot : le projet Neon de production, créé à l'inscription
+  du porteur du projet, est en PostgreSQL 18, et Neon ne change jamais la version majeure d'un projet (constat et
+  ADR 0024 d'US-049). C'est aussi la version de PGlite (18.6) et de `docker-compose.yml`.
+- Une base par fichier plutôt qu'un schéma : les migrations nomment le schéma `public` (`CREATE TYPE "public"…`).
+
+## Réalisation
+
+- `db/base-de-test.ts` : avec `DATABASE_URL`, `baseDeTest()` crée une base PostgreSQL vide par fichier
+  (`creerBaseVide`), la migre à l'ouverture, la vide avant chaque test et la supprime à la fin ; sans, PGlite en
+  mémoire comme avant.
+- `concurrence.test.ts` : ouvertures de booster, récompenses (même partie, et plafond quotidien), appariement au
+  hasard et actions de duel (avec et sans `If-Match`), dix à la fois. Le pool ouvre d'abord ses connexions : sans
+  cela, il les ouvrait une à une et la première opération finissait avant que la deuxième ne commence.
+- `db/migrations.test.ts` (PostgreSQL seulement) : migrations sur une base vide, puis une seconde ouverture sans effet
+  (même nombre de migrations, données conservées).
+- `.github/workflows/ci.yml` : job « Tests de l'API sur PostgreSQL 18 » (service `postgres:18-alpine`), en parallèle
+  des autres.
+
+## Vérifications
+
+Le 2026-10-22, contre le PostgreSQL 18 de `docker-compose.yml` : toute la suite de l'API passe (35 s, contre 90 s sur
+PGlite) et ne laisse aucune base derrière elle. Chaque verrou a été retiré à tour de rôle pour s'assurer que les tests
+le remarquent :
+
+| Verrou retiré                                     | PostgreSQL               | PGlite          |
+| ------------------------------------------------- | ------------------------ | --------------- |
+| `FOR UPDATE` de l'ouverture de booster            | échec 3 fois sur 3       | passe           |
+| `FOR UPDATE` de la récompense (même partie)       | échec 5 fois sur 5       | passe           |
+| `FOR UPDATE` de la récompense (plafond quotidien) | échec 3 fois sur 3       | passe           |
+| `FOR UPDATE SKIP LOCKED` de l'appariement         | échec 3 fois sur 3       | passe           |
+| `FOR UPDATE` de l'action de duel                  | les deux tests, 3 sur 3  | passe           |
+| aucun                                             | 6 tests passent, 3 sur 3 | 6 tests passent |
 
 ## Journal
 
 - 2026-10-22 — création, issue de la revue de l'API avant mise en ligne.
+- 2026-10-22 — prise en charge (lot 1, session API) ; PostgreSQL 18 retenu, comme la base Neon de production.
