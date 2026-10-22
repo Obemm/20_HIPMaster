@@ -16,8 +16,8 @@ référence the company.
 | [0005](0005-reference.local.md)                   | Les ADR technologiques the company comme référentiel                         | corpus [tool]                     | Acceptée                      |
 | [0006](0006-angular-pwa.md)                            | Angular pour le front, livré en PWA                                   | [ref], [ref]               | Acceptée                      |
 | [0007](0007-api-rest-monorepo.md)                      | API REST Fastify et monorepo npm workspaces                           | [ref], [ref]               | Acceptée                      |
-| [0008](0008-hebergement-azure.md)                      | Azure comme hébergement cible                                         | [ref], 006, 012, 004         | Acceptée                      |
-| [0009](0009-qualite-sonarway.md)                       | Qualité de code : règles SonarWay, quality gate bloquant              | [ref], 008, 040              | Acceptée                      |
+| [0008](0008-hebergement-azure.md)                      | Azure comme hébergement cible                                         | [ref], 006, 012, 004         | Remplacée par 0021            |
+| [0009](0009-qualite-sonarway.md)                       | Qualité de code : règles SonarWay, quality gate bloquant              | [ref], 008, 040              | Acceptée (complétée par 0022) |
 | [0010](0010-combat-plateau.md)                         | Combat sur plateau : Débit, SLA, capacités thématiques                | aucune                         | Acceptée                      |
 | [0011](0011-catalogue-cartes-versionne.md)             | Catalogue des cartes versionné dans le domaine, pas en base           | [ref] (écarté)               | Acceptée                      |
 | [0012](0012-theme-clair-sombre.md)                     | Thème clair ou sombre selon le système, jetons de couleur             | [ref] (adapté)               | Acceptée                      |
@@ -29,5 +29,7 @@ référence the company.
 | [0018](0018-pglite-developpement.md)                   | PGlite en développement et en tests, PostgreSQL en production         | aucune                         | Acceptée                      |
 | [0019](0019-boosters-recharge-a-la-lecture.md)         | Boosters : tirage serveur, recharge calculée à la lecture             | aucune ([ref] écarté)        | Acceptée                      |
 | [0020](0020-duels-asynchrones.md)                      | Duels entre joueurs : asynchrones, au tour par tour, état en base     | [ref] ([ref], 029 écartés) | Acceptée                      |
+| [0021](0021-hebergement-gcp.md)                        | Hébergement quasi gratuit : Firebase Hosting, Cloud Run, Neon         | [ref] écarté, 006, 012, 004  | Acceptée                      |
+| [0022](0022-depot-public.md)                           | Dépôt GitHub public                                                   | [ref], 039, 033              | Acceptée                      |
 
 Modèle : [template.md](template.md).
