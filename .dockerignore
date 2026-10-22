@@ -1,0 +1,24 @@
+# Contexte de construction de l'image de l'API (Dockerfile, US-046) : tout est exclu, sauf ce que l'image copie.
+*
+!package.json
+!package-lock.json
+!apps/api/package.json
+!apps/api/drizzle
+!apps/api/src
+!apps/web/package.json
+!packages/domain/package.json
+!packages/domain/src
+!packages/illustrations/package.json
+
+# Jamais dans l'image, même sous un dossier autorisé : secrets, base PGlite locale, dépendances du poste, rapports de
+# tests, worktrees de l'app Claude Desktop, et le code de test.
+**/.env
+**/.env.*
+**/.donnees
+**/node_modules
+**/coverage
+**/test-results
+**/playwright-report
+**/.claude
+**/*.test.ts
+apps/api/src/db/base-de-test.ts
