@@ -26,11 +26,14 @@ describe('arrêt propre sur SIGTERM (US-046)', () => {
     const commencee = Promise.withResolvers<void>();
 
     const app = construireApp();
-    app.get('/api/v1/essais/lente', async () => {
-      commencee.resolve();
-      await enCours.promise;
-      evenements.push('réponse');
-      return { fini: true };
+    // Dans un plugin, comme les vraies routes de l'API.
+    app.register(async (essais) => {
+      essais.get('/api/v1/essais/lente', async () => {
+        commencee.resolve();
+        await enCours.promise;
+        evenements.push('réponse');
+        return { fini: true };
+      });
     });
     // Ce que fait le serveur : fermer le pool de connexions quand l'API s'arrête.
     app.addHook('onClose', async () => {
@@ -58,6 +61,8 @@ describe('arrêt propre sur SIGTERM (US-046)', () => {
     enCours.resolve();
     const reponse = await lente;
     expect(reponse.status).toBe(200);
+    // La réponse ferme sa connexion : gardée ouverte, elle retiendrait l'arrêt.
+    expect(reponse.headers.get('connection')).toBe('close');
     expect(await reponse.json()).toEqual({ fini: true });
     expect(await sortie).toBe(0);
     expect(evenements).toEqual(['réponse', 'base fermée']);
