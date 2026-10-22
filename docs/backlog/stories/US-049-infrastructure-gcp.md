@@ -81,3 +81,5 @@ tout recréer**.
   attendue, en lecture seule, n'arrivait pas à la vérification) ; corrigé. Relance suivante : 0 créé, 0 modifié,
   29 déjà en place, URL du secret à jour ; configuration `gcloud` active du poste inchangée à chaque passage.
 - 2026-10-22 — livrée : infrastructure Google Cloud, Firebase et Neon créée par scripts/gcp/infrastructure.sh (idempotent, --simulation), relancée sans écart ; guide d'exploitation ; ADR 0024 (script plutôt que Terraform, PostgreSQL 18, Firebase par son API REST)
+- 2026-10-22 — guide : variante PowerShell, où `bash` désigne WSL (constaté par le porteur du projet, qui a relancé
+  la simulation depuis PowerShell : 29 éléments en place, rien à faire).
