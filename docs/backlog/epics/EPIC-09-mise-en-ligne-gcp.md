@@ -1,6 +1,6 @@
 # EPIC-09 — Mise en ligne sur Google Cloud
 
-- **Statut** : À affiner
+- **Statut** : En cours
 - **Priorité** : Must
 
 ## Objectif
@@ -31,7 +31,7 @@ gratuite, que Claude installe, déploie et maintient en ligne de commande
 - [ ] US-052 — Parties contre le bot gardées en base
 - [ ] US-053 — Page de confidentialité et suppression de son compte
 - [ ] US-054 — Des sessions qui expirent et des données qui ne s'accumulent pas
-- [ ] US-055 — Un front robuste au démarrage à froid et aux sessions expirées
+- [x] US-055 — Un front robuste au démarrage à froid et aux sessions expirées
 - [ ] US-056 — La CI teste l'API sur un vrai PostgreSQL
 - [ ] US-057 — Des requêtes légères : index, lectures bornées, cache et chargement à la demande
 - [ ] US-058 — Des duels équitables : hasard imprévisible et appariement sûr
