@@ -81,6 +81,54 @@ describe('Boosters', () => {
     expect(page.textContent).toContain('4 boosters en stock');
   });
 
+  const bouton = (page: HTMLElement, texte: string) =>
+    [...page.querySelectorAll('button')].find((b) => b.textContent?.includes(texte));
+
+  it('sans le catalogue, n’ouvre rien : bouton désactivé, raison et « Réessayer » (US-055)', async () => {
+    TestBed.inject(CompteService).joueur.set({ id: 'x', pseudo: 'Ada' });
+    const fixture = TestBed.createComponent(BoostersEcran);
+    fixture.detectChanges();
+    const http = TestBed.inject(HttpTestingController);
+    http
+      .expectOne('/api/v1/cartes')
+      .flush(null, { status: 503, statusText: 'Service Unavailable' });
+    fixture.detectChanges();
+    http.expectOne('/api/v1/moi/boosters').flush({ stock: 5, plafond: 10, prochainDans: 125 });
+    await fixture.whenStable();
+    fixture.detectChanges();
+    const page = fixture.nativeElement as HTMLElement;
+    expect(bouton(page, 'Ouvrir un booster')?.disabled).toBe(true);
+    expect(page.querySelector('[role="alert"]')?.textContent).toContain(
+      'Les cartes n’ont pas pu être chargées',
+    );
+
+    bouton(page, 'Réessayer')?.click();
+    TestBed.tick();
+    http.expectOne('/api/v1/cartes').flush(CATALOGUE);
+    await fixture.whenStable();
+    fixture.detectChanges();
+    expect(bouton(page, 'Ouvrir un booster')?.disabled).toBe(false);
+  });
+
+  it('dit pourquoi le stock n’a pas pu être lu, et le relit quand on réessaie', async () => {
+    const { fixture, http, page } = await afficher(true);
+    fixture.detectChanges();
+    http.expectOne('/api/v1/moi/boosters').flush(null, { status: 500, statusText: 'Erreur' });
+    await fixture.whenStable();
+    fixture.detectChanges();
+    expect(page.querySelector('[role="alert"]')?.textContent).toContain(
+      'Votre stock de boosters n’a pas pu être lu. Le serveur a rencontré un problème',
+    );
+    expect(page.textContent).not.toContain('Lecture de votre stock');
+
+    bouton(page, 'Réessayer')?.click();
+    http.expectOne('/api/v1/moi/boosters').flush({ stock: 2, plafond: 10, prochainDans: null });
+    await fixture.whenStable();
+    fixture.detectChanges();
+    expect(page.textContent).toContain('2 boosters en stock');
+    expect(page.querySelector('[role="alert"]')).toBeNull();
+  });
+
   it('désactive l’ouverture quand le stock est vide', async () => {
     const { fixture, http, page } = await afficher(true);
     fixture.detectChanges();

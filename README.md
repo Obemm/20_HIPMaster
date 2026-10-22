@@ -13,6 +13,12 @@ PostgreSQL + [Drizzle ORM](https://orm.drizzle.team), TypeScript strict, monorep
 - Rien d'autre : en développement, la base est PGlite (PostgreSQL embarqué, dans `.donnees/`, ADR 0018) ;
   Docker Desktop n'est utile que pour tester contre un vrai PostgreSQL (`npm run db:up`, puis `DATABASE_URL`)
 
+## Navigateurs pris en charge
+
+Ceux qu'exige Tailwind CSS 4 : **Safari 16.4** (iOS et iPadOS 16.4 compris), **Chrome et Edge 111**, **Firefox 128**,
+ou plus récents. Sur un navigateur plus ancien, les styles du jeu ne s'appliquent pas correctement. Le jeu a besoin de
+JavaScript ; sans lui, la page le dit (US-055).
+
 ## Démarrage
 
 ```bash

@@ -15,6 +15,7 @@ import { CollectionService } from '../collection/collection.service';
 import { CompteService } from '../compte/compte.service';
 import { Icone } from '../icone';
 import { LIBELLES_RARETE, SYMBOLES_RARETE } from '../libelles';
+import { ErreurChargement } from '../reseau/erreur-chargement';
 import { type Carte, LIBELLES_FAMILLE, libelleType } from './carte';
 import { VignetteCarte } from './vignette-carte';
 
@@ -24,7 +25,7 @@ import { VignetteCarte } from './vignette-carte';
  */
 @Component({
   selector: 'hip-detail-carte',
-  imports: [RouterLink, Icone, VignetteCarte],
+  imports: [RouterLink, Icone, VignetteCarte, ErreurChargement],
   templateUrl: './detail-carte.html',
 })
 export class DetailCarte implements OnDestroy {
