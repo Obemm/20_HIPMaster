@@ -1,7 +1,7 @@
 # 0008 — Azure comme hébergement cible
 
 - **Date** : 2026-10-16
-- **Statut** : Acceptée
+- **Statut** : Remplacée par 0021
 - **Référence Elis** : ADR-030 (Azure seul cloud public), ADR-006 (Application Insights / Log Analytics),
   ADR-012 (Azure Storage Account pour les fichiers), ADR-004 (préfixes d'URL hors production)
 
