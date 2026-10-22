@@ -38,6 +38,7 @@ npm run dev          # migrations appliquées au démarrage ; API sur localhost:
 | `npm run typecheck`                 | Vérifie les types de chaque paquet                                    |
 | `npm test`                          | Tests unitaires (Vitest : domaine, API, Angular)                      |
 | `npm run test:e2e`                  | Tests de bout en bout + accessibilité (Playwright)                    |
+| `npm run test:e2e:production`       | Les mêmes sur le build de production, avec la CSP de Firebase (= CI)  |
 | `npm run test:coverage`             | Tests du domaine et de l'API avec couverture                          |
 | `npm run check`                     | Lint + format + types + tests (quality gate, = CI)                    |
 | `npm run db:up`                     | Démarre PostgreSQL (Docker, facultatif) ; `db:down` pour l'arrêter    |
@@ -62,6 +63,12 @@ docker run --rm -p 8080:8080 -e DATABASE_URL=postgres://hipmaster:hipmaster@host
 
 En production (`NODE_ENV=production`, posé par l'image), l'API ne migre plus au démarrage : la commande
 `node apps/api/src/migrer.ts` s'en charge avant chaque déploiement (ADR 0023). Variables : voir `.env.example`.
+
+## Mise en ligne
+
+Chaque merge sur `main` dont la CI est verte est déployé automatiquement : l'API sur Cloud Run, le front sur Firebase
+Hosting (`https://hipmaster.web.app`), par le workflow `deploy.yml` (ADR 0028). Infrastructure, déploiement à la main
+et retour arrière : [guide d'exploitation](docs/exploitation/README.md).
 
 ## Organisation du code
 

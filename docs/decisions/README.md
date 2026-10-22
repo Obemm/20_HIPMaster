@@ -33,5 +33,6 @@ référence Elis.
 | [0022](0022-depot-public.md)                           | Dépôt GitHub public                                                   | ADR-011, 039, 033              | Acceptée                      |
 | [0023](0023-postgresql-production.md)                  | PostgreSQL en production : migrations dédiées, connexions courtes     | aucune                         | Acceptée                      |
 | [0024](0024-infrastructure-script-gcloud.md)           | Infrastructure créée par un script `gcloud` idempotent, pas Terraform | ADR-023 adapté, ADR-033 retenu | Acceptée                      |
+| [0028](0028-deploiement-continu.md)                    | Déploiement continu : révision vérifiée avant bascule, front par API  | ADR-011, 032 écartés, 039, 033 | Acceptée                      |
 
 Modèle : [template.md](template.md).

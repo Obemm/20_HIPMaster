@@ -108,6 +108,7 @@ readonly -a ROLES_DEPLOIEMENT=(
   roles/run.admin                         # déployer l'API et ses jobs, et l'ouvrir à Firebase Hosting
   roles/firebasehosting.admin             # publier le front
   roles/serviceusage.serviceUsageConsumer # utiliser les API du projet depuis les CLI
+  roles/secretmanager.viewer              # vérifier que les secrets de l'API existent, sans lire leur valeur (US-050)
 )
 
 readonly EMAIL_API=$SA_API@$PROJET.iam.gserviceaccount.com

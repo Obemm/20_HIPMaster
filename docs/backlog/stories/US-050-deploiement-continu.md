@@ -1,7 +1,7 @@
 # US-050 — Déploiement continu vers Cloud Run et Firebase Hosting
 
 - **Epic** : EPIC-09
-- **Statut** : À affiner
+- **Statut** : En cours
 - **Priorité** : Must
 - **Taille** : M
 - **Branche** : `us-050-deploiement-continu`
@@ -65,3 +65,6 @@ automatiquement** afin de **livrer souvent, sans manipulation à la main ni secr
 
 - 2026-10-22 — création, issue de la revue avant mise en ligne (ADR 0021).
 - 2026-10-22 — US-046 : mesure de la veille de Neon en production reprise ici, variables attendues par l'image.
+- 2026-10-23 — en cours : workflow `deploy.yml` et script `deployer.sh` (révision sans trafic, sonde, bascule),
+  `firebase.json` et publication par l'API REST de Firebase (ADR 0028), CSP vérifiée par les parcours e2e sur le
+  build de production (93 parcours, aucune violation ; le CSS critique en ligne en provoque 2, détectées).

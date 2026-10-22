@@ -24,7 +24,8 @@ jobs:
       - run: npm run build
 
   bout-en-bout:
-    name: Parcours et accessibilité (Playwright)
+    # Sur le build de production, servi comme par Firebase Hosting : la moindre violation de la CSP échoue (US-050).
+    name: Parcours, accessibilité et CSP sur le build de production (Playwright)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -34,7 +35,7 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx playwright install --with-deps chromium
-      - run: npm run test:e2e
+      - run: npm run test:e2e:production
       - uses: actions/upload-artifact@v7
         if: failure()
         with:
