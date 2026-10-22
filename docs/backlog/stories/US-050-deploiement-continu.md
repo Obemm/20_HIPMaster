@@ -72,7 +72,11 @@ automatiquement** afin de **livrer souvent, sans manipulation à la main ni secr
   - sous `/api`, Firebase ne pose pas de `Cache-Control` : l'API garde la main (`no-store` d'US-047, cache d'US-057) ;
   - le secret `cle-codes-recuperation` (US-047) est attendu en plus de `database-url` : sans lui, le déploiement
     s'arrête avant toute écriture, avec un message clair. Le compte de déploiement lit pour cela les métadonnées des
-    secrets (`roles/secretmanager.viewer`, ajouté au script d'infrastructure et appliqué le 2026-10-23).
+    secrets (`roles/secretmanager.viewer`, ajouté au script d'infrastructure et appliqué le 2026-10-23) ;
+  - l'API reçoit aussi `PROXYS_DE_CONFIANCE=2` (US-047 : Firebase Hosting, puis le frontal de Cloud Run) ; le job
+    de migration reçoit la même configuration que le service ;
+  - la sonde passe par l'adresse `run.app` de la révision `essai` : si US-047 désactive l'adresse par défaut
+    (`--no-default-url`), la sonde est à revoir.
 - À vérifier au premier déploiement réel (après US-047 et US-048) : jeton Workload Identity Federation, publication
   sur Firebase Hosting et en-têtes réels (étape `site`), retour arrière essayé une fois (API et front), veille de
   Neon en moins de 10 minutes.

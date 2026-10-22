@@ -49,8 +49,8 @@ Contraintes relevées par US-050 :
   adresse, puis tout le trafic bascule. La révision qui servait reçoit l'étiquette `precedente` : le retour arrière
   tient en une commande. Réglages : `europe-west3`, compte `hipmaster-api`, 1 vCPU, 512 Mio, 0 à 1 instance,
   accélération au démarrage, processeur alloué pendant les requêtes seulement, `DATABASE_URL` et
-  `CLE_CODES_RECUPERATION` tirés de Secret Manager, `GOOGLE_CLOUD_PROJECT`. Le premier déploiement crée le service,
-  sans révision précédente à protéger.
+  `CLE_CODES_RECUPERATION` tirés de Secret Manager, `GOOGLE_CLOUD_PROJECT` et `PROXYS_DE_CONFIANCE=2` (US-047). Le
+  premier déploiement crée le service, sans révision précédente à protéger.
 - **Front** : le build Angular est publié par l'**API REST de Firebase Hosting** (`scripts/gcp/publier-front.ts`),
   avec le jeton `gcloud` du compte de déploiement, sans CLI Firebase ni clé. `firebase.json` fait foi : le script le
   traduit, et refuse ce qu'il ne sait pas traduire plutôt que de l'oublier. Une dernière étape vérifie le site public
@@ -94,6 +94,8 @@ Contraintes relevées par US-050 :
   précédente du front. Plus loin en arrière, on redéploie un ancien commit en relançant son exécution du workflow.
 - Chaque déploiement efface les parties contre le bot en cours, jusqu'à US-052 (ADR 0014).
 - L'adresse de la révision `essai` est joignable comme le service : c'est le code qui va servir, sans risque de plus.
+  La sonde dépend de cette adresse `run.app` : désactiver l'adresse par défaut du service (`--no-default-url`)
+  demanderait de revoir la sonde.
 - Un déploiement depuis un poste reste possible, avec le même script, mais jamais pendant que le workflow tourne.
 - La CI lance les parcours e2e sur le build de production. En local, `npm run test:e2e` reste sur le serveur de
   développement, et `npm run test:e2e:production` reproduit la CI.

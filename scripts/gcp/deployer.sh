@@ -59,6 +59,9 @@ readonly ESSAI=essai
 readonly PRECEDENTE=precedente
 readonly FIREBASE=https://firebasehosting.googleapis.com/v1beta1
 readonly BUILD_FRONT=apps/web/dist/web/browser
+# Variables de l'API, hors secrets : projet pour relier journaux et traces (US-046) ; deux relais devant l'API,
+# Firebase Hosting puis le frontal de Cloud Run, sans quoi elle refuse de démarrer (US-047, ADR 0025).
+readonly VARIABLES=GOOGLE_CLOUD_PROJECT=$PROJET,PROXYS_DE_CONFIANCE=2
 readonly -a ETAPES_CONNUES=(prerequis image migrations revision sante trafic front site etat retour-api retour-front)
 
 GITHUB=0
@@ -283,13 +286,14 @@ pousser_image() {
   DOCKER_CONFIG=$(chemin_natif "$configuration") DOCKER_HOST=$hote docker push "$IMAGE"
 }
 
-# Même image, même compte et mêmes secrets que l'API : seule la commande change (ADR 0023).
+# Même image, même compte et même configuration que l'API, seule la commande change (ADR 0023) : la migration n'en
+# lit qu'une partie, mais une configuration vérifiée plus strictement demain ne la casserait pas.
 etape_migrations() {
   titre "Migrations : job $JOB, image du commit ${COMMIT:0:7}"
   info "en cas d'échec, le déploiement s'arrête ici : l'API en ligne n'a pas changé"
   gc run jobs deploy "$JOB" --project="$PROJET" --region="$REGION" --image="$IMAGE" \
     --service-account="$COMPTE_API" --set-secrets="$(liste_secrets)" \
-    --set-env-vars="GOOGLE_CLOUD_PROJECT=$PROJET" --command=node --args=apps/api/src/migrer.ts \
+    --set-env-vars="$VARIABLES" --command=node --args=apps/api/src/migrer.ts \
     --tasks=1 --max-retries=1 --task-timeout=5m --cpu=1 --memory=512Mi --labels=application=hipmaster
   gc run jobs execute "$JOB" --project="$PROJET" --region="$REGION" --wait
 }
@@ -300,7 +304,7 @@ etape_revision() {
   # pendant les requêtes seulement, pour que la base Neon puisse se mettre en veille (ADR 0021, 0023).
   local -a options=(--project="$PROJET" --region="$REGION" --image="$IMAGE" --service-account="$COMPTE_API"
     --cpu=1 --memory=512Mi --min-instances=0 --max-instances=1 --cpu-boost --cpu-throttling
-    --set-secrets="$(liste_secrets)" --set-env-vars="GOOGLE_CLOUD_PROJECT=$PROJET"
+    --set-secrets="$(liste_secrets)" --set-env-vars="$VARIABLES"
     --labels=application=hipmaster --tag="$ESSAI")
   if service_existe; then
     options+=(--no-traffic)
