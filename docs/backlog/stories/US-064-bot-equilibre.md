@@ -46,7 +46,7 @@ Les mesures se font par simulation (`npm run simuler`), sur les decks prêtés c
 - [x] Les règles ([regles.md](../../produit/regles.md)) et l'aide « Comment jouer ? » de l'écran de choix et de
       l'écran de partie expliquent le Débit du second joueur.
 - [x] Récompense : la règle actuelle reste (un booster par victoire contre le bot, quel que soit le niveau, 3 par jour
-      au plus) ; la question d'une victoire contre Stagiaire est posée au porteur du projet.
+      au plus) ; confirmée par le porteur du projet le 2026-10-23, Stagiaire compris.
 - [x] Tests du domaine, de l'API et de l'écran ; `npm run check` passe ; parcours e2e et audit axe-core au vert.
 
 ## Résultats
@@ -78,8 +78,8 @@ joueur « Batch de nuit » contre Stagiaire 90 %, miroirs entre 46 et 54 % à ch
 
 - Décision : [ADR 0026](../../decisions/0026-debit-du-second-joueur.md).
 - **Récompense** : une victoire contre Stagiaire rapporte un booster, comme contre les autres niveaux (US-025 :
-  une fois par partie, 3 par jour au plus). Question posée au porteur du projet le 2026-10-23 : faut-il la garder
-  pour le niveau facile ? Le plafond quotidien limite déjà l'abus.
+  une fois par partie, 3 par jour au plus). Décision du porteur du projet le 2026-10-23 : la garder telle quelle,
+  y compris contre le niveau facile ; le plafond quotidien limite déjà l'abus.
 - La règle vit dans le moteur (`debuterTour`) : elle vaut pour les parties contre le bot comme pour les duels, sans
   rien changer à l'API. Le journal de partie l'annonce au second joueur (« Vous jouez en second : 1 Débit de plus à
   ce premier tour »).
@@ -129,3 +129,4 @@ joueur « Batch de nuit » contre Stagiaire 90 %, miroirs entre 46 et 54 % à ch
 - 2026-10-23 — `main` intégré (US-046, US-049, US-055) : `npm run check` passe. Les ports 3000 et 4200 étant pris
   par les serveurs d'une autre session, les parcours e2e de la branche fusionnée sont confiés à la CI de la PR.
 - 2026-10-23 — livrée : règle du Débit du second joueur (ADR 0026), niveau facile Stagiaire présélectionné, Architecte ESB à 4 actions candidates ; un débutant bat le Stagiaire 54 à 56 % du temps, un joueur du niveau de Batch de nuit 90 %, et le premier comme le second joueur gagnent entre 46 et 54 % en miroir à chaque niveau
+- 2026-10-23 — décision du porteur du projet : une victoire contre Stagiaire rapporte un booster, comme contre les autres niveaux (3 par jour au plus).
