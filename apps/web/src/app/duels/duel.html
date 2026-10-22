@@ -21,7 +21,7 @@
           en un clic (un pseudo suffit), puis revenez ici.
         </p>
       } @else {
-        <p>Vérification de votre session…</p>
+        <hip-etat-session />
       }
     } @else if (probleme() === 'introuvable') {
       <h1 class="text-3xl font-bold tracking-tight">Défi introuvable</h1>
@@ -33,7 +33,12 @@
       <p><a routerLink="/duels/nouveau" class="underline underline-offset-4">Lancer un défi</a></p>
     } @else if (probleme() === 'panne') {
       <h1 class="text-3xl font-bold tracking-tight">Duel</h1>
-      <p role="alert" class="text-alerte">Le duel n’a pas pu être chargé : l’API ne répond pas.</p>
+      <hip-erreur-chargement
+        quoi="Le duel n’a pas pu être chargé."
+        [erreur]="panne()"
+        [enCours]="enLecture()"
+        (reessayer)="charger()"
+      />
     } @else if (duel(); as d) {
       @if (d.statut === 'attente' && d.moi === 'j1' && d.ouvert) {
         <h1 class="text-3xl font-bold tracking-tight">Recherche d’un adversaire…</h1>
@@ -120,6 +125,15 @@
               </li>
             }
           </ul>
+        } @else if (decks.error()) {
+          <hip-erreur-chargement
+            quoi="Les decks n’ont pas pu être chargés."
+            [erreur]="decks.error()"
+            [enCours]="decks.isLoading()"
+            (reessayer)="decks.reload()"
+          />
+        } @else {
+          <p>Chargement des decks…</p>
         }
       }
       @if (erreur()) {

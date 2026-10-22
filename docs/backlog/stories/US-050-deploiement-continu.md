@@ -37,10 +37,17 @@ automatiquement** afin de **livrer souvent, sans manipulation à la main ni secr
       (révision Cloud Run précédente, version Firebase précédente) et il a été essayé une fois.
 - [ ] La règle des migrations compatibles est écrite : une migration ne casse jamais la version encore en ligne
       (ajouter, déployer, puis retirer), puisqu'elle s'exécute avant la bascule du trafic.
+- [ ] **Étant donné** le service en ligne, **quand** plus aucune requête n'arrive, **alors** la base Neon se met en
+      veille en moins de 10 minutes, mesuré selon la procédure d'US-046 (processeur de Cloud Run alloué pendant les
+      requêtes seulement).
 
 ## Notes
 
 - Dépend de US-046 (image de l'API, commande de migration) et de US-049 (infrastructure).
+- Ce qu'attend l'image de l'API (US-046, ADR 0023) : `DATABASE_URL` (Secret Manager, point d'accès direct de Neon,
+  `sslmode=require` accepté), `GOOGLE_CLOUD_PROJECT` (relie les journaux aux traces) ; `NODE_ENV=production` et `PORT`
+  viennent de l'image et de Cloud Run ; `LOG_LEVEL` et `BASE_*` sont facultatifs (`.env.example`). Le job de migration
+  utilise la même image avec la commande `node apps/api/src/migrer.ts`.
 - La CI actuelle (`.github/workflows/ci.yml`) reste la porte d'entrée : le déploiement ne démarre qu'après elle.
 - Firebase Hosting ne relaie aucun cookie sauf `__session` : l'authentification par en-tête `Authorization`
   (ADR 0017) n'est pas concernée.
@@ -57,3 +64,4 @@ automatiquement** afin de **livrer souvent, sans manipulation à la main ni secr
 ## Journal
 
 - 2026-10-22 — création, issue de la revue avant mise en ligne (ADR 0021).
+- 2026-10-22 — US-046 : mesure de la veille de Neon en production reprise ici, variables attendues par l'image.

@@ -14,6 +14,10 @@ const GARDE = {
   description: 'Doit être attaqué avant vos autres composants et votre SI.',
 };
 
+/** Les identifiants de partie et de duel sont des UUID (US-055). */
+const ID = '00000000-0000-4000-8000-0000000000a1';
+const PERDUE = '00000000-0000-4000-8000-0000000000ff';
+
 const NIVEAUX = [{ id: 'agent-autonome', nom: 'Agent autonome', description: 'Difficile.' }];
 
 const CATALOGUE: Carte[] = [
@@ -91,7 +95,7 @@ function vue(modifs: Partial<Vue> = {}): Vue {
 }
 
 const partie = (v: Vue, evenements: Partie['evenements'] = []): Partie => ({
-  id: 'p1',
+  id: ID,
   deck: 'moderne',
   deckAdversaire: 'heritage',
   niveau: 'agent-autonome',
@@ -101,12 +105,12 @@ const partie = (v: Vue, evenements: Partie['evenements'] = []): Partie => ({
 
 async function ouvrir(v: Vue = vue(), complement: Partial<Partie> = {}) {
   const fixture = TestBed.createComponent(PartieEcran);
-  fixture.componentRef.setInput('id', 'p1');
+  fixture.componentRef.setInput('id', ID);
   fixture.detectChanges();
   const http = TestBed.inject(HttpTestingController);
   http.expectOne('/api/v1/cartes').flush(CATALOGUE);
   http.expectOne('/api/v1/niveaux').flush(NIVEAUX);
-  http.expectOne('/api/v1/parties/p1').flush({
+  http.expectOne(`/api/v1/parties/${ID}`).flush({
     ...partie(v, [{ type: 'pose', joueur: 'j2', carte: { id: 'j2-05', numero: 17 } }]),
     ...complement,
   });
@@ -184,7 +188,7 @@ describe('PartieEcran', () => {
     fixture.detectChanges();
     expect(bouton(page, 'Décommissionner (+1 Débit)')).toBeTruthy();
     bouton(page, 'Poser (2 Débit)')?.click();
-    const requete = http.expectOne('/api/v1/parties/p1/actions');
+    const requete = http.expectOne(`/api/v1/parties/${ID}/actions`);
     expect(requete.request.body).toEqual({ type: 'poser', carte: 'j1-01' });
     requete.flush(partie(vue()));
     await fixture.whenStable();
@@ -262,7 +266,7 @@ describe('PartieEcran', () => {
     cible?.click();
     fixture.detectChanges();
     // Regarder ne joue rien : aucune requête, le détail de la cible s'affiche avec son état.
-    http.expectNone('/api/v1/parties/p1/actions');
+    http.expectNone(`/api/v1/parties/${ID}/actions`);
     expect(cible?.getAttribute('aria-pressed')).toBe('true');
     const detail = page.querySelector('#detail-plateau');
     expect(detail?.querySelector('h3')?.textContent).toContain('SOAP / WSDL');
@@ -271,7 +275,7 @@ describe('PartieEcran', () => {
     expect(page.textContent).toContain('Confirmez l’attaque sous le détail de la cible');
 
     bouton(page, 'Attaquer avec API REST')?.click();
-    const requete = http.expectOne('/api/v1/parties/p1/actions');
+    const requete = http.expectOne(`/api/v1/parties/${ID}/actions`);
     expect(requete.request.body).toEqual({ type: 'attaquer', attaquant: 'j1-02', cible: 'j2-05' });
     requete.flush(partie(vue()));
     await fixture.whenStable();
@@ -366,7 +370,7 @@ describe('PartieEcran', () => {
     expect(finir?.getAttribute('aria-describedby')).toBe('attaques-oubliees');
     expect(finir?.disabled).toBe(false);
     finir?.click();
-    const requete = http.expectOne('/api/v1/parties/p1/actions');
+    const requete = http.expectOne(`/api/v1/parties/${ID}/actions`);
     expect(requete.request.body).toEqual({ type: 'finirTour' });
     requete.flush(partie(vue()));
     await fixture.whenStable();
@@ -417,7 +421,7 @@ describe('PartieEcran', () => {
     bouton(page, 'Content-Based Router')?.click();
     fixture.detectChanges();
     bouton(page, 'Jouer sur SOAP / WSDL (1 Débit)')?.click();
-    const requete = http.expectOne('/api/v1/parties/p1/actions');
+    const requete = http.expectOne(`/api/v1/parties/${ID}/actions`);
     expect(requete.request.body).toEqual({ type: 'jouer', carte: 'j1-09', cibles: ['j2-05'] });
     requete.flush(partie(vue()));
     await fixture.whenStable();
@@ -434,7 +438,7 @@ describe('PartieEcran', () => {
     page.querySelector<HTMLButtonElement>('section[aria-labelledby="titre-main"] button')?.click();
     fixture.detectChanges();
     bouton(page, 'Poser et renforcer API REST (2 Débit)')?.click();
-    const requete = http.expectOne('/api/v1/parties/p1/actions');
+    const requete = http.expectOne(`/api/v1/parties/${ID}/actions`);
     expect(requete.request.body).toEqual({ type: 'poser', carte: 'j1-01', cible: 'j1-02' });
     requete.flush(partie(vue()));
     await fixture.whenStable();
@@ -457,7 +461,7 @@ describe('PartieEcran', () => {
     page.querySelector<HTMLButtonElement>('section[aria-labelledby="titre-main"] button')?.click();
     fixture.detectChanges();
     bouton(page, 'Migrer SOAP / WSDL vers cette carte (0 Débit)')?.click();
-    const requete = http.expectOne('/api/v1/parties/p1/actions');
+    const requete = http.expectOne(`/api/v1/parties/${ID}/actions`);
     expect(requete.request.body).toEqual({ type: 'migrer', source: 'j1-02', carte: 'j1-01' });
     requete.flush(partie(vue()));
     await fixture.whenStable();
@@ -467,7 +471,7 @@ describe('PartieEcran', () => {
     const { fixture, http, page } = await ouvrir();
     bouton(page, 'Finir mon tour')?.click();
     http
-      .expectOne('/api/v1/parties/p1/actions')
+      .expectOne(`/api/v1/parties/${ID}/actions`)
       .flush(
         { title: 'Action refusée', status: 422, detail: 'Pas assez de Débit.' },
         { status: 422, statusText: 'Unprocessable Entity' },
@@ -516,15 +520,80 @@ describe('PartieEcran', () => {
 
   it('explique qu’une partie expirée n’existe plus', async () => {
     const fixture = TestBed.createComponent(PartieEcran);
-    fixture.componentRef.setInput('id', 'perdue');
+    fixture.componentRef.setInput('id', PERDUE);
     fixture.detectChanges();
     const http = TestBed.inject(HttpTestingController);
     http.expectOne('/api/v1/cartes').flush(CATALOGUE);
     http.expectOne('/api/v1/niveaux').flush(NIVEAUX);
-    http.expectOne('/api/v1/parties/perdue').flush(null, { status: 404, statusText: 'Not Found' });
+    http
+      .expectOne(`/api/v1/parties/${PERDUE}`)
+      .flush(null, { status: 404, statusText: 'Not Found' });
     await fixture.whenStable();
     fixture.detectChanges();
     expect((fixture.nativeElement as HTMLElement).textContent).toContain('Partie introuvable');
+  });
+
+  it('un identifiant qui n’est pas un UUID : « Partie introuvable », sans rien demander à l’API', async () => {
+    const fixture = TestBed.createComponent(PartieEcran);
+    // L'identifiant que lie le routeur pour le lien piégé /jouer/..%2F..%2Fv1%2Fraretes (US-055).
+    fixture.componentRef.setInput('id', '../../v1/raretes');
+    fixture.detectChanges();
+    const http = TestBed.inject(HttpTestingController);
+    http.expectOne('/api/v1/cartes').flush(CATALOGUE);
+    http.expectOne('/api/v1/niveaux').flush(NIVEAUX);
+    await fixture.whenStable();
+    fixture.detectChanges();
+    http.verify();
+    expect((fixture.nativeElement as HTMLElement).textContent).toContain('Partie introuvable');
+  });
+
+  it('sans le catalogue, dit pourquoi et propose de réessayer, au lieu d’un « Chargement… » sans fin', async () => {
+    const fixture = TestBed.createComponent(PartieEcran);
+    fixture.componentRef.setInput('id', ID);
+    fixture.detectChanges();
+    const http = TestBed.inject(HttpTestingController);
+    http
+      .expectOne('/api/v1/cartes')
+      .flush(null, { status: 503, statusText: 'Service Unavailable' });
+    http.expectOne('/api/v1/niveaux').flush(NIVEAUX);
+    http.expectOne(`/api/v1/parties/${ID}`).flush(partie(vue()));
+    await fixture.whenStable();
+    fixture.detectChanges();
+    const page = fixture.nativeElement as HTMLElement;
+    expect(page.querySelector('[role="alert"]')?.textContent).toContain(
+      'La partie n’a pas pu être chargée. Serveur injoignable pour le moment',
+    );
+    expect(page.textContent).not.toContain('Chargement de la partie');
+
+    // Seul ce qui manque est relu : le catalogue.
+    bouton(page, 'Réessayer')?.click();
+    TestBed.tick();
+    http.expectOne('/api/v1/cartes').flush(CATALOGUE);
+    await fixture.whenStable();
+    fixture.detectChanges();
+    http.verify();
+    expect(bouton(page, 'Finir mon tour')).toBeTruthy();
+  });
+
+  it('si la partie n’a pas pu être lue, propose de la relire', async () => {
+    const fixture = TestBed.createComponent(PartieEcran);
+    fixture.componentRef.setInput('id', ID);
+    fixture.detectChanges();
+    const http = TestBed.inject(HttpTestingController);
+    http.expectOne('/api/v1/cartes').flush(CATALOGUE);
+    http.expectOne('/api/v1/niveaux').flush(NIVEAUX);
+    http.expectOne(`/api/v1/parties/${ID}`).flush(null, { status: 500, statusText: 'Erreur' });
+    await fixture.whenStable();
+    fixture.detectChanges();
+    const page = fixture.nativeElement as HTMLElement;
+    expect(page.querySelector('[role="alert"]')?.textContent).toContain(
+      'Le serveur a rencontré un problème',
+    );
+    bouton(page, 'Réessayer')?.click();
+    http.expectOne(`/api/v1/parties/${ID}`).flush(partie(vue()));
+    await fixture.whenStable();
+    fixture.detectChanges();
+    expect(bouton(page, 'Finir mon tour')).toBeTruthy();
   });
 });
 
@@ -561,9 +630,15 @@ describe('ChoixDeck', () => {
     expect(creation.request.body).toEqual({ deck: 'moderne', niveau: 'agent-autonome' });
     creation.flush(partie(vue()));
     await fixture.whenStable();
-    expect(naviguer).toHaveBeenCalledWith(['/jouer', 'p1']);
+    expect(naviguer).toHaveBeenCalledWith(['/jouer', ID]);
   });
 });
+
+/** Simule un onglet caché ou de nouveau visible. */
+function onglet(etat: 'hidden' | 'visible'): void {
+  Object.defineProperty(document, 'visibilityState', { configurable: true, get: () => etat });
+  document.dispatchEvent(new Event('visibilitychange'));
+}
 
 describe('PartieEcran en duel (US-034)', () => {
   beforeEach(() => {
@@ -574,7 +649,7 @@ describe('PartieEcran en duel (US-034)', () => {
   });
 
   const duel = (v: Vue, version: number, evenements: Partie['evenements'] = []) => ({
-    id: 'p1',
+    id: ID,
     statut: 'en-cours',
     version,
     createur: { pseudo: 'Ada' },
@@ -589,13 +664,13 @@ describe('PartieEcran en duel (US-034)', () => {
 
   async function ouvrirDuel(v: Vue) {
     const fixture = TestBed.createComponent(PartieEcran);
-    fixture.componentRef.setInput('id', 'p1');
+    fixture.componentRef.setInput('id', ID);
     fixture.componentRef.setInput('mode', 'duel');
     fixture.detectChanges();
     const http = TestBed.inject(HttpTestingController);
     http.expectOne('/api/v1/cartes').flush(CATALOGUE);
     http.expectOne('/api/v1/niveaux').flush(NIVEAUX);
-    http.expectOne('/api/v1/duels/p1').flush(duel(v, 4));
+    http.expectOne(`/api/v1/duels/${ID}`).flush(duel(v, 4));
     await fixture.whenStable();
     fixture.detectChanges();
     return { fixture, http, page: fixture.nativeElement as HTMLElement };
@@ -603,12 +678,12 @@ describe('PartieEcran en duel (US-034)', () => {
 
   it('sans mode lié par la route (undefined), reste une partie contre le bot', () => {
     const fixture = TestBed.createComponent(PartieEcran);
-    fixture.componentRef.setInput('id', 'p1');
+    fixture.componentRef.setInput('id', ID);
     fixture.componentRef.setInput('mode', undefined);
     fixture.detectChanges();
     const http = TestBed.inject(HttpTestingController);
-    expect(http.match('/api/v1/parties/p1')).toHaveLength(1);
-    expect(http.match('/api/v1/duels/p1')).toHaveLength(0);
+    expect(http.match(`/api/v1/parties/${ID}`)).toHaveLength(1);
+    expect(http.match(`/api/v1/duels/${ID}`)).toHaveLength(0);
   });
 
   it('nomme l’adversaire et envoie ses actions au duel, avec la version connue', async () => {
@@ -618,7 +693,7 @@ describe('PartieEcran en duel (US-034)', () => {
     expect(page.textContent).not.toContain('Niveau :');
 
     bouton(page, 'Finir mon tour')?.click();
-    const action = http.expectOne('/api/v1/duels/p1/actions');
+    const action = http.expectOne(`/api/v1/duels/${ID}/actions`);
     expect(action.request.headers.get('If-Match')).toBe('"4"');
     action.flush(duel(vue({ actif: 'j2', actions: [] }), 5));
     await fixture.whenStable();
@@ -626,23 +701,47 @@ describe('PartieEcran en duel (US-034)', () => {
     expect(page.textContent).toContain('Au tour de Bob');
   });
 
-  it('pendant le tour adverse, redemande le duel et affiche les coups de l’adversaire', async () => {
-    // Seul setInterval est simulé : Angular garde ses vrais setTimeout pour se stabiliser.
-    vi.useFakeTimers({ toFake: ['setInterval', 'clearInterval'] });
+  it('pendant le tour adverse, redemande le duel toutes les 3 s, sauf pour un onglet caché (US-055)', async () => {
+    // Minuteries simulées dès le départ : l'interrogation et le rendu d'Angular avancent avec elles.
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout', 'Date'] });
     try {
-      const { fixture, http, page } = await ouvrirDuel(vue({ actif: 'j2', actions: [] }));
+      const fixture = TestBed.createComponent(PartieEcran);
+      fixture.componentRef.setInput('id', ID);
+      fixture.componentRef.setInput('mode', 'duel');
+      fixture.detectChanges();
+      const http = TestBed.inject(HttpTestingController);
+      http.expectOne('/api/v1/cartes').flush(CATALOGUE);
+      http.expectOne('/api/v1/niveaux').flush(NIVEAUX);
+      http.expectOne(`/api/v1/duels/${ID}`).flush(duel(vue({ actif: 'j2', actions: [] }), 4));
+      await vi.advanceTimersByTimeAsync(0);
+      fixture.detectChanges();
+      const page = fixture.nativeElement as HTMLElement;
+      const relecture = () => http.expectOne((r) => r.url === `/api/v1/duels/${ID}`);
+
       await vi.advanceTimersByTimeAsync(3000);
-      const relecture = http.expectOne((r) => r.url === '/api/v1/duels/p1');
-      expect(relecture.request.params.get('depuis')).toBe('14');
-      expect(relecture.request.headers.get('If-None-Match')).toBe('"4"');
-      relecture.flush(
+      const premiere = relecture();
+      expect(premiere.request.params.get('depuis')).toBe('14');
+      expect(premiere.request.headers.get('If-None-Match')).toBe('"4"');
+      premiere.flush(null, { status: 304, statusText: 'Not Modified' });
+      await vi.advanceTimersByTimeAsync(0);
+
+      onglet('hidden');
+      await vi.advanceTimersByTimeAsync(60_000);
+      http.expectNone((r) => r.url === `/api/v1/duels/${ID}`);
+
+      // De retour sur l'onglet, le duel est relu aussitôt : le temps du rendu, puis de la minuterie à 0 ms (que
+      // les minuteries simulées comptent pour 1 ms quand elle est créée pendant un pas).
+      onglet('visible');
+      await vi.advanceTimersByTimeAsync(10);
+      relecture().flush(
         duel(vue(), 6, [{ type: 'pose', joueur: 'j2', carte: { id: 'j2-05', numero: 17 } }]),
       );
-      await fixture.whenStable();
+      await vi.advanceTimersByTimeAsync(0);
       fixture.detectChanges();
       expect(page.querySelector('[role="log"]')?.textContent).toContain('Bob pose');
       expect(bouton(page, 'Finir mon tour')?.disabled).toBe(false);
     } finally {
+      onglet('visible');
       vi.useRealTimers();
     }
   });
@@ -661,7 +760,7 @@ describe('PartieEcran en duel (US-034)', () => {
     bouton(page, 'Abandonner')?.click();
     fixture.detectChanges();
     bouton(page, 'Oui, abandonner')?.click();
-    const abandon = http.expectOne('/api/v1/duels/p1/abandon');
+    const abandon = http.expectOne(`/api/v1/duels/${ID}/abandon`);
     expect(abandon.request.method).toBe('POST');
     abandon.flush({
       ...duel(vue({ issue: { gagnant: 'j2', raison: 'abandon' }, actions: [] }), 5),
@@ -677,13 +776,13 @@ describe('PartieEcran en duel (US-034)', () => {
 
   it('annonce la victoire par abandon, et pourquoi elle ne rapporte pas de booster', async () => {
     const fixture = TestBed.createComponent(PartieEcran);
-    fixture.componentRef.setInput('id', 'p1');
+    fixture.componentRef.setInput('id', ID);
     fixture.componentRef.setInput('mode', 'duel');
     fixture.detectChanges();
     const http = TestBed.inject(HttpTestingController);
     http.expectOne('/api/v1/cartes').flush(CATALOGUE);
     http.expectOne('/api/v1/niveaux').flush(NIVEAUX);
-    http.expectOne('/api/v1/duels/p1').flush({
+    http.expectOne(`/api/v1/duels/${ID}`).flush({
       ...duel(vue({ issue: { gagnant: 'j1', raison: 'abandon' }, actions: [] }), 7),
       statut: 'termine',
       echeance: null,

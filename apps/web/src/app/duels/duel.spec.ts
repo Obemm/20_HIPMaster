@@ -118,6 +118,33 @@ describe('DuelEcran', () => {
     expect(page.querySelector('h1')?.textContent).toContain('Défi expiré');
   });
 
+  it('un identifiant qui n’est pas un UUID : « Défi introuvable », sans appel à l’API (US-055)', async () => {
+    TestBed.inject(CompteService).joueur.set({ id: 'x', pseudo: 'Moi' });
+    const fixture = TestBed.createComponent(DuelEcran);
+    fixture.componentRef.setInput('id', '../../v1/raretes');
+    fixture.detectChanges();
+    const http = TestBed.inject(HttpTestingController);
+    http.expectOne('/api/v1/decks').flush(DECKS);
+    await fixture.whenStable();
+    fixture.detectChanges();
+    http.verify();
+    expect((fixture.nativeElement as HTMLElement).querySelector('h1')?.textContent).toContain(
+      'Défi introuvable',
+    );
+  });
+
+  it('si le duel n’a pas pu être lu, dit pourquoi et le relit quand on réessaie (US-055)', async () => {
+    const { fixture, http, page } = await afficher({ status: 503 });
+    expect(page.querySelector('[role="alert"]')?.textContent).toContain(
+      'Le duel n’a pas pu être chargé. Serveur injoignable pour le moment',
+    );
+    bouton(page, 'Réessayer')?.click();
+    http.expectOne(`/api/v1/duels/${ID}`).flush(duel());
+    await fixture.whenStable();
+    fixture.detectChanges();
+    expect(page.querySelector('h1')?.textContent).toContain('Votre défi est lancé');
+  });
+
   it('dans la file d’attente (duel ouvert), propose de la quitter, sans lien à partager', async () => {
     const { fixture, http, page } = await afficher(duel({ ouvert: true }));
     expect(page.querySelector('h1')?.textContent).toContain('Recherche d’un adversaire');
