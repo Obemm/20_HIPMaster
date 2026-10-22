@@ -9,7 +9,12 @@ Jouer une partie courte contre un bot, avec plusieurs niveaux de difficulté, et
 
 ## Indicateur de réussite
 
-Une partie dure moins de 5 minutes ; le bot de niveau moyen gagne environ une partie sur deux contre un joueur débutant.
+Une partie dure moins de 5 minutes ; le bot de niveau facile gagne au plus une partie sur deux contre un joueur
+débutant, et commencer ne donne pas d'avance décisive.
+
+Indicateur revu le 2026-10-22 (US-064) : il visait le niveau moyen (Architecte ESB du temps d'US-021), mais un
+débutant ne gagne qu'environ une partie sur sept contre Batch de nuit, désormais moyen, et moins encore contre
+Architecte ESB. C'est le niveau facile, Stagiaire, qui lui laisse plus d'une partie sur deux.
 
 ## Stories
 

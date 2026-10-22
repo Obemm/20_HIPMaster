@@ -49,6 +49,31 @@ Les mesures se font par simulation (`npm run simuler`), sur les decks prêtés c
       au plus) ; la question d'une victoire contre Stagiaire est posée au porteur du projet.
 - [ ] Tests du domaine, de l'API et de l'écran ; `npm run check` passe ; parcours e2e et audit axe-core au vert.
 
+## Résultats
+
+`npm run simuler -- 200 1` : 1 800 parties par ligne, decks prêtés croisés ; graine 1001 entre crochets quand elle
+diffère de plus de 2 points. « Avant » : le moteur sans la règle, avec les niveaux d'US-021. Détail et lecture dans
+[cartes-set-1.md](../../produit/cartes-set-1.md).
+
+| Chaque joueur contre lui-même | Avant : premier / second | Après : premier / second |
+| ----------------------------- | ------------------------ | ------------------------ |
+| Profil débutant               | 73 / 27 %                | 54 / 46 %                |
+| Stagiaire                     | —                        | 53 / 48 %                |
+| Batch de nuit                 | 63 / 36 %                | 52 / 46 %                |
+| Architecte ESB                | 66 / 33 %                | 54 / 46 %                |
+| Agent autonome                | 62 / 38 %                | 49 / 51 %                |
+
+| Après : niveau du bot      | Débutant (en commençant / en second) | Joueur « Batch de nuit » (en commençant / en second) |
+| -------------------------- | ------------------------------------ | ---------------------------------------------------- |
+| Stagiaire (facile)         | **56 %** (59 / 53 %)                 | **90 %** (91 / 89 %)                                 |
+| Batch de nuit (moyen)      | 14 % (16 / 12 %)                     | 50 % (53 / 46 %)                                     |
+| Architecte ESB (difficile) | 8 % (9 / 7 %)                        | 44 % [40 %] (49 / 40 %)                              |
+| Agent autonome (expert)    | 4 % (5 / 2 %)                        | 39 % [36 %] (42 / 36 %)                              |
+
+Avant, contre Batch de nuit alors présenté comme facile, un débutant gagnait 14 % de ses parties (21 % en
+commençant, 7 % en second). Les trois cibles sont atteintes aux deux graines : débutant contre Stagiaire 56 et 54 %,
+joueur « Batch de nuit » contre Stagiaire 90 %, miroirs entre 46 et 54 % à chaque niveau.
+
 ## Notes
 
 - Décision : [ADR 0026](../../decisions/0026-debit-du-second-joueur.md).
@@ -76,6 +101,25 @@ Les mesures se font par simulation (`npm run simuler`), sur les decks prêtés c
   « Une seule pose par tour » laisse une marge au débutant, garde un miroir équilibré et un bot actif, qui attaque
   aussi les Gardes ; « le SI seulement » est plus facile encore, mais le bot reste inerte derrière une Garde.
 
+- **Architecte ESB étudie désormais 4 actions candidates au lieu de 3.** Avec la seule règle du Débit, son miroir
+  restait à 56 / 44 % aux graines 1 et 1001 (54,7 % pour le premier en moyenne sur six graines, 10 800 parties),
+  hors de la cible, alors que Batch de nuit et Agent autonome y entraient. Le nombre de candidates règle cet avantage
+  (graine 1, 1 800 parties par mesure, decks croisés ; victoires d'ESB contre les deux autres) :
+
+  | Candidates     | Miroir (1er / 2e) | Contre Batch de nuit | Contre Agent autonome |
+  | -------------- | ----------------- | -------------------- | --------------------- |
+  | 2              | 58 / 42 %         | 45 %                 | 31 %                  |
+  | 3 (avant)      | 56 / 44 %         | 56 %                 | 41 %                  |
+  | **4** (retenu) | 54 / 46 %         | 59 %                 | 45 %                  |
+  | 5              | 53 / 47 %         | 61 %                 | 47 %                  |
+  | 6              | 51 / 49 %         | 61 %                 | 48 %                  |
+
+  Avec 4 candidates, ESB entre dans la cible et reste entre Batch de nuit et Agent autonome ; au-delà, il rattrape
+  presque Agent autonome. Un bot qui étudie trop peu d'actions profite davantage de l'avance du premier tour.
+
 ## Journal
 
 - 2026-10-22 — création, à la suite de l'étude par simulation du même jour.
+- 2026-10-22 — règle du second joueur dans le moteur (journal de partie, règles, aide « Comment jouer ? ») ; profil
+  débutant et `simulerCroise` ; Stagiaire « une seule pose par tour », retenu parmi huit variantes ; Architecte ESB à
+  4 candidates pour entrer dans la cible d'équité ; API, écran et e2e suivent ; mesures avant et après aux graines 1 et 1001. `npm run check` et `npm run test:e2e` (75 parcours) passent.

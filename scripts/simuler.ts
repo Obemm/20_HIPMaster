@@ -6,7 +6,7 @@
  * 3. Avantage du premier joueur : chaque niveau, et le profil débutant, contre lui-même (US-064).
  * 4. Chaque niveau contre un joueur débutant et contre un joueur du niveau de Batch de nuit (US-064).
  * Les mesures 3 et 4 croisent les decks prêtés : `parties` parties pour chacune des 9 paires de decks.
- * Affiche des tableaux Markdown, à reporter dans docs/produit/cartes-set-1.md. Compter une dizaine de minutes à 200.
+ * Affiche des tableaux Markdown, à reporter dans docs/produit/cartes-set-1.md. Compter de dix à vingt minutes à 200.
  */
 import {
   choisirActionBatchDeNuit,

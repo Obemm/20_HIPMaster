@@ -99,8 +99,21 @@ Toutes les évolutions notables du projet sont consignées ici
 - Illustrations provisoires des 71 cartes, dessinées par le code (`npm run illustrations:provisoires`) : un emblème
   par famille, un motif par type, une intensité par rareté, sans texte ni logo, en attendant de vraies illustrations
   (US-018, ADR 0016).
+- Un niveau de bot facile, « Stagiaire », présélectionné : il ne pose qu'une carte par tour, la plus chère, et
+  attaque le SI dès qu'il peut, sans sort ni calcul ; un joueur débutant le bat plus d'une fois sur deux (54 à 56 %
+  en simulation, contre 14 % face à Batch de nuit). `npm run simuler` mesure aussi un profil débutant, la part de
+  victoires du joueur qui commence et du second, et chaque niveau contre un débutant et contre un joueur du niveau de
+  Batch de nuit (US-064).
 
 ### Modifié
+
+- Le joueur qui joue en second reçoit 1 Débit de plus à son premier tour (2 au lieu de 1), contre le bot comme en
+  duel : chacun contre lui-même, le joueur qui commençait gagnait de 62 à 73 % des parties ; le premier et le second
+  en gagnent désormais chacun entre 46 et 54 %. Le journal de partie l'annonce, les règles et l'aide « Comment
+  jouer ? » l'expliquent (US-064, ADR 0026).
+- Niveaux du bot : Batch de nuit devient Moyen, Architecte ESB Difficile et Agent autonome Expert, avec des
+  descriptions à jour ; Architecte ESB étudie 4 actions candidates au lieu de 3, sans quoi le joueur qui commence
+  gardait 56 % des parties en miroir (US-064).
 
 - Dependabot ne propose plus TypeScript 6.1 ou plus (incompatible avec Angular 22) ni de version majeure de
   `@types/node` (qui suit Node 24) (US-007).
