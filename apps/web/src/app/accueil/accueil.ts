@@ -2,6 +2,7 @@ import { httpResource } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { LIBELLES_RARETE, type Rarete } from '../libelles';
+import { ErreurChargement } from '../reseau/erreur-chargement';
 
 /** Chance d'obtenir une rareté dans un booster, telle que calculée par l'API. */
 export interface ChanceRarete {
@@ -11,7 +12,7 @@ export interface ChanceRarete {
 
 @Component({
   selector: 'hip-accueil',
-  imports: [RouterLink],
+  imports: [RouterLink, ErreurChargement],
   templateUrl: './accueil.html',
 })
 export class Accueil {

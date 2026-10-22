@@ -17,7 +17,11 @@ import { firstValueFrom } from 'rxjs';
 import { type Carte, LIBELLES_FAMILLE, libelleType } from '../cartes/carte';
 import { VignetteCarte } from '../cartes/vignette-carte';
 import { Icone } from '../icone';
+import { estUuid } from '../identifiant';
 import { LIBELLES_RARETE, SYMBOLES_RARETE } from '../libelles';
+import { interroger } from '../presence';
+import { ErreurChargement } from '../reseau/erreur-chargement';
+import { expliquer } from '../reseau/reseau';
 import { decrireComposant, JetonComposant, statutsComposant } from './jeton-composant';
 import type { Duel } from '../duels/modele';
 import { resteAvant } from '../duels/temps';
@@ -58,7 +62,15 @@ const INTERROGATION_DUEL_MS = 3000;
  */
 @Component({
   selector: 'hip-partie',
-  imports: [NgTemplateOutlet, RouterLink, VignetteCarte, JetonComposant, Icone, RegleCourte],
+  imports: [
+    NgTemplateOutlet,
+    RouterLink,
+    VignetteCarte,
+    JetonComposant,
+    Icone,
+    RegleCourte,
+    ErreurChargement,
+  ],
   templateUrl: './partie.html',
   // Échap referme le détail de la carte ou du composant choisi (US-040, US-041), où que soit le focus dans l'écran.
   host: { '(keydown.escape)': 'fermerDetail()' },
@@ -80,7 +92,6 @@ export class PartieEcran implements OnInit, OnDestroy {
   /** Événements reçus, pas encore affichés : ils passent un par un, toujours dans l'ordre. */
   private readonly enAttente: Evenement[] = [];
   private minuterie: ReturnType<typeof setTimeout> | null = null;
-  private interrogation: ReturnType<typeof setInterval> | null = null;
   /** En duel : version (ETag) et curseur du journal de la dernière réponse, et pseudo de l'adversaire. */
   private version = -1;
   private curseur = 0;
@@ -106,6 +117,9 @@ export class PartieEcran implements OnInit, OnDestroy {
   protected readonly introuvable = signal(false);
   protected readonly erreur = signal<string | null>(null);
   protected readonly occupe = signal(false);
+  /** Lecture de la partie en cours, et son échec tant qu'aucune partie n'est affichée (US-055). */
+  private readonly enLecture = signal(false);
+  private readonly echecLecture = signal<unknown>(null);
   /** Événements déjà affichés ; le journal en est déduit, avec les noms du catalogue dès qu'il est chargé. */
   private readonly evenements = signal<Evenement[]>([]);
   protected readonly journal = computed(() => {
@@ -122,6 +136,12 @@ export class PartieEcran implements OnInit, OnDestroy {
   protected readonly composantChoisi = signal<string | null>(null);
   /** L'attaquant désigné parmi mes composants ; l'attaque se confirme sous le détail de la cible (US-041). */
   protected readonly attaquant = signal<string | null>(null);
+
+  /** L'adresse de la partie, ou du duel, dans l'API : l'identifiant tiré de l'URL y est encodé (US-055). */
+  private readonly cheminApi = computed(
+    () =>
+      `/api/v1/${this.mode() === 'duel' ? 'duels' : 'parties'}/${encodeURIComponent(this.id())}`,
+  );
 
   /** Les cartes du catalogue, par numéro. */
   private readonly catalogue = httpResource<Carte[]>(() => '/api/v1/cartes');
@@ -141,6 +161,9 @@ export class PartieEcran implements OnInit, OnDestroy {
     return niveaux.find((n) => n.id === id)?.nom ?? '';
   });
   protected readonly pret = computed(() => this.vue() !== null && this.catalogue.hasValue());
+  /** Ce qui empêche d'afficher la partie : sa lecture ou celle du catalogue a échoué. */
+  protected readonly echec = computed(() => this.echecLecture() ?? this.catalogue.error() ?? null);
+  protected readonly nouvelEssai = computed(() => this.enLecture() || this.catalogue.isLoading());
   protected readonly monTour = computed(() => {
     const vue = this.vue();
     return vue !== null && vue.actif === vue.joueur && !vue.issue;
@@ -252,18 +275,20 @@ export class PartieEcran implements OnInit, OnDestroy {
   constructor() {
     // En fin de partie, le focus va au résultat pour qu'il soit annoncé.
     afterRenderEffect(() => this.titreFin()?.nativeElement.focus());
+    // En duel, tant que le joueur est là : onglet visible, geste depuis moins de 10 minutes (US-055).
+    interroger(
+      () => this.actualiserDuel(),
+      INTERROGATION_DUEL_MS,
+      () => this.mode() === 'duel' && this.vue() !== null && !this.vue()?.issue,
+    );
   }
 
   ngOnInit(): void {
     void this.charger();
-    if (this.mode() === 'duel') {
-      this.interrogation = setInterval(() => void this.actualiserDuel(), INTERROGATION_DUEL_MS);
-    }
   }
 
   ngOnDestroy(): void {
     if (this.minuterie) clearTimeout(this.minuterie);
-    if (this.interrogation) clearInterval(this.interrogation);
   }
 
   protected carteDe(numero: number): Carte | undefined {
@@ -365,14 +390,12 @@ export class PartieEcran implements OnInit, OnDestroy {
         this.mode() === 'duel'
           ? this.depuisDuel(
               await firstValueFrom(
-                this.http.post<Duel>(`/api/v1/duels/${this.id()}/actions`, action, {
+                this.http.post<Duel>(`${this.cheminApi()}/actions`, action, {
                   headers: { 'If-Match': `"${this.version}"` },
                 }),
               ),
             )
-          : await firstValueFrom(
-              this.http.post<Partie>(`/api/v1/parties/${this.id()}/actions`, action),
-            );
+          : await firstValueFrom(this.http.post<Partie>(`${this.cheminApi()}/actions`, action));
       this.carteChoisie.set(null);
       this.composantChoisi.set(null);
       this.attaquant.set(null);
@@ -384,31 +407,47 @@ export class PartieEcran implements OnInit, OnDestroy {
     }
   }
 
+  /** « Réessayer » après un chargement en échec : relit ce qui manque, la partie ou le catalogue. */
+  protected reessayer(): void {
+    if (this.catalogue.error()) this.catalogue.reload();
+    if (this.echecLecture()) void this.charger();
+  }
+
   private async charger(): Promise<void> {
+    // Un identifiant qui n'a pas la forme d'un UUID ne désigne aucune partie : rien n'est demandé à l'API (US-055).
+    if (!estUuid(this.id())) {
+      this.introuvable.set(true);
+      return;
+    }
+    this.enLecture.set(true);
     try {
       const partie =
         this.mode() === 'duel'
-          ? this.depuisDuel(await firstValueFrom(this.http.get<Duel>(`/api/v1/duels/${this.id()}`)))
-          : await firstValueFrom(this.http.get<Partie>(`/api/v1/parties/${this.id()}`));
+          ? this.depuisDuel(await firstValueFrom(this.http.get<Duel>(this.cheminApi())))
+          : await firstValueFrom(this.http.get<Partie>(this.cheminApi()));
+      this.echecLecture.set(null);
       this.reglesOuvertes = partie.vue.moi.tours <= 1;
       this.recevoir(partie, false);
     } catch (erreur) {
-      this.signalerErreur(erreur);
+      if (erreur instanceof HttpErrorResponse && erreur.status === 404) this.introuvable.set(true);
+      else if (this.partie()) this.erreur.set(expliquer(erreur));
+      else this.echecLecture.set(erreur);
+    } finally {
+      this.enLecture.set(false);
     }
   }
 
   /**
-   * En duel : redemande le duel, sauf si l'onglet est caché. L'API répond 304 si rien n'a changé ; sinon les coups
-   * de l'adversaire défilent dans le journal comme ceux du bot. Aussi pendant son propre tour : l'adversaire peut
-   * abandonner, ou le forfait tomber (US-036).
+   * En duel : redemande le duel. L'API répond 304 si rien n'a changé ; sinon les coups de l'adversaire défilent dans
+   * le journal comme ceux du bot. Aussi pendant son propre tour : l'adversaire peut abandonner, ou le forfait tomber
+   * (US-036).
    */
   private async actualiserDuel(): Promise<void> {
     const vue = this.vue();
     if (!vue || vue.issue || this.occupe()) return;
-    if (globalThis.document?.visibilityState === 'hidden') return;
     try {
       const duel = await firstValueFrom(
-        this.http.get<Duel>(`/api/v1/duels/${this.id()}`, {
+        this.http.get<Duel>(this.cheminApi(), {
           params: { depuis: this.curseur },
           headers: { 'If-None-Match': `"${this.version}"` },
         }),
@@ -425,9 +464,7 @@ export class PartieEcran implements OnInit, OnDestroy {
     this.occupe.set(true);
     this.erreur.set(null);
     try {
-      const duel = await firstValueFrom(
-        this.http.post<Duel>(`/api/v1/duels/${this.id()}/abandon`, null),
-      );
+      const duel = await firstValueFrom(this.http.post<Duel>(`${this.cheminApi()}/abandon`, null));
       this.confirmerAbandon.set(false);
       this.recevoir(this.depuisDuel(duel), false);
     } catch (erreur) {
@@ -485,7 +522,7 @@ export class PartieEcran implements OnInit, OnDestroy {
     } else if (erreur instanceof HttpErrorResponse && erreur.status === 422) {
       this.erreur.set((erreur.error as { detail?: string } | null)?.detail ?? 'Action refusée.');
     } else {
-      this.erreur.set('L’API ne répond pas : réessayez dans un instant.');
+      this.erreur.set(expliquer(erreur));
     }
   }
 

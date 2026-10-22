@@ -40,6 +40,13 @@
         </label>
       }
     </fieldset>
+  } @else if (niveaux.error()) {
+    <hip-erreur-chargement
+      quoi="Les niveaux du bot n’ont pas pu être chargés : sans choix, il jouera au plus simple."
+      [erreur]="niveaux.error()"
+      [enCours]="niveaux.isLoading()"
+      (reessayer)="niveaux.reload()"
+    />
   }
 
   <h2 class="text-lg font-semibold">2. Votre deck</h2>
@@ -71,9 +78,12 @@
       }
     </ul>
   } @else if (decks.error()) {
-    <p role="alert" class="text-alerte">
-      Les decks n’ont pas pu être chargés : l’API ne répond pas.
-    </p>
+    <hip-erreur-chargement
+      quoi="Les decks n’ont pas pu être chargés."
+      [erreur]="decks.error()"
+      [enCours]="decks.isLoading()"
+      (reessayer)="decks.reload()"
+    />
   } @else {
     <p>Chargement des decks…</p>
   }

@@ -116,7 +116,7 @@ Google Cloud, Firebase Hosting et une base Neon gratuite (ADR 0021, accepté le 
 | [US-056 — La CI teste l'API sur un vrai PostgreSQL](stories/US-056-ci-postgresql.md)                                                  | EPIC-09 | Must     | S      | 1   | À affiner |
 | [US-047 — Les protections indispensables avant l'ouverture](stories/US-047-protections-avant-ouverture.md)                            | EPIC-09 | Must     | M      | 1   | À affiner |
 | [US-048 — Inscription sur invitation](stories/US-048-inscription-sur-invitation.md)                                                   | EPIC-09 | Must     | M      | 1   | À affiner |
-| [US-055 — Un front robuste au démarrage à froid et aux sessions expirées](stories/US-055-front-robuste.md)                            | EPIC-09 | Must     | M      | 1   | À affiner |
+| [US-055 — Un front robuste au démarrage à froid et aux sessions expirées](stories/US-055-front-robuste.md)                            | EPIC-09 | Must     | M      | 1   | Faite     |
 | [US-049 — Infrastructure gratuite et reproductible](stories/US-049-infrastructure-gcp.md)                                             | EPIC-09 | Must     | M      | 1   | À affiner |
 | [US-050 — Déploiement continu vers Cloud Run et Firebase Hosting](stories/US-050-deploiement-continu.md)                              | EPIC-09 | Must     | M      | 1   | À affiner |
 | [US-052 — Parties contre le bot gardées en base](stories/US-052-parties-bot-en-base.md)                                               | EPIC-09 | Must     | M      | 2   | À affiner |

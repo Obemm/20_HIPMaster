@@ -1,6 +1,8 @@
 import { Component, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CompteService } from '../compte/compte.service';
+import { EtatSession } from '../compte/etat-session';
+import { ErreurChargement } from '../reseau/erreur-chargement';
 import { MesDuelsService, type ResumeDuel } from './mes-duels.service';
 import { resteAvant } from './temps';
 
@@ -28,12 +30,12 @@ function depuis(iso: string, maintenant = Date.now()): string {
 /** Page « Mes duels » (US-035) : les duels qui attendent le joueur d'abord. */
 @Component({
   selector: 'hip-mes-duels',
-  imports: [RouterLink],
+  imports: [RouterLink, ErreurChargement, EtatSession],
   templateUrl: './mes-duels.html',
 })
 export class MesDuels {
   protected readonly compte = inject(CompteService);
-  private readonly service = inject(MesDuelsService);
+  protected readonly service = inject(MesDuelsService);
 
   protected readonly resultats = RESULTATS;
   protected readonly precisions = PRECISIONS;
