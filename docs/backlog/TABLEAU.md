@@ -118,7 +118,7 @@ Google Cloud, Firebase Hosting et une base Neon gratuite (ADR 0021, accepté le 
 | [US-048 — Inscription sur invitation](stories/US-048-inscription-sur-invitation.md)                                                   | EPIC-09 | Must     | M      | 1   | À affiner |
 | [US-055 — Un front robuste au démarrage à froid et aux sessions expirées](stories/US-055-front-robuste.md)                            | EPIC-09 | Must     | M      | 1   | Faite     |
 | [US-049 — Infrastructure gratuite et reproductible](stories/US-049-infrastructure-gcp.md)                                             | EPIC-09 | Must     | M      | 1   | Faite     |
-| [US-050 — Déploiement continu vers Cloud Run et Firebase Hosting](stories/US-050-deploiement-continu.md)                              | EPIC-09 | Must     | M      | 1   | À affiner |
+| [US-050 — Déploiement continu vers Cloud Run et Firebase Hosting](stories/US-050-deploiement-continu.md)                              | EPIC-09 | Must     | M      | 1   | En revue  |
 | [US-052 — Parties contre le bot gardées en base](stories/US-052-parties-bot-en-base.md)                                               | EPIC-09 | Must     | M      | 2   | À affiner |
 | [US-051 — Supervision, sauvegardes vérifiées et scan de sécurité](stories/US-051-supervision-sauvegardes-securite.md)                 | EPIC-09 | Must     | S      | 2   | À affiner |
 | [US-053 — Page de confidentialité et suppression de son compte](stories/US-053-confidentialite-suppression-compte.md)                 | EPIC-09 | Should   | S      | 2   | À affiner |
