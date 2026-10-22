@@ -1,7 +1,7 @@
 # US-046 — Une API prête pour Cloud Run
 
 - **Epic** : EPIC-09
-- **Statut** : En cours
+- **Statut** : Faite
 - **Priorité** : Must
 - **Taille** : L
 - **Branche** : `us-046-api-prete-cloud-run`
@@ -31,34 +31,36 @@ Revue du 2026-10-22 ([revue](../../revues/2026-10-22-revue-mise-en-ligne.md)), c
 
 ## Critères d'acceptation
 
-- [ ] **Étant donné** la variable `PORT`, **quand** l'API démarre dans un conteneur, **alors** elle écoute
+- [x] **Étant donné** la variable `PORT`, **quand** l'API démarre dans un conteneur, **alors** elle écoute
       `0.0.0.0:$PORT` (le développement garde `127.0.0.1:3000`).
-- [ ] **Étant donné** le `Dockerfile` multi-étapes construit depuis la racine du monorepo, **alors** l'image contient
+- [x] **Étant donné** le `Dockerfile` multi-étapes construit depuis la racine du monorepo, **alors** l'image contient
       seulement l'API, `packages/domain` (lien du workspace préservé, Node refusant le TypeScript sous
       `node_modules`), les migrations et les dépendances de production ; elle lance `node apps/api/src/server.ts`
       sans `npm`, sous un utilisateur non root ; `.dockerignore` exclut `.env`, `.donnees`, les rapports de tests et
       `.claude`.
-- [ ] **Étant donné** l'URL de la base Neon fournie par Secret Manager, **alors** l'API s'y connecte en TLS
+- [x] **Étant donné** l'URL de la base Neon fournie par Secret Manager, **alors** l'API s'y connecte en TLS
       (`sslmode=require`), de préférence sur le point d'accès direct : le point d'accès mutualisé de Neon (PgBouncer
       en mode transaction) impose des précautions sur les requêtes préparées de postgres.js, à vérifier s'il est
       retenu.
-- [ ] **Étant donné** la production, **quand** la connexion à PostgreSQL n'est pas configurée, **alors** l'API refuse
+- [x] **Étant donné** la production, **quand** la connexion à PostgreSQL n'est pas configurée, **alors** l'API refuse
       de démarrer avec un message clair ; PGlite n'est chargé qu'en développement et en tests.
-- [ ] **Étant donné** une erreur 500, **alors** elle est journalisée avec son message et sa pile d'appels (test à
+- [x] **Étant donné** une erreur 500, **alors** elle est journalisée avec son message et sa pile d'appels (test à
       l'appui), sans jeton, code ni corps de requête.
-- [ ] **Étant donné** un `SIGTERM`, **alors** l'API refuse les nouvelles requêtes, termine celles en cours, ferme le
+- [x] **Étant donné** un `SIGTERM`, **alors** l'API refuse les nouvelles requêtes, termine celles en cours, ferme le
       pool et s'arrête avant le délai de Cloud Run.
-- [ ] **Étant donné** le pool postgres.js, **alors** sa taille (petite), son délai d'inactivité (court) et son délai
+- [x] **Étant donné** le pool postgres.js, **alors** sa taille (petite), son délai d'inactivité (court) et son délai
       de connexion sont réglables ; **quand** plus aucune requête n'arrive, **alors** toutes les connexions se ferment
       et la base Neon se met en veille en moins de 10 minutes (mesuré en production, y compris avec le processeur de
       Cloud Run alloué seulement pendant les requêtes). Si les connexions restaient ouvertes, une piste est le pilote
-      HTTP de Neon pour les lectures, à évaluer dans la story.
-- [ ] **Étant donné** une commande de migration dédiée (exécutée par un Cloud Run Job, US-050), **alors** la
+      HTTP de Neon pour les lectures, à évaluer dans la story. _Vérifié en local (connexion fermée au terme du délai
+      d'inactivité) ; la mesure en production, impossible avant le premier déploiement, est reprise par US-050 selon
+      la procédure ci-dessous._
+- [x] **Étant donné** une commande de migration dédiée (exécutée par un Cloud Run Job, US-050), **alors** la
       production ne migre plus au démarrage ; le développement et les tests gardent la migration au démarrage
       (ADR 0018).
-- [ ] **Étant donné** les journaux en production, **alors** ce sont des lignes JSON avec `severity`, `message` et la
+- [x] **Étant donné** les journaux en production, **alors** ce sont des lignes JSON avec `severity`, `message` et la
       trace de la requête (`X-Cloud-Trace-Context`) ; le niveau est réglable (`LOG_LEVEL`).
-- [ ] L'image démarre en local contre le PostgreSQL de `docker-compose.yml` et passe la sonde `/api/v1/sante`.
+- [x] L'image démarre en local contre le PostgreSQL de `docker-compose.yml` et passe la sonde `/api/v1/sante`.
 
 ## Notes
 
@@ -124,3 +126,4 @@ du retard. À mesurer au premier déploiement (US-050) :
 - 2026-10-22 — création, issue de la revue avant mise en ligne (ADR 0021).
 - 2026-10-22 — prise en charge (lot 1, session API) ; ADR 0023 écrit ; image vérifiée contre le PostgreSQL local et
   TLS vérifié auprès de Neon ; la mesure de la veille de Neon en production est reprise par US-050.
+- 2026-10-22 — livrée : image Docker de l'API (sans PGlite ni .env, non root), écoute 0.0.0.0:$PORT, journaux JSON Cloud Logging avec trace et erreurs 500 journalisées sans données sensibles, arrêt propre sur SIGTERM, pool court et certificat vérifié, migrations par une commande dédiée sous verrou (ADR 0023) ; image vérifiée contre le PostgreSQL local, mesure de la veille de Neon en production reprise par US-050

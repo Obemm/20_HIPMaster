@@ -99,9 +99,18 @@ Toutes les évolutions notables du projet sont consignées ici
 - Illustrations provisoires des 71 cartes, dessinées par le code (`npm run illustrations:provisoires`) : un emblème
   par famille, un motif par type, une intensité par rareté, sans texte ni logo, en attendant de vraies illustrations
   (US-018, ADR 0016).
+- API prête pour Cloud Run : image Docker multi-étapes construite depuis la racine (API, domaine et migrations
+  seulement, ni PGlite ni `.env`, utilisateur non root), écoute `0.0.0.0:$PORT`, arrêt propre sur SIGTERM ; journaux
+  JSON au format Cloud Logging (`severity`, `message`, trace de la requête, `LOG_LEVEL`) qui gardent la trace des
+  erreurs 500, sans jeton ni corps de requête ; en production, PostgreSQL obligatoire, pool court qui laisse dormir la
+  base Neon, certificat vérifié, et migrations par une commande dédiée sous verrou (`node apps/api/src/migrer.ts`)
+  (US-046, ADR 0023).
 
 ### Modifié
 
+- `npm run db:migrate` passe par la commande de migration de l'API (verrou, bilan des migrations appliquées) au lieu de
+  `drizzle-kit migrate` ; PGlite devient une dépendance de développement ; Dependabot surveille l'image de base de
+  l'API (US-046).
 - Dependabot ne propose plus TypeScript 6.1 ou plus (incompatible avec Angular 22) ni de version majeure de
   `@types/node` (qui suit Node 24) (US-007).
 
