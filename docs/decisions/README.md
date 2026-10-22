@@ -31,5 +31,6 @@ référence Elis.
 | [0020](0020-duels-asynchrones.md)                      | Duels entre joueurs : asynchrones, au tour par tour, état en base     | ADR-020 (ADR-013, 029 écartés) | Acceptée                      |
 | [0021](0021-hebergement-gcp.md)                        | Hébergement quasi gratuit : Firebase Hosting, Cloud Run, Neon         | ADR-030 écarté, 006, 012, 004  | Acceptée                      |
 | [0022](0022-depot-public.md)                           | Dépôt GitHub public                                                   | ADR-011, 039, 033              | Acceptée                      |
+| [0024](0024-infrastructure-script-gcloud.md)           | Infrastructure créée par un script `gcloud` idempotent, pas Terraform | ADR-023 adapté, ADR-033 retenu | Acceptée                      |
 
 Modèle : [template.md](template.md).

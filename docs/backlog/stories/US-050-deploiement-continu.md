@@ -44,6 +44,15 @@ automatiquement** afin de **livrer souvent, sans manipulation à la main ni secr
 - La CI actuelle (`.github/workflows/ci.yml`) reste la porte d'entrée : le déploiement ne démarre qu'après elle.
 - Firebase Hosting ne relaie aucun cookie sauf `__session` : l'authentification par en-tête `Authorization`
   (ADR 0017) n'est pas concernée.
+- Infrastructure prête (US-049, [guide d'exploitation](../../exploitation/README.md)) :
+  - authentification : fournisseur
+    `projects/307763122401/locations/global/workloadIdentityPools/github/providers/github-actions`, avec le compte
+    `hipmaster-deploiement@hipmaster.iam.gserviceaccount.com`. Le jeton n'est délivré qu'à `refs/heads/main` ;
+  - images : `europe-west3-docker.pkg.dev/hipmaster/images`. Les pousser sans attestation
+    (`--provenance=false`), sinon celle-ci compte parmi les 2 versions gardées ;
+  - API et job de migration : ils tournent sous `hipmaster-api@hipmaster.iam.gserviceaccount.com`, avec le secret
+    `database-url` dans `DATABASE_URL` ;
+  - droit manquant : l'ajouter au script `scripts/gcp/infrastructure.sh`, pas à la main.
 
 ## Journal
 
