@@ -5,7 +5,7 @@
   "description": "API REST de HIPMaster (Fastify, ADR 0007).",
   "type": "module",
   "scripts": {
-    "dev": "node --watch src/server.ts",
+    "dev": "node --watch-path=src --watch-path=drizzle --watch-path=../../packages/domain/src src/server.ts",
     "start": "node src/server.ts",
     "typecheck": "tsc -p tsconfig.json",
     "db:generate": "drizzle-kit generate",

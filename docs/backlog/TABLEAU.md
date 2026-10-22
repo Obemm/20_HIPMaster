@@ -1,12 +1,12 @@
 # Tableau de suivi
 
-_Dernière mise à jour : 2026-10-19_
+_Dernière mise à jour : 2026-10-22_
 
 ## Epics
 
 | Epic                                                                                  | Priorité | Statut    | Avancement |
 | ------------------------------------------------------------------------------------- | -------- | --------- | ---------- |
-| [EPIC-00 — Fondations](epics/EPIC-00-fondations.md)                                   | Must     | Terminé   | 8/8        |
+| [EPIC-00 — Fondations](epics/EPIC-00-fondations.md)                                   | Must     | Terminé   | 9/9        |
 | [EPIC-01 — Univers et modèle de carte](epics/EPIC-01-univers-cartes.md)               | Must     | Terminé   | 2/2        |
 | [EPIC-02 — Comptes joueurs](epics/EPIC-02-comptes-joueurs.md)                         | Must     | Terminé   | 1/1        |
 | [EPIC-03 — Boosters et collection](epics/EPIC-03-boosters-collection.md)              | Must     | Terminé   | 2/2        |
@@ -30,6 +30,7 @@ Objectif : un socle outillé, vérifié automatiquement, et une méthode de trav
 | [US-007 — Dependabot ne propose que des versions compatibles](stories/US-007-dependabot-versions-compatibles.md)         | EPIC-00 | Must     | XS     | Faite  |
 | [US-043 — Tests de l'API robustes sur un poste chargé](stories/US-043-tests-api-pglite.md)                               | EPIC-00 | Must     | S      | Faite  |
 | [US-044 — Le quality gate ignore les worktrees de l'app Claude Desktop](stories/US-044-quality-gate-ignore-worktrees.md) | EPIC-00 | Must     | XS     | Faite  |
+| [US-045 — `npm run dev` ne redémarre l'API que sur un changement des sources](stories/US-045-api-dev-watch-sources.md)   | EPIC-00 | Must     | XS     | Faite  |
 
 ## Itération 1 (à venir) — définir le jeu
 
