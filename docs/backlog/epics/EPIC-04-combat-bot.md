@@ -31,7 +31,7 @@ Architecte ESB. C'est le niveau facile, Stagiaire, qui lui laisse plus d'une par
 - [x] US-039 — Expliquer les attaques et la résolution des combats
 - [x] US-040 — Consulter le détail des cartes de sa main
 - [x] US-041 — Consulter le détail des cartes du plateau
-- [ ] US-064 — Un bot battable par un débutant, une partie équitable pour les deux joueurs
+- [x] US-064 — Un bot battable par un débutant, une partie équitable pour les deux joueurs
 
 Premier jalon jouable à la fin d'US-013, avec les cartes que le moteur prend déjà en charge (décision du porteur du
 projet, 2026-10-18). Niveaux du bot (US-021) et récompense de victoire (US-025, avec EPIC-02 et EPIC-03) rédigés le 2026-10-18.

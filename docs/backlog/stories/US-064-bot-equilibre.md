@@ -1,7 +1,7 @@
 # US-064 — Un bot battable par un débutant, une partie équitable pour les deux joueurs
 
 - **Epic** : EPIC-04
-- **Statut** : En cours
+- **Statut** : Faite
 - **Priorité** : Must
 - **Taille** : M
 - **Branche** : `us-064-bot-equilibre`
@@ -29,25 +29,25 @@ Le porteur du projet trouve qu'il est « presque impossible de gagner contre le 
 
 Les mesures se font par simulation (`npm run simuler`), sur les decks prêtés croisés.
 
-- [ ] **Étant donné** une partie, contre le bot ou en duel, **quand** le joueur qui joue en second commence son
+- [x] **Étant donné** une partie, contre le bot ou en duel, **quand** le joueur qui joue en second commence son
       premier tour, **alors** il reçoit 2 Débit au lieu de 1 ; ses tours suivants restent à +1 par tour, 10 au plus
       (ADR 0026, qui complète l'ADR 0010). Tests du domaine.
-- [ ] **Étant donné** un niveau de bot, quel qu'il soit, **quand** il joue contre lui-même, **alors** le joueur qui
+- [x] **Étant donné** un niveau de bot, quel qu'il soit, **quand** il joue contre lui-même, **alors** le joueur qui
       commence et le second gagnent chacun entre 45 et 55 % des parties.
-- [ ] Un nouveau niveau **facile, « Stagiaire »**, présélectionné : il joue comme un débutant (il pose sa carte la plus
+- [x] Un nouveau niveau **facile, « Stagiaire »**, présélectionné : il joue comme un débutant (il pose sa carte la plus
       chère, attaque le SI dès qu'il peut, ne fait pas d'échanges réfléchis). Un profil débutant gagne **au moins
       50 %** de ses parties contre lui, un joueur du niveau de Batch de nuit **au moins 80 %**.
-- [ ] Les niveaux existants deviennent **Moyen** (Batch de nuit), **Difficile** (Architecte ESB) et **Expert** (Agent
+- [x] Les niveaux existants deviennent **Moyen** (Batch de nuit), **Difficile** (Architecte ESB) et **Expert** (Agent
       autonome), avec des descriptions à jour ; l'API (`GET /api/v1/niveaux`, niveau par défaut à la création d'une
       partie, contrat OpenAPI) et l'écran de choix suivent.
-- [ ] `npm run simuler` mesure aussi le profil débutant, la part de victoires du joueur qui commence et du second, et
+- [x] `npm run simuler` mesure aussi le profil débutant, la part de victoires du joueur qui commence et du second, et
       chaque niveau contre le profil débutant ; tableaux reportés dans
       [cartes-set-1.md](../../produit/cartes-set-1.md) et ci-dessous.
-- [ ] Les règles ([regles.md](../../produit/regles.md)) et l'aide « Comment jouer ? » de l'écran de choix et de
+- [x] Les règles ([regles.md](../../produit/regles.md)) et l'aide « Comment jouer ? » de l'écran de choix et de
       l'écran de partie expliquent le Débit du second joueur.
-- [ ] Récompense : la règle actuelle reste (un booster par victoire contre le bot, quel que soit le niveau, 3 par jour
+- [x] Récompense : la règle actuelle reste (un booster par victoire contre le bot, quel que soit le niveau, 3 par jour
       au plus) ; la question d'une victoire contre Stagiaire est posée au porteur du projet.
-- [ ] Tests du domaine, de l'API et de l'écran ; `npm run check` passe ; parcours e2e et audit axe-core au vert.
+- [x] Tests du domaine, de l'API et de l'écran ; `npm run check` passe ; parcours e2e et audit axe-core au vert.
 
 ## Résultats
 
@@ -77,6 +77,9 @@ joueur « Batch de nuit » contre Stagiaire 90 %, miroirs entre 46 et 54 % à ch
 ## Notes
 
 - Décision : [ADR 0026](../../decisions/0026-debit-du-second-joueur.md).
+- **Récompense** : une victoire contre Stagiaire rapporte un booster, comme contre les autres niveaux (US-025 :
+  une fois par partie, 3 par jour au plus). Question posée au porteur du projet le 2026-10-23 : faut-il la garder
+  pour le niveau facile ? Le plafond quotidien limite déjà l'abus.
 - La règle vit dans le moteur (`debuterTour`) : elle vaut pour les parties contre le bot comme pour les duels, sans
   rien changer à l'API. Le journal de partie l'annonce au second joueur (« Vous jouez en second : 1 Débit de plus à
   ce premier tour »).
@@ -123,3 +126,6 @@ joueur « Batch de nuit » contre Stagiaire 90 %, miroirs entre 46 et 54 % à ch
 - 2026-10-22 — règle du second joueur dans le moteur (journal de partie, règles, aide « Comment jouer ? ») ; profil
   débutant et `simulerCroise` ; Stagiaire « une seule pose par tour », retenu parmi huit variantes ; Architecte ESB à
   4 candidates pour entrer dans la cible d'équité ; API, écran et e2e suivent ; mesures avant et après aux graines 1 et 1001. `npm run check` et `npm run test:e2e` (75 parcours) passent.
+- 2026-10-23 — `main` intégré (US-046, US-049, US-055) : `npm run check` passe. Les ports 3000 et 4200 étant pris
+  par les serveurs d'une autre session, les parcours e2e de la branche fusionnée sont confiés à la CI de la PR.
+- 2026-10-23 — livrée : règle du Débit du second joueur (ADR 0026), niveau facile Stagiaire présélectionné, Architecte ESB à 4 actions candidates ; un débutant bat le Stagiaire 54 à 56 % du temps, un joueur du niveau de Batch de nuit 90 %, et le premier comme le second joueur gagnent entre 46 et 54 % en miroir à chaque niveau
