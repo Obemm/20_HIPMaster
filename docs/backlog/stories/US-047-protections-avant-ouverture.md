@@ -87,10 +87,11 @@ toujours la configuration `gcloud` dédiée.
    de moins, la passer à 1. Redéployer, puis recommencer.
 
 4. L'adresse `run.app` du service, appelée directement, laisse inventer l'adresse (ADR 0025) : le vérifier avec la
-   même requête et un `X-Forwarded-For` inventé, puis essayer de la fermer :
-   `gcloud run services update <service> --no-default-url --region=europe-west3 --configuration=hipmaster`.
-   `https://hipmaster.web.app/api/v1/sante` doit toujours répondre ; sinon, revenir en arrière avec `--default-url`
-   et noter ici que la limite demeure.
+   même requête et un `X-Forwarded-For` inventé. La fermer
+   (`gcloud run services update hipmaster-api --no-default-url --region=europe-west3 --configuration=hipmaster`)
+   supprimerait aussi l'adresse de la révision d'essai, par laquelle passe la sonde du déploiement (US-050) : ne le
+   faire qu'avec une autre sonde, vérifier ensuite que `https://hipmaster.web.app/api/v1/sante` répond toujours, et
+   sinon revenir en arrière (`--default-url`) et noter ici que la limite demeure.
 5. Cocher le critère et noter le résultat dans le journal ci-dessous.
 
 ## Journal
