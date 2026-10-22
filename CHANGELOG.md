@@ -112,6 +112,9 @@ Toutes les évolutions notables du projet sont consignées ici
 
 ### Corrigé
 
+- `npm run dev` ne fait plus redémarrer l'API en boucle sur un poste chargé : la surveillance se limite à
+  `apps/api/src`, `apps/api/drizzle` et `packages/domain/src` au lieu de tout le graphe des modules,
+  `node_modules` compris (3 redémarrages en 45 s sans modification avant, aucun après) (US-045).
 - Le quality gate ignore les worktrees Git que l'app Claude Desktop crée sous `.claude/worktrees/` : Prettier et
   ESLint ne parcourent plus cette copie du dépôt (`prettier --check .` échouait sur ses migrations Drizzle, ESLint
   lintait 286 fichiers au lieu de 149), et `.gitignore` l'exclut pour tout clone (US-044).
