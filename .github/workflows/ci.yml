@@ -23,6 +23,37 @@ jobs:
       - run: npm run check
       - run: npm run build
 
+  api-postgresql:
+    name: Tests de l'API sur PostgreSQL 18
+    runs-on: ubuntu-latest
+    # PGlite exécute les requêtes une par une : seul un vrai PostgreSQL éprouve les verrous, le pool et postgres.js
+    # (US-056). Même version majeure que la base Neon de production (PostgreSQL 18, US-049).
+    services:
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_USER: hipmaster
+          POSTGRES_PASSWORD: hipmaster
+          POSTGRES_DB: hipmaster
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U hipmaster"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      # Chaque fichier de tests y crée sa propre base, migrée puis supprimée (db/base-de-test.ts).
+      DATABASE_URL: postgres://hipmaster:hipmaster@localhost:5432/hipmaster
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npx vitest run --project api
+
   bout-en-bout:
     # Sur le build de production, servi comme par Firebase Hosting : la moindre violation de la CSP échoue (US-050).
     name: Parcours, accessibilité et CSP sur le build de production (Playwright)

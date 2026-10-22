@@ -48,6 +48,16 @@ npm run dev          # migrations appliquées au démarrage ; API sur localhost:
 | `npm run illustrations`             | Décline les illustrations des cartes (voir `packages/illustrations`)  |
 | `npm run illustrations:provisoires` | Dessine les illustrations provisoires des 71 cartes, puis les décline |
 
+Les tests de l'API tournent sur PGlite, qui exécute les requêtes une par une. La CI les fait aussi passer sur
+PostgreSQL 18, où les opérations simultanées se chevauchent vraiment (US-056) ; en local, avec Docker :
+
+```bash
+npm run db:up
+DATABASE_URL=postgres://hipmaster:hipmaster@localhost:5433/hipmaster npx vitest run --project api
+```
+
+Chaque fichier de tests y crée sa propre base, supprimée à la fin.
+
 ## Image Docker de l'API
 
 L'API part en production sous forme d'image Docker, sur Cloud Run (ADR 0021). L'image se construit depuis la racine du
@@ -88,4 +98,5 @@ et retour arrière : [guide d'exploitation](docs/exploitation/README.md).
 - **Avant chaque commit** : ESLint + Prettier sur les fichiers modifiés (Husky + lint-staged).
 - **Branches** : `main` est stable ; une branche par story `us-xxx-titre`, puis PR.
 - **Secrets** : uniquement dans `.env` (ignoré par Git). Documenter chaque variable dans `.env.example`.
-- **CI** : GitHub Actions (check, build, Playwright) sur chaque push et PR ; Dependabot chaque semaine.
+- **CI** : GitHub Actions (check, build, tests de l'API sur PostgreSQL, Playwright) sur chaque push et PR ;
+  Dependabot chaque semaine.
