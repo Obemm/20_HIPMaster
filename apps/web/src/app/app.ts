@@ -49,10 +49,14 @@ export class App {
   constructor() {
     // Vérifie la session gardée par le navigateur, sans retarder l'affichage.
     void this.compte.charger();
-    // « À vous de jouer » se met à jour à chaque changement de page (US-035).
+    // « À vous de jouer » se met à jour à chaque changement de page (US-035), et une session que le serveur n'a pas
+    // pu vérifier est revérifiée (US-055).
     const navigation = inject(Router)
       .events.pipe(filter((e) => e instanceof NavigationEnd))
-      .subscribe(() => void this.duels.charger());
+      .subscribe(() => {
+        void this.duels.charger();
+        if (this.compte.echec()) void this.compte.charger();
+      });
     inject(DestroyRef).onDestroy(() => navigation.unsubscribe());
   }
 }

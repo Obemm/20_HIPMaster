@@ -571,6 +571,15 @@
         </ol>
       </div>
     </section>
+  } @else if (echec(); as e) {
+    <hip-erreur-chargement
+      [quoi]="
+        mode() === 'duel' ? 'Le duel n’a pas pu être chargé.' : 'La partie n’a pas pu être chargée.'
+      "
+      [erreur]="e"
+      [enCours]="nouvelEssai()"
+      (reessayer)="reessayer()"
+    />
   } @else if (erreur()) {
     <p role="alert" class="text-alerte">{{ erreur() }}</p>
   } @else {

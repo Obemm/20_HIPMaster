@@ -38,14 +38,24 @@ describe('Accueil', () => {
     expect(texte).toContain('1 %');
   });
 
-  it('prévient quand l’API ne répond pas', async () => {
+  it('prévient en mots de joueur quand le serveur ne répond pas, et propose de réessayer', async () => {
     const fixture = TestBed.createComponent(Accueil);
     fixture.detectChanges();
-    TestBed.inject(HttpTestingController)
-      .expectOne('/api/v1/raretes')
-      .flush(null, { status: 502, statusText: 'Bad Gateway' });
+    const http = TestBed.inject(HttpTestingController);
+    http.expectOne('/api/v1/raretes').flush(null, { status: 502, statusText: 'Bad Gateway' });
     await fixture.whenStable();
-    const alerte = (fixture.nativeElement as HTMLElement).querySelector('[role="alert"]');
-    expect(alerte?.textContent).toContain('L’API ne répond pas');
+    const page = fixture.nativeElement as HTMLElement;
+    expect(page.querySelector('[role="alert"]')?.textContent).toContain(
+      'Les chances par booster n’ont pas pu être chargées. Serveur injoignable pour le moment',
+    );
+    expect(page.textContent).not.toContain('npm run dev');
+
+    // La ressource relance sa lecture au rendu suivant.
+    page.querySelector('button')?.click();
+    TestBed.tick();
+    http.expectOne('/api/v1/raretes').flush([{ rarete: 'commune', chance: 0.7 }]);
+    await fixture.whenStable();
+    expect(page.textContent).toContain('70 %');
+    expect(page.querySelector('[role="alert"]')).toBeNull();
   });
 });

@@ -121,6 +121,16 @@ Toutes les évolutions notables du projet sont consignées ici
 
 ### Corrigé
 
+- Le front tient au démarrage à froid et aux sessions expirées : une panne du serveur ne fait plus perdre son
+  compte (seul un 401 oublie la session, avec « Session expirée » puis retour à sa page après reconnexion, et aucun
+  écran ne propose de créer un compte tant qu'un jeton est gardé) ; une lecture en panne passagère est retentée deux
+  fois (après 1 s puis 3 s) et aucun « Chargement… » ne dure sans fin ; chaque écran en erreur dit pourquoi aux
+  joueurs (serveur injoignable, attente demandée par un 429) et propose « Réessayer », à la place du message de
+  développeur de l'accueil ; « Ouvrir un booster » attend le catalogue ; les identifiants de partie et de duel tirés
+  de l'URL sont vérifiés (UUID) et encodés ; les interrogations périodiques s'arrêtent quand l'onglet est caché ou
+  sans geste depuis 10 minutes ; `index.html` affiche un texte de chargement et un `<noscript>`, et déclare
+  `color-scheme` ; une déconnexion dans un autre onglet est suivie ; navigateurs pris en charge écrits dans le README
+  (US-055).
 - `npm run dev` ne fait plus redémarrer l'API en boucle sur un poste chargé : la surveillance se limite à
   `apps/api/src`, `apps/api/drizzle` et `packages/domain/src` au lieu de tout le graphe des modules,
   `node_modules` compris (3 redémarrages en 45 s sans modification avant, aucun après) (US-045).

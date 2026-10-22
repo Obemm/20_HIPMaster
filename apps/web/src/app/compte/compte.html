@@ -4,6 +4,15 @@
   </p>
   <h1 class="text-3xl font-bold tracking-tight">Mon compte</h1>
 
+  @if (compte.expiree()) {
+    <p role="alert" class="rounded-lg border-2 border-accent p-3">
+      <strong>Session expirée</strong> : ce navigateur n’est plus connecté à votre compte.
+      Retrouvez-le avec votre code de récupération{{
+        retourSur() ? ' ; vous reviendrez ensuite à votre page' : ''
+      }}.
+    </p>
+  }
+
   @if (erreur()) {
     <p role="alert" class="text-alerte">{{ erreur() }}</p>
   }
@@ -38,7 +47,7 @@
           <a
             [routerLink]="retour"
             class="rounded-lg border-2 border-accent px-3 py-2 font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-            >Code noté : revenir au défi</a
+            >{{ libelleRetour() }}</a
           >
         }
       </p>
@@ -128,6 +137,6 @@
       </form>
     </section>
   } @else {
-    <p>Vérification de votre session…</p>
+    <hip-etat-session />
   }
 </main>

@@ -1,14 +1,19 @@
 import { DOCUMENT } from '@angular/common';
 import { HttpClient, HttpErrorResponse, httpResource } from '@angular/common/http';
-import { Component, computed, DestroyRef, effect, inject, input, signal } from '@angular/core';
+import { Component, computed, effect, inject, input, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { CompteService } from '../compte/compte.service';
+import { EtatSession } from '../compte/etat-session';
+import { estUuid } from '../identifiant';
 import { PartieEcran } from '../jeu/partie';
 import type { Deck } from '../jeu/modele';
+import { interroger } from '../presence';
+import { ErreurChargement } from '../reseau/erreur-chargement';
+import { expliquer } from '../reseau/reseau';
 import type { Duel } from './modele';
 
-/** Délai entre deux vérifications quand le créateur attend que son défi soit relevé. */
+/** Délai entre deux vérifications quand le créateur attend que son défi soit relevé (tant qu'il est là, US-055). */
 const ATTENTE_MS = 5000;
 
 /**
@@ -17,7 +22,7 @@ const ATTENTE_MS = 5000;
  */
 @Component({
   selector: 'hip-duel',
-  imports: [RouterLink, PartieEcran],
+  imports: [RouterLink, PartieEcran, ErreurChargement, EtatSession],
   templateUrl: './duel.html',
 })
 export class DuelEcran {
@@ -31,13 +36,20 @@ export class DuelEcran {
 
   protected readonly decks = httpResource<Deck[]>(() => '/api/v1/decks');
   protected readonly duel = signal<Duel | null>(null);
-  /** Échec de lecture : introuvable (404), expiré (410), ou panne. */
+  /** Échec de lecture : introuvable (404, ou identifiant qui n'est pas un UUID), expiré (410), ou panne. */
   protected readonly probleme = signal<'introuvable' | 'expire' | 'panne' | null>(null);
+  /** La cause d'une panne de lecture, et une lecture en cours (US-055). */
+  protected readonly panne = signal<unknown>(null);
+  protected readonly enLecture = signal(false);
   protected readonly erreur = signal<string | null>(null);
   protected readonly occupe = signal(false);
   protected readonly copie = signal(false);
 
-  protected readonly lien = computed(() => `${this.origine}/duels/${this.id()}`);
+  /** L'adresse du duel dans l'API : l'identifiant tiré de l'URL y est encodé (US-055). */
+  private readonly cheminApi = computed(() => `/api/v1/duels/${encodeURIComponent(this.id())}`);
+  protected readonly lien = computed(
+    () => `${this.origine}/duels/${encodeURIComponent(this.id())}`,
+  );
   protected readonly nomDeck = (id: string) =>
     (this.decks.hasValue() ? this.decks.value() : []).find((d) => d.id === id)?.nom ?? id;
   /** Le créateur attend qu'un collègue relève son défi. */
@@ -49,17 +61,14 @@ export class DuelEcran {
     effect(() => {
       if (this.compte.joueur()) void this.charger();
     });
-    const minuterie = setInterval(() => {
-      if (this.enAttente()) void this.charger();
-    }, ATTENTE_MS);
-    inject(DestroyRef).onDestroy(() => clearInterval(minuterie));
+    interroger(() => this.charger(), ATTENTE_MS, this.enAttente);
   }
 
   protected async relever(deck: Deck): Promise<void> {
     await this.agir(async () => {
       this.duel.set(
         await firstValueFrom(
-          this.http.post<Duel>(`/api/v1/duels/${this.id()}/rejoindre`, { deck: deck.id }),
+          this.http.post<Duel>(`${this.cheminApi()}/rejoindre`, { deck: deck.id }),
         ),
       );
     });
@@ -68,7 +77,7 @@ export class DuelEcran {
   protected async annuler(): Promise<void> {
     await this.agir(async () => {
       const ouvert = this.duel()?.ouvert;
-      await firstValueFrom(this.http.delete(`/api/v1/duels/${this.id()}`));
+      await firstValueFrom(this.http.delete(this.cheminApi()));
       await this.router.navigate([ouvert ? '/jouer' : '/duels/nouveau']);
     });
   }
@@ -82,10 +91,17 @@ export class DuelEcran {
     }
   }
 
-  private async charger(): Promise<void> {
+  protected async charger(): Promise<void> {
+    // Un identifiant qui n'a pas la forme d'un UUID ne désigne aucun duel : rien n'est demandé à l'API (US-055).
+    if (!estUuid(this.id())) {
+      this.probleme.set('introuvable');
+      return;
+    }
+    this.enLecture.set(true);
     try {
-      this.duel.set(await firstValueFrom(this.http.get<Duel>(`/api/v1/duels/${this.id()}`)));
+      this.duel.set(await firstValueFrom(this.http.get<Duel>(this.cheminApi())));
       this.probleme.set(null);
+      this.panne.set(null);
     } catch (erreur) {
       const statut = erreur instanceof HttpErrorResponse ? erreur.status : 0;
       const problemes: Record<number, 'introuvable' | 'expire'> = {
@@ -93,6 +109,9 @@ export class DuelEcran {
         410: 'expire',
       };
       this.probleme.set(problemes[statut] ?? 'panne');
+      this.panne.set(erreur);
+    } finally {
+      this.enLecture.set(false);
     }
   }
 
@@ -107,7 +126,7 @@ export class DuelEcran {
         this.erreur.set('Ce défi n’est plus disponible : il a été relevé, annulé ou a expiré.');
         await this.charger();
       } else {
-        this.erreur.set('L’API ne répond pas : réessayez dans un instant.');
+        this.erreur.set(expliquer(erreur));
       }
     } finally {
       this.occupe.set(false);

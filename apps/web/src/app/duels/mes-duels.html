@@ -14,7 +14,7 @@
         en un clic (un pseudo suffit).
       </p>
     } @else {
-      <p>Vérification de votre session…</p>
+      <hip-etat-session />
     }
   } @else if (groupes(); as liste) {
     <p>
@@ -63,6 +63,13 @@
         }
       </section>
     }
+  } @else if (service.erreur(); as e) {
+    <hip-erreur-chargement
+      quoi="Vos duels n’ont pas pu être chargés."
+      [erreur]="e"
+      [enCours]="service.enCours()"
+      (reessayer)="service.charger()"
+    />
   } @else {
     <p>Chargement de vos duels…</p>
   }

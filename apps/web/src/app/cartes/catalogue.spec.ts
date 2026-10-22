@@ -96,8 +96,16 @@ describe('Catalogue', () => {
     expect(page.querySelector('[role="status"]')?.textContent).toContain('Aucune carte');
   });
 
-  it('prévient quand l’API ne répond pas', async () => {
-    const page = (await afficher('erreur')).nativeElement as HTMLElement;
-    expect(page.querySelector('[role="alert"]')?.textContent).toContain('l’API ne répond pas');
+  it('dit pourquoi le catalogue manque, et le recharge quand on réessaie', async () => {
+    const fixture = await afficher('erreur');
+    const page = fixture.nativeElement as HTMLElement;
+    expect(page.querySelector('[role="alert"]')?.textContent).toContain(
+      'Le catalogue n’a pas pu être chargé. Serveur injoignable pour le moment',
+    );
+    page.querySelector('button')?.click();
+    TestBed.tick();
+    TestBed.inject(HttpTestingController).expectOne('/api/v1/cartes').flush(CARTES);
+    await fixture.whenStable();
+    expect(page.querySelector('[role="status"]')?.textContent).toContain('3 cartes affichées');
   });
 });

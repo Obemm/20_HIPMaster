@@ -59,9 +59,12 @@
       }
     </ul>
   } @else if (cartes.error()) {
-    <p role="alert" class="text-alerte">
-      Le catalogue n’a pas pu être chargé : l’API ne répond pas.
-    </p>
+    <hip-erreur-chargement
+      quoi="Le catalogue n’a pas pu être chargé."
+      [erreur]="cartes.error()"
+      [enCours]="cartes.isLoading()"
+      (reessayer)="cartes.reload()"
+    />
   } @else {
     <p>Chargement du catalogue…</p>
   }

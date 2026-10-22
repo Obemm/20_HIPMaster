@@ -23,14 +23,32 @@
           <button
             type="button"
             class="rounded-lg bg-accent px-4 py-3 font-semibold text-sur-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:opacity-60"
-            [disabled]="occupe() || b.stock === 0"
+            [disabled]="occupe() || b.stock === 0 || !catalogue.hasValue()"
             (click)="ouvrir()"
           >
             Ouvrir un booster
           </button>
         </p>
-      } @else {
+        @if (catalogue.error()) {
+          <hip-erreur-chargement
+            quoi="Les cartes n’ont pas pu être chargées : sans elles, un booster ouvert ne pourrait pas vous les montrer."
+            [erreur]="catalogue.error()"
+            [enCours]="catalogue.isLoading()"
+            (reessayer)="catalogue.reload()"
+          />
+        } @else if (!catalogue.hasValue()) {
+          <p class="text-texte-doux">Chargement des cartes…</p>
+        }
+      } @else if (!erreurStock()) {
         <p>Lecture de votre stock…</p>
+      }
+      @if (erreurStock(); as e) {
+        <hip-erreur-chargement
+          quoi="Votre stock de boosters n’a pas pu être lu."
+          [erreur]="e"
+          [enCours]="lectureStock()"
+          (reessayer)="charger()"
+        />
       }
       @if (erreur()) {
         <p role="alert" class="text-alerte">{{ erreur() }}</p>
@@ -71,6 +89,6 @@
       en un clic (un pseudo suffit) : 5 boosters vous sont offerts.
     </p>
   } @else {
-    <p>Vérification de votre session…</p>
+    <hip-etat-session />
   }
 </main>

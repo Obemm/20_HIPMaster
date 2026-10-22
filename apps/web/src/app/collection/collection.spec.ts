@@ -1,4 +1,4 @@
-import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { HttpErrorResponse, provideHttpClient, withInterceptors } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
@@ -57,6 +57,9 @@ describe('Collection', () => {
     return { fixture, page: fixture.nativeElement as HTMLElement };
   }
 
+  const bouton = (page: HTMLElement, texte: string) =>
+    [...page.querySelectorAll('button')].find((b) => b.textContent?.includes(texte));
+
   const choisir = (page: HTMLElement, id: string, valeur: string) => {
     const liste = page.querySelector<HTMLSelectElement>(`#${id}`);
     if (!liste) throw new Error(`liste ${id} absente`);
@@ -87,6 +90,46 @@ describe('Collection', () => {
     expect(cartes[1]?.textContent).toContain('Manquante');
     expect(cartes[1]?.querySelector('hip-vignette-carte')?.classList).toContain('grayscale');
     expect(cartes[0]?.querySelector('hip-vignette-carte')?.classList).not.toContain('grayscale');
+  });
+
+  it('dit pourquoi la collection n’a pas pu être lue, et la relit quand on réessaie (US-055)', async () => {
+    TestBed.inject(CompteService).joueur.set({ id: 'x', pseudo: 'Ada' });
+    const fixture = TestBed.createComponent(CollectionEcran);
+    fixture.detectChanges();
+    const http = TestBed.inject(HttpTestingController);
+    http.expectOne('/api/v1/cartes').flush(CATALOGUE);
+    http
+      .expectOne('/api/v1/moi/collection')
+      .flush(null, { status: 503, statusText: 'Service Unavailable' });
+    await fixture.whenStable();
+    fixture.detectChanges();
+    const page = fixture.nativeElement as HTMLElement;
+    expect(page.querySelector('[role="alert"]')?.textContent).toContain(
+      'La collection n’a pas pu être chargée. Serveur injoignable pour le moment',
+    );
+    expect(page.textContent).not.toContain('Chargement de la collection');
+
+    bouton(page, 'Réessayer')?.click();
+    http.expectOne('/api/v1/moi/collection').flush({ cartes: [{ numero: 2, exemplaires: 1 }] });
+    await fixture.whenStable();
+    fixture.detectChanges();
+    expect(page.querySelector('#titre-progression')?.textContent).toContain('Set 1 : 1 / 5 cartes');
+  });
+
+  it('avec un compte gardé mais non vérifié, n’invite jamais à en créer un (US-055)', async () => {
+    localStorage.setItem('hipmaster.jeton', 'jeton-garde');
+    TestBed.inject(CompteService).echec.set(new HttpErrorResponse({ status: 503 }));
+    const fixture = TestBed.createComponent(CollectionEcran);
+    fixture.detectChanges();
+    TestBed.inject(HttpTestingController).expectOne('/api/v1/cartes').flush(CATALOGUE);
+    await fixture.whenStable();
+    fixture.detectChanges();
+    const page = fixture.nativeElement as HTMLElement;
+    expect(page.querySelector('[role="alert"]')?.textContent).toContain(
+      'Votre session n’a pas pu être vérifiée, mais votre compte reste gardé par ce navigateur.',
+    );
+    expect(page.querySelector('main a[href="/compte"]')).toBeNull();
+    expect(bouton(page, 'Réessayer')).toBeTruthy();
   });
 
   it('filtre les cartes possédées ou manquantes, en plus de la famille et de la rareté', async () => {

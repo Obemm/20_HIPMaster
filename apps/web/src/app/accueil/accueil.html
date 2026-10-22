@@ -32,9 +32,12 @@
         }
       </ul>
     } @else if (raretes.error()) {
-      <p role="alert" class="text-alerte">
-        L’API ne répond pas : lance-la avec <code>npm run dev</code>.
-      </p>
+      <hip-erreur-chargement
+        quoi="Les chances par booster n’ont pas pu être chargées."
+        [erreur]="raretes.error()"
+        [enCours]="raretes.isLoading()"
+        (reessayer)="raretes.reload()"
+      />
     } @else {
       <p>Chargement…</p>
     }
