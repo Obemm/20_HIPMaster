@@ -1,7 +1,7 @@
 # US-046 — Une API prête pour Cloud Run
 
 - **Epic** : EPIC-09
-- **Statut** : À affiner
+- **Statut** : En cours
 - **Priorité** : Must
 - **Taille** : L
 - **Branche** : `us-046-api-prete-cloud-run`
@@ -62,11 +62,65 @@ Revue du 2026-10-22 ([revue](../../revues/2026-10-22-revue-mise-en-ligne.md)), c
 
 ## Notes
 
-- ADR à écrire : migrations hors du démarrage en production (complète l'ADR 0018).
+- Décision : [ADR 0023](../../decisions/0023-postgresql-production.md) (complète l'ADR 0018) — production sur
+  PostgreSQL seulement, migrations par une commande dédiée sous verrou, pool court, point d'accès direct de Neon,
+  certificat vérifié.
 - La dépendance `"@hipmaster/domain": "*"` ne se résout que dans le workspace : toujours construire l'image depuis la
   racine du dépôt.
-- `node --watch` en développement : voir US-045 (PR en cours).
+- `node --watch` en développement : voir US-045.
+
+## Réalisation
+
+- `config.ts` : `lireConfig()` lit et valide l'environnement (`PORT`, `NODE_ENV`, `LOG_LEVEL`, pool,
+  `GOOGLE_CLOUD_PROJECT`) et lève une erreur explicite ; `chargerEnv()` ne lit `.env` qu'hors production.
+- `journaux.ts` : journal pino au format Cloud Logging (`severity`, `message`, heure ISO), pile d'appels dans
+  `stack_trace` (Error Reporting, US-051), erreurs réduites à leur type, message, code et cause (jamais les
+  paramètres d'une requête SQL), champs de trace tirés de `X-Cloud-Trace-Context`.
+- `app.ts` : journal et trace par requête ; le gestionnaire d'erreurs journalise les 500 (message et pile) et ne garde
+  que le code d'une requête refusée.
+- `arret.ts` : arrêt propre sur SIGTERM et SIGINT ; pendant l'arrêt, chaque réponse ferme sa connexion, sans quoi une
+  connexion keep-alive (72 s chez Fastify) retenait l'arrêt jusqu'au délai de garde, sans fermer le pool (défaut
+  trouvé par le test).
+- `db/index.ts` : PGlite importé à la demande (et passé en dépendance de développement) ; pool réglable qui journalise
+  chaque connexion fermée ; `urlPostgres()` (TLS vérifié, `channel_binding` retiré) ; `migrerPostgres()` sous verrou
+  consultatif. `migrer.ts` : la commande de migration, aussi `npm run db:migrate`.
+- `Dockerfile` multi-étapes et `.dockerignore` par liste blanche ; Dependabot surveille l'image de base.
+
+## Vérifications
+
+Faites le 2026-10-22, image construite sur le poste (Docker 29.1.3) contre le PostgreSQL 18 de `docker-compose.yml` :
+
+- image de 294 Mo, dont 43 Mo de dépendances : l'API, `packages/domain`, les migrations ; ni PGlite (il faut
+  `--omit=optional`, sinon il entre comme pair optionnel de drizzle-orm : 77 Mo), ni `.env`, ni tests ; utilisateur
+  `node` ;
+- sans `DATABASE_URL` : une ligne `CRITICAL` « Configuration invalide … obligatoire en production », code de sortie 1 ;
+- `node apps/api/src/migrer.ts` sur une base vide : « 8 appliquée(s), 8 au total », puis « 0 appliquée(s) » ;
+- l'API écoute `0.0.0.0:8080` ; aucune connexion à la base au démarrage ni pour `/api/v1/sante` ; une création de
+  compte ouvre une connexion, refermée 5 s après la dernière requête avec `BASE_INACTIVITE_SECONDES=5` (journal
+  « Connexion PostgreSQL fermée ») ;
+- `docker stop` (SIGTERM) avec une connexion keep-alive ouverte : arrêt en 0,8 s, pool fermé, code de sortie 0 ;
+- auprès de Neon (Francfort), avec un point d'accès fictif : la vérification du certificat réussit, seule
+  l'authentification échoue ;
+- deux migrations simultanées sur PostgreSQL : l'une applique tout, l'autre rien ; sans le verrou, la seconde échoue
+  (test `db/index.test.ts`, qui tourne quand `DATABASE_URL` est posée, voir US-056).
+
+## Vérifier la mise en veille de Neon en production
+
+Cloud Run n'alloue le processeur que pendant les requêtes : le minuteur qui ferme une connexion inactive peut prendre
+du retard. À mesurer au premier déploiement (US-050) :
+
+1. Jouer quelques actions, puis noter l'heure de la dernière requête et ne plus rien envoyer (ni onglet ouvert, ni
+   test de disponibilité qui toucherait la base : `/api/v1/sante` ne la touche pas).
+2. Dans Cloud Logging, chercher `jsonPayload.message="Connexion PostgreSQL fermée"` : la dernière fermeture doit
+   suivre la dernière requête d'environ 30 s (`BASE_INACTIVITE_SECONDES`).
+3. Dix minutes après la dernière requête, `neonctl operations list --project-id <projet> --output json` doit montrer
+   une opération `suspend_compute` postérieure à la dernière fermeture (ou la console Neon, onglet Monitoring : calcul
+   suspendu).
+4. Si une connexion reste ouverte plus de 5 minutes : la fermer quand plus aucune requête n'est en cours, ou passer
+   les lectures au pilote HTTP de Neon (ADR 0023, alternatives).
 
 ## Journal
 
 - 2026-10-22 — création, issue de la revue avant mise en ligne (ADR 0021).
+- 2026-10-22 — prise en charge (lot 1, session API) ; ADR 0023 écrit ; image vérifiée contre le PostgreSQL local et
+  TLS vérifié auprès de Neon ; la mesure de la veille de Neon en production est reprise par US-050.

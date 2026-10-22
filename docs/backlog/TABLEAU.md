@@ -112,7 +112,7 @@ Google Cloud, Firebase Hosting et une base Neon gratuite (ADR 0021, accepté le 
 
 | Story                                                                                                                                 | Epic    | Priorité | Taille | Lot | Statut    |
 | ------------------------------------------------------------------------------------------------------------------------------------- | ------- | -------- | ------ | --- | --------- |
-| [US-046 — Une API prête pour Cloud Run](stories/US-046-api-prete-cloud-run.md)                                                        | EPIC-09 | Must     | L      | 1   | À affiner |
+| [US-046 — Une API prête pour Cloud Run](stories/US-046-api-prete-cloud-run.md)                                                        | EPIC-09 | Must     | L      | 1   | En cours  |
 | [US-056 — La CI teste l'API sur un vrai PostgreSQL](stories/US-056-ci-postgresql.md)                                                  | EPIC-09 | Must     | S      | 1   | À affiner |
 | [US-047 — Les protections indispensables avant l'ouverture](stories/US-047-protections-avant-ouverture.md)                            | EPIC-09 | Must     | M      | 1   | À affiner |
 | [US-048 — Inscription sur invitation](stories/US-048-inscription-sur-invitation.md)                                                   | EPIC-09 | Must     | M      | 1   | À affiner |

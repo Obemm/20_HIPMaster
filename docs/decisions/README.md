@@ -26,10 +26,11 @@ référence Elis.
 | [0015](0015-illustrations-statiques-optimisees.md)     | Illustrations : fichiers statiques optimisés, originaux hors du dépôt | ADR-012, ADR-030               | Acceptée                      |
 | [0016](0016-illustrations-provisoires-vectorielles.md) | Illustrations provisoires vectorielles, générées par le code          | aucune (ADR-033)               | Acceptée                      |
 | [0017](0017-compte-invite.md)                          | Compte invité : pseudo, jeton secret et code de récupération          | ADR-010, 034 (écartés)         | Acceptée                      |
-| [0018](0018-pglite-developpement.md)                   | PGlite en développement et en tests, PostgreSQL en production         | aucune                         | Acceptée                      |
+| [0018](0018-pglite-developpement.md)                   | PGlite en développement et en tests, PostgreSQL en production         | aucune                         | Acceptée (complétée par 0023) |
 | [0019](0019-boosters-recharge-a-la-lecture.md)         | Boosters : tirage serveur, recharge calculée à la lecture             | aucune (ADR-032 écarté)        | Acceptée                      |
 | [0020](0020-duels-asynchrones.md)                      | Duels entre joueurs : asynchrones, au tour par tour, état en base     | ADR-020 (ADR-013, 029 écartés) | Acceptée                      |
 | [0021](0021-hebergement-gcp.md)                        | Hébergement quasi gratuit : Firebase Hosting, Cloud Run, Neon         | ADR-030 écarté, 006, 012, 004  | Acceptée                      |
 | [0022](0022-depot-public.md)                           | Dépôt GitHub public                                                   | ADR-011, 039, 033              | Acceptée                      |
+| [0023](0023-postgresql-production.md)                  | PostgreSQL en production : migrations dédiées, connexions courtes     | aucune                         | Acceptée                      |
 
 Modèle : [template.md](template.md).
