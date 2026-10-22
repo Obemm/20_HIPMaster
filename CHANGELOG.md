@@ -123,6 +123,13 @@ Toutes les évolutions notables du projet sont consignées ici
   Le script n'utilise jamais la configuration `gcloud` du poste. Un guide d'exploitation l'accompagne (US-049,
   ADR 0024).
 
+- Inscription sur invitation : en production, créer un compte demande un code d'invitation (16 caractères, gardé sous
+  HMAC), valable pour un nombre de comptes et jusqu'à une date ; chaque compte retient de quelle invitation il vient.
+  Un lien `/compte?invitation=…` remplit le code sur « Mon compte », et un code refusé reçoit un 403 qui ne dit pas
+  pourquoi. La commande `npm run invitation` crée une invitation (code affiché une seule fois, avec le lien à envoyer),
+  liste les invitations ou en révoque une ; en production, un Cloud Run Job l'exécute (guide d'exploitation). En
+  développement et dans les e2e, l'inscription reste libre (US-048, ADR 0027).
+
 ### Modifié
 
 - `npm run db:migrate` passe par la commande de migration de l'API (verrou, bilan des migrations appliquées) au lieu de

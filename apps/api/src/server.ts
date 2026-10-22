@@ -30,6 +30,7 @@ const app = construireApp({
   projet: config.projetGcp,
   base,
   cleCodes: config.cleCodes,
+  inscriptionSurInvitation: config.inscriptionSurInvitation,
   proxysDeConfiance: config.proxysDeConfiance,
   ...(config.limitesDebit !== null && { limites: limitesMultipliees(config.limitesDebit) }),
 });
@@ -38,6 +39,7 @@ journal.info(
   {
     proxysDeConfiance: config.proxysDeConfiance,
     limitesDebit: config.limitesDebit ?? 'desactivees',
+    inscriptionSurInvitation: config.inscriptionSurInvitation,
   },
   'Protections de l’API',
 );

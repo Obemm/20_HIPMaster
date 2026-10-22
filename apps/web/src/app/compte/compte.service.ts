@@ -120,13 +120,16 @@ export class CompteService {
     await this.charger();
   }
 
-  /** Crée un compte invité ; renvoie le code de récupération, à montrer une seule fois. */
-  async creer(pseudo: string): Promise<string> {
+  /**
+   * Crée un compte invité, avec le code d'invitation s'il y en a un (US-048) ; renvoie le code de récupération, à
+   * montrer une seule fois.
+   */
+  async creer(pseudo: string, invitation?: string): Promise<string> {
     this.exigerSansCompte();
     const reponse = await firstValueFrom(
       this.http.post<{ joueur: Joueur; jeton: string; codeRecuperation: string }>(
         '/api/v1/joueurs',
-        { pseudo },
+        { pseudo, ...(invitation && { invitation }) },
       ),
     );
     this.retenir(reponse.jeton, reponse.joueur);

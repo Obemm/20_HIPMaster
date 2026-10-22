@@ -1,6 +1,8 @@
 import type { EtatPartie } from '@hipmaster/domain';
+import { sql } from 'drizzle-orm';
 import {
   boolean,
+  check,
   integer,
   jsonb,
   pgTable,
@@ -9,6 +11,31 @@ import {
   timestamp,
   uuid,
 } from 'drizzle-orm/pg-core';
+
+/**
+ * Invitations (US-048, ADR 0027) : un code crée des comptes tant qu'il lui reste des utilisations et qu'il n'a pas
+ * expiré. La base n'en garde que l'empreinte, comme pour les codes de récupération.
+ */
+export const invitations = pgTable(
+  'invitations',
+  {
+    id: uuid().primaryKey().defaultRandom(),
+    /** Empreinte HMAC-SHA-256 du code (ADR 0025, 0027) : le code lui-même n'est jamais stocké. */
+    empreinteCode: text().notNull().unique(),
+    /** Pour qui, pour quelle campagne : « équipe intégration », « démo du 12 novembre »… */
+    libelle: text().notNull(),
+    utilisationsMax: integer().notNull(),
+    utilisations: integer().notNull().default(0),
+    expireLe: timestamp({ withTimezone: true }).notNull(),
+    creeLe: timestamp({ withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    check(
+      'invitations_utilisations',
+      sql`${table.utilisationsMax} >= 1 and ${table.utilisations} between 0 and ${table.utilisationsMax}`,
+    ),
+  ],
+);
 
 /** Comptes invités (US-022, ADR 0017) : un pseudo, et l'empreinte du code de récupération. */
 export const joueurs = pgTable('joueurs', {
@@ -21,6 +48,11 @@ export const joueurs = pgTable('joueurs', {
   boosters: integer().notNull().default(5),
   /** Instant d'où court la prochaine recharge gratuite ; le stock se recalcule à la lecture. */
   rechargeDepuis: timestamp({ withTimezone: true }).notNull().defaultNow(),
+  /**
+   * L'invitation qui a permis la création du compte (US-048) : suivre une campagne, retrouver les comptes d'une
+   * invitation qui aurait fuité. Vide pour un compte créé sans invitation (développement, comptes plus anciens).
+   */
+  invitationId: uuid().references(() => invitations.id, { onDelete: 'set null' }),
 });
 
 /** Sessions ouvertes (une par appareil) : l'empreinte SHA-256 du jeton, jamais le jeton. */

@@ -15,7 +15,7 @@ export interface Joueur {
 }
 
 /** Une transaction ouverte sur la base. */
-type Transaction = Parameters<Parameters<Base['transaction']>[0]>[0];
+export type Transaction = Parameters<Parameters<Base['transaction']>[0]>[0];
 
 /**
  * Clé des codes en développement et en tests : publique, elle ne protège rien. En production, l'API refuse de démarrer
@@ -23,12 +23,14 @@ type Transaction = Parameters<Parameters<Base['transaction']>[0]>[0];
  */
 export const CLE_CODES_DEVELOPPEMENT = 'hipmaster-developpement-cle-publique-des-codes';
 
-/** 32 symboles sans caractères ambigus (ni I, O, 0, 1) : 5 bits par caractère, 60 bits pour 12 caractères. */
+/** 32 symboles sans caractères ambigus (ni I, O, 0, 1) : 5 bits par caractère, 20 bits par groupe de 4. */
 const ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-const LONGUEUR_CODE = 12;
 
-/** Ce que permet un code saisi par un humain ; l'usage entre dans l'empreinte, pour qu'un code ne vaille que pour lui. */
-type UsageCode = 'recuperation';
+/**
+ * Ce que permet un code saisi par un humain (récupération d'un compte, invitation, ADR 0027) ; l'usage entre dans
+ * l'empreinte, pour qu'un code ne vaille que pour lui.
+ */
+type UsageCode = 'recuperation' | 'invitation';
 
 /** Forme canonique d'un code saisi : majuscules, sans espaces ni tirets. */
 const normaliserCode = (code: string) => code.toUpperCase().replaceAll(/[^A-Z0-9]/g, '');
@@ -45,30 +47,42 @@ export const empreinteCode = (cle: string, usage: UsageCode, code: string) =>
     .update(`${usage}:${normaliserCode(code)}`)
     .digest('hex');
 
-/** Un code de récupération lisible : « ABCD-EFGH-JKLM ». */
-function nouveauCode(): string {
-  const caracteres = Array.from(
-    { length: LONGUEUR_CODE },
-    () => ALPHABET[randomInt(ALPHABET.length)],
-  );
-  return [0, 4, 8].map((i) => caracteres.slice(i, i + 4).join('')).join('-');
+/**
+ * Un code lisible en groupes de 4 caractères : « ABCD-EFGH-JKLM » pour un code de récupération (3 groupes, 60 bits),
+ * un groupe de plus pour une invitation (80 bits).
+ */
+export function codeLisible(groupes: number): string {
+  return Array.from({ length: groupes }, () =>
+    Array.from({ length: 4 }, () => ALPHABET[randomInt(ALPHABET.length)]).join(''),
+  ).join('-');
 }
 
 const nouveauJeton = () => randomBytes(32).toString('base64url');
 
-async function ouvrirSession(base: Base, joueurId: string): Promise<string> {
+async function ouvrirSession(base: Base | Transaction, joueurId: string): Promise<string> {
   const jeton = nouveauJeton();
   await base.insert(sessions).values({ empreinteJeton: empreinteJeton(jeton), joueurId });
   return jeton;
 }
 
-/** Crée un compte invité ; renvoie le jeton de la première session et le code de récupération (une seule fois). */
+/** Un compte créé : le jeton de sa première session et son code de récupération, montré une seule fois. */
+export interface Creation {
+  joueur: Joueur;
+  jeton: string;
+  codeRecuperation: string;
+}
+
+/**
+ * Crée un compte invité ; renvoie le jeton de la première session et le code de récupération (une seule fois).
+ * `invitationId` : l'invitation qui l'a permis, s'il y en a une (US-048).
+ */
 export async function creerJoueur(
-  base: Base,
+  base: Base | Transaction,
   pseudo: string,
   cle: string,
-): Promise<{ joueur: Joueur; jeton: string; codeRecuperation: string }> {
-  const codeRecuperation = nouveauCode();
+  invitationId?: string,
+): Promise<Creation> {
+  const codeRecuperation = codeLisible(3);
   const [joueur] = await base
     .insert(joueurs)
     .values({
@@ -76,6 +90,7 @@ export async function creerJoueur(
       empreinteCode: empreinteCode(cle, 'recuperation', codeRecuperation),
       // Cadeau de bienvenue (US-023).
       boosters: REGLES_BOOSTERS.bienvenue,
+      ...(invitationId && { invitationId }),
     })
     .returning({ id: joueurs.id, pseudo: joueurs.pseudo });
   if (!joueur) throw new Error('Création du joueur impossible.');
@@ -136,7 +151,7 @@ export async function regenererCode(
   jeton: string,
   cle: string,
 ): Promise<{ codeRecuperation: string; sessionsFermees: number }> {
-  const codeRecuperation = nouveauCode();
+  const codeRecuperation = codeLisible(3);
   return base.transaction(async (tx) => {
     await tx
       .update(joueurs)
