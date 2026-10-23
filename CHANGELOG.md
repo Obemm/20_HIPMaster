@@ -272,3 +272,12 @@ Toutes les évolutions notables du projet sont consignées ici
     mémoire évince d'abord les parties anonymes ;
   - toutes les réponses portent `X-Content-Type-Options: nosniff` et, sauf politique propre à une route,
     `Cache-Control: no-store` ; corps de requête limités à 16 Ko (413).
+- Des duels équitables (US-058, ADR 0034) :
+  - le hasard des duels et des parties contre le bot vient de ChaCha20, dont la clé de 256 bits est tirée par
+    `node:crypto` et ne quitte jamais le serveur : un joueur ne peut plus retrouver la graine à partir de sa main et
+    prévoir la main adverse ou les pioches. Les parties restent rejouables ; celles créées avant gardent leur
+    générateur et se terminent normalement ;
+  - deux joueurs qui cherchent un adversaire au même instant se retrouvent dans le même duel au lieu de s'attendre
+    l'un l'autre, et un double clic n'ouvre plus deux duels ;
+  - la règle « pas de booster contre un adversaire déjà affronté le même jour » vaut au jour de la fin du duel : lire
+    son résultat le lendemain ne la contourne plus.
