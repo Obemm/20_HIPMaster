@@ -463,6 +463,10 @@ describe('PartieEcran', () => {
     expect(finir?.getAttribute('aria-describedby')).toBe('attaques-oubliees');
     expect(finir?.disabled).toBe(false);
     finir?.click();
+    fixture.detectChanges();
+    // Le coup de pouce le redit (US-065), sans bloquer : « Finir quand même » finit le tour.
+    http.expectNone(`/api/v1/parties/${ID}/actions`);
+    bouton(page, 'Finir quand même')?.click();
     const requete = http.expectOne(`/api/v1/parties/${ID}/actions`);
     expect(requete.request.body).toEqual({ type: 'finirTour' });
     requete.flush(partie(vue()));
@@ -560,9 +564,131 @@ describe('PartieEcran', () => {
     await fixture.whenStable();
   });
 
+  describe('coups de pouce (US-065)', () => {
+    const attaquant = {
+      id: 'j1-02',
+      numero: 22,
+      pv: 2,
+      attaque: 3,
+      poseAuTour: 1,
+      aAttaqueCeTour: false,
+    };
+
+    it('avant de finir, dit ce qui reste possible, et « Revenir au plateau » ne finit pas le tour', async () => {
+      const v = vue({
+        actions: [
+          { type: 'attaquer', attaquant: 'j1-02', cible: 'si' },
+          { type: 'poser', carte: 'j1-01' },
+          { type: 'decommissionner', carte: 'j1-01' },
+          { type: 'finirTour' },
+        ],
+      });
+      v.moi.plateau = [attaquant];
+      const { fixture, http, page } = await ouvrir(v);
+      bouton(page, 'Finir mon tour')?.click();
+      fixture.detectChanges();
+      await fixture.whenStable();
+      const message = page.querySelector<HTMLElement>('[role="alertdialog"]');
+      expect(message?.getAttribute('aria-labelledby')).toBe('titre-fin-tour');
+      expect(message?.textContent).toContain('API REST peut encore attaquer.');
+      expect(message?.textContent).toContain('Vous pouvez encore poser API REST.');
+      expect(document.activeElement).toBe(bouton(page, 'Revenir au plateau'));
+      http.expectNone(`/api/v1/parties/${ID}/actions`);
+
+      bouton(page, 'Revenir au plateau')?.click();
+      fixture.detectChanges();
+      await fixture.whenStable();
+      expect(page.querySelector('[role="alertdialog"]')).toBeNull();
+      expect(document.activeElement).toBe(page.querySelector('#finir-tour'));
+      http.expectNone(`/api/v1/parties/${ID}/actions`);
+    });
+
+    it('compte les attaquants, distingue poser et jouer, et ignore le décommissionnement', async () => {
+      const v = vue({
+        actions: [
+          { type: 'attaquer', attaquant: 'j1-02', cible: 'si' },
+          { type: 'attaquer', attaquant: 'j1-03', cible: 'si' },
+          { type: 'jouer', carte: 'j1-09', cibles: ['j2-05'] },
+          { type: 'decommissionner', carte: 'j1-01' },
+          { type: 'finirTour' },
+        ],
+      });
+      v.moi.main = [
+        { id: 'j1-01', numero: 22 },
+        { id: 'j1-09', numero: 55 },
+      ];
+      v.moi.plateau = [attaquant, { ...attaquant, id: 'j1-03', numero: 13 }];
+      const { fixture, page } = await ouvrir(v);
+      bouton(page, 'Finir mon tour')?.click();
+      fixture.detectChanges();
+      const texte = page.querySelector('[role="alertdialog"]')?.textContent ?? '';
+      expect(texte).toContain('2 de vos composants peuvent encore attaquer.');
+      expect(texte).toContain('Vous pouvez encore jouer Content-Based Router.');
+      expect(texte).not.toContain('poser API REST');
+    });
+
+    it('finit le tour sans rien dire quand il ne reste rien à faire', async () => {
+      const { fixture, http, page } = await ouvrir(
+        vue({ actions: [{ type: 'decommissionner', carte: 'j1-01' }, { type: 'finirTour' }] }),
+      );
+      bouton(page, 'Finir mon tour')?.click();
+      fixture.detectChanges();
+      expect(page.querySelector('[role="alertdialog"]')).toBeNull();
+      http.expectOne(`/api/v1/parties/${ID}/actions`).flush(partie(vue()));
+      await fixture.whenStable();
+    });
+
+    it('signale le SI indisponible et rappelle la Garde, d’après les cibles du serveur', async () => {
+      const v = vue({
+        actions: [{ type: 'attaquer', attaquant: 'j1-02', cible: 'j2-06' }, { type: 'finirTour' }],
+      });
+      v.moi.plateau = [attaquant];
+      v.adversaire.plateau = [
+        { id: 'j2-06', numero: 13, pv: 5, attaque: 3, poseAuTour: 1, aAttaqueCeTour: false },
+      ];
+      const { fixture, page } = await ouvrir(v);
+      expect(bouton(page, 'SI du bot')?.textContent).not.toContain('Indisponible');
+      bouton(page, 'peut attaquer')?.click();
+      fixture.detectChanges();
+      expect(bouton(page, 'SI du bot')?.textContent).toContain('Indisponible : Garde');
+      expect(page.querySelector('#detail-plateau')?.textContent).toContain(
+        'Garde : Adaptateur SAP doit tomber avant le SI du bot.',
+      );
+    });
+
+    it('se désactivent dans l’aide, et le réglage est gardé par le navigateur', async () => {
+      const v = vue({
+        actions: [
+          { type: 'attaquer', attaquant: 'j1-02', cible: 'j2-05' },
+          { type: 'poser', carte: 'j1-01' },
+          { type: 'finirTour' },
+        ],
+      });
+      v.moi.plateau = [attaquant];
+      const { fixture, http, page } = await ouvrir(v);
+      const reglage = page.querySelector<HTMLInputElement>('dialog input[type="checkbox"]');
+      expect(reglage?.checked).toBe(true);
+      reglage?.click();
+      fixture.detectChanges();
+      expect(localStorage.getItem('hipmaster.coups-de-pouce')).toBe('non');
+      // Plus d'avertissement d'attaques oubliées (US-039), ni de SI « indisponible », ni de message.
+      expect(page.querySelector('#attaques-oubliees')).toBeNull();
+      bouton(page, 'peut attaquer')?.click();
+      fixture.detectChanges();
+      expect(bouton(page, 'SI du bot')?.textContent).not.toContain('Indisponible');
+      bouton(page, 'Finir mon tour')?.click();
+      fixture.detectChanges();
+      expect(page.querySelector('[role="alertdialog"]')).toBeNull();
+      http.expectOne(`/api/v1/parties/${ID}/actions`).flush(partie(vue()));
+      await fixture.whenStable();
+    });
+  });
+
   it('affiche le refus du serveur', async () => {
     const { fixture, http, page } = await ouvrir();
     bouton(page, 'Finir mon tour')?.click();
+    fixture.detectChanges();
+    bouton(page, 'Finir quand même')?.click();
     http
       .expectOne(`/api/v1/parties/${ID}/actions`)
       .flush(
@@ -785,7 +911,13 @@ describe('PartieEcran en duel (US-034)', () => {
     expect(page.querySelector('#titre-bot')?.textContent).toContain('Bob');
     expect(page.textContent).not.toContain('Niveau :');
 
+    // Les coups de pouce valent aussi en duel (US-065).
     bouton(page, 'Finir mon tour')?.click();
+    fixture.detectChanges();
+    expect(page.querySelector('[role="alertdialog"]')?.textContent).toContain(
+      'Vous pouvez encore poser API REST.',
+    );
+    bouton(page, 'Finir quand même')?.click();
     const action = http.expectOne(`/api/v1/duels/${ID}/actions`);
     expect(action.request.headers.get('If-Match')).toBe('"4"');
     action.flush(duel(vue({ actif: 'j2', actions: [] }), 5));
