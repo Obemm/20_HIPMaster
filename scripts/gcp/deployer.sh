@@ -169,7 +169,11 @@ jeton_acces() { gc auth print-access-token; }
 appel_firebase() {
   local methode=$1 url=$2 corps=${3:-} jeton reponse code
   local -a options=(-sS -X "$methode" -H @- -H "x-goog-user-project: $PROJET" -w '\n%{http_code}')
-  if [[ -n $corps ]]; then options+=(-H 'Content-Type: application/json' --data "$corps"); fi
+  # Le corps passe par un fichier : sous Windows, un argument de curl perd ses lettres accentuées (US-051).
+  if [[ -n $corps ]]; then
+    printf '%s' "$corps" >"$TEMPORAIRE/corps.json"
+    options+=(-H 'Content-Type: application/json' --data-binary "@$(chemin_natif "$TEMPORAIRE/corps.json")")
+  fi
   jeton=$(jeton_acces)
   reponse=$(printf 'Authorization: Bearer %s\n' "$jeton" | curl "${options[@]}" "$url")
   code=${reponse##*$'\n'}

@@ -270,8 +270,10 @@ appel_google() {
   local jeton
   jeton=$(gc auth print-access-token)
   local -a options=(-sS -X "$1" -H @- -H "x-goog-user-project: $PROJET" -w '\n%{http_code}')
+  # Le corps passe par un fichier : sous Windows, un argument de curl perd ses lettres accentuées.
   if [[ -n ${3:-} ]]; then
-    options+=(-H 'Content-Type: application/json' --data "$3")
+    printf '%s' "$3" >"$TEMPORAIRE/corps.json"
+    options+=(-H 'Content-Type: application/json' --data-binary "@$(chemin_natif "$TEMPORAIRE/corps.json")")
   fi
   printf 'Authorization: Bearer %s\n' "$jeton" | curl "${options[@]}" "$2"
 }
