@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: HIPMaster — comptes invités
-  version: 1.3.0
+  version: 1.4.0
   description: >
     Comptes invités (US-022, ADR 0017) : un pseudo, un jeton de session gardé par le navigateur et un code de
     récupération pour retrouver son compte sur un autre appareil. Ni mot de passe ni e-mail. Les routes marquées
@@ -142,6 +142,18 @@ paths:
           content:
             application/json:
               schema: { $ref: '#/components/schemas/Joueur' }
+        '401': { $ref: '#/components/responses/Probleme' }
+    delete:
+      operationId: supprimerMonCompte
+      summary: Supprime définitivement le compte connecté (compte requis)
+      description: >
+        Suppression de son compte (US-053, ADR 0031), en une seule fois : ses duels en cours se terminent par forfait
+        (l'adversaire gagne), ses défis en attente disparaissent, puis le compte et avec lui ses sessions (tous ses
+        appareils sont déconnectés), sa collection, ses boosters, ses récompenses et ses parties contre le bot. Ses
+        duels terminés restent à ses adversaires, sous le pseudo « Compte supprimé ». Rien ne peut être restauré.
+      security: [{ jeton: [] }]
+      responses:
+        '204': { description: Compte supprimé ; le jeton ne vaut plus rien. }
         '401': { $ref: '#/components/responses/Probleme' }
   /moi/code:
     post:

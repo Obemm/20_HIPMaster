@@ -22,7 +22,7 @@ référence Elis.
 | [0011](0011-catalogue-cartes-versionne.md)             | Catalogue des cartes versionné dans le domaine, pas en base           | ADR-026 (écarté)               | Acceptée                      |
 | [0012](0012-theme-clair-sombre.md)                     | Thème clair ou sombre selon le système, jetons de couleur             | ADR-019 (adapté)               | Acceptée                      |
 | [0013](0013-moteur-combat.md)                          | Moteur de combat : état sérialisable, actions, hasard à graine        | aucune                         | Acceptée                      |
-| [0014](0014-parties-en-memoire.md)                     | État des parties en cours gardé en mémoire par l'API                  | ADR-020                        | Acceptée (précisée par 0025)  |
+| [0014](0014-parties-en-memoire.md)                     | État des parties en cours gardé en mémoire par l'API                  | ADR-020                        | Remplacée par 0030            |
 | [0015](0015-illustrations-statiques-optimisees.md)     | Illustrations : fichiers statiques optimisés, originaux hors du dépôt | ADR-012, ADR-030               | Acceptée                      |
 | [0016](0016-illustrations-provisoires-vectorielles.md) | Illustrations provisoires vectorielles, générées par le code          | aucune (ADR-033)               | Acceptée                      |
 | [0017](0017-compte-invite.md)                          | Compte invité : pseudo, jeton secret et code de récupération          | ADR-010, 034 (écartés)         | Complétée (0025, 0027, 0029)  |
@@ -38,6 +38,8 @@ référence Elis.
 | [0027](0027-inscription-sur-invitation.md)             | Inscription sur invitation : codes à usages comptés, sous HMAC        | ADR-020 ; 010, 034 écartés     | Acceptée (complétée par 0029) |
 | [0028](0028-deploiement-continu.md)                    | Déploiement continu : révision vérifiée avant bascule, front par API  | ADR-011, 032 écartés, 039, 033 | Acceptée                      |
 | [0029](0029-administrateurs-par-configuration.md)      | Administrateurs désignés par la configuration, routes cachées en 404  | ADR-020 ; 010, 034 écartés     | Acceptée                      |
+| [0030](0030-parties-bot-en-base.md)                    | Parties contre le bot en base : version, une écriture par action      | ADR-020                        | Acceptée                      |
+| [0031](0031-suppression-compte.md)                     | Suppression de son compte : forfait des duels, historique sans lui    | ADR-020 ; ADR-015 écarté       | Acceptée                      |
 | [0032](0032-preferences-interface-navigateur.md)       | Préférences d'interface gardées par le navigateur (`localStorage`)    | ADR-032 écarté                 | Acceptée                      |
 
 Modèle : [template.md](template.md).

@@ -13,7 +13,7 @@ import {
   vueDe,
   type VueJoueur,
 } from '@hipmaster/domain';
-import { and, asc, desc, eq, gt, inArray, isNotNull, lt, ne, or, sql } from 'drizzle-orm';
+import { and, asc, desc, eq, gt, inArray, isNotNull, isNull, lt, ne, or, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import { type OptionsBoosters, type Recompense, recompenserVictoire } from '../comptes/boosters.ts';
 import type { Base } from '../db/index.ts';
@@ -77,6 +77,9 @@ export interface OptionsDuels {
   boosters?: OptionsBoosters;
 }
 
+/** Le pseudo affiché à la place d'un joueur qui a supprimé son compte (US-053, ADR 0031). */
+export const COMPTE_SUPPRIME = 'Compte supprimé';
+
 const SEPT_JOURS = 7 * 24 * 60 * 60 * 1000;
 const SOIXANTE_DOUZE_HEURES = 72 * 60 * 60 * 1000;
 const horloge = (options: OptionsDuels) => (options.maintenant ?? Date.now)();
@@ -134,7 +137,7 @@ function campDe(ligne: LigneDuel, joueurId: string): IdJoueur | null {
 }
 
 async function pseudos(base: Base, ligne: LigneDuel): Promise<Map<string, string>> {
-  const ids = [ligne.createurId, ...(ligne.adversaireId ? [ligne.adversaireId] : [])];
+  const ids = [ligne.createurId, ligne.adversaireId].filter((id) => id !== null);
   const lignes = await base
     .select({ id: joueurs.id, pseudo: joueurs.pseudo })
     .from(joueurs)
@@ -179,6 +182,12 @@ async function recompenseDuel(
   return recompenserVictoire(base, ligne.id, joueurId, options.boosters, refus);
 }
 
+/** L'adversaire d'un duel : `null` tant que personne ne l'a rejoint, « Compte supprimé » s'il est parti. */
+function adversaireVisible(ligne: LigneDuel, noms: Map<string, string>): { pseudo: string } | null {
+  if (ligne.statut === 'attente') return null;
+  return { pseudo: (ligne.adversaireId && noms.get(ligne.adversaireId)) || COMPTE_SUPPRIME };
+}
+
 async function visible(
   base: Base,
   ligne: LigneDuel,
@@ -199,10 +208,10 @@ async function visible(
     id: ligne.id,
     statut: ligne.statut,
     version: ligne.version,
-    createur: { pseudo: noms.get(ligne.createurId) ?? '?' },
+    createur: { pseudo: (ligne.createurId && noms.get(ligne.createurId)) || COMPTE_SUPPRIME },
     deckCreateur: ligne.deckCreateur,
     ouvert: ligne.ouvert,
-    adversaire: ligne.adversaireId ? { pseudo: noms.get(ligne.adversaireId) ?? '?' } : null,
+    adversaire: adversaireVisible(ligne, noms),
     moi,
     curseur: etat?.journal.length ?? 0,
     echeance: echeanceDe(ligne, options)?.toISOString() ?? null,
@@ -535,14 +544,16 @@ export async function lireMesDuels(
       majLe: duels.majLe,
     })
     .from(duels)
-    .innerJoin(createur, eq(createur.id, duels.createurId))
+    .leftJoin(createur, eq(createur.id, duels.createurId))
     .leftJoin(adversaire, eq(adversaire.id, duels.adversaireId))
     .where(or(eq(duels.createurId, joueurId), eq(duels.adversaireId, joueurId)))
     .orderBy(desc(duels.majLe));
 
   const resumes = lignes.map((l) => {
     const moi = l.createurId === joueurId ? 'j1' : 'j2';
-    const pseudo = moi === 'j1' ? l.pseudoAdversaire : l.pseudoCreateur;
+    const pseudo =
+      (moi === 'j1' ? l.pseudoAdversaire : l.pseudoCreateur) ??
+      (l.statut === 'attente' ? null : COMPTE_SUPPRIME);
     const monTour = l.statut === 'en-cours' && l.actif === moi;
     const groupe = groupeDe(l.statut, monTour);
     const resultat = l.statut === 'termine' ? resultatDe(l.gagnant, moi) : null;
@@ -567,4 +578,43 @@ export async function lireMesDuels(
     aMonTour: resumes.filter((r) => r.groupe === 'mon-tour').length,
     duels: [...enCours, ...termines].map((r) => r.resume),
   };
+}
+
+/**
+ * Avant la suppression d'un compte (US-053, ADR 0031), dans sa transaction : ses duels en cours se terminent par
+ * forfait (il perd), ses défis en attente disparaissent. Les lignes sont verrouillées comme pour une action : un coup
+ * de l'adversaire joué au même instant passe avant ou après, jamais au milieu.
+ */
+export async function quitterSesDuels(tx: Transaction, joueurId: string): Promise<void> {
+  const lignes = await tx
+    .select()
+    .from(duels)
+    .where(
+      and(
+        ne(duels.statut, 'termine'),
+        or(eq(duels.createurId, joueurId), eq(duels.adversaireId, joueurId)),
+      ),
+    )
+    .for('update');
+  for (const ligne of lignes) {
+    const camp = campDe(ligne, joueurId);
+    if (ligne.statut === 'attente' || !ligne.etat || !camp) {
+      await tx.delete(duels).where(eq(duels.id, ligne.id));
+      continue;
+    }
+    await tx
+      .update(duels)
+      .set({
+        etat: conceder(ligne.etat, camp, 'forfait'),
+        statut: 'termine',
+        version: ligne.version + 1,
+        majLe: new Date(),
+      })
+      .where(eq(duels.id, ligne.id));
+  }
+}
+
+/** Après la suppression d'un compte : un duel dont les deux joueurs sont partis ne sert plus à personne. */
+export async function oublierDuelsSansJoueur(tx: Transaction): Promise<void> {
+  await tx.delete(duels).where(and(isNull(duels.createurId), isNull(duels.adversaireId)));
 }

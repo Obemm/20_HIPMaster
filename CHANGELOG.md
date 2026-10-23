@@ -152,9 +152,28 @@ Toutes les évolutions notables du projet sont consignées ici
   route qui n'existe pas. Le lien « Inviter des collègues » n'apparaît dans « Mon compte » que pour un administrateur,
   et « Mon compte » montre l'identifiant du compte. Une invitation révoquée se distingue désormais d'une invitation
   expirée, dans la page comme dans `npm run invitation -- --lister` (US-072, ADR 0029).
+- Page « À propos et confidentialité », à laquelle mène un lien en pied de chaque page : qui édite et héberge le jeu
+  (Firebase Hosting, Cloud Run et Neon à Francfort), ce qu'il garde et pourquoi (pseudo, collection, duels, sessions,
+  adresses IP des journaux), combien de temps, et comment exercer ses droits ; le seul stockage du navigateur est le
+  jeton de session, strictement nécessaire : ni bandeau de consentement, ni traceur, ni mesure d'audience. Comptes, collections,
+  récompenses et résultats sont gardés sans limite, sauf suppression par le joueur ; seules des données techniques
+  expirent (sessions inutilisées 90 jours, journaux et sauvegardes 30 jours, parties abandonnées, défis jamais
+  acceptés) ; celles que la purge d'US-054 appliquera sont marquées « bientôt ». « Mon compte » permet de supprimer son
+  compte après confirmation (`DELETE /api/v1/moi`, contrat `comptes.yaml` 1.4.0) : compte, sessions sur tous les
+  appareils, collection, récompenses et parties disparaissent en une transaction ; ses duels en cours se terminent
+  par forfait au lieu de disparaître pour l'adversaire, qui garde ses duels terminés face à « Compte supprimé »
+  (`duels.yaml` 1.3.0) (US-053, ADR 0031).
 
 ### Modifié
 
+- Les parties contre le bot sont gardées en base au lieu de la mémoire de l'API : elles survivent aux déploiements,
+  aux arrêts à zéro et aux redémarrages, et expirent après 24 heures sans coup joué (une lecture ne compte pas), ce
+  que dit désormais l'écran de partie. Chaque action, tour du bot compris, s'écrit en une seule fois à condition que
+  la partie n'ait pas changé : de deux actions simultanées, une seule passe, l'autre reçoit 409. Chaque partie porte
+  sa `version` (en-tête `ETag`), que `If-Match` peut exiger (contrat `parties.yaml` 1.3.0). Les parties expirées
+  sont purgées à chaque création ; au-delà de 1 000, la partie anonyme la moins récemment jouée part la première.
+  Fermer sa session supprime ses parties. Plus rien dans les parties n'impose une seule instance Cloud Run
+  (US-052, ADR 0030, qui remplace l'ADR 0014).
 - L'écran de partie et de duel tient dans un écran de téléphone (375 × 667) sans faire défiler la page : en-tête
   compact, camps et main en rangées qui défilent horizontalement, journal en bandeau de deux lignes qui se déplie à la
   demande, détail d'une carte ou d'un composant en feuille au bas de l'écran, « Finir mon tour » collé au bas.
@@ -216,6 +235,9 @@ Toutes les évolutions notables du projet sont consignées ici
 - La vue de partie renvoyée par l'API perdait le bonus d'attaque des composants et les marqueurs du joueur : un bot
   du domaine joué depuis l'API (Agent autonome) évaluait tout à `NaN` et ne gagnait plus aucune partie. Le schéma et
   le contrat OpenAPI les exposent ; la vue de l'API suffit désormais à reconstituer la partie (US-026).
+- Statut des epics : `scripts/cloturer-story.py` déduit le statut et l'avancement de chaque epic de ses stories et
+  les écrit à l'identique dans le fichier de l'epic et le tableau ; `--recompter` les recalcule tous (EPIC-00,
+  EPIC-02 et EPIC-04 terminés mais restés « En cours », avancements faux après l'ajout de stories) (US-075).
 
 ### Sécurité
 

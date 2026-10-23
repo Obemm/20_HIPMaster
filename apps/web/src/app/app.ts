@@ -5,7 +5,8 @@ import { CompteService } from './compte/compte.service';
 import { MesDuelsService } from './duels/mes-duels.service';
 
 /**
- * Coquille de l'application : un bandeau (accueil, compte du joueur), puis la page, qui fournit son propre `<main>`.
+ * Coquille de l'application : un bandeau (accueil, compte du joueur), puis la page, qui fournit son propre `<main>`,
+ * et un pied de page qui mène à « À propos et confidentialité » (US-053).
  */
 @Component({
   selector: 'hip-root',
@@ -40,6 +41,13 @@ import { MesDuelsService } from './duels/mes-duels.service';
       </nav>
     </header>
     <router-outlet />
+    <footer class="mt-auto border-t border-bordure">
+      <p class="mx-auto w-full max-w-6xl px-4 py-3 text-sm sm:px-6">
+        <a routerLink="/confidentialite" class="underline underline-offset-4"
+          >À propos et confidentialité</a
+        >
+      </p>
+    </footer>
   `,
 })
 export class App {
