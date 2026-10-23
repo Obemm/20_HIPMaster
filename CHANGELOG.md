@@ -144,6 +144,14 @@ Toutes les évolutions notables du projet sont consignées ici
   illustrations, un an pour les fichiers à empreinte) et pose une CSP stricte avec les en-têtes de sécurité ;
   `robots.txt` et `noindex` tiennent les robots à l'écart. Guide d'exploitation complété : déploiement, retour
   arrière, migrations compatibles (US-050, ADR 0028).
+- Page « Inviter », réservée au porteur du projet : créer une invitation (pour qui, nombre de comptes, date limite),
+  copier son lien en un geste ou le partager par le menu du téléphone, suivre les comptes créés par chaque invitation et
+  en révoquer une après confirmation. Les administrateurs sont désignés par le réglage `ADMINISTRATEURS` de l'API
+  (identifiants de joueur, variable GitHub `HIPMASTER_ADMINISTRATEURS` au déploiement), jamais par le front ; les
+  routes `/api/v1/admin/invitations` (contrat OpenAPI, débit limité) répondent 404 à tout autre appelant, comme une
+  route qui n'existe pas. Le lien « Inviter des collègues » n'apparaît dans « Mon compte » que pour un administrateur,
+  et « Mon compte » montre l'identifiant du compte. Une invitation révoquée se distingue désormais d'une invitation
+  expirée, dans la page comme dans `npm run invitation -- --lister` (US-072, ADR 0029).
 
 ### Modifié
 

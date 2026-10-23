@@ -64,6 +64,13 @@
       "when": 1792710068830,
       "tag": "0008_invitations",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1792736645801,
+      "tag": "0009_revocation_invitations",
+      "breakpoints": true
     }
   ]
 }

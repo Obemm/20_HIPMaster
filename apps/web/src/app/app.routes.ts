@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { Accueil } from './accueil/accueil';
+import { InviterEcran } from './administration/inviter';
 import { BoostersEcran } from './boosters/boosters';
 import { CollectionEcran } from './collection/collection';
 import { DuelEcran } from './duels/duel';
@@ -46,5 +47,7 @@ export const routes: Routes = [
   { path: 'duels/nouveau', component: NouveauDefi, title: 'Défier un collègue — HIPMaster' },
   { path: 'duels/:id', component: DuelEcran, title: 'Duel — HIPMaster' },
   { path: 'compte', component: CompteEcran, title: 'Mon compte — HIPMaster' },
+  // Réservée aux administrateurs (US-072) : pour tout autre joueur, retour à l'accueil.
+  { path: 'inviter', component: InviterEcran, title: 'Inviter — HIPMaster' },
   { path: '**', redirectTo: '' },
 ];

@@ -7,6 +7,8 @@ import { catchError, firstValueFrom, throwError } from 'rxjs';
 export interface Joueur {
   id: string;
   pseudo: string;
+  /** Présent pour un administrateur seulement (US-072, ADR 0029) : la page « Inviter » lui est ouverte. */
+  administrateur?: true;
 }
 
 const CLE_JETON = 'hipmaster.jeton';

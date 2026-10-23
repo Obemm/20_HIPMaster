@@ -34,6 +34,11 @@
 #   HIPMASTER_COMMIT   commit déployé, qui étiquette l'image ; par défaut, celui du dépôt (git rev-parse HEAD)
 #   HIPMASTER_SECRETS  secrets de l'API, VARIABLE=secret séparés par des virgules ; par défaut
 #                      DATABASE_URL=database-url,CLE_CODES_RECUPERATION=cle-codes-recuperation
+#   HIPMASTER_ADMINISTRATEURS
+#                      identifiants de joueur des administrateurs (page « Inviter », US-072, ADR 0029), séparés par
+#                      des espaces ou des virgules ; vide : personne. Dans GitHub Actions, la variable du dépôt du
+#                      même nom. Les étapes migrations et revision la posent sur l'API : un déploiement sans elle
+#                      retire les administrateurs.
 #
 # Sécurité : sur un poste, chaque appel gcloud vise la configuration dédiée « hipmaster », compte et projet vérifiés
 # avant toute écriture, et la configuration active du poste ne change pas (contrôlé à la fin) ; dans GitHub Actions,
@@ -70,6 +75,7 @@ PUBLIC=0
 ETAPES=()
 COMPTE=${HIPMASTER_COMPTE:-}
 COMMIT=${HIPMASTER_COMMIT:-}
+ADMINISTRATEURS=${HIPMASTER_ADMINISTRATEURS:-}
 IFS=, read -r -a SECRETS <<<"${HIPMASTER_SECRETS:-DATABASE_URL=database-url,CLE_CODES_RECUPERATION=cle-codes-recuperation}"
 ACTIVE_AVANT=''
 
@@ -171,6 +177,13 @@ liste_secrets() {
   printf '%s' "${liste[*]}"
 }
 
+# --set-env-vars de gcloud : les variables de l'API, et ses administrateurs s'il y en a. Ceux-ci y sont séparés par
+# des espaces, la virgule séparant les variables pour gcloud.
+variables_api() {
+  printf '%s' "$VARIABLES"
+  if [[ -n $ADMINISTRATEURS ]]; then printf ',ADMINISTRATEURS=%s' "$ADMINISTRATEURS"; fi
+}
+
 service_json() { gc run services describe "$SERVICE" --project="$PROJET" --region="$REGION" --format=json; }
 
 service_existe() {
@@ -237,6 +250,19 @@ verifier_commit() {
   IMAGE=$REGISTRE/api:$COMMIT
 }
 
+# Identifiants de joueur (UUID), séparés par des espaces ou des virgules : vérifiés avant toute étape (l'API refuserait
+# de démarrer avec une valeur invalide), puis gardés séparés par des espaces.
+verifier_administrateurs() {
+  local id
+  local -a ids
+  read -r -a ids <<<"${ADMINISTRATEURS//,/ }"
+  for id in "${ids[@]}"; do
+    [[ $id =~ ^[0-9a-fA-F]{8}(-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}$ ]] ||
+      arret "HIPMASTER_ADMINISTRATEURS : « $id » n'est pas un identifiant de joueur (voir le guide d'exploitation, « Administrateurs »)."
+  done
+  ADMINISTRATEURS="${ids[*]}"
+}
+
 # --- Étapes du déploiement --------------------------------------------------------------------------
 
 etape_prerequis() {
@@ -293,7 +319,7 @@ etape_migrations() {
   info "en cas d'échec, le déploiement s'arrête ici : l'API en ligne n'a pas changé"
   gc run jobs deploy "$JOB" --project="$PROJET" --region="$REGION" --image="$IMAGE" \
     --service-account="$COMPTE_API" --set-secrets="$(liste_secrets)" \
-    --set-env-vars="$VARIABLES" --command=node --args=apps/api/src/migrer.ts \
+    --set-env-vars="$(variables_api)" --command=node --args=apps/api/src/migrer.ts \
     --tasks=1 --max-retries=1 --task-timeout=5m --cpu=1 --memory=512Mi --labels=application=hipmaster
   gc run jobs execute "$JOB" --project="$PROJET" --region="$REGION" --wait
 }
@@ -304,8 +330,15 @@ etape_revision() {
   # pendant les requêtes seulement, pour que la base Neon puisse se mettre en veille (ADR 0021, 0023).
   local -a options=(--project="$PROJET" --region="$REGION" --image="$IMAGE" --service-account="$COMPTE_API"
     --cpu=1 --memory=512Mi --min-instances=0 --max-instances=1 --cpu-boost --cpu-throttling
-    --set-secrets="$(liste_secrets)" --set-env-vars="$VARIABLES"
+    --set-secrets="$(liste_secrets)" --set-env-vars="$(variables_api)"
     --labels=application=hipmaster --tag="$ESSAI")
+  if [[ -n $ADMINISTRATEURS ]]; then
+    local -a ids
+    read -r -a ids <<<"$ADMINISTRATEURS"
+    info "administrateurs (page « Inviter ») : ${#ids[@]} compte(s)"
+  else
+    info "aucun administrateur : la page « Inviter » n'est ouverte à personne (HIPMASTER_ADMINISTRATEURS vide)"
+  fi
   if service_existe; then
     options+=(--no-traffic)
     info "sans trafic : la révision actuelle continue de servir jusqu'à la bascule"
@@ -497,6 +530,7 @@ principal() {
   verifier_outils
   verifier_identite
   verifier_commit
+  verifier_administrateurs
   local i etape
   for ((i = 0; i < ${#ETAPES[@]}; i++)); do
     etape=${ETAPES[i]}

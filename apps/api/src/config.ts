@@ -1,7 +1,14 @@
 import { existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { z } from 'zod';
+import {
+  type Administrateurs,
+  AUCUN,
+  lireAdministrateurs,
+  TOUS,
+} from './comptes/administrateurs.ts';
 import { CLE_CODES_DEVELOPPEMENT } from './comptes/comptes.ts';
+import { SITE_DEVELOPPEMENT, SITE_PAR_DEFAUT } from './comptes/invitations.ts';
 import { type OptionsPool, POOL_PAR_DEFAUT } from './db/index.ts';
 import { NIVEAUX_JOURNAL, type NiveauJournal } from './journaux.ts';
 
@@ -66,6 +73,10 @@ const variablesApi = z.object({
   INSCRIPTION_SUR_INVITATION: z
     .stringbool({ truthy: ['oui', 'true', '1'], falsy: ['non', 'false', '0'] })
     .optional(),
+  /** Administrateurs (US-072, ADR 0029) : identifiants de joueur séparés par des virgules ou des espaces. */
+  ADMINISTRATEURS: z.string().optional(),
+  /** Adresse du site, pour les liens d'invitation (ADR 0029). */
+  ADRESSE_SITE: z.url({ protocol: /^https?$/ }).optional(),
 });
 
 type Contexte = z.core.$RefinementCtx;
@@ -130,6 +141,20 @@ const schemaApi = variablesApi.superRefine((env, contexte) => {
     'PROXYS_DE_CONFIANCE',
     '2 derrière Firebase Hosting et Cloud Run (ADR 0025)',
   );
+  const administrateurs = lireAdministrateurs(env.ADMINISTRATEURS);
+  if ('erreur' in administrateurs) {
+    contexte.addIssue({
+      code: 'custom',
+      path: ['ADMINISTRATEURS'],
+      message: administrateurs.erreur,
+    });
+  } else if (administrateurs.administrateurs === TOUS && env.NODE_ENV === 'production') {
+    contexte.addIssue({
+      code: 'custom',
+      path: ['ADMINISTRATEURS'],
+      message: `« ${TOUS} » ne sert qu’au développement et aux tests (ADR 0029)`,
+    });
+  }
 });
 
 export interface Config {
@@ -159,6 +184,10 @@ export interface ConfigApi extends ConfigCle {
   limitesDebit: number | null;
   /** Création de compte réservée aux invités ; par défaut en production seulement. */
   inscriptionSurInvitation: boolean;
+  /** Les comptes administrateurs (US-072, ADR 0029) ; personne par défaut. */
+  administrateurs: Administrateurs;
+  /** Adresse du site, pour les liens d'invitation : celle du jeu en production, du front de développement ailleurs. */
+  site: string;
 }
 
 function lire<S extends z.ZodType>(schema: S, env: NodeJS.ProcessEnv): z.output<S> {
@@ -204,6 +233,7 @@ export function lireConfigCle(env: NodeJS.ProcessEnv = process.env): ConfigCle {
 export function lireConfigApi(env: NodeJS.ProcessEnv = process.env): ConfigApi {
   const e = lire(schemaApi, env);
   const config = versConfig(e);
+  const administrateurs = lireAdministrateurs(e.ADMINISTRATEURS);
   return {
     ...config,
     cleCodes: e.CLE_CODES_RECUPERATION ?? CLE_CODES_DEVELOPPEMENT,
@@ -211,6 +241,9 @@ export function lireConfigApi(env: NodeJS.ProcessEnv = process.env): ConfigApi {
     limitesDebit: facteurLimites(e.LIMITES_DEBIT, config.production),
     // Hors production, le développement et les parcours e2e créent des comptes librement.
     inscriptionSurInvitation: e.INSCRIPTION_SUR_INVITATION ?? config.production,
+    // Une valeur invalide a déjà été refusée par le schéma.
+    administrateurs: 'administrateurs' in administrateurs ? administrateurs.administrateurs : AUCUN,
+    site: e.ADRESSE_SITE ?? (config.production ? SITE_PAR_DEFAUT : SITE_DEVELOPPEMENT),
   };
 }
 

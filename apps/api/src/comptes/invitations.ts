@@ -1,4 +1,4 @@
-import { and, asc, count, eq, gt, lt, sql } from 'drizzle-orm';
+import { and, asc, count, eq, gt, isNull, lt, sql } from 'drizzle-orm';
 import type { Base } from '../db/index.ts';
 import { invitations, joueurs } from '../db/schema.ts';
 import {
@@ -12,7 +12,30 @@ import {
 /**
  * Inscription sur invitation (US-048, ADR 0027) : un code crée des comptes tant qu'il lui reste des utilisations et
  * qu'il n'a pas expiré. La base n'en garde que l'empreinte HMAC, avec la clé des codes de récupération (ADR 0025).
+ * La commande `npm run invitation` et la page « Inviter » (US-072, ADR 0029) passent toutes deux par ce module.
  */
+
+/** Longueur maximale d'un libellé. */
+export const LIBELLE_MAX = 80;
+/** Nombre maximal de comptes qu'une invitation peut créer. */
+export const UTILISATIONS_MAX = 1000;
+/** Adresse du jeu en production (ADR 0021), pour le lien à envoyer. */
+export const SITE_PAR_DEFAUT = 'https://hipmaster.web.app';
+/** Hors production, le front de développement (`npm run dev`), qui relaie /api vers l'API. */
+export const SITE_DEVELOPPEMENT = 'http://localhost:4200';
+const JOUR_MS = 24 * 60 * 60 * 1000;
+
+/** Une date limite `AAAA-MM-JJ` vaut tout ce jour-là : l'invitation expire à minuit UTC, le lendemain. */
+export function finDuJour(date: string): Date {
+  return new Date(Date.parse(date) + JOUR_MS);
+}
+
+/** Le lien à envoyer : la page « Mon compte » du site, dont il remplit le code d'invitation. */
+export function lienInvitation(code: string, site: string): string {
+  const lien = new URL('/compte', site);
+  lien.searchParams.set('invitation', code);
+  return lien.href;
+}
 
 export interface NouvelleInvitation {
   /** Pour qui, pour quelle campagne : « équipe intégration », « démo du 12 novembre »… */
@@ -29,8 +52,27 @@ export interface ResumeInvitation {
   utilisationsMax: number;
   expireLe: Date;
   creeLe: Date;
+  /** Instant de la révocation (US-072) ; `null` pour une invitation jamais révoquée. */
+  revoqueeLe: Date | null;
   /** Comptes créés avec cette invitation et encore présents. */
   comptes: number;
+}
+
+/** `active` : le code crée encore des comptes ; sinon, pourquoi il n'en crée plus. */
+export type StatutInvitation = 'active' | 'epuisee' | 'expiree' | 'revoquee';
+
+/** Le statut d'une invitation à cet instant : la révocation prime sur l'expiration, qui prime sur l'épuisement. */
+export function statutInvitation(
+  invitation: Pick<
+    ResumeInvitation,
+    'utilisations' | 'utilisationsMax' | 'expireLe' | 'revoqueeLe'
+  >,
+  maintenant = new Date(),
+): StatutInvitation {
+  if (invitation.revoqueeLe) return 'revoquee';
+  if (invitation.expireLe <= maintenant) return 'expiree';
+  if (invitation.utilisations >= invitation.utilisationsMax) return 'epuisee';
+  return 'active';
 }
 
 /** Crée une invitation ; renvoie son code, à montrer une seule fois : la base n'en garde que l'empreinte. */
@@ -97,8 +139,8 @@ export async function inscrire(
   });
 }
 
-/** Les invitations, des plus anciennes aux plus récentes, avec le nombre de comptes créés par chacune. */
-export async function listerInvitations(base: Base): Promise<ResumeInvitation[]> {
+/** Les invitations avec le nombre de comptes créés par chacune ; jamais leur empreinte. */
+function resumes(base: Base) {
   return base
     .select({
       id: invitations.id,
@@ -107,17 +149,30 @@ export async function listerInvitations(base: Base): Promise<ResumeInvitation[]>
       utilisationsMax: invitations.utilisationsMax,
       expireLe: invitations.expireLe,
       creeLe: invitations.creeLe,
+      revoqueeLe: invitations.revoqueeLe,
       comptes: count(joueurs.id),
     })
     .from(invitations)
     .leftJoin(joueurs, eq(joueurs.invitationId, invitations.id))
     .groupBy(invitations.id)
-    .orderBy(asc(invitations.creeLe), asc(invitations.id));
+    .$dynamic();
+}
+
+/** Les invitations, des plus anciennes aux plus récentes, avec le nombre de comptes créés par chacune. */
+export async function listerInvitations(base: Base): Promise<ResumeInvitation[]> {
+  return resumes(base).orderBy(asc(invitations.creeLe), asc(invitations.id));
+}
+
+/** Une invitation et le nombre de comptes qu'elle a créés ; `null` si aucune n'a cet identifiant. */
+export async function lireInvitation(base: Base, id: string): Promise<ResumeInvitation | null> {
+  const [invitation] = await resumes(base).where(eq(invitations.id, id));
+  return invitation ?? null;
 }
 
 /**
- * Révoque une invitation (un code qui aurait fuité) : elle expire aussitôt ; les comptes déjà créés restent. `false`
- * si aucune invitation en cours n'a cet identifiant (inconnue, ou déjà expirée).
+ * Révoque une invitation (un code qui aurait fuité) : elle expire aussitôt, et garde l'instant de sa révocation
+ * (US-072) ; les comptes déjà créés restent. `false` si aucune invitation en cours n'a cet identifiant (inconnue, déjà
+ * expirée ou déjà révoquée).
  */
 export async function revoquerInvitation(
   base: Base,
@@ -126,8 +181,14 @@ export async function revoquerInvitation(
 ): Promise<boolean> {
   const revoquees = await base
     .update(invitations)
-    .set({ expireLe: maintenant })
-    .where(and(eq(invitations.id, id), gt(invitations.expireLe, maintenant)))
+    .set({ expireLe: maintenant, revoqueeLe: maintenant })
+    .where(
+      and(
+        eq(invitations.id, id),
+        gt(invitations.expireLe, maintenant),
+        isNull(invitations.revoqueeLe),
+      ),
+    )
     .returning({ id: invitations.id });
   return revoquees.length > 0;
 }

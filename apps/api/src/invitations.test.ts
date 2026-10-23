@@ -263,6 +263,11 @@ describe('commande des invitations', () => {
     ).toBe(false);
     expect(lignes[0]).toContain('révoquée');
     expect(lignes[1]).toContain('Aucune invitation en cours');
+
+    // La liste distingue une invitation révoquée d'une invitation expirée (US-072).
+    lignes.length = 0;
+    await executer({ action: 'lister' }, ouverte.base, CLE_CODES_DEVELOPPEMENT, ecrire);
+    expect(lignes[0]).toMatch(/1 compte\(s\), révoquée le \d{4}-\d{2}-\d{2} \d{2}:\d{2} UTC$/);
   });
 
   it('`npm run invitation` exige PostgreSQL : sans DATABASE_URL, elle s’arrête en le disant', () => {

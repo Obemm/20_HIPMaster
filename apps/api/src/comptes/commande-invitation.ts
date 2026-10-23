@@ -1,7 +1,18 @@
 import { parseArgs } from 'node:util';
 import { z } from 'zod';
 import type { Base } from '../db/index.ts';
-import { creerInvitation, listerInvitations, revoquerInvitation } from './invitations.ts';
+import {
+  creerInvitation,
+  finDuJour,
+  LIBELLE_MAX,
+  lienInvitation,
+  listerInvitations,
+  type ResumeInvitation,
+  revoquerInvitation,
+  SITE_PAR_DEFAUT,
+  statutInvitation,
+  UTILISATIONS_MAX,
+} from './invitations.ts';
 
 /**
  * La commande des invitations (US-048, ADR 0027), sans ses entrées-sorties : `invitation.ts` la lance. Elle crée une
@@ -16,8 +27,6 @@ export const AIDE = `Usage :
 Une invitation expire à la fin du jour --expire (minuit UTC), ou --jours jours après sa création (30 par défaut).
 Son code n'est affiché qu'à sa création : la base n'en garde que l'empreinte.`;
 
-/** Adresse du jeu en production (ADR 0021), pour le lien à envoyer. */
-const SITE_PAR_DEFAUT = 'https://hipmaster.web.app';
 const JOUR_MS = 24 * 60 * 60 * 1000;
 
 export type Commande =
@@ -34,18 +43,18 @@ export class ErreurArguments extends Error {
   }
 }
 
-const LIBELLE = '--libelle : pour qui, ou pour quelle campagne (80 caractères au plus)';
-const UTILISATIONS = '--utilisations : le nombre de comptes que le code peut créer, de 1 à 1000';
+const LIBELLE = `--libelle : pour qui, ou pour quelle campagne (${LIBELLE_MAX} caractères au plus)`;
+const UTILISATIONS = `--utilisations : le nombre de comptes que le code peut créer, de 1 à ${UTILISATIONS_MAX}`;
 const JOURS = '--jours : de 1 à 365';
 
 const schemaCreation = z
   .object({
-    libelle: z.string({ error: LIBELLE }).trim().min(1, LIBELLE).max(80, LIBELLE),
+    libelle: z.string({ error: LIBELLE }).trim().min(1, LIBELLE).max(LIBELLE_MAX, LIBELLE),
     utilisations: z.coerce
       .number({ error: UTILISATIONS })
       .int(UTILISATIONS)
       .min(1, UTILISATIONS)
-      .max(1000, UTILISATIONS),
+      .max(UTILISATIONS_MAX, UTILISATIONS),
     expire: z.iso.date({ error: '--expire : une date AAAA-MM-JJ' }).optional(),
     jours: z.coerce.number({ error: JOURS }).int(JOURS).min(1, JOURS).max(365, JOURS).optional(),
     site: z
@@ -110,15 +119,20 @@ export function lireArguments(argv: string[], maintenant = new Date()): Commande
   if (!lue.success) throw new ErreurArguments(z.prettifyError(lue.error));
   const { libelle, utilisations, expire, jours = 30, site } = lue.data;
   // --expire : valable tout le jour indiqué, jusqu'à minuit UTC.
-  const expireLe = expire
-    ? new Date(Date.parse(expire) + JOUR_MS)
-    : new Date(maintenant.getTime() + jours * JOUR_MS);
+  const expireLe = expire ? finDuJour(expire) : new Date(maintenant.getTime() + jours * JOUR_MS);
   if (expireLe <= maintenant) throw new ErreurArguments('--expire est déjà passé.');
   return { action: 'creer', libelle, utilisations, expireLe, site };
 }
 
 /** « 2027-01-01 00:00 UTC » : sans ambiguïté, quel que soit le fuseau de qui lit. */
 const dateUtc = (date: Date) => `${date.toISOString().slice(0, 16).replace('T', ' ')} UTC`;
+
+/** « expire le … », « expirée le … » ou « révoquée le … ». */
+function echeance(invitation: ResumeInvitation, maintenant: Date): string {
+  if (invitation.revoqueeLe) return `révoquée le ${dateUtc(invitation.revoqueeLe)}`;
+  const expiree = statutInvitation(invitation, maintenant) === 'expiree';
+  return `${expiree ? 'expirée le' : 'expire le'} ${dateUtc(invitation.expireLe)}`;
+}
 
 /**
  * Exécute la commande ; chaque ligne à montrer passe par `ecrire`. Renvoie faux si elle n'a rien pu faire (révocation
@@ -138,20 +152,17 @@ export async function executer(
         `Invitation « ${commande.libelle} » créée (${id}) : ${commande.utilisations} compte(s) au plus, ` +
           `jusqu’au ${dateUtc(commande.expireLe)}.`,
       );
-      const lien = new URL('/compte', commande.site);
-      lien.searchParams.set('invitation', code);
       ecrire(`Code, affiché cette seule fois : ${code}`);
-      ecrire(`Lien à envoyer : ${lien.href}`);
+      ecrire(`Lien à envoyer : ${lienInvitation(code, commande.site)}`);
       return true;
     }
     case 'lister': {
       const liste = await listerInvitations(base);
       if (liste.length === 0) ecrire('Aucune invitation.');
       for (const invitation of liste) {
-        const echeance = invitation.expireLe <= maintenant ? 'expirée le' : 'expire le';
         ecrire(
           `${invitation.id}  « ${invitation.libelle} »  ${invitation.utilisations}/${invitation.utilisationsMax} ` +
-            `utilisée(s), ${invitation.comptes} compte(s), ${echeance} ${dateUtc(invitation.expireLe)}`,
+            `utilisée(s), ${invitation.comptes} compte(s), ${echeance(invitation, maintenant)}`,
         );
       }
       return true;
@@ -161,7 +172,7 @@ export async function executer(
       ecrire(
         revoquee
           ? `Invitation ${commande.id} révoquée : son code ne crée plus de compte ; les comptes déjà créés restent.`
-          : `Aucune invitation en cours ne porte l’identifiant ${commande.id} (inconnue, ou déjà expirée).`,
+          : `Aucune invitation en cours ne porte l’identifiant ${commande.id} (inconnue, déjà expirée ou révoquée).`,
       );
       return revoquee;
     }

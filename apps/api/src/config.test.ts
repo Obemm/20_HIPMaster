@@ -162,3 +162,47 @@ describe('configuration de l’inscription sur invitation (US-048, ADR 0027)', (
     expect(lireConfigCle({})).toMatchObject({ cleCodes: CLE_CODES_DEVELOPPEMENT });
   });
 });
+
+describe('administrateurs et adresse du site (US-072, ADR 0029)', () => {
+  const ADA = '0F8FAD5B-D9CB-469F-A165-70867728950E';
+  const BOB = '7c9e6679-7425-40de-944b-e07fc1f90ae7';
+  const PRODUCTION = {
+    NODE_ENV: 'production',
+    DATABASE_URL: NEON,
+    CLE_CODES_RECUPERATION: 'k'.repeat(43),
+    PROXYS_DE_CONFIANCE: '2',
+  };
+
+  it('personne par défaut ; sinon des identifiants séparés par des virgules ou des espaces', () => {
+    expect(lireConfigApi({}).administrateurs).toEqual(new Set());
+    expect(lireConfigApi({ ...PRODUCTION, ADMINISTRATEURS: '' }).administrateurs).toEqual(
+      new Set(),
+    );
+    expect(
+      lireConfigApi({ ...PRODUCTION, ADMINISTRATEURS: ` ${ADA}, ${BOB}  ` }).administrateurs,
+    ).toEqual(new Set([ADA.toLowerCase(), BOB]));
+  });
+
+  it('refuse un identifiant qui n’est pas un UUID, en le citant', () => {
+    expect(() => lireConfigApi({ ADMINISTRATEURS: `${ADA},Ada` })).toThrow(
+      /UUID[\s\S]*Ada[\s\S]*ADMINISTRATEURS/,
+    );
+  });
+
+  it('« tous » ne sert qu’au développement et aux tests, et s’emploie seul', () => {
+    expect(lireConfigApi({ ADMINISTRATEURS: 'tous' }).administrateurs).toBe('tous');
+    expect(() => lireConfigApi({ ...PRODUCTION, ADMINISTRATEURS: 'tous' })).toThrow(
+      /développement et aux tests[\s\S]*ADMINISTRATEURS/,
+    );
+    expect(() => lireConfigApi({ ADMINISTRATEURS: `tous,${ADA}` })).toThrow(/s’emploie seul/);
+  });
+
+  it('l’adresse du site : celle du jeu en production, du front de développement ailleurs', () => {
+    expect(lireConfigApi(PRODUCTION).site).toBe('https://hipmaster.web.app');
+    expect(lireConfigApi({}).site).toBe('http://localhost:4200');
+    expect(lireConfigApi({ ADRESSE_SITE: 'http://localhost:4500' }).site).toBe(
+      'http://localhost:4500',
+    );
+    expect(() => lireConfigApi({ ADRESSE_SITE: 'hipmaster.web.app' })).toThrow(/ADRESSE_SITE/);
+  });
+});

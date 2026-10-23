@@ -28,6 +28,11 @@ export const invitations = pgTable(
     utilisations: integer().notNull().default(0),
     expireLe: timestamp({ withTimezone: true }).notNull(),
     creeLe: timestamp({ withTimezone: true }).notNull().defaultNow(),
+    /**
+     * Instant de la révocation (US-072, ADR 0029), qui pose aussi `expireLe` : la distingue d'une invitation expirée.
+     * Vide pour une invitation jamais révoquée.
+     */
+    revoqueeLe: timestamp({ withTimezone: true }),
   },
   (table) => [
     check(
