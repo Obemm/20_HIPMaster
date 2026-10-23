@@ -104,7 +104,8 @@ export type Statut =
   | 'malus-debit';
 
 export type Evenement =
-  | { type: 'debut-tour'; joueur: IdJoueur; tour: number }
+  /** `bonusDebit` : le Débit de plus du second joueur à son premier tour (ADR 0026). */
+  | { type: 'debut-tour'; joueur: IdJoueur; tour: number; bonusDebit?: number }
   | { type: 'pioche'; joueur: IdJoueur; carte: InstanceCarte }
   | { type: 'carte-brulee'; joueur: IdJoueur; carte: InstanceCarte }
   | { type: 'pose'; joueur: IdJoueur; carte: InstanceCarte }

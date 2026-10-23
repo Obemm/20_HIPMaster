@@ -20,7 +20,8 @@ import { type Adversaire, BOT } from './journal';
           <li>
             Vous piochez une carte et recevez du <strong>Débit</strong>
             <hip-icone nom="debit" class="size-3.5 text-amber-600 dark:text-amber-400" /> : 1 au
-            premier tour, puis 1 de plus à chaque tour (10 au plus).
+            premier tour, puis 1 de plus à chaque tour (10 au plus). Si vous jouez en second, votre
+            premier tour vous en donne 2 au lieu de 1 : commencer ne donne pas d’avance.
           </li>
           <li>
             <strong>Posez</strong> des cartes de votre main en payant leur coût en Débit (le chiffre
