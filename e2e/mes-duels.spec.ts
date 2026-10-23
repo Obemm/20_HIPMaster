@@ -1,6 +1,7 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, type Page, test } from '@playwright/test';
 import { duelParApi } from './duel-api';
+import { REGLES_WCAG } from './axe';
 
 // Le duel est préparé par l'API (US-042) : ces parcours vérifient « Mes duels » et le bandeau, rien d'autre.
 
@@ -45,9 +46,7 @@ for (const theme of ['light', 'dark'] as const) {
     const { ada, contexte } = await duelParApi(page, browser, `axe ${theme}`);
     await ada.goto('/duels');
     await expect(ada.getByRole('heading', { name: /^Au tour|^À vous/ }).first()).toBeVisible();
-    const { violations } = await new AxeBuilder({ page: ada })
-      .withTags(['wcag2a', 'wcag2aa'])
-      .analyze();
+    const { violations } = await new AxeBuilder({ page: ada }).withTags(REGLES_WCAG).analyze();
     expect(violations).toEqual([]);
     await contexte.close();
   });

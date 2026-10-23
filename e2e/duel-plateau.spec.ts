@@ -1,6 +1,7 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, type Page, test } from '@playwright/test';
 import { duelParApi } from './duel-api';
+import { REGLES_WCAG } from './axe';
 
 // Le duel est préparé par l'API (US-042) : ces parcours vérifient le plateau, pas le défi par lien (duels.spec.ts).
 
@@ -101,9 +102,7 @@ for (const theme of ['light', 'dark'] as const) {
   }) => {
     await page.emulateMedia({ colorScheme: theme });
     const { ada, contexte } = await duelParApi(page, browser, theme);
-    const { violations } = await new AxeBuilder({ page: ada })
-      .withTags(['wcag2a', 'wcag2aa'])
-      .analyze();
+    const { violations } = await new AxeBuilder({ page: ada }).withTags(REGLES_WCAG).analyze();
     expect(violations).toEqual([]);
     await contexte.close();
   });

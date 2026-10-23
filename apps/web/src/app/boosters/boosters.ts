@@ -10,6 +10,7 @@ import { EtatSession } from '../compte/etat-session';
 import { PresenceService } from '../presence';
 import { ErreurChargement } from '../reseau/erreur-chargement';
 import { expliquer } from '../reseau/reseau';
+import { StockBoostersService } from './stock-boosters.service';
 
 // Contrat : apps/api/openapi/boosters.yaml.
 export interface Boosters {
@@ -38,6 +39,8 @@ export class BoostersEcran {
   private readonly http = inject(HttpClient);
   private readonly collection = inject(CollectionService);
   private readonly presence = inject(PresenceService);
+  /** Le stock affiché dans la navigation (US-060), tenu à jour par chaque lecture de cette page. */
+  private readonly stockNavigation = inject(StockBoostersService);
 
   protected readonly catalogue = httpResource<Carte[]>(() => '/api/v1/cartes');
   private readonly parNumero = computed(
@@ -127,6 +130,7 @@ export class BoostersEcran {
   private afficher(boosters: Boosters): void {
     this.boosters.set(boosters);
     this.restant.set(boosters.prochainDans);
+    this.stockNavigation.retenir(boosters);
   }
 
   private decompter(): void {

@@ -1,6 +1,7 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, type Page, test } from '@playwright/test';
 import { creerCompteParApi } from './duel-api';
+import { REGLES_WCAG } from './axe';
 
 // Seul Bob crée son compte par l'interface : c'est le parcours testé. Les autres comptes viennent de l'API (US-042).
 
@@ -66,7 +67,7 @@ for (const theme of ['light', 'dark'] as const) {
   }) => {
     await page.emulateMedia({ colorScheme: theme });
     const lien = await lancerDefi(page);
-    const createur = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
+    const createur = await new AxeBuilder({ page }).withTags(REGLES_WCAG).analyze();
     expect(createur.violations).toEqual([]);
 
     const autre = await browser.newContext({ colorScheme: theme });
@@ -74,9 +75,7 @@ for (const theme of ['light', 'dark'] as const) {
     await creerCompteParApi(collegue, `Invité ${theme}`);
     await collegue.goto(new URL(lien).pathname);
     await expect(collegue.getByRole('heading', { name: /vous défie en duel/ })).toBeVisible();
-    const invitation = await new AxeBuilder({ page: collegue })
-      .withTags(['wcag2a', 'wcag2aa'])
-      .analyze();
+    const invitation = await new AxeBuilder({ page: collegue }).withTags(REGLES_WCAG).analyze();
     expect(invitation.violations).toEqual([]);
     await autre.close();
   });

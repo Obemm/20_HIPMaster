@@ -1,5 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
+import { REGLES_WCAG } from './axe';
 
 test('créer un compte invité, le retrouver avec son code sur un autre appareil', async ({
   page,
@@ -40,7 +41,7 @@ test('créer un compte invité, le retrouver avec son code sur un autre appareil
   await expect(
     page.getByRole('heading', { name: 'Connecté en tant que Joueuse e2e' }),
   ).toBeVisible();
-  const { violations } = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
+  const { violations } = await new AxeBuilder({ page }).withTags(REGLES_WCAG).analyze();
   expect(violations).toEqual([]);
   await autrePage.reload();
   await expect(autrePage.getByRole('alert').filter({ hasText: 'Session expirée' })).toBeVisible();
@@ -73,7 +74,7 @@ for (const theme of ['light', 'dark'] as const) {
     await page.emulateMedia({ colorScheme: theme });
     await page.goto('/compte');
     await expect(page.getByRole('heading', { name: 'Créer mon compte' })).toBeVisible();
-    const { violations } = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
+    const { violations } = await new AxeBuilder({ page }).withTags(REGLES_WCAG).analyze();
     expect(violations).toEqual([]);
   });
 }

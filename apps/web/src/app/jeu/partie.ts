@@ -41,6 +41,7 @@ import {
 } from './modele';
 import { CompteService } from '../compte/compte.service';
 import { PreferencesService } from '../preferences';
+import { StockBoostersService } from '../boosters/stock-boosters.service';
 
 type ActionCarte = Extract<Action, { carte: string }>;
 type Attaque = Extract<Action, { type: 'attaquer' }>;
@@ -93,6 +94,7 @@ export class PartieEcran implements OnInit, OnDestroy {
   private readonly http = inject(HttpClient);
   protected readonly compte = inject(CompteService);
   private readonly preferences = inject(PreferencesService);
+  private readonly stockBoosters = inject(StockBoostersService);
   private readonly injecteur = inject(Injector);
   private readonly titreFin = viewChild<ElementRef<HTMLElement>>('titreFin');
   private readonly fenetreAide = viewChild<ElementRef<HTMLDialogElement>>('fenetreAide');
@@ -613,6 +615,8 @@ export class PartieEcran implements OnInit, OnDestroy {
    */
   private recevoir(partie: Partie, animer: boolean): void {
     this.retenirNumeros(partie);
+    // Une victoire qui rapporte un booster change le stock affiché dans la navigation (US-060).
+    if (partie.recompense?.booster && !this.partie()?.recompense) void this.stockBoosters.charger();
     this.partie.set(partie);
     if (this.minuterie) clearTimeout(this.minuterie);
     this.minuterie = null;

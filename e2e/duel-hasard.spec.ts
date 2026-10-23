@@ -1,5 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, type Page, test } from '@playwright/test';
+import { REGLES_WCAG } from './axe';
 
 // La file d'appariement est commune à tous : ces tests passent l'un après l'autre, et sur le seul profil bureau
 // (voir playwright.config.ts), pour ne pas s'apparier entre eux. Les règles d'appariement sont couvertes par les
@@ -59,7 +60,7 @@ for (const theme of ['light', 'dark'] as const) {
     await page.emulateMedia({ colorScheme: theme });
     await creerCompte(page, `File ${theme}`);
     await entrerDansLaFile(page);
-    const { violations } = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
+    const { violations } = await new AxeBuilder({ page }).withTags(REGLES_WCAG).analyze();
     expect(violations).toEqual([]);
     await page.getByRole('button', { name: 'Quitter la file' }).click();
     await expect(page).toHaveURL(/\/jouer$/);

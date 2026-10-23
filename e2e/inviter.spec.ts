@@ -1,5 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, type Page, test } from '@playwright/test';
+import { REGLES_WCAG } from './axe';
 
 // Page « Inviter » (US-072, ADR 0029). Les parcours e2e lancent l'API avec ADMINISTRATEURS=tous : chaque compte créé
 // y est administrateur. Le 404 des routes d'administration pour un joueur ordinaire est vérifié par les tests de l'API.
@@ -106,7 +107,7 @@ for (const theme of ['light', 'dark'] as const) {
       () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
     );
     expect(debordement).toBeLessThanOrEqual(0);
-    const { violations } = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
+    const { violations } = await new AxeBuilder({ page }).withTags(REGLES_WCAG).analyze();
     expect(violations).toEqual([]);
   });
 }
