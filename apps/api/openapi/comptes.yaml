@@ -1,11 +1,16 @@
 openapi: 3.1.0
 info:
   title: HIPMaster — comptes invités
-  version: 1.0.0
+  version: 1.2.0
   description: >
     Comptes invités (US-022, ADR 0017) : un pseudo, un jeton de session gardé par le navigateur et un code de
     récupération pour retrouver son compte sur un autre appareil. Ni mot de passe ni e-mail. Les routes marquées
     « compte requis » attendent l'en-tête `Authorization: Bearer <jeton>` et répondent 401 sans jeton valide.
+
+    Protections (US-047, ADR 0025) : la création de compte et la connexion par code sont limitées par adresse IP
+    (valeurs de production ci-dessous, multipliées par le réglage `LIMITES_DEBIT` de l'API) ; au-delà, la réponse est
+    429 avec `Retry-After`. Toutes les réponses portent `Cache-Control: no-store` et `X-Content-Type-Options: nosniff`.
+    Un corps de plus de 16 Ko est refusé (413).
 servers:
   - url: /api/v1
 paths:
@@ -14,8 +19,12 @@ paths:
       operationId: creerJoueur
       summary: Crée un compte invité
       description: >
-        Renvoie le jeton de session et le code de récupération, affiché une seule fois (le serveur n'en garde que
-        l'empreinte).
+        Renvoie le jeton de session et le code de récupération, affiché une seule fois (le serveur n'en garde qu'une
+        empreinte HMAC). Limite : 30 créations par heure et par adresse.
+
+        Inscription sur invitation (US-048, ADR 0027) : quand l'API l'exige (réglage `INSCRIPTION_SUR_INVITATION`,
+        activé par défaut en production), le compte n'est créé qu'avec un code d'invitation valide, qui compte alors
+        une utilisation. Un code fourni est toujours vérifié, même quand l'invitation n'est pas exigée.
       requestBody:
         required: true
         content:
@@ -29,6 +38,14 @@ paths:
                   minLength: 2
                   maxLength: 24
                   description: Lettres, chiffres, espaces, tirets, points et soulignés.
+                invitation:
+                  type: string
+                  minLength: 1
+                  maxLength: 40
+                  description: >
+                    Code d'invitation (`/compte?invitation=…`) ; majuscules, minuscules, espaces et tirets sont
+                    acceptés.
+                  examples: [ABCD-EFGH-JKLM-NPQR]
       responses:
         '201':
           description: Le compte créé.
@@ -42,10 +59,20 @@ paths:
                   jeton: { type: string }
                   codeRecuperation: { type: string, examples: [ABCD-EFGH-JKLM] }
         '400': { $ref: '#/components/responses/Probleme' }
+        '403':
+          description: >
+            Invitation refusée : code absent alors qu'il est exigé, inconnu, expiré ou déjà utilisé autant de fois que
+            permis. Le message est le même dans tous les cas, sans dire lequel (Problem Details).
+          content:
+            application/problem+json:
+              schema: { $ref: '#/components/schemas/Probleme' }
+        '413': { $ref: '#/components/responses/Probleme' }
+        '429': { $ref: '#/components/responses/TropDeRequetes' }
   /sessions:
     post:
       operationId: seConnecter
       summary: Ouvre une session avec un code de récupération (nouvel appareil)
+      description: 'Limite : 10 essais par minute et par adresse.'
       requestBody:
         required: true
         content:
@@ -55,12 +82,8 @@ paths:
               required: [code]
               properties:
                 code:
-                  {
-                    type: string,
-                    description: Majuscules,
-                    minuscules,
-                    espaces et tirets sont acceptés.,
-                  }
+                  type: string
+                  description: Majuscules, minuscules, espaces et tirets sont acceptés.
       responses:
         '201':
           description: La session ouverte.
@@ -74,6 +97,8 @@ paths:
                   jeton: { type: string }
         '400': { $ref: '#/components/responses/Probleme' }
         '401': { $ref: '#/components/responses/Probleme' }
+        '413': { $ref: '#/components/responses/Probleme' }
+        '429': { $ref: '#/components/responses/TropDeRequetes' }
   /sessions/courante:
     delete:
       operationId: seDeconnecter
@@ -81,6 +106,27 @@ paths:
       security: [{ jeton: [] }]
       responses:
         '204': { description: Session fermée. }
+        '401': { $ref: '#/components/responses/Probleme' }
+  /sessions/autres:
+    delete:
+      operationId: deconnecterAutresAppareils
+      summary: Ferme toutes les autres sessions du compte ; celle de cet appareil reste ouverte (compte requis)
+      description: >
+        « Déconnecter mes autres appareils » (US-047) : chacun devra saisir le code de récupération pour revenir.
+        La session de la requête se ferme à part (DELETE /sessions/courante), pour qu'un joueur qui n'a plus son code
+        ne perde pas son compte.
+      security: [{ jeton: [] }]
+      responses:
+        '200':
+          description: Les autres sessions sont fermées.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [sessionsFermees]
+                properties:
+                  sessionsFermees:
+                    { type: integer, minimum: 0, description: Nombre de sessions fermées. }
         '401': { $ref: '#/components/responses/Probleme' }
   /moi:
     get:
@@ -97,7 +143,10 @@ paths:
   /moi/code:
     post:
       operationId: regenererCode
-      summary: Génère un nouveau code de récupération ; l'ancien cesse de fonctionner (compte requis)
+      summary: Génère un nouveau code de récupération (compte requis)
+      description: >
+        L'ancien code cesse de fonctionner, et toutes les autres sessions du compte sont fermées (US-047) : une
+        session ouverte avec un code qui a fuité ne lui survit pas. La session de la requête reste ouverte.
       security: [{ jeton: [] }]
       responses:
         '201':
@@ -106,28 +155,55 @@ paths:
             application/json:
               schema:
                 type: object
-                required: [codeRecuperation]
+                required: [codeRecuperation, sessionsFermees]
                 properties:
                   codeRecuperation: { type: string }
+                  sessionsFermees:
+                    { type: integer, minimum: 0, description: Nombre d'autres sessions fermées. }
         '401': { $ref: '#/components/responses/Probleme' }
 components:
   securitySchemes:
     jeton:
       type: http
       scheme: bearer
+  headers:
+    RetryAfter:
+      description: Secondes à attendre avant de réessayer.
+      schema: { type: integer, minimum: 0 }
+    LimiteMax:
+      description: Requêtes acceptées par fenêtre, pour cette route et cette adresse.
+      schema: { type: integer }
+    LimiteRestante:
+      description: Requêtes encore acceptées dans la fenêtre en cours.
+      schema: { type: integer }
+    LimiteRemiseAZero:
+      description: Secondes avant la fenêtre suivante.
+      schema: { type: integer }
   responses:
     Probleme:
       description: Erreur au format Problem Details (RFC 9457).
       content:
         application/problem+json:
-          schema:
-            type: object
-            required: [type, title, status]
-            properties:
-              type: { type: string }
-              title: { type: string }
-              status: { type: integer }
+          schema: { $ref: '#/components/schemas/Probleme' }
+    TropDeRequetes:
+      description: >
+        Limite de débit dépassée pour cette adresse (ADR 0025) : réessayer après le délai de `Retry-After`.
+      headers:
+        Retry-After: { $ref: '#/components/headers/RetryAfter' }
+        X-RateLimit-Limit: { $ref: '#/components/headers/LimiteMax' }
+        X-RateLimit-Remaining: { $ref: '#/components/headers/LimiteRestante' }
+        X-RateLimit-Reset: { $ref: '#/components/headers/LimiteRemiseAZero' }
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Probleme' }
   schemas:
+    Probleme:
+      type: object
+      required: [type, title, status]
+      properties:
+        type: { type: string }
+        title: { type: string }
+        status: { type: integer }
     Joueur:
       type: object
       required: [id, pseudo]

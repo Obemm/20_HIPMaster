@@ -15,6 +15,13 @@ describe('decrireEvenement', () => {
       'Tour 3 : à vous de jouer.',
     );
     expect(decrire({ type: 'debut-tour', joueur: 'j2', tour: 4 })).toBe('Tour 4 : le bot joue.');
+    // Le second joueur reçoit un Débit de plus à son premier tour (ADR 0026).
+    expect(decrire({ type: 'debut-tour', joueur: 'j1', tour: 2, bonusDebit: 1 })).toBe(
+      'Tour 2 : à vous de jouer. Vous jouez en second : 1 Débit de plus à ce premier tour.',
+    );
+    expect(decrire({ type: 'debut-tour', joueur: 'j2', tour: 2, bonusDebit: 1 })).toBe(
+      'Tour 2 : le bot joue (en second, 1 Débit de plus à ce premier tour).',
+    );
     expect(decrire({ type: 'pose', joueur: 'j2', carte: { id: 'j2-03', numero: 18 } })).toBe(
       'Le bot pose Apigee API Gateway.',
     );

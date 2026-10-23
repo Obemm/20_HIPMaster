@@ -10,7 +10,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router, withComponentInputBinding } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { firstValueFrom } from 'rxjs';
-import { CompteEcran } from './compte';
+import { bilanDeconnexion, CompteEcran } from './compte';
 import { CompteService, intercepteurJeton } from './compte.service';
 
 const JOUEUR = { id: '00000000-0000-4000-8000-000000000001', pseudo: 'Ada' };
@@ -279,5 +279,100 @@ describe('Compte', () => {
     expect(moi.request.headers.get('Authorization')).toBe('Bearer jeton-2');
     moi.flush({ ...JOUEUR, pseudo: 'Bob' });
     await vi.waitFor(() => expect(service.joueur()?.pseudo).toBe('Bob'));
+  });
+
+  /** La page, avec une session vérifiée pour Ada. */
+  async function afficherConnecte() {
+    localStorage.setItem('hipmaster.jeton', 'jeton-1');
+    const service = TestBed.inject(CompteService);
+    const affichage = await afficher();
+    const chargement = service.charger();
+    TestBed.inject(HttpTestingController).expectOne('/api/v1/moi').flush(JOUEUR);
+    await chargement;
+    affichage.fixture.detectChanges();
+    return affichage;
+  }
+
+  it('un nouveau code dit que les autres appareils ont été déconnectés (US-047)', async () => {
+    const { fixture, page } = await afficherConnecte();
+    expect(page.textContent).toContain('vos autres appareils seront déconnectés');
+    bouton(page, 'Générer un nouveau code')?.click();
+    TestBed.inject(HttpTestingController)
+      .expectOne({ method: 'POST', url: '/api/v1/moi/code' })
+      .flush({ codeRecuperation: 'WXYZ-2345-6789', sessionsFermees: 2 });
+    await fixture.whenStable();
+    fixture.detectChanges();
+    expect(page.textContent).toContain('WXYZ-2345-6789');
+    const annonces = [...page.querySelectorAll('[role="status"]')].map((e) => e.textContent);
+    expect(annonces).toContain('Vos 2 autres appareils ont été déconnectés.');
+  });
+
+  it('« Déconnecter mes autres appareils » garde cet appareil connecté et dit le bilan (US-047)', async () => {
+    const { fixture, page } = await afficherConnecte();
+    bouton(page, 'Déconnecter mes autres appareils')?.click();
+    const requete = TestBed.inject(HttpTestingController).expectOne('/api/v1/sessions/autres');
+    expect(requete.request.method).toBe('DELETE');
+    expect(requete.request.headers.get('Authorization')).toBe('Bearer jeton-1');
+    requete.flush({ sessionsFermees: 1 });
+    await fixture.whenStable();
+    fixture.detectChanges();
+    const annonces = [...page.querySelectorAll('[role="status"]')].map((e) => e.textContent);
+    expect(annonces).toContain('Votre autre appareil a été déconnecté.');
+    expect(page.textContent).toContain('Connecté en tant que Ada');
+    expect(localStorage.getItem('hipmaster.jeton')).toBe('jeton-1');
+  });
+
+  it('une session refusée en déconnectant les autres appareils est une session expirée', async () => {
+    const { fixture, page } = await afficherConnecte();
+    bouton(page, 'Déconnecter mes autres appareils')?.click();
+    TestBed.inject(HttpTestingController)
+      .expectOne('/api/v1/sessions/autres')
+      .flush({ title: 'Compte requis', status: 401 }, REFUS);
+    await fixture.whenStable();
+    fixture.detectChanges();
+    expect(TestBed.inject(CompteService).expiree()).toBe(true);
+    expect(localStorage.getItem('hipmaster.jeton')).toBeNull();
+    expect(page.textContent).toContain('Session expirée');
+  });
+
+  it('dit combien d’appareils ont été déconnectés, accordé au nombre', () => {
+    expect(bilanDeconnexion(0)).toBe('Aucun autre appareil n’était connecté.');
+    expect(bilanDeconnexion(1)).toBe('Votre autre appareil a été déconnecté.');
+    expect(bilanDeconnexion(3)).toBe('Vos 3 autres appareils ont été déconnectés.');
+  });
+
+  it('un lien d’invitation remplit le code, envoyé avec le pseudo (US-048)', async () => {
+    const { fixture, page } = await afficher();
+    fixture.componentRef.setInput('invitation', ' abcd-efgh-jklm-npqr ');
+    fixture.detectChanges();
+    expect(page.querySelector<HTMLInputElement>('#invitation')?.value).toBe('abcd-efgh-jklm-npqr');
+    saisir(page, 'pseudo', 'Ada');
+    page.querySelector<HTMLFormElement>('form')?.requestSubmit();
+    const requete = TestBed.inject(HttpTestingController).expectOne('/api/v1/joueurs');
+    expect(requete.request.body).toEqual({ pseudo: 'Ada', invitation: 'abcd-efgh-jklm-npqr' });
+    requete.flush({ joueur: JOUEUR, jeton: 'jeton-5', codeRecuperation: 'ABCD-EFGH-JKLM' });
+    await fixture.whenStable();
+    fixture.detectChanges();
+    expect(page.textContent).toContain('Connecté en tant que Ada');
+  });
+
+  it('explique une invitation refusée (403), sans créer de compte', async () => {
+    const { fixture, page } = await afficher();
+    saisir(page, 'pseudo', 'Ada');
+    saisir(page, 'invitation', 'ZZZZ-ZZZZ-ZZZZ-ZZZZ');
+    page.querySelector<HTMLFormElement>('form')?.requestSubmit();
+    TestBed.inject(HttpTestingController)
+      .expectOne('/api/v1/joueurs')
+      .flush(
+        { title: 'Invitation refusée : code absent, inconnu, expiré ou épuisé', status: 403 },
+        { status: 403, statusText: 'Forbidden' },
+      );
+    await fixture.whenStable();
+    fixture.detectChanges();
+    expect(page.querySelector('[role="alert"]')?.textContent).toContain(
+      'Ce code d’invitation n’est pas accepté',
+    );
+    expect(localStorage.getItem('hipmaster.jeton')).toBeNull();
+    expect(page.querySelector<HTMLInputElement>('#invitation')?.value).toBe('ZZZZ-ZZZZ-ZZZZ-ZZZZ');
   });
 });

@@ -45,6 +45,7 @@ npm run dev          # migrations appliquées au démarrage ; API sur localhost:
 | `npm run db:generate`               | Génère une migration depuis le schéma Drizzle                         |
 | `npm run db:migrate`                | Applique les migrations à PostgreSQL (`DATABASE_URL`) ; PGlite : auto |
 | `npm run db:studio`                 | Explore la base PostgreSQL (`DATABASE_URL`) dans le navigateur        |
+| `npm run invitation`                | Crée, liste ou révoque les invitations (PostgreSQL, voir `--aide`)    |
 | `npm run illustrations`             | Décline les illustrations des cartes (voir `packages/illustrations`)  |
 | `npm run illustrations:provisoires` | Dessine les illustrations provisoires des 71 cartes, puis les décline |
 
@@ -68,11 +69,14 @@ de production :
 docker build -t hipmaster-api .
 npm run db:up        # PostgreSQL local, port 5433
 docker run --rm -e DATABASE_URL=postgres://hipmaster:hipmaster@host.docker.internal:5433/hipmaster hipmaster-api node apps/api/src/migrer.ts
-docker run --rm -p 8080:8080 -e DATABASE_URL=postgres://hipmaster:hipmaster@host.docker.internal:5433/hipmaster hipmaster-api
+docker run --rm -p 8080:8080 -e DATABASE_URL=postgres://hipmaster:hipmaster@host.docker.internal:5433/hipmaster \
+  -e CLE_CODES_RECUPERATION=cle-locale-de-trente-deux-caracteres-au-moins -e PROXYS_DE_CONFIANCE=0 hipmaster-api
 ```
 
 En production (`NODE_ENV=production`, posé par l'image), l'API ne migre plus au démarrage : la commande
-`node apps/api/src/migrer.ts` s'en charge avant chaque déploiement (ADR 0023). Variables : voir `.env.example`.
+`node apps/api/src/migrer.ts` s'en charge avant chaque déploiement (ADR 0023). Elle exige aussi la clé des codes de
+récupération et le nombre de relais placés devant elle, et limite le débit par adresse (ADR 0025). Variables : voir
+`.env.example`.
 
 ## Mise en ligne
 

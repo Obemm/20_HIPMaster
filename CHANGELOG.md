@@ -123,6 +123,17 @@ Toutes les évolutions notables du projet sont consignées ici
   Le script n'utilise jamais la configuration `gcloud` du poste. Un guide d'exploitation l'accompagne (US-049,
   ADR 0024).
 
+- Un niveau de bot facile, « Stagiaire », présélectionné : il ne pose qu'une carte par tour, la plus chère, et
+  attaque le SI dès qu'il peut, sans sort ni calcul ; un joueur débutant le bat plus d'une fois sur deux (54 à 56 %
+  en simulation, contre 14 % face à Batch de nuit). `npm run simuler` mesure aussi un profil débutant, la part de
+  victoires du joueur qui commence et du second, et chaque niveau contre un débutant et contre un joueur du niveau de
+  Batch de nuit (US-064).
+- Inscription sur invitation : en production, créer un compte demande un code d'invitation (16 caractères, gardé sous
+  HMAC), valable pour un nombre de comptes et jusqu'à une date ; chaque compte retient de quelle invitation il vient.
+  Un lien `/compte?invitation=…` remplit le code sur « Mon compte », et un code refusé reçoit un 403 qui ne dit pas
+  pourquoi. La commande `npm run invitation` crée une invitation (code affiché une seule fois, avec le lien à envoyer),
+  liste les invitations ou en révoque une ; en production, un Cloud Run Job l'exécute (guide d'exploitation). En
+  développement et dans les e2e, l'inscription reste libre (US-048, ADR 0027).
 - Déploiement continu : après chaque CI verte sur `main`, le workflow `deploy.yml` s'authentifie sans clé (Workload
   Identity Federation), construit l'image de l'API étiquetée par le commit, exécute le job de migration, déploie une
   révision Cloud Run sans trafic, la sonde (`/api/v1/sante`), lui bascule le trafic, puis publie le front sur
@@ -143,6 +154,13 @@ Toutes les évolutions notables du projet sont consignées ici
 - `npm run db:migrate` passe par la commande de migration de l'API (verrou, bilan des migrations appliquées) au lieu de
   `drizzle-kit migrate` ; PGlite devient une dépendance de développement ; Dependabot surveille l'image de base de
   l'API (US-046).
+- Le joueur qui joue en second reçoit 1 Débit de plus à son premier tour (2 au lieu de 1), contre le bot comme en
+  duel : chacun contre lui-même, le joueur qui commençait gagnait de 62 à 73 % des parties ; le premier et le second
+  en gagnent désormais chacun entre 46 et 54 %. Le journal de partie l'annonce, les règles et l'aide « Comment
+  jouer ? » l'expliquent (US-064, ADR 0026).
+- Niveaux du bot : Batch de nuit devient Moyen, Architecte ESB Difficile et Agent autonome Expert, avec des
+  descriptions à jour ; Architecte ESB étudie 4 actions candidates au lieu de 3, sans quoi le joueur qui commence
+  gardait 56 % des parties en miroir (US-064).
 - Dependabot ne propose plus TypeScript 6.1 ou plus (incompatible avec Angular 22) ni de version majeure de
   `@types/node` (qui suit Node 24) (US-007).
 
@@ -176,3 +194,22 @@ Toutes les évolutions notables du projet sont consignées ici
 - La vue de partie renvoyée par l'API perdait le bonus d'attaque des composants et les marqueurs du joueur : un bot
   du domaine joué depuis l'API (Agent autonome) évaluait tout à `NaN` et ne gagnait plus aucune partie. Le schéma et
   le contrat OpenAPI les exposent ; la vue de l'API suffit désormais à reconstituer la partie (US-026).
+
+### Sécurité
+
+- Protections de l'API avant l'ouverture (US-047, ADR 0025) :
+  - limitation de débit par adresse (IPv6 : par /64) sur la création de compte (30 par heure), la connexion par code
+    (10 par minute), les parties contre le bot (20 créations et 300 actions par minute) et chaque route de duel ;
+    au-delà, un 429 Problem Details avec `Retry-After`. Les limites, documentées dans les contrats OpenAPI, se règlent
+    par `LIMITES_DEBIT` (actives par défaut en production seulement) ;
+  - l'adresse du joueur est lue derrière Firebase Hosting et Cloud Run, sans qu'un `X-Forwarded-For` ajouté puisse la
+    fausser (`PROXYS_DE_CONFIANCE`, obligatoire en production) ;
+  - codes de récupération gardés sous HMAC-SHA-256, avec une clé tirée au hasard dans Secret Manager
+    (`cle-codes-recuperation`, créée par le script d'infrastructure) ; sans elle, l'API refuse de démarrer en
+    production ;
+  - un nouveau code de récupération ferme les autres sessions du compte, et « Mon compte » propose « Déconnecter mes
+    autres appareils » ;
+  - une partie contre le bot lancée par un joueur connecté n'est visible que de sa session ; au plafond, le dépôt en
+    mémoire évince d'abord les parties anonymes ;
+  - toutes les réponses portent `X-Content-Type-Options: nosniff` et, sauf politique propre à une route,
+    `Cache-Control: no-store` ; corps de requête limités à 16 Ko (413).

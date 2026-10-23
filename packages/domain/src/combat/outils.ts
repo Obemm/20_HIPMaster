@@ -20,6 +20,8 @@ export const MAIN_DEPART = 4;
 export const MAIN_MAX = 8;
 export const PLATEAU_MAX = 5;
 export const DEBIT_MAX = 10;
+/** Débit de plus pour le joueur qui joue en second, à son premier tour seulement (ADR 0026). */
+export const DEBIT_BONUS_SECOND = 1;
 /** Nombre de tours de la partie, tous joueurs confondus (10 chacun). */
 export const TOURS_MAX = 20;
 export const DEBIT_DECOMMISSION: Record<Rarete, number> = {

@@ -1,13 +1,14 @@
 import { construireApp } from './app.ts';
 import { arreterSurSignal } from './arret.ts';
-import { chargerEnv, type Config, lireConfig } from './config.ts';
+import { chargerEnv, type ConfigApi, lireConfigApi } from './config.ts';
 import { ouvrirBase } from './db/index.ts';
 import { creerJournal, messageErreur } from './journaux.ts';
+import { limitesMultipliees } from './limites.ts';
 
 chargerEnv();
-let config: Config;
+let config: ConfigApi;
 try {
-  config = lireConfig();
+  config = lireConfigApi();
 } catch (erreur) {
   // Par exemple DATABASE_URL absente en production : l'API refuse de démarrer, et dit pourquoi.
   creerJournal({ niveau: 'info' }).fatal(messageErreur(erreur));
@@ -24,7 +25,24 @@ const { base, fermer } = await ouvrirBase({
   pool: config.pool,
   surFermeture: (connexion) => journal.info({ connexion }, 'Connexion PostgreSQL fermée'),
 });
-const app = construireApp({ journal, projet: config.projetGcp, base });
+const app = construireApp({
+  journal,
+  projet: config.projetGcp,
+  base,
+  cleCodes: config.cleCodes,
+  inscriptionSurInvitation: config.inscriptionSurInvitation,
+  proxysDeConfiance: config.proxysDeConfiance,
+  ...(config.limitesDebit !== null && { limites: limitesMultipliees(config.limitesDebit) }),
+});
+// De quoi vérifier dans les journaux la configuration des protections (ADR 0025), sans aucun secret.
+journal.info(
+  {
+    proxysDeConfiance: config.proxysDeConfiance,
+    limitesDebit: config.limitesDebit ?? 'desactivees',
+    inscriptionSurInvitation: config.inscriptionSurInvitation,
+  },
+  'Protections de l’API',
+);
 app.addHook('onClose', fermer);
 arreterSurSignal(app);
 

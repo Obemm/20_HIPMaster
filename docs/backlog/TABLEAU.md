@@ -1,6 +1,6 @@
 # Tableau de suivi
 
-_Dernière mise à jour : 2026-10-22_
+_Dernière mise à jour : 2026-10-23_
 
 ## Epics
 
@@ -10,12 +10,12 @@ _Dernière mise à jour : 2026-10-22_
 | [EPIC-01 — Univers et modèle de carte](epics/EPIC-01-univers-cartes.md)                           | Must     | Terminé   | 2/2        |
 | [EPIC-02 — Comptes joueurs](epics/EPIC-02-comptes-joueurs.md)                                     | Must     | Terminé   | 1/1        |
 | [EPIC-03 — Boosters et collection](epics/EPIC-03-boosters-collection.md)                          | Must     | Terminé   | 2/2        |
-| [EPIC-04 — Combat contre le bot](epics/EPIC-04-combat-bot.md)                                     | Must     | Terminé   | 13/13      |
+| [EPIC-04 — Combat contre le bot](epics/EPIC-04-combat-bot.md)                                     | Must     | Terminé   | 14/14      |
 | [EPIC-05 — Illustrations des cartes](epics/EPIC-05-illustrations.md)                              | Should   | En cours  | 3/5        |
 | [EPIC-06 — Duels entre joueurs](epics/EPIC-06-duels-joueurs.md)                                   | Should   | Terminé   | 8/8        |
 | [EPIC-07 — Vie sociale](epics/EPIC-07-vie-sociale.md)                                             | Could    | À affiner | 0/0        |
 | [EPIC-08 — Cartes proposées par la communauté IT](epics/EPIC-08-cartes-communaute.md)             | Should   | À affiner | 0/5        |
-| [EPIC-09 — Mise en ligne sur Google Cloud](epics/EPIC-09-mise-en-ligne-gcp.md)                    | Must     | En cours  | 4/13       |
+| [EPIC-09 — Mise en ligne sur Google Cloud](epics/EPIC-09-mise-en-ligne-gcp.md)                    | Must     | En cours  | 6/13       |
 | [EPIC-10 — Identité visuelle et confort sur téléphone](epics/EPIC-10-identite-visuelle-mobile.md) | Should   | À affiner | 0/5        |
 
 ## Itération 0 (en cours) — fondations
@@ -104,6 +104,12 @@ choisir l'attaquant et sa cible.
 | [US-040 — Détail des cartes de la main](stories/US-040-detail-cartes-main.md)          | EPIC-04 | Should   | M      | Faite  |
 | [US-041 — Détail des cartes du plateau](stories/US-041-detail-cartes-plateau.md)       | EPIC-04 | Should   | M      | Faite  |
 
+Retour du porteur du projet le 2026-10-22 : « presque impossible de gagner contre le bot ».
+
+| Story                                                                                             | Epic    | Priorité | Taille | Statut |
+| ------------------------------------------------------------------------------------------------- | ------- | -------- | ------ | ------ |
+| [US-064 — Un bot battable par un débutant, une partie équitable](stories/US-064-bot-equilibre.md) | EPIC-04 | Must     | M      | Faite  |
+
 ## Itération 6 (à venir) — mise en ligne
 
 Revue du 2026-10-22 ([revue avant mise en ligne](../revues/2026-10-22-revue-mise-en-ligne.md)) : hébergement sur
@@ -114,8 +120,8 @@ Google Cloud, Firebase Hosting et une base Neon gratuite (ADR 0021, accepté le 
 | ------------------------------------------------------------------------------------------------------------------------------------- | ------- | -------- | ------ | --- | --------- |
 | [US-046 — Une API prête pour Cloud Run](stories/US-046-api-prete-cloud-run.md)                                                        | EPIC-09 | Must     | L      | 1   | Faite     |
 | [US-056 — La CI teste l'API sur un vrai PostgreSQL](stories/US-056-ci-postgresql.md)                                                  | EPIC-09 | Must     | S      | 1   | Faite     |
-| [US-047 — Les protections indispensables avant l'ouverture](stories/US-047-protections-avant-ouverture.md)                            | EPIC-09 | Must     | M      | 1   | À affiner |
-| [US-048 — Inscription sur invitation](stories/US-048-inscription-sur-invitation.md)                                                   | EPIC-09 | Must     | M      | 1   | À affiner |
+| [US-047 — Les protections indispensables avant l'ouverture](stories/US-047-protections-avant-ouverture.md)                            | EPIC-09 | Must     | M      | 1   | Faite     |
+| [US-048 — Inscription sur invitation](stories/US-048-inscription-sur-invitation.md)                                                   | EPIC-09 | Must     | M      | 1   | Faite     |
 | [US-055 — Un front robuste au démarrage à froid et aux sessions expirées](stories/US-055-front-robuste.md)                            | EPIC-09 | Must     | M      | 1   | Faite     |
 | [US-049 — Infrastructure gratuite et reproductible](stories/US-049-infrastructure-gcp.md)                                             | EPIC-09 | Must     | M      | 1   | Faite     |
 | [US-050 — Déploiement continu vers Cloud Run et Firebase Hosting](stories/US-050-deploiement-continu.md)                              | EPIC-09 | Must     | M      | 1   | En revue  |

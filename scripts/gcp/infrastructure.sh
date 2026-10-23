@@ -29,7 +29,9 @@
 #     écriture ;
 #   - ni adresse e-mail ni identifiant de facturation dans le dépôt : ils arrivent par l'environnement ;
 #   - l'URL de la base va de neonctl à Secret Manager par des tubes : jamais affichée, écrite sur le
-#     disque ni journalisée.
+#     disque ni journalisée ;
+#   - la clé des codes de récupération est tirée au hasard par Node et va à Secret Manager par un tube,
+#     sans jamais être affichée ; une fois rangée, elle n'est jamais régénérée.
 
 set -Eeuo pipefail
 
@@ -78,6 +80,7 @@ readonly DEPOT_IMAGES=images
 readonly SA_API=hipmaster-api
 readonly SA_DEPLOIEMENT=hipmaster-deploiement
 readonly SECRET=database-url
+readonly SECRET_CLE=cle-codes-recuperation
 readonly POOL=github
 readonly FOURNISSEUR=github-actions
 readonly NOM_BUDGET=HIPMaster
@@ -539,7 +542,7 @@ creer_bucket() {
 etape_comptes_service() {
   etape "7. Comptes de service (sans clé JSON)"
   compte_service "$SA_API" "API HIPMaster (Cloud Run)" \
-    "Exécute l'API HIPMaster ; ne lit que le secret de la base (US-049)"
+    "Exécute l'API HIPMaster ; ne lit que ses secrets : la base et la clé des codes (US-049, US-047)"
   compte_service "$SA_DEPLOIEMENT" "Déploiement HIPMaster (GitHub Actions)" \
     "Déploie HIPMaster depuis GitHub Actions, par Workload Identity Federation et sans clé (US-049)"
 }
@@ -575,7 +578,7 @@ etape_secret() {
       reessayer gc secrets create "$SECRET" --project="$PROJET" \
       --replication-policy=user-managed --locations="$REGION" --labels=application=hipmaster
   fi
-  lier_role "$SA_API peut lire ce secret, et aucun autre" "serviceAccount:$EMAIL_API" \
+  lier_role "$SA_API peut lire ce secret" "serviceAccount:$EMAIL_API" \
     roles/secretmanager.secretAccessor secrets "$SECRET" --project="$PROJET"
 }
 
@@ -924,6 +927,37 @@ ranger_url() {
   done
 }
 
+# --- 14. Clé des codes de récupération (US-047) -----------------------------------------------------
+
+# L'API garde des codes de récupération une empreinte HMAC (ADR 0025) : sans cette clé, une copie de la
+# base ne permet pas d'essayer des codes hors ligne. La clé est tirée une seule fois : la changer
+# rendrait inutilisables tous les codes de récupération des joueurs (voir le guide en cas de fuite).
+etape_cle_codes() {
+  etape "14. Secret « $SECRET_CLE » (clé des codes de récupération, lue par l'API seule)"
+  if gc secrets describe "$SECRET_CLE" --project="$PROJET" >/dev/null 2>&1; then
+    existe "secret $SECRET_CLE, répliqué en $REGION seulement"
+  else
+    creer "secret $SECRET_CLE, répliqué en $REGION seulement" reessayer gc secrets create "$SECRET_CLE" \
+      --project="$PROJET" --replication-policy=user-managed --locations="$REGION" --labels=application=hipmaster
+  fi
+  local versions
+  versions=$(gc secrets versions list "$SECRET_CLE" --project="$PROJET" --filter='state=ENABLED' \
+    --format='value(name.basename())' 2>/dev/null || true)
+  if [[ -n $versions ]]; then
+    existe "valeur de la clé (jamais régénérée par le script)"
+  else
+    creer "valeur de la clé : 256 bits tirés au hasard, jamais affichés" ranger_cle
+  fi
+  lier_role "$SA_API peut lire ce secret" "serviceAccount:$EMAIL_API" \
+    roles/secretmanager.secretAccessor secrets "$SECRET_CLE" --project="$PROJET"
+}
+
+# La clé va de Node à gcloud par un tube : jamais affichée, écrite sur le disque ni journalisée.
+ranger_cle() {
+  node -e 'process.stdout.write(require("node:crypto").randomBytes(32).toString("base64url"))' |
+    silencieux gc secrets versions add "$SECRET_CLE" --project="$PROJET" --data-file=-
+}
+
 # --- Bilan ------------------------------------------------------------------------------------------
 
 bilan() {
@@ -949,6 +983,7 @@ bilan() {
   printf '  Fournisseur WIF        %s\n' \
     "projects/$NUMERO/locations/global/workloadIdentityPools/$POOL/providers/$FOURNISSEUR"
   printf '  Secret de la base      %s\n' "$SECRET (variable DATABASE_URL de l'API)"
+  printf '  Clé des codes          %s\n' "$SECRET_CLE (variable CLE_CODES_RECUPERATION de l'API)"
   printf '  Sauvegardes            %s\n' "gs://$BUCKET"
   printf '  Front                  %s\n' "https://$SITE.web.app"
   printf '  Base Neon              %s\n' \
@@ -972,6 +1007,7 @@ principal() {
   etape_budget
   etape_firebase
   etape_neon
+  etape_cle_codes
   bilan
 }
 

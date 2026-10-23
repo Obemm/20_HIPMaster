@@ -62,7 +62,12 @@
       </h2>
       <p class="text-texte-doux">
         Votre compte est gardé par ce navigateur. Pour le retrouver ailleurs, utilisez votre code de
-        récupération ; perdu, vous pouvez en générer un nouveau (l’ancien cessera de fonctionner).
+        récupération. Perdu, ou vu par quelqu’un d’autre ? Générez-en un nouveau : l’ancien cessera
+        de fonctionner, et vos autres appareils seront déconnectés.
+      </p>
+      <p class="text-texte-doux">
+        Resté connecté sur un appareil prêté ? « Déconnecter mes autres appareils » ferme votre
+        compte partout sauf ici, sans changer de code.
       </p>
       <p class="flex flex-wrap gap-2">
         <button
@@ -75,6 +80,14 @@
         </button>
         <button
           type="button"
+          class="rounded-lg border-2 border-accent px-3 py-2 font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:opacity-60"
+          [disabled]="occupe()"
+          (click)="deconnecterAutres()"
+        >
+          Déconnecter mes autres appareils
+        </button>
+        <button
+          type="button"
           class="rounded-lg border-2 border-bordure px-3 py-2 font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:opacity-60"
           [disabled]="occupe()"
           (click)="deconnecter()"
@@ -82,13 +95,14 @@
           Se déconnecter
         </button>
       </p>
+      <p role="status">{{ info() }}</p>
     </section>
   } @else if (compte.pret()) {
     <section aria-labelledby="titre-creer" class="flex flex-col gap-3">
       <h2 id="titre-creer" class="text-lg font-semibold">Créer mon compte</h2>
       <p class="text-texte-doux">Un pseudo suffit : ni mot de passe, ni e-mail.</p>
-      <form class="flex flex-col gap-2 sm:flex-row sm:items-end" (submit)="creer($event)">
-        <div class="flex flex-1 flex-col gap-1">
+      <form class="flex flex-col gap-3" (submit)="creer($event)">
+        <div class="flex flex-col gap-1">
           <label for="pseudo" class="text-sm font-semibold">Pseudo</label>
           <input
             id="pseudo"
@@ -101,9 +115,26 @@
             (input)="pseudo.set($any($event.target).value)"
           />
         </div>
+        <div class="flex flex-col gap-1">
+          <label for="invitation" class="text-sm font-semibold">Code d’invitation</label>
+          <input
+            id="invitation"
+            name="invitation"
+            autocomplete="off"
+            maxlength="40"
+            placeholder="ABCD-EFGH-JKLM-NPQR"
+            aria-describedby="aide-invitation"
+            class="rounded border border-bordure bg-fond px-3 py-2 font-mono uppercase"
+            [value]="codeInvitation()"
+            (input)="codeInvitation.set($any($event.target).value)"
+          />
+          <p id="aide-invitation" class="text-sm text-texte-doux">
+            Reçu avec votre invitation : le lien d’invitation le remplit tout seul.
+          </p>
+        </div>
         <button
           type="submit"
-          class="rounded-lg bg-accent px-4 py-2 font-semibold text-sur-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:opacity-60"
+          class="self-start rounded-lg bg-accent px-4 py-2 font-semibold text-sur-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:opacity-60"
           [disabled]="occupe()"
         >
           Créer mon compte

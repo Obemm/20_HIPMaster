@@ -130,14 +130,16 @@ export function chercher(vue: VueJoueur, recherche: Recherche): Action {
 }
 
 /**
- * Architecte ESB (moyen) : pour ses 3 meilleures actions immédiates, regarde aussi la meilleure action suivante.
+ * Architecte ESB (difficile) : pour ses 4 meilleures actions immédiates, regarde aussi la meilleure action suivante.
+ * Avec 3, le joueur qui commençait gagnait 56 % de ses parties contre lui-même, malgré le Débit de plus du second
+ * joueur ; avec 4, 54 % (US-064, docs/produit/cartes-set-1.md).
  */
 export function choisirActionArchitecteEsb(vue: VueJoueur): Action {
-  return chercher(vue, { candidats: 3, profondeur: 1, poids: POIDS_PAR_DEFAUT });
+  return chercher(vue, { candidats: 4, profondeur: 1, poids: POIDS_PAR_DEFAUT });
 }
 
 /**
- * Agent autonome (difficile) : pour **chacune** de ses actions possibles, regarde la meilleure action suivante ; il
+ * Agent autonome (expert) : pour **chacune** de ses actions possibles, regarde la meilleure action suivante ; il
  * voit ainsi qu'un décommissionnement permet de poser une carte, ou qu'un sort affaiblit une cible avant l'attaque.
  * Des recherches plus profondes ou qui simulent la réponse adverse se sont révélées moins fortes en simulation : le
  * hasard et les cartes cachées les trompent (voir docs/produit/cartes-set-1.md).

@@ -120,13 +120,16 @@ export class CompteService {
     await this.charger();
   }
 
-  /** Crée un compte invité ; renvoie le code de récupération, à montrer une seule fois. */
-  async creer(pseudo: string): Promise<string> {
+  /**
+   * Crée un compte invité, avec le code d'invitation s'il y en a un (US-048) ; renvoie le code de récupération, à
+   * montrer une seule fois.
+   */
+  async creer(pseudo: string, invitation?: string): Promise<string> {
     this.exigerSansCompte();
     const reponse = await firstValueFrom(
       this.http.post<{ joueur: Joueur; jeton: string; codeRecuperation: string }>(
         '/api/v1/joueurs',
-        { pseudo },
+        { pseudo, ...(invitation && { invitation }) },
       ),
     );
     this.retenir(reponse.jeton, reponse.joueur);
@@ -141,11 +144,22 @@ export class CompteService {
     this.retenir(reponse.jeton, reponse.joueur);
   }
 
-  async nouveauCode(): Promise<string> {
-    const reponse = await firstValueFrom(
-      this.http.post<{ codeRecuperation: string }>('/api/v1/moi/code', {}),
+  /**
+   * Remplace le code de récupération ; l'API ferme du même coup les autres sessions du compte (US-047). Renvoie le
+   * nouveau code, à montrer une seule fois, et le nombre d'appareils déconnectés.
+   */
+  async nouveauCode(): Promise<{ codeRecuperation: string; sessionsFermees: number }> {
+    return firstValueFrom(
+      this.http.post<{ codeRecuperation: string; sessionsFermees: number }>('/api/v1/moi/code', {}),
     );
-    return reponse.codeRecuperation;
+  }
+
+  /** « Déconnecter mes autres appareils » (US-047) : cet appareil reste connecté ; renvoie le nombre de déconnectés. */
+  async deconnecterAutresAppareils(): Promise<number> {
+    const reponse = await firstValueFrom(
+      this.http.delete<{ sessionsFermees: number }>('/api/v1/sessions/autres'),
+    );
+    return reponse.sessionsFermees;
   }
 
   async deconnecter(): Promise<void> {
@@ -214,10 +228,15 @@ export class CompteService {
 }
 
 /**
+ * Les requêtes dont un 401 ne veut pas dire « session expirée » : un code de récupération inconnu (connexion), ou une
+ * session déjà fermée (déconnexion).
+ */
+const SANS_EXPIRATION = new Set(['/api/v1/sessions', '/api/v1/sessions/courante']);
+
+/**
  * Ajoute le jeton de session aux requêtes vers l'API. Si l'API ne le reconnaît plus (401), la session est oubliée et
  * le joueur renvoyé vers « Mon compte » (« Session expirée »), d'où il revient à sa page une fois reconnecté
- * (US-055). Sauf sur `/sessions`, où un 401 dit qu'un code de récupération est inconnu ou que la session est déjà
- * fermée.
+ * (US-055). Sauf pour la connexion et la déconnexion (`SANS_EXPIRATION`).
  */
 export const intercepteurJeton: HttpInterceptorFn = (requete, suivant) => {
   const compte = inject(CompteService);
@@ -227,7 +246,7 @@ export const intercepteurJeton: HttpInterceptorFn = (requete, suivant) => {
   return suivant(requete.clone({ setHeaders: { Authorization: `Bearer ${jeton}` } })).pipe(
     catchError((erreur: unknown) => {
       const refusee = erreur instanceof HttpErrorResponse && erreur.status === 401;
-      if (refusee && !requete.url.startsWith('/api/v1/sessions') && compte.expirer(jeton)) {
+      if (refusee && !SANS_EXPIRATION.has(requete.url) && compte.expirer(jeton)) {
         const ici = router.url;
         if (!ici.startsWith('/compte')) {
           void router.navigate(['/compte'], { queryParams: { retour: ici } });

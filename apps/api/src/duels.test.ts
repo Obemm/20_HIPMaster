@@ -1,7 +1,7 @@
 import { choisirActionBatchDeNuit, type VueJoueur } from '@hipmaster/domain';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { construireApp } from './app.ts';
-import { creerJoueur } from './comptes/comptes.ts';
+import { CLE_CODES_DEVELOPPEMENT, creerJoueur } from './comptes/comptes.ts';
 import { baseDeTest } from './db/base-de-test.ts';
 import { duels } from './db/schema.ts';
 import type { DuelVisible } from './duels/duels.ts';
@@ -16,7 +16,7 @@ beforeEach(() => {
 afterEach(() => app.close());
 
 async function joueur(pseudo: string) {
-  const { jeton } = await creerJoueur(ouverte.base, pseudo);
+  const { jeton } = await creerJoueur(ouverte.base, pseudo, CLE_CODES_DEVELOPPEMENT);
   return { authorization: `Bearer ${jeton}` };
 }
 
@@ -118,6 +118,8 @@ describe('duels entre joueurs', () => {
     expect(apres.version).toBe(2);
     expect(apres.vue?.actif).toBe(apres.moi);
     expect(apres.evenements.map((e) => e.type)).toContain('debut-tour');
+    // Le second joueur reçoit 2 Débit à son premier tour, en duel comme contre le bot (ADR 0026).
+    expect(apres.vue?.moi.debit).toBe(2);
   });
 
   it('répond 304 si rien n’a changé, et refuse une action fondée sur une version périmée', async () => {
