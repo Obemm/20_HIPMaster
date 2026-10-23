@@ -1,6 +1,7 @@
 import { Injectable, signal } from '@angular/core';
 
 const CLE_AIDE_VUE = 'hipmaster.aide-vue';
+const CLE_COUPS_DE_POUCE = 'hipmaster.coups-de-pouce';
 
 /** Lecture du stockage du navigateur ; un stockage refusé (navigation privée stricte) vaut « rien de retenu ». */
 function lire(cle: string): string | null {
@@ -31,5 +32,13 @@ export class PreferencesService {
   marquerAideVue(): void {
     this.aideVue.set(true);
     ecrire(CLE_AIDE_VUE, 'oui');
+  }
+
+  /** Les coups de pouce avant de finir son tour (US-065) : actifs, sauf si le joueur les a désactivés. */
+  readonly coupsDePouce = signal(lire(CLE_COUPS_DE_POUCE) !== 'non');
+
+  activerCoupsDePouce(actifs: boolean): void {
+    this.coupsDePouce.set(actifs);
+    ecrire(CLE_COUPS_DE_POUCE, actifs ? 'oui' : 'non');
   }
 }
