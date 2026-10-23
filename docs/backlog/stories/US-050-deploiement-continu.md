@@ -1,7 +1,7 @@
 # US-050 — Déploiement continu vers Cloud Run et Firebase Hosting
 
 - **Epic** : EPIC-09
-- **Statut** : En revue
+- **Statut** : Faite
 - **Priorité** : Must
 - **Taille** : M
 - **Branche** : `us-050-deploiement-continu`
@@ -13,11 +13,11 @@ automatiquement** afin de **livrer souvent, sans manipulation à la main ni secr
 
 ## Critères d'acceptation
 
-- [ ] **Étant donné** un merge sur `main` dont la CI est verte, **quand** le workflow de déploiement s'exécute,
+- [x] **Étant donné** un merge sur `main` dont la CI est verte, **quand** le workflow de déploiement s'exécute,
       **alors** il s'authentifie par Workload Identity Federation (US-049), construit l'image de l'API (étiquetée
       par le SHA du commit), la pousse dans Artifact Registry, **exécute le job de migration** avec cette image,
       déploie le service Cloud Run, vérifie `/api/v1/sante`, puis publie le front sur Firebase Hosting.
-- [ ] **Étant donné** une migration ou une sonde de santé en échec, **alors** le déploiement s'arrête et l'ancienne
+- [x] **Étant donné** une migration ou une sonde de santé en échec, **alors** le déploiement s'arrête et l'ancienne
       révision continue de servir le trafic.
 - [x] **Étant donné** `firebase.json`, **alors** il publie le build Angular, relaie `/api/**` vers le service Cloud
       Run, renvoie `index.html` pour les routes Angular, sert les fichiers à empreinte avec un cache long
@@ -30,14 +30,14 @@ automatiquement** afin de **livrer souvent, sans manipulation à la main ni secr
       la CSP bloquerait (site sans styles, vérifié le 2026-10-22). Aucune violation de CSP sur les parcours e2e.
 - [x] **Étant donné** un robot d'indexation, **quand** il visite le site, **alors** `robots.txt` et
       `<meta name="robots" content="noindex">` lui demandent de ne rien indexer (site réservé aux invités).
-- [ ] **Étant donné** le service Cloud Run, **alors** il tourne à Francfort (`europe-west3`, près de la base Neon)
-      avec le compte de service de l'API, 1 vCPU, 512 Mio, 0 instance minimum, 1 maximum tant que l'ADR 0014 tient,
+- [x] **Étant donné** le service Cloud Run, **alors** il tourne à Francfort (`europe-west3`, près de la base Neon)
+      avec le compte de service de l'API, 1 vCPU, 512 Mio, 0 instance minimum, 1 maximum (gardé après l'ADR 0030, voir le journal),
       l'accélération au démarrage, et reçoit l'URL de la base par Secret Manager.
-- [ ] **Étant donné** une version défectueuse en ligne, **alors** le guide d'exploitation décrit le retour arrière
+- [x] **Étant donné** une version défectueuse en ligne, **alors** le guide d'exploitation décrit le retour arrière
       (révision Cloud Run précédente, version Firebase précédente) et il a été essayé une fois.
 - [x] La règle des migrations compatibles est écrite : une migration ne casse jamais la version encore en ligne
       (ajouter, déployer, puis retirer), puisqu'elle s'exécute avant la bascule du trafic.
-- [ ] **Étant donné** le service en ligne, **quand** plus aucune requête n'arrive, **alors** la base Neon se met en
+- [x] **Étant donné** le service en ligne, **quand** plus aucune requête n'arrive, **alors** la base Neon se met en
       veille en moins de 10 minutes, mesuré selon la procédure d'US-046 (processeur de Cloud Run alloué pendant les
       requêtes seulement).
 
@@ -93,3 +93,15 @@ automatiquement** afin de **livrer souvent, sans manipulation à la main ni secr
   29 déjà en place) ; image construite en local, manifeste simple sans index. Validation sur Google Cloud (image
   poussée, job de migration sur Neon, service privé sondé avec un jeton d'identité) en attente de l'accord du
   porteur du projet.
+- 2026-10-24 — vérifié en production : déploiements réels réussis de bout en bout par Workload Identity Federation
+  (US-051, US-059, US-065 : image, job de migration, révision « essai » sondée, bascule, front, contrôle du site) ;
+  un secret absent arrête tout avant écriture, et chaque étape du workflow s'arrête au premier échec (`set -Eeuo
+pipefail`, aucune étape tolérante), la révision en ligne continuant de servir. Configuration lue sur le service :
+  Francfort, compte `hipmaster-api`, 1 vCPU, 512 Mio, 0 à 1 instance, processeur pendant les requêtes seulement,
+  accélération au démarrage, `DATABASE_URL` et `CLE_CODES_RECUPERATION` tirés de Secret Manager. Retour arrière
+  essayé une fois, aller-retour (lancé par le porteur du projet, le mode automatique de Claude Code bloquant les
+  écritures sur GCP) : API vers la révision `precedente` en 32 s, front vers la publication d'avant en 42 s, site
+  sain (`/api/v1/sante` 200, bundle d'avant servi), puis version du moment rétablie. Veille de Neon mesurée sur
+  48 h : calcul suspendu 5 min 36 s à 6 min 20 s après la dernière requête (ex. 21:54:25 → 22:00:45). Le maximum
+  d'une instance est gardé malgré l'ADR 0030 : compteurs de limitation de débit et pool de connexions par instance.
+- 2026-10-24 — livrée : déploiement continu vérifié en production : chaîne complète, arrêt au premier échec, retour arrière API et front essayé (32 s et 42 s), veille de Neon en 6 min au plus

@@ -143,7 +143,8 @@ Toutes les évolutions notables du projet sont consignées ici
   Cloud Run, renvoie `index.html` aux routes Angular, règle le cache (aucun pour `index.html`, un jour pour les
   illustrations, un an pour les fichiers à empreinte) et pose une CSP stricte avec les en-têtes de sécurité ;
   `robots.txt` et `noindex` tiennent les robots à l'écart. Guide d'exploitation complété : déploiement, retour
-  arrière, migrations compatibles (US-050, ADR 0028).
+  arrière, migrations compatibles Vérifié en production : retour arrière essayé (API en
+  32 s, front en 42 s), base Neon en veille 6 minutes au plus après la dernière requête (US-050, ADR 0028).
 - Page « Inviter », réservée au porteur du projet : créer une invitation (pour qui, nombre de comptes, date limite),
   copier son lien en un geste ou le partager par le menu du téléphone, suivre les comptes créés par chaque invitation et
   en révoquer une après confirmation. Les administrateurs sont désignés par le réglage `ADMINISTRATEURS` de l'API
