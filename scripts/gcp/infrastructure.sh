@@ -17,6 +17,7 @@
 #   HIPMASTER_DEPOT=Obemm/20_HIPMaster    HIPMASTER_BRANCHE=main
 #   HIPMASTER_SITE=<projet>               HIPMASTER_BUCKET=<projet>-sauvegardes
 #   HIPMASTER_BUDGET=1 (devise du compte de facturation)
+#   HIPMASTER_ALERTES=<HIPMASTER_COMPTE> (adresse qui reçoit les alertes par e-mail, US-051)
 #   HIPMASTER_DEPOT_ID=<lu sur l'API publique de GitHub>
 #   NEON_PROJET=hipmaster                 NEON_ORG=<la seule organisation du compte Neon>
 #   NEON_REGION=aws-eu-central-1          NEON_PG=18          NEON_CU=0.25
@@ -65,6 +66,7 @@ BRANCHE=${HIPMASTER_BRANCHE:-main}
 SITE=${HIPMASTER_SITE:-$PROJET}
 BUCKET=${HIPMASTER_BUCKET:-$PROJET-sauvegardes}
 BUDGET=${HIPMASTER_BUDGET:-1}
+ALERTES=${HIPMASTER_ALERTES:-$COMPTE}
 DEPOT_ID=${HIPMASTER_DEPOT_ID:-}
 NEON_PROJET=${NEON_PROJET:-hipmaster}
 NEON_ORG=${NEON_ORG:-}
@@ -84,6 +86,22 @@ readonly SECRET_CLE=cle-codes-recuperation
 readonly POOL=github
 readonly FOURNISSEUR=github-actions
 readonly NOM_BUDGET=HIPMaster
+# Exploitation (US-051, ADR 0033) : jobs créés par le déploiement (scripts/gcp/deployer.sh exploitation).
+readonly SA_SAUVEGARDE=hipmaster-sauvegarde
+readonly SA_CONSOMMATION=hipmaster-consommation
+readonly SECRET_NEON=neon-cle-api
+readonly JOB_SAUVEGARDE=hipmaster-sauvegarde
+readonly JOB_CONSOMMATION=hipmaster-consommation
+# Heure de Paris. La sauvegarde évite la fenêtre de maintenance de Neon (jeudi, 2 h à 3 h UTC) ; le relevé arrive
+# avant la journée de travail.
+readonly FUSEAU=Europe/Paris
+readonly HORAIRE_SAUVEGARDE='30 5 * * *'
+readonly HORAIRE_CONSOMMATION='0 8 * * *'
+readonly MONITORING=https://monitoring.googleapis.com/v3
+readonly NOM_CANAL="HIPMaster : porteur du projet"
+readonly NOM_TEST="HIPMaster : santé de l'API"
+readonly NOM_ALERTE_SITE="HIPMaster : site indisponible"
+readonly NOM_ALERTE_JOBS="HIPMaster : sauvegarde ou consommation Neon"
 # Version de neonctl figée (publiée le 2026-10-07) plutôt que la dernière parue.
 readonly NEONCTL=neonctl@8.0.12
 
@@ -116,6 +134,8 @@ readonly -a ROLES_DEPLOIEMENT=(
 
 readonly EMAIL_API=$SA_API@$PROJET.iam.gserviceaccount.com
 readonly EMAIL_DEPLOIEMENT=$SA_DEPLOIEMENT@$PROJET.iam.gserviceaccount.com
+readonly EMAIL_SAUVEGARDE=$SA_SAUVEGARDE@$PROJET.iam.gserviceaccount.com
+readonly EMAIL_CONSOMMATION=$SA_CONSOMMATION@$PROJET.iam.gserviceaccount.com
 readonly CORRESPONDANCE=google.subject=assertion.sub,attribute.repository=assertion.repository,attribute.repository_id=assertion.repository_id,attribute.ref=assertion.ref
 NUMERO=''
 CONDITION=''
@@ -299,6 +319,8 @@ verifier_parametres() {
   [[ $PROJET =~ ^[a-z][a-z0-9-]{4,28}[a-z0-9]$ ]] ||
     arret "HIPMASTER_PROJET n'est pas un identifiant de projet Google Cloud valable : $PROJET."
   [[ $BUDGET =~ ^[0-9]+$ ]] || arret "HIPMASTER_BUDGET doit être un nombre entier : $BUDGET."
+  [[ $ALERTES =~ ^[^@[:space:]]+@[^@[:space:]]+\.[^@[:space:]]+$ ]] ||
+    arret "HIPMASTER_ALERTES doit contenir une adresse e-mail."
   local outil
   for outil in gcloud node npx curl sha256sum; do
     command -v "$outil" >/dev/null 2>&1 || arret "outil introuvable : $outil (voir les prérequis du guide)."
@@ -545,6 +567,10 @@ etape_comptes_service() {
     "Exécute l'API HIPMaster ; ne lit que ses secrets : la base et la clé des codes (US-049, US-047)"
   compte_service "$SA_DEPLOIEMENT" "Déploiement HIPMaster (GitHub Actions)" \
     "Déploie HIPMaster depuis GitHub Actions, par Workload Identity Federation et sans clé (US-049)"
+  compte_service "$SA_SAUVEGARDE" "Sauvegarde HIPMaster (Cloud Run Job)" \
+    "Sauvegarde la base chaque nuit : lit l'URL de la base, ajoute des objets au bucket de sauvegardes (US-051)"
+  compte_service "$SA_CONSOMMATION" "Consommation Neon HIPMaster (Cloud Run Job)" \
+    "Relève chaque jour la consommation Neon : lit la clé de l'API Neon, jamais la base (US-051)"
 }
 
 compte_service() {
@@ -656,9 +682,12 @@ etape_droits_deploiement() {
   lier_role "roles/artifactregistry.writer sur le dépôt $DEPOT_IMAGES seulement" \
     "serviceAccount:$EMAIL_DEPLOIEMENT" roles/artifactregistry.writer "artifacts repositories" \
     "$DEPOT_IMAGES" --location="$REGION" --project="$PROJET"
-  lier_role "roles/iam.serviceAccountUser sur $SA_API seulement (déployer l'API sous ce compte)" \
-    "serviceAccount:$EMAIL_DEPLOIEMENT" roles/iam.serviceAccountUser "iam service-accounts" \
-    "$EMAIL_API" --project="$PROJET"
+  local email
+  for email in "$EMAIL_API" "$EMAIL_SAUVEGARDE" "$EMAIL_CONSOMMATION"; do
+    lier_role "roles/iam.serviceAccountUser sur ${email%%@*} seulement (déployer l'API ou un job sous ce compte)" \
+      "serviceAccount:$EMAIL_DEPLOIEMENT" roles/iam.serviceAccountUser "iam service-accounts" \
+      "$email" --project="$PROJET"
+  done
 }
 
 # --- 11. Budget -------------------------------------------------------------------------------------
@@ -958,6 +987,274 @@ ranger_cle() {
     silencieux gc secrets versions add "$SECRET_CLE" --project="$PROJET" --data-file=-
 }
 
+# --- 15. Sauvegarde de chaque nuit (US-051) ---------------------------------------------------------
+
+# Le job hipmaster-sauvegarde (deployer.sh exploitation) range un pg_dump de la base dans le bucket. Son compte lit
+# l'URL de la base et ajoute des objets au bucket : il ne peut ni lire, ni remplacer, ni supprimer une sauvegarde.
+etape_sauvegarde() {
+  etape "15. Sauvegarde de chaque nuit : job $JOB_SAUVEGARDE (« $HORAIRE_SAUVEGARDE », heure de Paris)"
+  lier_role "$SA_SAUVEGARDE peut lire le secret $SECRET" "serviceAccount:$EMAIL_SAUVEGARDE" \
+    roles/secretmanager.secretAccessor secrets "$SECRET" --project="$PROJET"
+  lier_role "$SA_SAUVEGARDE peut ajouter des objets à gs://$BUCKET (ni lire, ni remplacer, ni supprimer)" \
+    "serviceAccount:$EMAIL_SAUVEGARDE" roles/storage.objectCreator "storage buckets" "gs://$BUCKET" \
+    --project="$PROJET"
+  planifier "$JOB_SAUVEGARDE" "$EMAIL_SAUVEGARDE" "$HORAIRE_SAUVEGARDE" \
+    "Sauvegarde de la base Neon vers gs://$BUCKET (US-051)"
+}
+
+# planifier <job> <compte> <horaire> <description> : tâche Cloud Scheduler du même nom, qui lance le job Cloud Run
+# avec l'identité du compte de ce job, autorisé à lancer ce seul job.
+planifier() {
+  local job=$1 email=$2 horaire=$3 description=$4 actuelle conforme
+  local uri="https://run.googleapis.com/v2/projects/$PROJET/locations/$REGION/jobs/$job:run"
+  if gc run jobs describe "$job" --project="$PROJET" --region="$REGION" >/dev/null 2>&1; then
+    lier_role "$job peut être lancé par ${email%%@*} (ce job seulement)" "serviceAccount:$email" \
+      roles/run.invoker "run jobs" "$job" --project="$PROJET" --region="$REGION"
+  else
+    alerte "le job $job n'existe pas encore : il naît au déploiement (deployer.sh exploitation) ; relancer ensuite ce script pour que la tâche planifiée ait le droit de le lancer."
+  fi
+  local -a options=(--project="$PROJET" --location="$REGION" --schedule="$horaire" --time-zone="$FUSEAU"
+    --uri="$uri" --http-method=POST --oauth-service-account-email="$email"
+    --oauth-token-scope=https://www.googleapis.com/auth/cloud-platform --description="$description")
+  local libelle="tâche planifiée $job : « $horaire » ($FUSEAU), lance le job $job"
+  actuelle=$(gc scheduler jobs describe "$job" --project="$PROJET" --location="$REGION" --format=json \
+    2>/dev/null || true)
+  if [[ -z $actuelle ]]; then
+    creer "$libelle" reessayer gc scheduler jobs create http "$job" "${options[@]}"
+    return 0
+  fi
+  conforme=$(HORAIRE=$horaire URI=$uri EMAIL=$email ZONE=$FUSEAU json '(() => {
+    const cible = j.httpTarget || {};
+    return j.schedule === process.env.HORAIRE && j.timeZone === process.env.ZONE && cible.uri === process.env.URI
+      && (cible.oauthToken || {}).serviceAccountEmail === process.env.EMAIL && j.state === "ENABLED";
+  })()' <<<"$actuelle" || true)
+  if [[ $conforme == true ]]; then
+    existe "$libelle"
+  else
+    modifier "$libelle (remise à la cible, réactivée si elle était en pause)" planifier_a_nouveau "$job" \
+      "${options[@]}"
+  fi
+}
+
+planifier_a_nouveau() {
+  local job=$1
+  shift
+  silencieux gc scheduler jobs update http "$job" "$@"
+  if [[ $(gc scheduler jobs describe "$job" --project="$PROJET" --location="$REGION" --format='value(state)') != ENABLED ]]; then
+    silencieux gc scheduler jobs resume "$job" --project="$PROJET" --location="$REGION"
+  fi
+}
+
+# --- 16. Relevé de la consommation Neon (US-051) ----------------------------------------------------
+
+# Le job hipmaster-consommation lit sur l'API de Neon les compteurs du mois, sans jamais se connecter à la base. Sa
+# clé est une clé d'organisation limitée au projet HIPMaster, créée ici et rangée dans Secret Manager par des tubes.
+etape_consommation() {
+  etape "16. Relevé de la consommation Neon : job $JOB_CONSOMMATION (« $HORAIRE_CONSOMMATION », heure de Paris)"
+  if gc secrets describe "$SECRET_NEON" --project="$PROJET" >/dev/null 2>&1; then
+    existe "secret $SECRET_NEON (clé de l'API Neon), répliqué en $REGION seulement"
+  else
+    creer "secret $SECRET_NEON (clé de l'API Neon), répliqué en $REGION seulement" reessayer gc secrets create \
+      "$SECRET_NEON" --project="$PROJET" --replication-policy=user-managed --locations="$REGION" \
+      --labels=application=hipmaster
+  fi
+  local versions
+  versions=$(gc secrets versions list "$SECRET_NEON" --project="$PROJET" --filter='state=ENABLED' \
+    --format='value(name.basename())' 2>/dev/null || true)
+  if [[ -n $versions ]]; then
+    existe "clé de l'API Neon rangée (jamais recréée par le script)"
+  elif [[ -z $NEON_ID ]]; then
+    creer "clé de l'API Neon limitée au projet, rangée dans le secret $SECRET_NEON" :
+  else
+    creer "clé de l'API Neon « hipmaster-consommation », limitée au projet $NEON_ID, rangée sans être affichée" \
+      ranger_cle_neon
+  fi
+  lier_role "$SA_CONSOMMATION peut lire ce secret" "serviceAccount:$EMAIL_CONSOMMATION" \
+    roles/secretmanager.secretAccessor secrets "$SECRET_NEON" --project="$PROJET"
+  planifier "$JOB_CONSOMMATION" "$EMAIL_CONSOMMATION" "$HORAIRE_CONSOMMATION" \
+    "Relevé de la consommation Neon, alerte au-delà de 70 % du quota (US-051)"
+}
+
+# La réponse de Neon contient la clé : elle va de neonctl à gcloud par des tubes, jamais affichée ni écrite. En cas
+# d'échec après sa création, la révoquer dans la console Neon (Organization settings, API keys).
+ranger_cle_neon() {
+  neon_api "/organizations/$NEON_ORG/api_keys" -X POST -F key_name=hipmaster-consommation \
+    -F "project_id=$NEON_ID" |
+    node -e '
+      let texte = "";
+      process.stdin.on("data", (d) => (texte += d));
+      process.stdin.on("end", () => {
+        try {
+          const cle = JSON.parse(texte).key;
+          if (!cle) process.exit(1);
+          process.stdout.write(cle);
+        } catch {
+          process.exit(1);
+        }
+      });
+    ' | silencieux gc secrets versions add "$SECRET_NEON" --project="$PROJET" --data-file=-
+}
+
+# --- 17. Supervision (US-051) -----------------------------------------------------------------------
+
+# Cloud Monitoring par son API REST : un canal e-mail, un test de disponibilité et deux alertes. Chaque objet est
+# retrouvé par son nom affiché, et remis à la cible s'il s'en écarte.
+etape_supervision() {
+  etape "17. Supervision : test de disponibilité de https://$SITE.web.app/api/v1/sante, alertes par e-mail"
+  supervision_canal
+  supervision_test
+  supervision_alerte "$NOM_ALERTE_SITE" "$(alerte_site)"
+  supervision_alerte "$NOM_ALERTE_JOBS" "$(alerte_jobs)"
+}
+
+# monitoring <méthode> <chemin> [corps] : API de Cloud Monitoring du projet ; affiche la réponse, échoue sur une
+# erreur HTTP.
+monitoring() {
+  local reponse
+  reponse=$(appel_google "$1" "$MONITORING/projects/$PROJET$2" "${3:-}")
+  if [[ ${reponse##*$'\n'} != 2* ]]; then
+    printf '%s\n' "${reponse%$'\n'*}" >&2
+    return 1
+  fi
+  printf '%s\n' "${reponse%$'\n'*}"
+}
+
+# trouver <collection> <nom affiché> : l'objet de ce nom (JSON), ou rien.
+trouver() {
+  monitoring GET "/$1?pageSize=200" | COLLECTION=$1 NOM=$2 \
+    json '(j[process.env.COLLECTION] || []).find((o) => o.displayName === process.env.NOM)' || true
+}
+
+# nom_court <objet JSON> : le dernier segment de son nom (identifiant).
+nom_court() { json 'j.name.split("/").pop()' <<<"$1"; }
+
+CANAL=''
+ID_TEST=''
+
+supervision_canal() {
+  local canal corps libelle="canal e-mail « $NOM_CANAL » (adresse HIPMASTER_ALERTES)"
+  corps=$(NOM=$NOM_CANAL ADRESSE=$ALERTES node -e 'console.log(JSON.stringify({ type: "email",
+    displayName: process.env.NOM, labels: { email_address: process.env.ADRESSE }, enabled: true }))')
+  canal=$(trouver notificationChannels "$NOM_CANAL")
+  if [[ -z $canal ]]; then
+    if [[ $MODE == simulation ]]; then
+      creer "$libelle" :
+      CANAL=projects/$PROJET/notificationChannels/a-creer
+      return 0
+    fi
+    canal=$(monitoring POST /notificationChannels "$corps")
+    CREES=$((CREES + 1))
+    printf '  [créé]         %s\n' "$libelle"
+  elif [[ $(ADRESSE=$ALERTES json 'j.labels.email_address === process.env.ADRESSE && j.enabled !== false' <<<"$canal") == true ]]; then
+    existe "$libelle"
+  else
+    modifier "$libelle : adresse remise à HIPMASTER_ALERTES, canal réactivé" silencieux monitoring PATCH \
+      "/notificationChannels/$(nom_court "$canal")?updateMask=labels,enabled" "$corps"
+  fi
+  CANAL=$(json 'j.name' <<<"$canal")
+}
+
+# Toutes les 15 minutes, depuis 3 régions : 8 640 exécutions par mois, pour 1 million gratuites. /api/v1/sante ne
+# touche pas la base, qui peut rester en veille (ADR 0021).
+supervision_test() {
+  local test corps conforme
+  local libelle="test de disponibilité « $NOM_TEST » : GET https://$SITE.web.app/api/v1/sante toutes les 15 minutes, depuis 3 régions"
+  corps=$(NOM=$NOM_TEST HOTE=$SITE.web.app PROJET_GCP=$PROJET node -e 'console.log(JSON.stringify({
+    displayName: process.env.NOM,
+    monitoredResource: { type: "uptime_url", labels: { project_id: process.env.PROJET_GCP, host: process.env.HOTE } },
+    httpCheck: { path: "/api/v1/sante", port: 443, useSsl: true, validateSsl: true, requestMethod: "GET",
+      acceptedResponseStatusCodes: [{ statusClass: "STATUS_CLASS_2XX" }] },
+    contentMatchers: [{ content: "\"statut\":\"ok\"", matcher: "CONTAINS_STRING" }],
+    period: "900s", timeout: "30s", selectedRegions: ["EUROPE", "SOUTH_AMERICA", "ASIA_PACIFIC"],
+    checkerType: "STATIC_IP_CHECKERS" }))')
+  test=$(trouver uptimeCheckConfigs "$NOM_TEST")
+  if [[ -z $test ]]; then
+    if [[ $MODE == simulation ]]; then
+      creer "$libelle" :
+      ID_TEST=a-creer
+      return 0
+    fi
+    test=$(monitoring POST /uptimeCheckConfigs "$corps")
+    CREES=$((CREES + 1))
+    printf '  [créé]         %s\n' "$libelle"
+  else
+    conforme=$(CIBLE=$corps json '(() => {
+      const c = JSON.parse(process.env.CIBLE);
+      const meme = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+      return j.period === c.period && j.timeout === c.timeout && (j.httpCheck || {}).path === c.httpCheck.path
+        && j.monitoredResource.labels.host === c.monitoredResource.labels.host
+        && meme([...(j.selectedRegions || [])].sort(), [...c.selectedRegions].sort())
+        && meme((j.contentMatchers || []).map((m) => m.content), c.contentMatchers.map((m) => m.content));
+    })()' <<<"$test" || true)
+    if [[ $conforme == true ]]; then
+      existe "$libelle"
+    else
+      modifier "$libelle (remis à la cible)" silencieux monitoring PATCH \
+        "/uptimeCheckConfigs/$(nom_court "$test")?updateMask=httpCheck,period,timeout,contentMatchers,selectedRegions" \
+        "$corps"
+    fi
+  fi
+  ID_TEST=$(nom_court "$test")
+}
+
+# Alerte quand 2 régions sur 3 échouent deux tours de suite : une indisponibilité qui dure, pas un raté isolé. Les
+# alertes sur les métriques des tests de disponibilité restent gratuites.
+alerte_site() {
+  NOM=$NOM_ALERTE_SITE CANAL=$CANAL TEST=$ID_TEST node -e 'console.log(JSON.stringify({
+    displayName: process.env.NOM,
+    documentation: { mimeType: "text/markdown",
+      content: "Le jeu ne répond plus sur /api/v1/sante depuis au moins 2 régions sur 3, deux tours de suite. Voir docs/exploitation/README.md, section Supervision." },
+    combiner: "OR",
+    conditions: [{ displayName: "/api/v1/sante en échec depuis 2 régions sur 3",
+      conditionThreshold: {
+        filter: `metric.type="monitoring.googleapis.com/uptime_check/check_passed" AND metric.label.check_id="${process.env.TEST}" AND resource.type="uptime_url"`,
+        aggregations: [{ alignmentPeriod: "1200s", perSeriesAligner: "ALIGN_NEXT_OLDER",
+          crossSeriesReducer: "REDUCE_COUNT_FALSE", groupByFields: ["resource.label.host"] }],
+        comparison: "COMPARISON_GT", thresholdValue: 1, duration: "1200s", trigger: { count: 1 } } }],
+    alertStrategy: { autoClose: "3600s" },
+    notificationChannels: [process.env.CANAL], severity: "CRITICAL", enabled: true }))'
+}
+
+# Une seule condition sur les journaux pour les deux jobs et leurs tâches planifiées : un échec (ERROR) ou un
+# dépassement du seuil de consommation (WARNING) envoie un e-mail, au plus un par heure.
+alerte_jobs() {
+  NOM=$NOM_ALERTE_JOBS CANAL=$CANAL A=$JOB_SAUVEGARDE B=$JOB_CONSOMMATION node -e 'console.log(JSON.stringify({
+    displayName: process.env.NOM,
+    documentation: { mimeType: "text/markdown",
+      content: "Sauvegarde ou relevé de consommation en échec, ou consommation Neon au-delà de 70 % du quota du mois. Voir docs/exploitation/README.md, section Supervision." },
+    combiner: "OR",
+    conditions: [{ displayName: "Avertissement ou erreur d’un job d’exploitation",
+      conditionMatchedLog: {
+        filter: `(resource.type="cloud_run_job" AND resource.labels.job_name=("${process.env.A}" OR "${process.env.B}") AND severity>=WARNING) OR (resource.type="cloud_scheduler_job" AND resource.labels.job_id=("${process.env.A}" OR "${process.env.B}") AND severity>=ERROR)` } }],
+    alertStrategy: { notificationRateLimit: { period: "3600s" }, autoClose: "86400s" },
+    notificationChannels: [process.env.CANAL], severity: "ERROR", enabled: true }))'
+}
+
+# supervision_alerte <nom> <corps> : crée la politique d'alerte, ou la remet à la cible (conditions, canal, activée).
+supervision_alerte() {
+  local nom=$1 corps=$2 politique conforme libelle="alerte « $1 » par e-mail"
+  politique=$(trouver alertPolicies "$nom")
+  if [[ -z $politique ]]; then
+    creer "$libelle" silencieux monitoring POST /alertPolicies "$corps"
+    return 0
+  fi
+  conforme=$(CIBLE=$corps json '(() => {
+    const c = JSON.parse(process.env.CIBLE);
+    const sans = (conditions) => (conditions || []).map(({ name, ...reste }) => reste);
+    const tri = (o) => JSON.stringify(o, (cle, v) => v && typeof v === "object" && !Array.isArray(v)
+      ? Object.fromEntries(Object.entries(v).sort()) : v);
+    return tri(sans(j.conditions)) === tri(c.conditions) && j.enabled !== false
+      && tri(j.notificationChannels) === tri(c.notificationChannels);
+  })()' <<<"$politique" || true)
+  if [[ $conforme == true ]]; then
+    existe "$libelle"
+  else
+    modifier "$libelle (remise à la cible)" silencieux monitoring PATCH \
+      "/alertPolicies/$(nom_court "$politique")?updateMask=documentation,conditions,combiner,alert_strategy,notification_channels,severity,enabled" \
+      "$corps"
+  fi
+}
+
 # --- Bilan ------------------------------------------------------------------------------------------
 
 bilan() {
@@ -985,6 +1282,8 @@ bilan() {
   printf '  Secret de la base      %s\n' "$SECRET (variable DATABASE_URL de l'API)"
   printf '  Clé des codes          %s\n' "$SECRET_CLE (variable CLE_CODES_RECUPERATION de l'API)"
   printf '  Sauvegardes            %s\n' "gs://$BUCKET"
+  printf '  Comptes des jobs       %s\n' "$EMAIL_SAUVEGARDE, $EMAIL_CONSOMMATION"
+  printf "  Clé de l'API Neon      %s\n" "$SECRET_NEON (variable NEON_CLE_API du job $JOB_CONSOMMATION)"
   printf '  Front                  %s\n' "https://$SITE.web.app"
   printf '  Base Neon              %s\n' \
     "projet ${NEON_ID:-<à créer>}, branche ${BRANCHE_NEON_NOM:-<par défaut>}, base $NEON_BASE, rôle $NEON_ROLE"
@@ -1008,6 +1307,9 @@ principal() {
   etape_firebase
   etape_neon
   etape_cle_codes
+  etape_sauvegarde
+  etape_consommation
+  etape_supervision
   bilan
 }
 

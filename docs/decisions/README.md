@@ -38,5 +38,6 @@ référence Elis.
 | [0027](0027-inscription-sur-invitation.md)             | Inscription sur invitation : codes à usages comptés, sous HMAC        | ADR-020 ; 010, 034 écartés     | Acceptée (complétée par 0029) |
 | [0028](0028-deploiement-continu.md)                    | Déploiement continu : révision vérifiée avant bascule, front par API  | ADR-011, 032 écartés, 039, 033 | Acceptée                      |
 | [0029](0029-administrateurs-par-configuration.md)      | Administrateurs désignés par la configuration, routes cachées en 404  | ADR-020 ; 010, 034 écartés     | Acceptée                      |
+| [0033](0033-supervision-sauvegardes.md)                | Supervision, sauvegardes et erreurs : Cloud Monitoring, jobs, journal | ADR-006, 012, 043 ; 009 écarté | Proposée                      |
 
 Modèle : [template.md](template.md).

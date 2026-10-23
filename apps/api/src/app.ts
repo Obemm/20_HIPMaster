@@ -19,6 +19,7 @@ import { routesAdministration } from './routes/administration.ts';
 import { routesBoosters } from './routes/boosters.ts';
 import { routesCollection } from './routes/collection.ts';
 import { routesDuels } from './routes/duels.ts';
+import { routesErreurs } from './routes/erreurs.ts';
 import { routesCartes } from './routes/cartes.ts';
 import { routesComptes } from './routes/comptes.ts';
 import { routesParties } from './routes/parties.ts';
@@ -136,6 +137,8 @@ export function construireApp(
   );
 
   app.register(routesSante, { prefix: '/api/v1' });
+  // Erreurs JavaScript des navigateurs, vers Error Reporting (US-051).
+  app.register(routesErreurs, { prefix: '/api/v1', ...(limites && { limites }) });
   app.register(routesRaretes, { prefix: '/api/v1' });
   app.register(routesCartes, { prefix: '/api/v1' });
   // Parties en cours, gardées en mémoire (ADR 0014).
