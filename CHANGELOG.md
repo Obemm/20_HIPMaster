@@ -152,6 +152,12 @@ Toutes les évolutions notables du projet sont consignées ici
   route qui n'existe pas. Le lien « Inviter des collègues » n'apparaît dans « Mon compte » que pour un administrateur,
   et « Mon compte » montre l'identifiant du compte. Une invitation révoquée se distingue désormais d'une invitation
   expirée, dans la page comme dans `npm run invitation -- --lister` (US-072, ADR 0029).
+- Coups de pouce au bon moment, contre le bot comme en duel : avant de finir son tour, un message non bloquant dit
+  ce qui reste possible (« 2 de vos composants peuvent encore attaquer », « Vous pouvez encore poser Pub/Sub »), avec
+  « Revenir au plateau » et « Finir quand même » ; quand un attaquant est choisi et que le SI adverse ne lui est pas
+  proposé, le SI est signalé « Indisponible : Garde » et le détail rappelle quel composant doit tomber d'abord. Tout
+  vient des actions proposées par le serveur. Une case de l'aide « Comment jouer ? » les désactive, réglage gardé par
+  le navigateur (US-065, ADR 0032).
 
 ### Modifié
 

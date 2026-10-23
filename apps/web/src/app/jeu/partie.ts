@@ -44,6 +44,15 @@ import { PreferencesService } from '../preferences';
 import { StockBoostersService } from '../boosters/stock-boosters.service';
 
 type ActionCarte = Extract<Action, { carte: string }>;
+
+/** Les actions qui posent ou jouent une carte de la main : en oublier une est un coup de pouce à donner (US-065). */
+const ACTIONS_QUI_JOUENT = new Set<Action['type']>([
+  'poser',
+  'evoluer',
+  'jouer',
+  'router',
+  'migrer',
+]);
 type Attaque = Extract<Action, { type: 'attaquer' }>;
 
 /**
@@ -93,7 +102,7 @@ export class PartieEcran implements OnInit, OnDestroy {
 
   private readonly http = inject(HttpClient);
   protected readonly compte = inject(CompteService);
-  private readonly preferences = inject(PreferencesService);
+  protected readonly preferences = inject(PreferencesService);
   private readonly stockBoosters = inject(StockBoostersService);
   private readonly injecteur = inject(Injector);
   private readonly titreFin = viewChild<ElementRef<HTMLElement>>('titreFin');
@@ -232,7 +241,7 @@ export class PartieEcran implements OnInit, OnDestroy {
    * proposées par l'API ; l'avertissement ne bloque pas la fin du tour.
    */
   protected readonly attaquesOubliees = computed(() => {
-    if (!this.monTour()) return '';
+    if (!this.monTour() || !this.preferences.coupsDePouce()) return '';
     const noms = [...this.attaquantsPossibles()].map((id) => this.nommer(id));
     if (noms.length === 0) return '';
     return noms.length === 1
@@ -242,11 +251,58 @@ export class PartieEcran implements OnInit, OnDestroy {
   /** La même chose en quelques mots, pour la barre d'action d'un écran de téléphone (US-059). */
   protected readonly attaquesOublieesCourt = computed(() => {
     const [premier, ...autres] = this.attaquantsPossibles();
-    if (!this.monTour() || premier === undefined) return '';
+    if (!this.monTour() || !this.preferences.coupsDePouce() || premier === undefined) return '';
     return autres.length === 0
       ? `${this.nommer(premier)} peut encore attaquer.`
       : `${autres.length + 1} composants peuvent encore attaquer.`;
   });
+  /**
+   * Coups de pouce (US-065) : ce qui reste possible au moment de finir son tour, en phrases. Tout vient des actions
+   * proposées par le serveur : attaques, et cartes de la main qui se posent ou se jouent (pas le décommissionnement).
+   */
+  protected readonly resteAFaire = computed((): string[] => {
+    if (!this.monTour() || !this.preferences.coupsDePouce()) return [];
+    const phrases: string[] = [];
+    const [premier, ...autres] = this.attaquantsPossibles();
+    if (premier !== undefined) {
+      phrases.push(
+        autres.length === 0
+          ? `${this.nommer(premier)} peut encore attaquer.`
+          : `${autres.length + 1} de vos composants peuvent encore attaquer.`,
+      );
+    }
+    const aPoser = new Set<string>();
+    const aJouer = new Set<string>();
+    for (const action of this.vue()?.actions ?? []) {
+      if (!ACTIONS_QUI_JOUENT.has(action.type) || !('carte' in action)) continue;
+      (action.type === 'jouer' ? aJouer : aPoser).add(this.nommer(action.carte));
+    }
+    for (const nom of aJouer) aPoser.delete(nom);
+    if (aPoser.size) phrases.push(`Vous pouvez encore poser ${enListe([...aPoser])}.`);
+    if (aJouer.size) phrases.push(`Vous pouvez encore jouer ${enListe([...aJouer])}.`);
+    return phrases;
+  });
+  /** Le message « Avant de finir votre tour » est affiché (US-065). */
+  protected readonly confirmerFin = signal(false);
+  /**
+   * Garde (US-065) : un attaquant est choisi et le serveur ne propose pas le SI adverse comme cible. Le nom des
+   * composants qui ont Garde, s'il y en a en jeu, dit pourquoi.
+   */
+  protected readonly siIndisponible = computed(
+    () =>
+      this.preferences.coupsDePouce() &&
+      this.monTour() &&
+      this.attaquant() !== null &&
+      !this.ciblesPossibles().has('si'),
+  );
+
+  /** Le rappel de Garde sous le détail de l'attaquant choisi, quand le SI ne lui est pas proposé (US-065). */
+  protected readonly rappelGarde = computed(() => {
+    const gardes = this.gardesAdverses();
+    if (!this.siIndisponible() || gardes.length === 0) return '';
+    return `Garde : ${enListe(gardes)} ${gardes.length > 1 ? 'doivent' : 'doit'} tomber avant le SI ${this.autre().de}.`;
+  });
+
   protected readonly ciblesPossibles = computed(() => {
     const attaquant = this.attaquant();
     return new Set(
@@ -273,7 +329,7 @@ export class PartieEcran implements OnInit, OnDestroy {
       return 'Confirmez l’attaque sous le détail de la cible, ou choisissez-en une autre.';
     }
     const gardes = this.gardesAdverses();
-    if (gardes.length > 0) {
+    if (gardes.length > 0 && this.preferences.coupsDePouce()) {
       return `${this.autre().sujet} est protégé par Garde (${gardes.join(', ')}) : attaquez d’abord ce composant, son SI est inaccessible tant qu’il est en jeu.`;
     }
     return `Choisissez la cible de l’attaque : un composant ${this.autre().de} ou son SI.`;
@@ -371,15 +427,54 @@ export class PartieEcran implements OnInit, OnDestroy {
     });
   }
 
-  /** Échap : replie d'abord le journal déplié, sinon referme le détail ; l'aide se ferme seule (`<dialog>`). */
+  /**
+   * Échap : revient au plateau depuis le message de fin de tour, sinon replie le journal déplié, sinon referme le
+   * détail ; l'aide se ferme seule (`<dialog>`).
+   */
   protected echap(): void {
     if (this.fenetreAide()?.nativeElement.open) return;
+    if (this.confirmerFin()) {
+      this.revenirAuPlateau();
+      return;
+    }
     if (this.journalOuvert()) {
       this.journalOuvert.set(false);
       this.boutonJournal()?.nativeElement.focus();
       return;
     }
     this.fermerDetail();
+  }
+
+  /**
+   * « Finir mon tour » : s'il reste une attaque ou une carte à jouer, un message le dit d'abord (US-065), sans
+   * bloquer : « Finir quand même » finit le tour.
+   */
+  protected finirTour(): void {
+    if (this.resteAFaire().length > 0) {
+      this.fermerDetail();
+      this.confirmerFin.set(true);
+      afterNextRender(() => globalThis.document?.getElementById('revenir-plateau')?.focus(), {
+        injector: this.injecteur,
+      });
+      return;
+    }
+    void this.jouer({ type: 'finirTour' });
+  }
+
+  protected finirQuandMeme(): void {
+    this.confirmerFin.set(false);
+    void this.jouer({ type: 'finirTour' });
+  }
+
+  protected revenirAuPlateau(): void {
+    this.confirmerFin.set(false);
+    afterNextRender(() => globalThis.document?.getElementById('finir-tour')?.focus(), {
+      injector: this.injecteur,
+    });
+  }
+
+  protected basculerCoupsDePouce(evenement: Event): void {
+    this.preferences.activerCoupsDePouce((evenement.target as HTMLInputElement).checked);
   }
 
   protected basculerJournal(): void {
@@ -663,4 +758,9 @@ export class PartieEcran implements OnInit, OnDestroy {
 function montrer(dialogue: HTMLDialogElement): void {
   if (typeof dialogue.showModal !== 'function') dialogue.setAttribute('open', '');
   else if (!dialogue.open) dialogue.showModal();
+}
+
+/** « Pub/Sub », « Pub/Sub et Webhook », « Pub/Sub, Topic et Webhook ». */
+function enListe(noms: string[]): string {
+  return noms.length < 2 ? (noms[0] ?? '') : `${noms.slice(0, -1).join(', ')} et ${noms.at(-1)}`;
 }
