@@ -6,8 +6,9 @@ import { type OptionsBoosters, ouvrirUnBooster, recompenserVictoire } from './co
 import { CLE_CODES_DEVELOPPEMENT, creerJoueur } from './comptes/comptes.ts';
 import { creerInvitation, inscrire } from './comptes/invitations.ts';
 import { baseDeTest } from './db/base-de-test.ts';
-import { collection, duels, invitations, joueurs, recompenses } from './db/schema.ts';
+import { collection, duels, invitations, joueurs, parties, recompenses } from './db/schema.ts';
 import { chercherAdversaire, creerDuel, jouerDuel, rejoindreDuel } from './duels/duels.ts';
+import { jouerPartie, lancerPartie } from './parties/parties.ts';
 
 /**
  * Opérations lancées en même temps (US-056). PGlite exécute les requêtes une par une : là, ces tests ne prouvent que la
@@ -163,6 +164,51 @@ describe('opérations simultanées (US-056)', () => {
         Array.from({ length: FOIS - 1 }, () => 'pas-ton-tour'),
       );
       expect(await versionEnBase(id)).toBe(version + 1);
+    });
+  });
+
+  describe('actions simultanées dans une partie contre le bot (US-052)', () => {
+    async function partieLancee() {
+      const lancee = await lancerPartie(ouverte.base, 'moderne');
+      if (!lancee.ok) throw new Error('Partie non lancée.');
+      return lancee.valeur;
+    }
+
+    async function versionEnBase(id: string) {
+      const [ligne] = await ouverte.base
+        .select({ version: parties.version })
+        .from(parties)
+        .where(eq(parties.id, id));
+      return ligne?.version;
+    }
+
+    it('avec la même version attendue (If-Match), une seule s’applique', async () => {
+      const { id, version } = await partieLancee();
+      const resultats = await enParallele(() =>
+        jouerPartie(ouverte.base, id, { type: 'finirTour' }, null, version),
+      );
+
+      expect(resultats.filter((r) => r.ok)).toHaveLength(1);
+      expect(resultats.flatMap((r) => (r.ok ? [] : [r.raison]))).toEqual(
+        Array.from({ length: FOIS - 1 }, () => 'version-perimee'),
+      );
+      expect(await versionEnBase(id)).toBe(version + 1);
+    });
+
+    it('sans version attendue, aucune action ne s’applique sur une version déjà remplacée', async () => {
+      const { id, version } = await partieLancee();
+      const resultats = await enParallele(() =>
+        jouerPartie(ouverte.base, id, { type: 'finirTour' }, null),
+      );
+
+      // Les actions qui se croisent sont refusées ; celles qui arrivent après une autre s'appliquent à leur tour.
+      const appliquees = resultats.flatMap((r) => (r.ok ? [r.valeur.partie.version] : []));
+      expect(appliquees.length).toBeGreaterThan(0);
+      expect(new Set(appliquees).size).toBe(appliquees.length);
+      expect(resultats.flatMap((r) => (r.ok ? [] : [r.raison]))).toEqual(
+        Array.from({ length: FOIS - appliquees.length }, () => 'version-perimee'),
+      );
+      expect(await versionEnBase(id)).toBe(version + appliquees.length);
     });
   });
 

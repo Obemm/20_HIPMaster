@@ -18,7 +18,7 @@ import {
 } from '../duels/duels.ts';
 import { schemaAction, schemaEvenement, schemaVue } from '../parties/schemas.ts';
 import { exigerJoueur } from './comptes.ts';
-import { versAction } from './parties.ts';
+import { etiquette, versAction, versionDe } from './parties.ts';
 
 // Contrat : apps/api/openapi/duels.yaml (US-032, ADR 0020 ; limites de débit : US-047, ADR 0025).
 
@@ -48,15 +48,6 @@ const schemaDuel = z.object({
 
 const parametres = z.object({ id: z.uuid() });
 const corpsDeck = z.object({ deck: z.string().max(64) });
-
-const etiquette = (version: number) => `"${version}"`;
-
-/** La version d'un en-tête `If-Match` ou `If-None-Match` (`"3"` ou `W/"3"`) ; `undefined` sinon. */
-function versionDe(entete: string | string[] | undefined): number | undefined {
-  const valeur = Array.isArray(entete) ? entete[0] : entete;
-  const correspondance = valeur?.match(/^(?:W\/)?"(\d+)"$/);
-  return correspondance?.[1] === undefined ? undefined : Number(correspondance[1]);
-}
 
 /** Traduit un échec en Problem Details (RFC 9457). */
 function refuser(reponse: FastifyReply, resultat: Exclude<ResultatDuel<unknown>, { ok: true }>) {

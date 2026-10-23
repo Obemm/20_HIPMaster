@@ -5,7 +5,7 @@ import { baseDeTest } from './db/base-de-test.ts';
 import type { DuelVisible } from './duels/duels.ts';
 import { creerJournal } from './journaux.ts';
 import { LIMITES_DEBIT, type LimitesDebit, limitesMultipliees } from './limites.ts';
-import type { PartieVisible } from './parties/depot.ts';
+import type { PartieVisible } from './parties/parties.ts';
 
 // Protections avant l'ouverture (US-047, ADR 0025).
 
