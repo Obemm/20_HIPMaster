@@ -109,6 +109,8 @@ test('on choisit la difficulté du bot avant son deck, et elle est rappelée pen
 test('une partie inconnue est annoncée comme introuvable', async ({ page }) => {
   await page.goto('/jouer/00000000-0000-4000-8000-000000000000');
   await expect(page.getByRole('heading', { name: 'Partie introuvable' })).toBeVisible();
+  // La vraie règle d'expiration (US-052, ADR 0030).
+  await expect(page.getByText('elle expire après 24 heures sans coup joué')).toBeVisible();
 });
 
 for (const theme of ['light', 'dark'] as const) {

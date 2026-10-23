@@ -322,6 +322,45 @@ describe('Compte', () => {
     expect(localStorage.getItem('hipmaster.jeton')).toBe('jeton-1');
   });
 
+  it('supprime le compte après confirmation, puis le dit et oublie le jeton (US-053)', async () => {
+    const { fixture, page } = await afficherConnecte();
+    const http = TestBed.inject(HttpTestingController);
+    bouton(page, 'Supprimer mon compte…')?.click();
+    fixture.detectChanges();
+    // Rien ne part avant la confirmation, et l'on peut se raviser.
+    http.expectNone('/api/v1/moi');
+    bouton(page, 'Non, le garder')?.click();
+    fixture.detectChanges();
+    expect(bouton(page, 'Oui, supprimer mon compte')).toBeUndefined();
+
+    bouton(page, 'Supprimer mon compte…')?.click();
+    fixture.detectChanges();
+    bouton(page, 'Oui, supprimer mon compte')?.click();
+    const requete = http.expectOne({ method: 'DELETE', url: '/api/v1/moi' });
+    expect(requete.request.headers.get('Authorization')).toBe('Bearer jeton-1');
+    requete.flush(null, { status: 204, statusText: 'No Content' });
+    await fixture.whenStable();
+    fixture.detectChanges();
+    expect(page.textContent).toContain('Votre compte a été supprimé');
+    expect(page.textContent).toContain('Créer mon compte');
+    expect(localStorage.getItem('hipmaster.jeton')).toBeNull();
+  });
+
+  it('une suppression qui échoue garde le compte et le dit (US-053)', async () => {
+    const { fixture, page } = await afficherConnecte();
+    bouton(page, 'Supprimer mon compte…')?.click();
+    fixture.detectChanges();
+    bouton(page, 'Oui, supprimer mon compte')?.click();
+    TestBed.inject(HttpTestingController)
+      .expectOne({ method: 'DELETE', url: '/api/v1/moi' })
+      .flush(null, PANNE);
+    await fixture.whenStable();
+    fixture.detectChanges();
+    expect(page.querySelector('[role="alert"]')?.textContent).toBeTruthy();
+    expect(page.textContent).toContain('Connecté en tant que Ada');
+    expect(localStorage.getItem('hipmaster.jeton')).toBe('jeton-1');
+  });
+
   it('une session refusée en déconnectant les autres appareils est une session expirée', async () => {
     const { fixture, page } = await afficherConnecte();
     bouton(page, 'Déconnecter mes autres appareils')?.click();
