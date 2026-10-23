@@ -300,9 +300,11 @@ lier_role() {
   local -a commande ajout=()
   read -r -a commande <<<"$groupe"
   if [[ $groupe == projects ]]; then ajout=(--condition=None); fi
+  # Filtre en JSON : gcloud storage buckets get-iam-policy n'accepte pas --filter (US-051).
   local membres
-  membres=$(gc "${commande[@]}" get-iam-policy "$ressource" "$@" --flatten='bindings[].members' \
-    --filter="bindings.role=\"$role\"" --format='value(bindings.members)' 2>/dev/null || true)
+  membres=$(gc "${commande[@]}" get-iam-policy "$ressource" "$@" --format=json 2>/dev/null |
+    ROLE=$role json '(j.bindings || []).filter((b) => b.role === process.env.ROLE).flatMap((b) => b.members).join("\n")' ||
+    true)
   if grep -qxF "$membre" <<<"$membres"; then
     existe "$libelle"
   else

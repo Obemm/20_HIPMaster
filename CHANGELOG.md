@@ -152,6 +152,12 @@ Toutes les évolutions notables du projet sont consignées ici
   route qui n'existe pas. Le lien « Inviter des collègues » n'apparaît dans « Mon compte » que pour un administrateur,
   et « Mon compte » montre l'identifiant du compte. Une invitation révoquée se distingue désormais d'une invitation
   expirée, dans la page comme dans `npm run invitation -- --lister` (US-072, ADR 0029).
+- Supervision du jeu en ligne : test de disponibilité de `/api/v1/sante` toutes les 15 minutes (sans réveiller la
+  base) et e-mail quand le site tombe ; sauvegarde de chaque nuit de la base Neon (`pg_dump` vérifié, 30 jours dans
+  Cloud Storage) et relevé quotidien de sa consommation, avec un e-mail au moindre échec ou au-delà de 70 % du quota ;
+  restauration essayée dans une branche Neon temporaire (`scripts/gcp/restaurer.sh`). Les erreurs JavaScript des
+  joueurs partent vers Error Reporting par `POST /api/v1/erreurs` (contrat OpenAPI, débit limité), sans jeton ni
+  paramètres d'adresse. Scan OWASP ZAP de base : aucune alerte élevée ni moyenne (US-051, ADR 0033).
 
 ### Modifié
 
@@ -179,6 +185,9 @@ Toutes les évolutions notables du projet sont consignées ici
 
 ### Corrigé
 
+- Scripts d'exploitation sous Windows : les corps JSON envoyés aux API Google passent par un fichier, car un argument
+  de `curl` y perdait ses lettres accentuées (message du retour arrière du front, noms des objets de supervision)
+  (US-051).
 - L'écran de partie et de duel dit pourquoi une carte de la main ne se joue pas, avec les mots du serveur : une
   évolution sans sa carte d'origine (« Évolution d’Apigee API Gateway : posez d’abord Apigee API Gateway, puis
   faites-la évoluer. »), le Débit qui manque (coût effectif, Cache sémantique compris), le plateau plein, un sort ou
