@@ -155,6 +155,14 @@ Toutes les évolutions notables du projet sont consignées ici
 
 ### Modifié
 
+- Les parties contre le bot sont gardées en base au lieu de la mémoire de l'API : elles survivent aux déploiements,
+  aux arrêts à zéro et aux redémarrages, et expirent après 24 heures sans coup joué (une lecture ne compte pas), ce
+  que dit désormais l'écran de partie. Chaque action, tour du bot compris, s'écrit en une seule fois à condition que
+  la partie n'ait pas changé : de deux actions simultanées, une seule passe, l'autre reçoit 409. Chaque partie porte
+  sa `version` (en-tête `ETag`), que `If-Match` peut exiger (contrat `parties.yaml` 1.3.0). Les parties expirées
+  sont purgées à chaque création ; au-delà de 1 000, la partie anonyme la moins récemment jouée part la première.
+  Fermer sa session supprime ses parties. Plus rien dans les parties n'impose une seule instance Cloud Run
+  (US-052, ADR 0030, qui remplace l'ADR 0014).
 - Les parcours e2e de la CI tournent sur le build de production, servi avec les en-têtes de `firebase.json` : la
   moindre violation de la CSP fait échouer la série (`npm run test:e2e:production`). Le build de production
   n'insère plus de CSS critique en ligne, que la CSP bloquerait. Le compte de déploiement lit les métadonnées des

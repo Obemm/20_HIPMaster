@@ -7,7 +7,7 @@ import { recompenserVictoire } from './comptes/boosters.ts';
 import { CLE_CODES_DEVELOPPEMENT, creerJoueur } from './comptes/comptes.ts';
 import { baseDeTest } from './db/base-de-test.ts';
 import { joueurs } from './db/schema.ts';
-import type { PartieVisible } from './parties/depot.ts';
+import type { PartieVisible } from './parties/parties.ts';
 
 const HEURE = 60 * 60 * 1000;
 const ouverte = baseDeTest();

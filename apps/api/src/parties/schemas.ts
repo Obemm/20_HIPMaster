@@ -110,6 +110,7 @@ export const schemaEvenement = z.looseObject({ type: z.string() });
 
 export const schemaPartie = z.object({
   id: z.uuid(),
+  version: z.int(),
   deck: z.string(),
   deckAdversaire: z.string(),
   niveau: z.string(),
