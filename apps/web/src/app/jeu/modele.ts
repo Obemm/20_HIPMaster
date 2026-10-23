@@ -65,6 +65,8 @@ export interface Evenement {
   type: string;
   joueur?: IdJoueur;
   tour?: number;
+  /** Débit de plus du second joueur à son premier tour (ADR 0026). */
+  bonusDebit?: number;
   /** La carte concernée ; un simple identifiant pour l'entretien (Sur site). */
   carte?: Instance | string | null;
   origine?: Instance;

@@ -1,6 +1,7 @@
 export { appliquer } from './moteur.ts';
 export { conceder } from './fin.ts';
 export {
+  DEBIT_BONUS_SECOND,
   DEBIT_DECOMMISSION,
   DEBIT_MAX,
   MAIN_DEPART,
@@ -43,6 +44,7 @@ export {
   type VueMoi,
 } from './vue.ts';
 export { choisirActionBatchDeNuit } from './bot.ts';
+export { choisirActionDebutant, choisirActionStagiaire } from './bot-stagiaire.ts';
 export {
   DECKS_PRETES,
   EXEMPLAIRES_MAX,
@@ -52,7 +54,13 @@ export {
   validerDeck,
   type DeckPrete,
 } from './decks.ts';
-export { jouerPartie, simuler, type ResultatSimulation, type Strategie } from './simulation.ts';
+export {
+  jouerPartie,
+  simuler,
+  simulerCroise,
+  type ResultatSimulation,
+  type Strategie,
+} from './simulation.ts';
 export { choisirActionAgentAutonome, choisirActionArchitecteEsb, evaluer } from './bots-forts.ts';
 export { chercher, POIDS_PAR_DEFAUT, type Poids, type Recherche } from './bots-forts.ts';
 export { NIVEAU_PAR_DEFAUT, NIVEAUX_BOT, trouverNiveau, type NiveauBot } from './niveaux.ts';

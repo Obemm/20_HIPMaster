@@ -3,6 +3,7 @@ import {
   adversaire,
   blesserSi,
   carteDe,
+  DEBIT_BONUS_SECOND,
   DEBIT_MAX,
   MAIN_DEPART,
   MAIN_MAX,
@@ -70,7 +71,9 @@ export function debuterTour(etat: EtatPartie, joueur: IdJoueur): void {
   etat.actif = joueur;
   const etatJoueur = etat.joueurs[joueur];
   etatJoueur.tours += 1;
-  noter(etat, { type: 'debut-tour', joueur, tour: etat.tour });
+  // Le second joueur reçoit un Débit de plus à son premier tour : commencer ne décide plus de la partie (ADR 0026).
+  const bonusDebit = joueur !== etat.premier && etatJoueur.tours === 1 ? DEBIT_BONUS_SECOND : 0;
+  noter(etat, { type: 'debut-tour', joueur, tour: etat.tour, ...(bonusDebit && { bonusDebit }) });
 
   for (const id of JOUEURS) {
     for (const composant of etat.joueurs[id].plateau) {
@@ -88,7 +91,10 @@ export function debuterTour(etat: EtatPartie, joueur: IdJoueur): void {
 
   const premierTourDuPremier = joueur === etat.premier && etatJoueur.tours === 1;
   if (!premierTourDuPremier) piocher(etat, joueur, 1);
-  etatJoueur.debit = Math.max(0, Math.min(etatJoueur.tours, DEBIT_MAX) - etatJoueur.malusDebit);
+  etatJoueur.debit = Math.max(
+    0,
+    Math.min(etatJoueur.tours + bonusDebit, DEBIT_MAX) - etatJoueur.malusDebit,
+  );
   etatJoueur.malusDebit = 0;
   etatJoueur.aDecommissionne = false;
   etatJoueur.cronUtilise = false;

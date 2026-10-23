@@ -39,23 +39,37 @@ export interface ResultatSimulation {
   finiesParSla: number;
   toursMoyens: number;
   slaMoyenGagnant: number;
+  /** Parties où A commence, et celles qu'il y gagne ; dans les autres, A joue en second (US-064). */
+  partiesAPremier: number;
+  victoiresAPremier: number;
+  /** Victoires du joueur qui commence et de celui qui joue en second, quel que soit son camp (US-064). */
+  victoiresPremier: number;
+  victoiresSecond: number;
 }
+
+type Bilan = Omit<ResultatSimulation, 'toursMoyens' | 'slaMoyenGagnant'>;
 
 /** Compte une partie terminée dans le bilan, du point de vue du deck A. */
 function compter(
-  bilan: { victoiresA: number; victoiresB: number; nulles: number; finiesParSla: number },
+  bilan: Bilan,
   fin: EtatPartie,
   aEnJ1: boolean,
 ): { tours: number; slaGagnant: number } {
   const issue = fin.issue;
   if (!issue) return { tours: 0, slaGagnant: 0 };
+  const aCommence = (fin.premier === 'j1') === aEnJ1;
+  if (aCommence) bilan.partiesAPremier += 1;
   if (issue.raison === 'sla') bilan.finiesParSla += 1;
   if (issue.gagnant === null) {
     bilan.nulles += 1;
     return { tours: fin.tour, slaGagnant: 0 };
   }
-  if ((issue.gagnant === 'j1') === aEnJ1) bilan.victoiresA += 1;
+  const aGagne = (issue.gagnant === 'j1') === aEnJ1;
+  if (aGagne) bilan.victoiresA += 1;
   else bilan.victoiresB += 1;
+  if (aGagne && aCommence) bilan.victoiresAPremier += 1;
+  if (issue.gagnant === fin.premier) bilan.victoiresPremier += 1;
+  else bilan.victoiresSecond += 1;
   return { tours: fin.tour, slaGagnant: fin.joueurs[issue.gagnant].sla };
 }
 
@@ -72,7 +86,17 @@ export function simuler(
   /** Stratégie du deck B (la même que celle du deck A par défaut) : pour comparer deux niveaux de bot. */
   strategieB: Strategie = strategie,
 ): ResultatSimulation {
-  const bilan = { parties, victoiresA: 0, victoiresB: 0, nulles: 0, finiesParSla: 0 };
+  const bilan: Bilan = {
+    parties,
+    victoiresA: 0,
+    victoiresB: 0,
+    nulles: 0,
+    finiesParSla: 0,
+    partiesAPremier: 0,
+    victoiresAPremier: 0,
+    victoiresPremier: 0,
+    victoiresSecond: 0,
+  };
   let tours = 0;
   let slaGagnants = 0;
   for (let i = 0; i < parties; i++) {
@@ -90,5 +114,41 @@ export function simuler(
     ...bilan,
     toursMoyens: parties ? tours / parties : 0,
     slaMoyenGagnant: gagnees ? slaGagnants / gagnees : 0,
+  };
+}
+
+/**
+ * Decks croisés (US-064) : `parties` parties pour chaque paire de decks, le premier pour la stratégie A et le second
+ * pour B (9 paires avec les 3 decks prêtés) ; les bilans sont cumulés. Même graine, même résultat.
+ */
+export function simulerCroise(
+  decks: readonly (readonly number[])[],
+  parties: number,
+  graine: number,
+  strategieA: Strategie,
+  strategieB: Strategie = strategieA,
+): ResultatSimulation {
+  const paires = decks.flatMap((deckA) => decks.map((deckB) => [deckA, deckB] as const));
+  const resultats = paires.map(([deckA, deckB], i) =>
+    simuler(deckA, deckB, parties, graine + i * parties, strategieA, strategieB),
+  );
+  const somme = (champ: (r: ResultatSimulation) => number) =>
+    resultats.reduce((total, r) => total + champ(r), 0);
+  const total = somme((r) => r.parties);
+  const gagnees = somme((r) => r.victoiresA + r.victoiresB);
+  return {
+    parties: total,
+    victoiresA: somme((r) => r.victoiresA),
+    victoiresB: somme((r) => r.victoiresB),
+    nulles: somme((r) => r.nulles),
+    finiesParSla: somme((r) => r.finiesParSla),
+    toursMoyens: total ? somme((r) => r.toursMoyens * r.parties) / total : 0,
+    slaMoyenGagnant: gagnees
+      ? somme((r) => r.slaMoyenGagnant * (r.victoiresA + r.victoiresB)) / gagnees
+      : 0,
+    partiesAPremier: somme((r) => r.partiesAPremier),
+    victoiresAPremier: somme((r) => r.victoiresAPremier),
+    victoiresPremier: somme((r) => r.victoiresPremier),
+    victoiresSecond: somme((r) => r.victoiresSecond),
   };
 }
