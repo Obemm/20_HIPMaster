@@ -60,3 +60,20 @@ Une phrase en français qui décrit **ce que montre l'image**, sans répéter le
 ## Prompts pour Gemini
 
 Un prompt prêt à l'emploi par carte du set 1, avec le bloc de style ci-dessus : [prompts-illustrations-gemini.md](prompts-illustrations-gemini.md).
+
+## L'interface autour des cartes (US-061)
+
+L'interface parle la même langue que les illustrations ([charte graphique](charte-graphique.md),
+[ADR 0037](../decisions/0037-identite-visuelle-nuit-electrique.md)) :
+
+- **La nuit des illustrations devient celle du site** : fond bleu nuit `#0b1029`, halos violet et cyan, trame de
+  points. En thème clair, les mêmes halos sur un fond lavande pâle ; le bandeau et la barre d'onglets restent de nuit,
+  comme le dos d'une carte.
+- **Le dos de carte** reprend cette nuit, une trame en losanges, un liseré doré et le logo au centre : il tient la
+  place des cartes pendant un chargement et figurera les paquets de boosters (US-062).
+- **Le logo** : deux cartes en éventail, la face porte un moyeu de connexions doré, l'intégration en un signe.
+- **L'or est l'énergie** : la gemme de Débit des cartes et le bouton de l'action principale ont la même couleur.
+- **La rareté se lit à l'intensité**, sur l'interface comme dans l'image : une commune est sobre, une épique ou une
+  légendaire porte un halo.
+- Les illustrations définitives doivent rester lisibles **sur fond clair comme sur fond sombre** : le cadre de la
+  carte les sépare toujours du fond de la page.

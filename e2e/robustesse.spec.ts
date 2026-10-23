@@ -24,7 +24,7 @@ test('une lecture qui échoue une fois (503 puis 200) est retentée seule : le j
     appels++;
     return appels === 1 ? indisponible(route) : route.continue();
   });
-  await page.goto('/');
+  await page.goto('/boosters');
   const raretes = page.getByRole('region', { name: 'Chances par booster' });
   await expect(raretes.getByRole('listitem')).toHaveCount(4);
   await expect(page.getByRole('alert')).toHaveCount(0);
@@ -160,7 +160,8 @@ for (const theme of ['light', 'dark'] as const) {
   }) => {
     await page.emulateMedia({ colorScheme: theme });
     await page.route('**/api/v1/raretes', indisponible);
-    await page.goto('/');
+    // Les chances par booster, sur l'écran des boosters depuis US-061.
+    await page.goto('/boosters');
     await expect(page.getByRole('button', { name: 'Réessayer' })).toBeVisible(
       APRES_NOUVELLES_TENTATIVES,
     );

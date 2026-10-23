@@ -1,6 +1,8 @@
-import { HttpErrorResponse } from '@angular/common/http';
+import { HttpErrorResponse, httpResource } from '@angular/common/http';
 import { Component, computed, inject, input, linkedSignal, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
+import type { Carte } from '../cartes/carte';
+import { cartesVedettes, EventailCartes } from '../cartes/eventail-cartes';
 import { expliquer } from '../reseau/reseau';
 import { CompteService } from './compte.service';
 import { EtatSession } from './etat-session';
@@ -25,7 +27,7 @@ const refusDe = (message: string): Refus => ({ 400: message, 401: message });
  */
 @Component({
   selector: 'hip-compte',
-  imports: [RouterLink, EtatSession],
+  imports: [RouterLink, EtatSession, EventailCartes],
   templateUrl: './compte.html',
 })
 export class CompteEcran {
@@ -49,6 +51,16 @@ export class CompteEcran {
 
   /** Paramètre `?invitation=` : le code d'un lien d'invitation (US-048), qui remplit le champ. */
   readonly invitation = input<string>();
+  /**
+   * Un lien d'invitation arrive ici : la page accueille l'invité avec les cartes de l'accueil (US-061), chargées
+   * seulement dans ce cas.
+   */
+  private readonly catalogue = httpResource<Carte[]>(() =>
+    this.invitation()?.trim() ? '/api/v1/cartes' : undefined,
+  );
+  protected readonly vedettes = computed(() =>
+    this.catalogue.hasValue() ? cartesVedettes(this.catalogue.value()) : undefined,
+  );
 
   protected readonly pseudo = signal('');
   protected readonly codeInvitation = linkedSignal(() => this.invitation()?.trim() ?? '');

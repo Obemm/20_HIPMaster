@@ -41,6 +41,8 @@ describe('Boosters', () => {
     fixture.detectChanges();
     const http = TestBed.inject(HttpTestingController);
     http.expectOne('/api/v1/cartes').flush(CATALOGUE);
+    // Les chances par booster, en bas de l'écran (US-061) : testées dans chances-booster.spec.ts.
+    http.expectOne('/api/v1/raretes').flush([]);
     return { fixture, http, page: fixture.nativeElement as HTMLElement };
   }
 
@@ -92,6 +94,7 @@ describe('Boosters', () => {
     http
       .expectOne('/api/v1/cartes')
       .flush(null, { status: 503, statusText: 'Service Unavailable' });
+    http.expectOne('/api/v1/raretes').flush([]);
     fixture.detectChanges();
     http.expectOne('/api/v1/moi/boosters').flush({ stock: 5, plafond: 10, prochainDans: 125 });
     await fixture.whenStable();

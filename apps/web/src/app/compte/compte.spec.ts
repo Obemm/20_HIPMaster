@@ -385,9 +385,13 @@ describe('Compte', () => {
     fixture.componentRef.setInput('invitation', ' abcd-efgh-jklm-npqr ');
     fixture.detectChanges();
     expect(page.querySelector<HTMLInputElement>('#invitation')?.value).toBe('abcd-efgh-jklm-npqr');
+    // L'invité est accueilli avec les cartes de l'accueil (US-061).
+    const http = TestBed.inject(HttpTestingController);
+    http.expectOne('/api/v1/cartes').flush([]);
+    expect(page.querySelector('h2')?.textContent).toBe('Bienvenue dans HIPMaster !');
     saisir(page, 'pseudo', 'Ada');
     page.querySelector<HTMLFormElement>('form')?.requestSubmit();
-    const requete = TestBed.inject(HttpTestingController).expectOne('/api/v1/joueurs');
+    const requete = http.expectOne('/api/v1/joueurs');
     expect(requete.request.body).toEqual({ pseudo: 'Ada', invitation: 'abcd-efgh-jklm-npqr' });
     requete.flush({ joueur: JOUEUR, jeton: 'jeton-5', codeRecuperation: 'ABCD-EFGH-JKLM' });
     await fixture.whenStable();
