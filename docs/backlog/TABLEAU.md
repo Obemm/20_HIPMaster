@@ -141,6 +141,16 @@ Google Cloud, Firebase Hosting et une base Neon gratuite (ADR 0021, accepté le 
 | [US-062 — Ouvrir un booster, un vrai moment](stories/US-062-ouverture-booster-mise-en-scene.md)                                       | EPIC-10 | Could    | M      | 3   | À affiner |
 | [US-067 — Une première partie guidée](stories/US-067-premiere-partie-guidee.md)                                                       | EPIC-11 | Should   | L      | 3   | À affiner |
 
+## Plus tard — évolutions notées le 2026-10-23
+
+Demandes du porteur du projet, à affiner le moment venu.
+
+| Story                                                                                                           | Epic    | Priorité | Taille | Statut    |
+| --------------------------------------------------------------------------------------------------------------- | ------- | -------- | ------ | --------- |
+| [US-068 — Une revue visuelle de tout le site](stories/US-068-revue-visuelle.md)                                 | EPIC-10 | Should   | M      | À affiner |
+| [US-069 — Un score et un classement](stories/US-069-score-classement.md)                                        | EPIC-07 | Could    | L      | À affiner |
+| [US-070 — Des boosters offerts par code, pour récompenser le travail réel](stories/US-070-boosters-par-code.md) | EPIC-03 | Should   | M      | À affiner |
+
 ## Plus tard — cartes de la communauté IT
 
 Demande du porteur du projet (2026-10-19) : permettre à d'autres tech leads et architectes de proposer leurs cartes,

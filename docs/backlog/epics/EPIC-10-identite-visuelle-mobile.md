@@ -23,6 +23,7 @@ la [revue avant mise en ligne](../../revues/2026-10-22-revue-mise-en-ligne.md)).
 - [ ] US-061 — Une identité visuelle et un accueil qui donnent envie
 - [ ] US-062 — Ouvrir un booster, un vrai moment
 - [ ] US-063 — Installer le jeu sur son téléphone (PWA)
+- [ ] US-068 — Une revue visuelle de tout le site
 
 Ordre suggéré : US-059 et US-060 avant d'envoyer les invitations (EPIC-09, lot 2), puis US-061, US-063 et US-062.
 

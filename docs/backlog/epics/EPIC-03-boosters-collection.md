@@ -15,6 +15,7 @@ Un booster s'ouvre en moins d'une seconde ; la collection affiche la progression
 
 - [x] US-023 — Recevoir et ouvrir des boosters
 - [x] US-024 — Ma collection
+- [ ] US-070 — Des boosters offerts par code, pour récompenser le travail réel
 
 Gestion des doubles et animation plus riche à découper ensuite.
 
