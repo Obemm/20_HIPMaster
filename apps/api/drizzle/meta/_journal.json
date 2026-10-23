@@ -78,6 +78,13 @@
       "when": 1792781027161,
       "tag": "0010_parties_bot",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1792786693555,
+      "tag": "0011_duels_sans_joueur_supprime",
+      "breakpoints": true
     }
   ]
 }
