@@ -28,9 +28,10 @@ de l'équipe d'intégration** : la première API publiée, la file d'attente ave
 
 - Demande du porteur du projet (2026-10-23) : faire du jeu un outil d'animation de l'équipe, en reliant les
   récompenses au travail réel.
-- Plus tard : des récompenses attribuées automatiquement à partir des outils de l'équipe (Apigee, Solace…) — hors
-  périmètre de cette story, ADR à prévoir.
+- **Attribution manuelle uniquement** (décision du porteur du projet, 2026-10-23) : c'est lui qui juge la réussite
+  et crée le code ; aucune récompense calculée automatiquement à partir des outils de l'équipe.
 
 ## Journal
 
 - 2026-10-23 — création, notée pour plus tard à la demande du porteur du projet.
+- 2026-10-23 — décision : attribution manuelle uniquement, rien d'automatique.
