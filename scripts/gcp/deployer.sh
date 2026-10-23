@@ -66,6 +66,8 @@ readonly JOB_CONSOMMATION=hipmaster-consommation
 readonly COMPTE_SAUVEGARDE=hipmaster-sauvegarde@$PROJET.iam.gserviceaccount.com
 readonly COMPTE_CONSOMMATION=hipmaster-consommation@$PROJET.iam.gserviceaccount.com
 readonly BUCKET=hipmaster-sauvegardes
+# Projet Neon suivi par le relevé de consommation : sa clé, limitée au projet, ne peut pas lister les projets.
+readonly NEON_PROJET=lingering-firefly-04102994
 readonly SOURCES_EXPLOITATION=scripts/exploitation
 readonly COMPTE_API=hipmaster-api@$PROJET.iam.gserviceaccount.com
 readonly REGISTRE=$REGION-docker.pkg.dev/$PROJET/images
@@ -483,7 +485,7 @@ etape_exploitation() {
   # n'est pas relancé par Cloud Run : le script réessaie lui-même la connexion, puis l'échec part en alerte.
   gc run jobs deploy "$JOB_SAUVEGARDE" "${communes[@]}" --service-account="$COMPTE_SAUVEGARDE"     --set-secrets=DATABASE_URL=database-url:latest --set-env-vars=BUCKET=$BUCKET     --args=sauvegarder.ts --task-timeout=15m
   # Consommation : la clé de l'API Neon limitée au projet ; jamais la base, qui resterait éveillée.
-  gc run jobs deploy "$JOB_CONSOMMATION" "${communes[@]}" --service-account="$COMPTE_CONSOMMATION"     --set-secrets=NEON_CLE_API=neon-cle-api:latest --args=consommation.ts --task-timeout=2m
+  gc run jobs deploy "$JOB_CONSOMMATION" "${communes[@]}" --service-account="$COMPTE_CONSOMMATION"     --set-secrets=NEON_CLE_API=neon-cle-api:latest --set-env-vars=NEON_PROJET=$NEON_PROJET     --args=consommation.ts --task-timeout=2m
 }
 
 # --- Exploitation -----------------------------------------------------------------------------------
