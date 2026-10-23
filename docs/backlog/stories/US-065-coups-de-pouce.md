@@ -53,3 +53,6 @@ informations et les dit au bon moment.
 - 2026-10-23 — création, à la demande du porteur du projet (« un mode tuto ou un bot qui conseille le joueur »).
 - 2026-10-23 — affinée et commencée (lot 2, session front) : choix notés ci-dessus.
 - 2026-10-23 — livrée : message non bloquant avant « Finir mon tour » (attaques et cartes encore possibles d'après vue.actions), SI « Indisponible : Garde » et rappel de Garde, réglage dans l'aide gardé par le navigateur, actifs en duel (ADR 0032)
+- 2026-10-24 — anomalie signalée en ligne : après « Finir mon tour », choisir le SI ou une carte ouvrait la fiche de
+  détail par-dessus le message, qui gardait ses boutons cachés dessous. Choisir une carte ou un composant referme
+  désormais le message (test du composant qui échouait avant la correction).

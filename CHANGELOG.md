@@ -224,6 +224,8 @@ Toutes les évolutions notables du projet sont consignées ici
 
 ### Corrigé
 
+- Partie : choisir une carte ou un composant pendant le message « Avant de finir votre tour » le referme ; la fiche
+  de détail se posait par-dessus et cachait ses boutons (US-065).
 - Scripts d'exploitation sous Windows : les corps JSON envoyés aux API Google passent par un fichier, car un argument
   de `curl` y perdait ses lettres accentuées (message du retour arrière du front, noms des objets de supervision)
   (US-051).
