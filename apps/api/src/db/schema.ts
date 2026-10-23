@@ -3,6 +3,7 @@ import { sql } from 'drizzle-orm';
 import {
   boolean,
   check,
+  index,
   integer,
   jsonb,
   pgTable,
@@ -122,3 +123,33 @@ export const duels = pgTable('duels', {
   creeLe: timestamp({ withTimezone: true }).notNull().defaultNow(),
   majLe: timestamp({ withTimezone: true }).notNull().defaultNow(),
 });
+
+/**
+ * Parties contre le bot (US-052, ADR 0030) : le joueur joue le camp j1, le bot j2. `version` change à chaque action,
+ * qui s'écrit en une seule fois (action du joueur et tour du bot) à condition que la version n'ait pas bougé.
+ * Une partie anonyme n'a ni joueur ni session ; celle d'un compte n'est visible que de sa session (ADR 0025), et
+ * disparaît avec elle.
+ */
+export const parties = pgTable(
+  'parties',
+  {
+    id: uuid().primaryKey().defaultRandom(),
+    /** Le joueur connecté qui l'a lancée : il recevra la récompense d'une victoire (US-025). */
+    joueurId: uuid().references(() => joueurs.id, { onDelete: 'cascade' }),
+    /** Empreinte du jeton de la session qui l'a lancée : seule cette session la lit et la joue. */
+    session: text().references(() => sessions.empreinteJeton, { onDelete: 'cascade' }),
+    deck: text().notNull(),
+    deckBot: text().notNull(),
+    niveau: text().notNull(),
+    /** État complet du moteur, jamais renvoyé tel quel (seulement la vue du joueur). */
+    etat: jsonb().$type<EtatPartie>().notNull(),
+    version: integer().notNull().default(0),
+    creeLe: timestamp({ withTimezone: true }).notNull().defaultNow(),
+    /** Instant du dernier coup (création ou action) : l'expiration et le plafond se comptent depuis lui. */
+    majLe: timestamp({ withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    index('parties_maj_le').on(table.majLe),
+    check('parties_proprietaire', sql`(${table.joueurId} is null) = (${table.session} is null)`),
+  ],
+);

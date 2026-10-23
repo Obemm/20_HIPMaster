@@ -1,11 +1,15 @@
 openapi: 3.1.0
 info:
   title: HIPMaster — parties contre le bot
-  version: 1.2.0
+  version: 1.3.0
   description: >
     Parties contre le bot (US-012), à quatre niveaux (US-021, US-064). Le serveur fait foi : il applique les règles (moteur du domaine,
-    ADR 0013), fait jouer le bot et ne renvoie que la vue du joueur. Les parties en cours sont gardées en mémoire
-    (ADR 0014) : elles expirent après 30 minutes sans activité. Le joueur est toujours `j1`, le bot `j2`.
+    ADR 0013), fait jouer le bot et ne renvoie que la vue du joueur. Les parties en cours sont gardées en base
+    (US-052, ADR 0030) : elles survivent aux redémarrages de l'API, et expirent après 24 heures sans coup joué (la
+    création ou une action ; une lecture ne compte pas). Le joueur est toujours `j1`, le bot `j2`.
+
+    Chaque partie a une `version`, donnée aussi en `ETag`, qui change à chaque action. Deux actions simultanées sur
+    une même partie : une seule est appliquée, l'autre reçoit 409.
 
     Une partie créée avec le jeton d'un compte appartient à cette session : elle ne se lit et ne se joue qu'avec le
     même jeton, et reste introuvable (404) pour toute autre requête (US-047). Une partie sans compte appartient à qui
@@ -52,7 +56,9 @@ paths:
       operationId: creerPartie
       summary: Crée une partie contre le bot avec un deck prêté
       description: >
-        Si le bot commence, son premier tour est déjà joué dans la réponse. Avec l'en-tête `Authorization: Bearer`
+        Si le bot commence, son premier tour est déjà joué dans la réponse. Au-delà de 1 000 parties gardées, la
+        création supprime la partie sans compte la moins récemment jouée, et seulement à défaut celle d'un compte
+        (ADR 0025, 0030). Avec l'en-tête `Authorization: Bearer`
         d'un compte (facultatif), une victoire rapportera un booster (US-025, voir `recompense`), et la partie
         n'appartient qu'à cette session. Limite : 20 créations par minute et par adresse.
       requestBody:
@@ -71,6 +77,8 @@ paths:
       responses:
         '201':
           description: La partie créée.
+          headers:
+            ETag: { $ref: '#/components/headers/ETag' }
           content:
             application/json:
               schema: { $ref: '#/components/schemas/Partie' }
@@ -88,6 +96,8 @@ paths:
       responses:
         '200':
           description: La partie.
+          headers:
+            ETag: { $ref: '#/components/headers/ETag' }
           content:
             application/json:
               schema: { $ref: '#/components/schemas/Partie' }
@@ -102,9 +112,18 @@ paths:
       summary: Joue une action du joueur
       description: >
         Après `finirTour`, le bot joue tout son tour dans la même requête. `evenements` ne contient que ce qui s'est
-        passé pendant la requête (action du joueur, puis tour du bot). Une partie lancée par un compte ne se joue
-        qu'avec le jeton de la session qui l'a créée. Limite : 300 actions par minute et par adresse.
-      parameters: [{ $ref: '#/components/parameters/IdPartie' }]
+        passé pendant la requête (action du joueur, puis tour du bot), écrits ensemble en une seule fois. Avec
+        `If-Match` égal à l'ETag connu, l'action est refusée (409) si la partie a changé entre-temps (un double clic
+        sur « Finir le tour », par exemple) ; sans lui, une action qui croise une autre action sur la même partie
+        reçoit aussi 409. Une partie lancée par un compte ne se joue qu'avec le jeton de la session qui l'a créée.
+        Limite : 300 actions par minute et par adresse.
+      parameters:
+        - { $ref: '#/components/parameters/IdPartie' }
+        - name: If-Match
+          in: header
+          required: false
+          description: L'ETag de la dernière réponse reçue pour cette partie.
+          schema: { type: string, examples: ['"3"'] }
       requestBody:
         required: true
         content:
@@ -113,12 +132,21 @@ paths:
       responses:
         '200':
           description: La partie après l'action.
+          headers:
+            ETag: { $ref: '#/components/headers/ETag' }
           content:
             application/json:
               schema: { $ref: '#/components/schemas/Partie' }
         '400': { $ref: '#/components/responses/Probleme' }
         '404':
           description: Partie inconnue, expirée, ou appartenant à une autre session (Problem Details).
+          content:
+            application/problem+json:
+              schema: { $ref: '#/components/schemas/Probleme' }
+        '409':
+          description: >
+            La partie a changé depuis la version attendue (`If-Match`), ou une autre action est passée en même
+            temps : rien n'est appliqué, relire la partie (Problem Details).
           content:
             application/problem+json:
               schema: { $ref: '#/components/schemas/Probleme' }
@@ -136,6 +164,10 @@ components:
       in: path
       required: true
       schema: { type: string, format: uuid }
+  headers:
+    ETag:
+      description: Version de la partie, entre guillemets ; elle change à chaque action.
+      schema: { type: string, examples: ['"3"'] }
   responses:
     Probleme:
       description: Erreur au format Problem Details (RFC 9457).
@@ -154,9 +186,12 @@ components:
         cartes: { type: array, items: { type: integer }, description: Numéros des 20 cartes. }
     Partie:
       type: object
-      required: [id, deck, deckAdversaire, niveau, vue, evenements]
+      required: [id, version, deck, deckAdversaire, niveau, vue, evenements]
       properties:
         id: { type: string, format: uuid }
+        version:
+          type: integer
+          description: Change à chaque action ; à renvoyer dans `If-Match` (voir l'en-tête `ETag`).
         deck: { type: string, description: Identifiant du deck du joueur. }
         deckAdversaire: { type: string, description: Identifiant du deck du bot. }
         niveau: { type: string, description: Niveau du bot adverse. }

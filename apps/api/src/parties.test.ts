@@ -1,8 +1,19 @@
 import { choisirActionBatchDeNuit, type VueJoueur } from '@hipmaster/domain';
+import { randomUUID } from 'node:crypto';
+import { eq } from 'drizzle-orm';
 import { afterEach, describe, expect, it } from 'vitest';
 import { construireApp } from './app.ts';
-import { DepotParties, type PartieVisible } from './parties/depot.ts';
+import { CLE_CODES_DEVELOPPEMENT, creerJoueur, empreinteJeton } from './comptes/comptes.ts';
+import { baseDeTest } from './db/base-de-test.ts';
+import { parties } from './db/schema.ts';
+import {
+  lancerPartie,
+  lirePartie,
+  type OptionsParties,
+  type PartieVisible,
+} from './parties/parties.ts';
 
+const ouverte = baseDeTest();
 type App = ReturnType<typeof construireApp>;
 const applis: App[] = [];
 
@@ -11,20 +22,22 @@ function appli(options: { partiesMax?: number; premiereGraine?: number } = {}) {
   const { premiereGraine = 1, ...reglages } = options;
   let temps = 0;
   let graine = premiereGraine - 1;
-  const app = construireApp({
-    parties: {
-      maintenant: () => temps,
-      tirerGraine: () => ++graine,
-      dureeVieMs: 1000,
-      ...reglages,
-    },
-  });
+  const reglesParties: OptionsParties = {
+    maintenant: () => temps,
+    tirerGraine: () => ++graine,
+    dureeVieMs: 1000,
+    ...reglages,
+  };
+  const app = construireApp({ base: ouverte.base, parties: reglesParties });
   applis.push(app);
-  return { app, avancer: (ms: number) => (temps += ms) };
+  return { app, reglesParties, avancer: (ms: number) => (temps += ms) };
 }
 afterEach(async () => {
   await Promise.all(applis.splice(0).map((a) => a.close()));
 });
+
+/** Les identifiants des parties gardées en base. */
+const enBase = () => ouverte.base.select({ id: parties.id }).from(parties);
 
 async function creer(app: App, deck = 'moderne') {
   const reponse = await app.inject({ method: 'POST', url: '/api/v1/parties', payload: { deck } });
@@ -185,11 +198,75 @@ describe('parties contre le bot', () => {
     const { app, avancer } = appli();
     const inconnue = await app.inject({ method: 'GET', url: '/api/v1/parties/nimporte-quoi' });
     expect(inconnue.statusCode).toBe(404);
+    const absente = await app.inject({ method: 'GET', url: `/api/v1/parties/${randomUUID()}` });
+    expect(absente.statusCode).toBe(404);
     const { partie } = await creer(app);
     avancer(1001);
     const expiree = await jouer(app, partie.id, { type: 'finirTour' });
     expect(expiree.statusCode).toBe(404);
     expect(expiree.json()).toMatchObject({ title: 'Partie introuvable ou expirée' });
+  });
+
+  it('compte la durée de vie depuis le dernier coup, qu’une lecture ne prolonge pas (US-052)', async () => {
+    const { app, avancer } = appli();
+    const { partie } = await creer(app);
+    avancer(600);
+    expect((await jouer(app, partie.id, { type: 'finirTour' })).statusCode).toBe(200);
+    avancer(600);
+    const lire = () => app.inject({ method: 'GET', url: `/api/v1/parties/${partie.id}` });
+    expect((await lire()).statusCode).toBe(200);
+    avancer(600);
+    expect((await lire()).statusCode).toBe(404);
+  });
+
+  it('purge les parties expirées à la création suivante (US-052)', async () => {
+    const { app, avancer } = appli();
+    const ancienne = (await creer(app)).partie;
+    avancer(1001);
+    // Expirée, elle reste en base jusqu'à la création suivante.
+    expect(await enBase()).toEqual([{ id: ancienne.id }]);
+    const nouvelle = (await creer(app)).partie;
+    expect(await enBase()).toEqual([{ id: nouvelle.id }]);
+  });
+
+  it('reprend une partie après un redémarrage de l’API sur la même base (US-052)', async () => {
+    const avant = appli();
+    const { partie } = await creer(avant.app);
+    await avant.app.close();
+    // Une nouvelle instance, sur la même base : la partie reprend là où elle en était.
+    const apres = construireApp({ base: ouverte.base, parties: avant.reglesParties });
+    applis.push(apres);
+    const relue = await apres.inject({ method: 'GET', url: `/api/v1/parties/${partie.id}` });
+    expect(relue.statusCode).toBe(200);
+    expect(relue.json<PartieVisible>().vue).toEqual(partie.vue);
+    const suite = await jouer(apres, partie.id, { type: 'finirTour' });
+    expect(suite.statusCode).toBe(200);
+    expect(suite.json<PartieVisible>().vue.tour).toBe(partie.vue.tour + 2);
+  });
+
+  it('donne sa version en ETag, et refuse (409) une action sur une version dépassée (US-052)', async () => {
+    const { app } = appli();
+    const { reponse, partie } = await creer(app);
+    expect(partie.version).toBe(0);
+    expect(reponse.headers['etag']).toBe('"0"');
+    const finirTour = (version: string) =>
+      app.inject({
+        method: 'POST',
+        url: `/api/v1/parties/${partie.id}/actions`,
+        headers: { 'if-match': version },
+        payload: { type: 'finirTour' },
+      });
+    const premiere = await finirTour('"0"');
+    expect(premiere.statusCode).toBe(200);
+    expect(premiere.headers['etag']).toBe('"1"');
+    expect(premiere.json<PartieVisible>().version).toBe(1);
+    // Un double clic : la seconde fin de tour porte encore la version 0.
+    const doublon = await finirTour('"0"');
+    expect(doublon.statusCode).toBe(409);
+    expect(doublon.headers['content-type']).toContain('application/problem+json');
+    const relue = await app.inject({ method: 'GET', url: `/api/v1/parties/${partie.id}` });
+    expect(relue.headers['etag']).toBe('"1"');
+    expect(relue.json<PartieVisible>().vue.tour).toBe(partie.vue.tour + 2);
   });
 
   it('au plafond, oublie la partie la moins récemment jouée', async () => {
@@ -204,32 +281,57 @@ describe('parties contre le bot', () => {
     expect((await lire(deuxieme.id)).statusCode).toBe(200);
   });
 
-  it('au plafond, oublie d’abord les parties anonymes, puis celles des joueurs connectés (US-047)', () => {
+  it('au plafond, oublie d’abord les parties anonymes, puis celles des joueurs connectés (US-047)', async () => {
     let temps = 0;
-    const depot = new DepotParties({
+    const options: OptionsParties = {
       partiesMax: 2,
       maintenant: () => temps,
       tirerGraine: () => 1,
-    });
-    const ada = { joueurId: '00000000-0000-4000-8000-000000000001', session: 'session-ada' };
-    const creerDans = (proprietaire?: typeof ada) => {
+    };
+    const { joueur, jeton } = await creerJoueur(ouverte.base, 'Ada', CLE_CODES_DEVELOPPEMENT);
+    const ada = { joueurId: joueur.id, session: empreinteJeton(jeton) };
+    const creerDans = async (proprietaire: typeof ada | null = null) => {
       temps += 10;
-      const resultat = depot.creer('moderne', undefined, proprietaire);
+      const resultat = await lancerPartie(
+        ouverte.base,
+        'moderne',
+        undefined,
+        proprietaire,
+        options,
+      );
       if (!resultat.ok) throw new Error(resultat.raison);
       return resultat.valeur.id;
     };
-    const connectee = creerDans(ada);
-    const anonyme = creerDans();
+    const lire = (id: string, session: string | null) =>
+      lirePartie(ouverte.base, id, session, options);
+    const connectee = await creerDans(ada);
+    const anonyme = await creerDans();
     // Un afflux de parties anonymes n'évince que des parties anonymes, même plus récentes.
-    const suivante = creerDans();
-    expect(depot.lire(anonyme, null)).toMatchObject({ ok: false, raison: 'partie-inconnue' });
-    expect(depot.lire(connectee, 'session-ada').ok).toBe(true);
-    expect(depot.lire(suivante, null).ok).toBe(true);
+    const suivante = await creerDans();
+    expect(await lire(anonyme, null)).toMatchObject({ ok: false, raison: 'partie-inconnue' });
+    expect((await lire(connectee, ada.session)).ok).toBe(true);
+    expect((await lire(suivante, null)).ok).toBe(true);
     // Sans partie anonyme à évincer, la moins récemment jouée part.
-    creerDans(ada);
-    creerDans(ada);
-    expect(depot.lire(connectee, 'session-ada').ok).toBe(false);
-    expect(depot.taille).toBe(2);
+    await creerDans(ada);
+    await creerDans(ada);
+    expect((await lire(connectee, ada.session)).ok).toBe(false);
+    expect(await enBase()).toHaveLength(2);
+  });
+
+  it('disparaît avec la session qui l’a lancée (US-052)', async () => {
+    const { app } = appli();
+    const { jeton } = await creerJoueur(ouverte.base, 'Ada', CLE_CODES_DEVELOPPEMENT);
+    const entetes = { authorization: `Bearer ${jeton}` };
+    const reponse = await app.inject({
+      method: 'POST',
+      url: '/api/v1/parties',
+      headers: entetes,
+      payload: { deck: 'moderne' },
+    });
+    const { id } = reponse.json<PartieVisible>();
+    expect(await enBase()).toEqual([{ id }]);
+    await app.inject({ method: 'DELETE', url: '/api/v1/sessions/courante', headers: entetes });
+    expect(await ouverte.base.select().from(parties).where(eq(parties.id, id))).toEqual([]);
   });
 
   it('accepte l’action jouer (sort ou incident) avec ses cibles, et refuse des cibles invalides', async () => {
