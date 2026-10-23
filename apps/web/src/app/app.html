@@ -1,0 +1,74 @@
+<header class="border-b border-bordure">
+  <div class="mx-auto flex w-full max-w-6xl items-center justify-between gap-3 px-4 sm:px-6">
+    <a
+      routerLink="/"
+      class="flex min-h-11 items-center font-bold tracking-tight focus-visible:outline-2 focus-visible:outline-accent"
+      >HIPMaster</a
+    >
+    <!--
+      Une seule navigation (US-060) : barre d'onglets fixée en bas sous 768 px, dans le bandeau au-delà. En partie, elle
+      s'efface sur téléphone pour laisser tout l'écran au plateau (US-059).
+    -->
+    <nav
+      aria-label="Navigation principale"
+      class="fixed inset-x-0 bottom-0 z-30 border-t border-bordure bg-fond pr-[env(safe-area-inset-right)] pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)] md:static md:border-0 md:p-0"
+      [class]="enPartie() ? 'max-md:hidden' : ''"
+    >
+      <ul class="mx-auto grid max-w-lg grid-cols-5 md:flex md:max-w-none md:gap-1">
+        @for (onglet of onglets; track onglet.lien) {
+          <li>
+            <a
+              [routerLink]="onglet.lien"
+              routerLinkActive
+              ariaCurrentWhenActive="page"
+              class="onglet"
+            >
+              <hip-icone [nom]="onglet.icone" class="size-6 md:hidden" />
+              <span>{{ onglet.libelle }}</span>
+              @if (onglet.lien === '/duels' && duels.aMonTour() > 0) {
+                <span class="pastille"
+                  ><span class="sr-only">&#32;</span>{{ duels.aMonTour()
+                  }}<span class="sr-only"> à vous de jouer</span></span
+                >
+              } @else if (onglet.lien === '/boosters' && stock.stock(); as enStock) {
+                <span class="pastille"
+                  ><span class="sr-only">&#32;</span>{{ enStock
+                  }}<span class="sr-only"> en stock</span></span
+                >
+              }
+            </a>
+          </li>
+        }
+        <li>
+          <a routerLink="/compte" routerLinkActive ariaCurrentWhenActive="page" class="onglet">
+            <hip-icone nom="compte" class="size-6 md:hidden" />
+            @if (compte.joueur(); as joueur) {
+              <span class="sr-only">Mon compte : {{ joueur.pseudo }}</span>
+              <span aria-hidden="true" class="md:hidden">Compte</span>
+              <span aria-hidden="true" class="hidden max-w-40 truncate md:inline">{{
+                joueur.pseudo
+              }}</span>
+            } @else if (compte.pret()) {
+              <span class="max-md:sr-only">Créer un compte</span>
+              <span aria-hidden="true" class="md:hidden">Compte</span>
+            } @else {
+              <span>Compte</span>
+            }
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</header>
+<router-outlet />
+@if (!enPartie()) {
+  <footer class="mt-auto border-t border-bordure">
+    <p class="mx-auto w-full max-w-6xl px-4 py-3 text-sm sm:px-6">
+      <a routerLink="/confidentialite" class="underline underline-offset-4"
+        >À propos et confidentialité</a
+      >
+    </p>
+  </footer>
+  <!-- Cale sous la page : la barre d'onglets ne masque jamais le bas d'un écran. -->
+  <div class="h-[calc(3.5rem+env(safe-area-inset-bottom))] shrink-0 md:hidden"></div>
+}

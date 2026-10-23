@@ -1,6 +1,7 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, type Route, test } from '@playwright/test';
 import { creerCompteParApi } from './duel-api';
+import { REGLES_WCAG } from './axe';
 
 // US-055 : le front face au démarrage à froid, aux pannes passagères, aux sessions expirées et aux 429. Les pannes
 // sont simulées par Playwright (`page.route`) : l'API réelle répond dès que la simulation la laisse passer.
@@ -163,7 +164,7 @@ for (const theme of ['light', 'dark'] as const) {
     await expect(page.getByRole('button', { name: 'Réessayer' })).toBeVisible(
       APRES_NOUVELLES_TENTATIVES,
     );
-    const { violations } = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
+    const { violations } = await new AxeBuilder({ page }).withTags(REGLES_WCAG).analyze();
     expect(violations).toEqual([]);
   });
 }

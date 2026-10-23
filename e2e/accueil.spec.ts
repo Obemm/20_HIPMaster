@@ -1,5 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
+import { REGLES_WCAG } from './axe';
 
 test('la page d’accueil présente le jeu et les chances calculées par l’API', async ({ page }) => {
   await page.goto('/');
@@ -17,7 +18,7 @@ for (const theme of ['light', 'dark'] as const) {
     await page.emulateMedia({ colorScheme: theme });
     await page.goto('/');
     await expect(page.getByRole('listitem').first()).toBeVisible();
-    const { violations } = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
+    const { violations } = await new AxeBuilder({ page }).withTags(REGLES_WCAG).analyze();
     expect(violations).toEqual([]);
   });
 }

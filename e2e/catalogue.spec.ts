@@ -1,8 +1,9 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, type Page, test } from '@playwright/test';
+import { REGLES_WCAG } from './axe';
 
 const auditer = async (page: Page) => {
-  const { violations } = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
+  const { violations } = await new AxeBuilder({ page }).withTags(REGLES_WCAG).analyze();
   expect(violations).toEqual([]);
 };
 
