@@ -34,7 +34,7 @@ gratuite, que Claude installe, déploie et maintient en ligne de commande
 - [x] US-055 — Un front robuste au démarrage à froid et aux sessions expirées
 - [x] US-056 — La CI teste l'API sur un vrai PostgreSQL
 - [ ] US-057 — Des requêtes légères : index, lectures bornées, cache et chargement à la demande
-- [ ] US-058 — Des duels équitables : hasard imprévisible et appariement sûr
+- [x] US-058 — Des duels équitables : hasard imprévisible et appariement sûr
 - [x] US-072 — Une page « Inviter » réservée au porteur du projet
 
 Ordre suggéré, en trois lots :

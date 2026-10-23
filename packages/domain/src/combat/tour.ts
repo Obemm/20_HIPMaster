@@ -1,4 +1,4 @@
-import { melanger, tirerIndex } from './alea.ts';
+import { etatAlea, type Graine, melanger, tirerIndex } from './alea.ts';
 import {
   adversaire,
   blesserSi,
@@ -149,11 +149,12 @@ function nouveauJoueur(joueur: IdJoueur, deck: readonly number[]): EtatJoueur {
 
 /**
  * Crée une partie : decks mélangés, 4 cartes en main, premier joueur tiré au sort, premier tour commencé.
- * La même graine et les mêmes decks donnent toujours la même partie (ADR 0013).
+ * La même graine et les mêmes decks donnent toujours la même partie (ADR 0013) ; une partie jouée en ligne reçoit une
+ * clé ChaCha20 tirée par le serveur (ADR 0034).
  */
 export function creerPartie(
   decks: Record<IdJoueur, readonly number[]>,
-  graine: number,
+  graine: Graine,
 ): EtatPartie {
   const etat: EtatPartie = {
     joueurs: { j1: nouveauJoueur('j1', decks.j1), j2: nouveauJoueur('j2', decks.j2) },
@@ -161,7 +162,7 @@ export function creerPartie(
     actif: 'j1',
     tour: 1,
     issue: null,
-    alea: graine | 0,
+    alea: etatAlea(graine),
     journal: [],
   };
   for (const joueur of JOUEURS) {

@@ -21,7 +21,7 @@ référence the company.
 | [0010](0010-combat-plateau.md)                         | Combat sur plateau : Débit, SLA, capacités thématiques                | aucune                         | Acceptée (complétée par 0026) |
 | [0011](0011-catalogue-cartes-versionne.md)             | Catalogue des cartes versionné dans le domaine, pas en base           | [ref] (écarté)               | Acceptée                      |
 | [0012](0012-theme-clair-sombre.md)                     | Thème clair ou sombre selon le système, jetons de couleur             | [ref] (adapté)               | Acceptée                      |
-| [0013](0013-moteur-combat.md)                          | Moteur de combat : état sérialisable, actions, hasard à graine        | aucune                         | Acceptée                      |
+| [0013](0013-moteur-combat.md)                          | Moteur de combat : état sérialisable, actions, hasard à graine        | aucune                         | Acceptée (générateur : 0034)  |
 | [0014](0014-parties-en-memoire.md)                     | État des parties en cours gardé en mémoire par l'API                  | [ref]                        | Remplacée par 0030            |
 | [0015](0015-illustrations-statiques-optimisees.md)     | Illustrations : fichiers statiques optimisés, originaux hors du dépôt | [ref], [ref]               | Acceptée                      |
 | [0016](0016-illustrations-provisoires-vectorielles.md) | Illustrations provisoires vectorielles, générées par le code          | aucune ([ref])               | Acceptée                      |
@@ -42,5 +42,6 @@ référence the company.
 | [0031](0031-suppression-compte.md)                     | Suppression de son compte : forfait des duels, historique sans lui    | [ref] ; [ref] écarté       | Acceptée                      |
 | [0032](0032-preferences-interface-navigateur.md)       | Préférences d'interface gardées par le navigateur (`localStorage`)    | [ref] écarté                 | Acceptée                      |
 | [0033](0033-supervision-sauvegardes.md)                | Supervision, sauvegardes et erreurs : Cloud Monitoring, jobs, journal | [ref], 012, 043 ; 009 écarté | Proposée                      |
+| [0034](0034-hasard-et-appariement.md)                  | Hasard ChaCha20 à clé tirée par le serveur ; appariement sous verrou  | aucune ; [ref] retenu        | Acceptée                      |
 
 Modèle : [template.md](template.md).
