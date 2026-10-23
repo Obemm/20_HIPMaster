@@ -103,6 +103,7 @@ export const recompenses = pgTable('recompenses', {
 /**
  * Duels entre joueurs (US-032, ADR 0020) : le créateur joue le camp j1, l'adversaire qui rejoint le camp j2 ; le
  * tirage du moteur désigne qui commence. `version` change à chaque action et à chaque changement de statut.
+ * Un joueur qui supprime son compte disparaît de ses duels terminés (`NULL`), qui restent à son adversaire (ADR 0031).
  */
 export const duels = pgTable('duels', {
   id: uuid().primaryKey().defaultRandom(),
@@ -110,13 +111,13 @@ export const duels = pgTable('duels', {
     .notNull()
     .default('attente'),
   version: integer().notNull().default(0),
-  createurId: uuid()
-    .notNull()
-    .references(() => joueurs.id, { onDelete: 'cascade' }),
+  /** Vide une fois son compte supprimé (US-053). */
+  createurId: uuid().references(() => joueurs.id, { onDelete: 'set null' }),
   deckCreateur: text().notNull(),
   /** Duel ouvert à tous (adversaire au hasard, US-037) ; sinon défi privé, rejoint par son lien (US-033). */
   ouvert: boolean().notNull().default(false),
-  adversaireId: uuid().references(() => joueurs.id, { onDelete: 'cascade' }),
+  /** Vide tant que personne n'a rejoint le duel, ou une fois son compte supprimé (US-053). */
+  adversaireId: uuid().references(() => joueurs.id, { onDelete: 'set null' }),
   deckAdversaire: text(),
   /** État complet du moteur, jamais renvoyé tel quel (seulement la vue de chaque joueur). */
   etat: jsonb().$type<EtatPartie>(),

@@ -152,6 +152,17 @@ Toutes les évolutions notables du projet sont consignées ici
   route qui n'existe pas. Le lien « Inviter des collègues » n'apparaît dans « Mon compte » que pour un administrateur,
   et « Mon compte » montre l'identifiant du compte. Une invitation révoquée se distingue désormais d'une invitation
   expirée, dans la page comme dans `npm run invitation -- --lister` (US-072, ADR 0029).
+- Page « À propos et confidentialité », à laquelle mène un lien en pied de chaque page : qui édite et héberge le jeu
+  (Firebase Hosting, Cloud Run et Neon à Francfort), ce qu'il garde et pourquoi (pseudo, collection, duels, sessions,
+  adresses IP des journaux), combien de temps, et comment exercer ses droits ; le seul stockage du navigateur est le
+  jeton de session, strictement nécessaire : ni bandeau de consentement, ni traceur, ni mesure d'audience. Comptes, collections,
+  récompenses et résultats sont gardés sans limite, sauf suppression par le joueur ; seules des données techniques
+  expirent (sessions inutilisées 90 jours, journaux et sauvegardes 30 jours, parties abandonnées, défis jamais
+  acceptés) ; celles que la purge d'US-054 appliquera sont marquées « bientôt ». « Mon compte » permet de supprimer son
+  compte après confirmation (`DELETE /api/v1/moi`, contrat `comptes.yaml` 1.4.0) : compte, sessions sur tous les
+  appareils, collection, récompenses et parties disparaissent en une transaction ; ses duels en cours se terminent
+  par forfait au lieu de disparaître pour l'adversaire, qui garde ses duels terminés face à « Compte supprimé »
+  (`duels.yaml` 1.3.0) (US-053, ADR 0031).
 
 ### Modifié
 

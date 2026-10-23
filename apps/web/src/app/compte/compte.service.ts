@@ -173,6 +173,15 @@ export class CompteService {
   }
 
   /**
+   * Supprime définitivement le compte (US-053) : l'API le supprime avec toutes ses sessions, puis ce navigateur
+   * l'oublie. Un échec garde le compte tel quel.
+   */
+  async supprimerCompte(): Promise<void> {
+    await firstValueFrom(this.http.delete('/api/v1/moi'));
+    this.oublier();
+  }
+
+  /**
    * L'API ne reconnaît plus la session (401) : elle est oubliée, et « Mon compte » dira « Session expirée ». Sans
    * effet si le jeton a changé entre-temps (le joueur s'est reconnecté) ; vrai si la session vient d'être oubliée.
    */

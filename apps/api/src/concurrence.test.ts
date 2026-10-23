@@ -3,7 +3,7 @@ import { REGLES_BOOSTERS, TAILLE_BOOSTER } from '@hipmaster/domain';
 import { eq, sql, sum } from 'drizzle-orm';
 import { describe, expect, it } from 'vitest';
 import { type OptionsBoosters, ouvrirUnBooster, recompenserVictoire } from './comptes/boosters.ts';
-import { CLE_CODES_DEVELOPPEMENT, creerJoueur } from './comptes/comptes.ts';
+import { CLE_CODES_DEVELOPPEMENT, creerJoueur, supprimerCompte } from './comptes/comptes.ts';
 import { creerInvitation, inscrire } from './comptes/invitations.ts';
 import { baseDeTest } from './db/base-de-test.ts';
 import { collection, duels, invitations, joueurs, parties, recompenses } from './db/schema.ts';
@@ -129,7 +129,8 @@ describe('opérations simultanées (US-056)', () => {
       const lance = await rejoindreDuel(ouverte.base, cree.valeur.id, bob.joueur.id, 'heritage');
       if (!lance.ok || !lance.valeur.vue) throw new Error('Duel non lancé.');
       const actif = lance.valeur.vue.actif === 'j1' ? ada.joueur.id : bob.joueur.id;
-      return { id: cree.valeur.id, actif, version: lance.valeur.version };
+      const autre = actif === ada.joueur.id ? bob.joueur.id : ada.joueur.id;
+      return { id: cree.valeur.id, actif, autre, version: lance.valeur.version };
     }
 
     async function versionEnBase(id: string) {
@@ -164,6 +165,23 @@ describe('opérations simultanées (US-056)', () => {
         Array.from({ length: FOIS - 1 }, () => 'pas-ton-tour'),
       );
       expect(await versionEnBase(id)).toBe(version + 1);
+    });
+
+    it('un compte supprimé pendant que l’adversaire joue : le forfait passe avant ou après, jamais au milieu (US-053)', async () => {
+      const { id, actif, autre, version } = await duelLance();
+      const [, ...coups] = await enParallele((i) =>
+        i === 0
+          ? supprimerCompte(ouverte.base, autre).then(() => null)
+          : jouerDuel(ouverte.base, id, actif, { type: 'finirTour' }),
+      );
+
+      // Au plus la fin de tour de l'actif passe, avant le forfait ; ensuite, la partie est terminée.
+      const passes = coups.filter((r) => r?.ok).length;
+      expect(passes).toBeLessThanOrEqual(1);
+      const [ligne] = await ouverte.base.select().from(duels).where(eq(duels.id, id));
+      expect(ligne?.statut).toBe('termine');
+      expect(ligne?.etat?.issue?.raison).toBe('forfait');
+      expect(ligne?.version).toBe(version + passes + 1);
     });
   });
 

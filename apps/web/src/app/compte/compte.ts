@@ -20,7 +20,8 @@ const refusDe = (message: string): Refus => ({ 400: message, 401: message });
  * Page « Mon compte » (US-022) : créer un compte invité, le retrouver avec son code, se déconnecter. Après un 401, elle
  * dit « Session expirée » et ramène le joueur à sa page une fois reconnecté (US-055). Un nouveau code, ou « Déconnecter
  * mes autres appareils », ferme les autres sessions du compte (US-047). Un lien d'invitation (`?invitation=`) remplit
- * le code d'invitation (US-048).
+ * le code d'invitation (US-048). « Supprimer mon compte », après confirmation, supprime le compte et déconnecte
+ * (US-053).
  */
 @Component({
   selector: 'hip-compte',
@@ -59,6 +60,10 @@ export class CompteEcran {
   protected readonly info = signal<string | null>(null);
   protected readonly occupe = signal(false);
   protected readonly copie = signal(false);
+  /** La suppression du compte attend sa confirmation (US-053). */
+  protected readonly confirmerSuppression = signal(false);
+  /** Le compte vient d'être supprimé : la page le dit. */
+  protected readonly supprime = signal(false);
 
   protected async creer(evenement: Event): Promise<void> {
     evenement.preventDefault();
@@ -108,6 +113,15 @@ export class CompteEcran {
     }, refusDe('La déconnexion a échoué.'));
   }
 
+  protected async supprimer(): Promise<void> {
+    await this.agir(async () => {
+      await this.compte.supprimerCompte();
+      this.codeAffiche.set(null);
+      this.confirmerSuppression.set(false);
+      this.supprime.set(true);
+    }, refusDe('Le compte n’a pas pu être supprimé.'));
+  }
+
   protected async copier(code: string): Promise<void> {
     try {
       await navigator.clipboard.writeText(code);
@@ -123,6 +137,7 @@ export class CompteEcran {
     this.erreur.set(null);
     this.info.set(null);
     this.copie.set(false);
+    this.supprime.set(false);
     try {
       await action();
     } catch (erreur) {

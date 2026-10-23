@@ -39,5 +39,6 @@ référence the company.
 | [0028](0028-deploiement-continu.md)                    | Déploiement continu : révision vérifiée avant bascule, front par API  | [ref], 032 écartés, 039, 033 | Acceptée                      |
 | [0029](0029-administrateurs-par-configuration.md)      | Administrateurs désignés par la configuration, routes cachées en 404  | [ref] ; 010, 034 écartés     | Acceptée                      |
 | [0030](0030-parties-bot-en-base.md)                    | Parties contre le bot en base : version, une écriture par action      | [ref]                        | Acceptée                      |
+| [0031](0031-suppression-compte.md)                     | Suppression de son compte : forfait des duels, historique sans lui    | [ref] ; [ref] écarté       | Acceptée                      |
 
 Modèle : [template.md](template.md).
