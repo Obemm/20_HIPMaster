@@ -155,6 +155,12 @@ Toutes les évolutions notables du projet sont consignées ici
 
 ### Modifié
 
+- Navigation pensée pour le téléphone : sous 768 px, une barre d'onglets fixée en bas (Jouer, Duels avec la pastille
+  « à vous de jouer », Boosters avec le stock, Collection, Compte), au-delà les mêmes onglets dans le bandeau. Onglets
+  d'au moins 44 px, onglet courant signalé (trait, gras, `aria-current`), zone de sécurité des téléphones à encoche
+  respectée ; la barre s'efface pendant une partie sur téléphone. À chaque changement de page, le focus passe sur son
+  titre. Les liens « ← Accueil » disparaissent. L'audit axe des parcours e2e vérifie aussi WCAG 2.1 et 2.2 AA ; les
+  cartes de la main et les jetons du plateau respectent « Libellé dans le nom » (US-060).
 - L'écran de partie et de duel tient dans un écran de téléphone (375 × 667) sans faire défiler la page : en-tête
   compact, camps et main en rangées qui défilent horizontalement, journal en bandeau de deux lignes qui se déplie à la
   demande, détail d'une carte ou d'un composant en feuille au bas de l'écran, « Finir mon tour » collé au bas.

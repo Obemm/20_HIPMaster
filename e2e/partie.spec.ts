@@ -1,5 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, type Page, test } from '@playwright/test';
+import { REGLES_WCAG } from './axe';
 
 const FIN = /Victoire !|Défaite|Partie nulle/;
 
@@ -119,17 +120,17 @@ for (const theme of ['light', 'dark'] as const) {
     await page.emulateMedia({ colorScheme: theme });
     await page.goto('/jouer');
     await expect(page.getByRole('button', { name: 'Jouer avec Héritage' })).toBeVisible();
-    const choix = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
+    const choix = await new AxeBuilder({ page }).withTags(REGLES_WCAG).analyze();
     expect(choix.violations).toEqual([]);
 
     await page.getByRole('button', { name: 'Jouer avec Héritage' }).click();
     await expect(page.getByRole('dialog', { name: 'Comment jouer ?' })).toBeVisible();
-    const aide = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
+    const aide = await new AxeBuilder({ page }).withTags(REGLES_WCAG).analyze();
     expect(aide.violations).toEqual([]);
 
     await fermerAide(page);
     await expect(page.getByRole('button', { name: 'Finir mon tour' })).toBeVisible();
-    const partie = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
+    const partie = await new AxeBuilder({ page }).withTags(REGLES_WCAG).analyze();
     expect(partie.violations).toEqual([]);
 
     // Le détail d'une carte, en feuille au bas de l'écran (US-059).
@@ -139,7 +140,7 @@ for (const theme of ['light', 'dark'] as const) {
       .first()
       .click();
     await expect(page.getByRole('button', { name: 'Fermer le détail' })).toBeVisible();
-    const detail = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
+    const detail = await new AxeBuilder({ page }).withTags(REGLES_WCAG).analyze();
     expect(detail.violations).toEqual([]);
   });
 }
@@ -186,7 +187,7 @@ test('une évolution sans sa carte d’origine dit pourquoi elle ne se joue pas 
   await expect(detail.getByRole('button', { name: /^Décommissionner/ })).toBeVisible();
   await expect(page.getByText('Débit, plateau plein')).toHaveCount(0);
 
-  const audit = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
+  const audit = await new AxeBuilder({ page }).withTags(REGLES_WCAG).analyze();
   expect(audit.violations).toEqual([]);
 });
 

@@ -1,5 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, type Page, test } from '@playwright/test';
+import { REGLES_WCAG } from './axe';
 
 async function creerCompte(page: Page, pseudo: string) {
   await page.goto('/compte');
@@ -38,7 +39,7 @@ for (const theme of ['light', 'dark'] as const) {
     await page.goto('/boosters');
     await page.getByRole('button', { name: 'Ouvrir un booster' }).click();
     await expect(page.locator('hip-vignette-carte')).toHaveCount(5);
-    const { violations } = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
+    const { violations } = await new AxeBuilder({ page }).withTags(REGLES_WCAG).analyze();
     expect(violations).toEqual([]);
   });
 }
