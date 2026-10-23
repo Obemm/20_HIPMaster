@@ -15,7 +15,7 @@ _Dernière mise à jour : 2026-10-23_
 | [EPIC-06 — Duels entre joueurs](epics/EPIC-06-duels-joueurs.md)                                   | Should   | Terminé   | 8/8        |
 | [EPIC-07 — Vie sociale](epics/EPIC-07-vie-sociale.md)                                             | Could    | À affiner | 0/0        |
 | [EPIC-08 — Cartes proposées par la communauté IT](epics/EPIC-08-cartes-communaute.md)             | Should   | À affiner | 0/5        |
-| [EPIC-09 — Mise en ligne sur Google Cloud](epics/EPIC-09-mise-en-ligne-gcp.md)                    | Must     | En cours  | 6/13       |
+| [EPIC-09 — Mise en ligne sur Google Cloud](epics/EPIC-09-mise-en-ligne-gcp.md)                    | Must     | En cours  | 6/14       |
 | [EPIC-10 — Identité visuelle et confort sur téléphone](epics/EPIC-10-identite-visuelle-mobile.md) | Should   | À affiner | 0/5        |
 | [EPIC-11 — Apprendre à jouer](epics/EPIC-11-apprendre-a-jouer.md)                                 | Should   | À affiner | 0/3        |
 
@@ -129,6 +129,7 @@ Google Cloud, Firebase Hosting et une base Neon gratuite (ADR 0021, accepté le 
 | [US-052 — Parties contre le bot gardées en base](stories/US-052-parties-bot-en-base.md)                                               | EPIC-09 | Must     | M      | 2   | À affiner |
 | [US-051 — Supervision, sauvegardes vérifiées et scan de sécurité](stories/US-051-supervision-sauvegardes-securite.md)                 | EPIC-09 | Must     | S      | 2   | À affiner |
 | [US-053 — Page de confidentialité et suppression de son compte](stories/US-053-confidentialite-suppression-compte.md)                 | EPIC-09 | Should   | S      | 2   | À affiner |
+| [US-072 — Une page « Inviter » réservée au porteur du projet](stories/US-072-page-inviter.md)                                         | EPIC-09 | Must     | M      | 2   | En cours  |
 | [US-059 — Un plateau de partie qui tient dans un écran de téléphone](stories/US-059-plateau-mobile-un-ecran.md)                       | EPIC-10 | Should   | M      | 2   | À affiner |
 | [US-060 — Une navigation pensée pour le téléphone](stories/US-060-navigation-mobile.md)                                               | EPIC-10 | Should   | S      | 2   | À affiner |
 | [US-065 — Des coups de pouce au bon moment](stories/US-065-coups-de-pouce.md)                                                         | EPIC-11 | Should   | S      | 2   | À affiner |
