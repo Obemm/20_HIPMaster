@@ -4,7 +4,13 @@ import { construireApp } from './app.ts';
 import { CLE_CODES_DEVELOPPEMENT, creerJoueur } from './comptes/comptes.ts';
 import { baseDeTest } from './db/base-de-test.ts';
 import { duels } from './db/schema.ts';
-import type { DuelVisible } from './duels/duels.ts';
+import {
+  abandonnerDuel,
+  creerDuel,
+  type DuelVisible,
+  lireDuel,
+  rejoindreDuel,
+} from './duels/duels.ts';
 
 const ouverte = baseDeTest();
 let app: ReturnType<typeof construireApp>;
@@ -488,5 +494,68 @@ describe('booster pour une victoire en duel (US-038)', () => {
       plafondAtteint: false,
       motif: 'adversaire-deja-affronte',
     });
+  });
+
+  it('la règle de l’adversaire déjà affronté vaut au jour de la fin, même lue le lendemain (US-058)', async () => {
+    const ada = await creerJoueur(ouverte.base, 'Ada', CLE_CODES_DEVELOPPEMENT);
+    const bob = await creerJoueur(ouverte.base, 'Bob', CLE_CODES_DEVELOPPEMENT);
+    const ids: string[] = [];
+    for (let i = 0; i < 2; i++) {
+      const cree = await creerDuel(ouverte.base, ada.joueur.id, 'moderne');
+      if (!cree.ok) throw new Error('Duel non créé.');
+      await rejoindreDuel(ouverte.base, cree.valeur.id, bob.joueur.id, 'heritage');
+      await abandonnerDuel(ouverte.base, cree.valeur.id, ada.joueur.id);
+      ids.push(cree.valeur.id);
+    }
+
+    // Bob ne lit ses victoires que deux jours plus tard : la seconde reste sans booster.
+    const plusTard = { maintenant: () => Date.now() + 2 * 24 * 60 * 60 * 1000 };
+    const recompenses = [];
+    for (const id of ids) {
+      const lu = await lireDuel(ouverte.base, id, bob.joueur.id, 0, plusTard);
+      recompenses.push(lu.ok ? lu.valeur.recompense?.motif : 'illisible');
+    }
+    expect(recompenses).toEqual([null, 'adversaire-deja-affronte']);
+  });
+});
+
+describe('hasard des duels (US-058, ADR 0034)', () => {
+  it('un duel reçoit une clé ChaCha20 tirée par le serveur, jamais renvoyée au joueur', async () => {
+    const ada = await creerJoueur(ouverte.base, 'Ada', CLE_CODES_DEVELOPPEMENT);
+    const bob = await creerJoueur(ouverte.base, 'Bob', CLE_CODES_DEVELOPPEMENT);
+    const ids = [];
+    for (let i = 0; i < 2; i++) {
+      const cree = await creerDuel(ouverte.base, ada.joueur.id, 'moderne');
+      if (!cree.ok) throw new Error('Duel non créé.');
+      const lance = await rejoindreDuel(ouverte.base, cree.valeur.id, bob.joueur.id, 'heritage');
+      expect(JSON.stringify(lance)).not.toMatch(/"(alea|cle)"/);
+      ids.push(cree.valeur.id);
+    }
+
+    const lignes = await ouverte.base.select().from(duels);
+    const cles = lignes.map((l) => (typeof l.etat?.alea === 'object' ? l.etat.alea.cle : null));
+    for (const cle of cles) expect(cle).toHaveLength(8);
+    expect(cles[0]).not.toEqual(cles[1]);
+
+    const lu = await requete('GET', `/duels/${ids[0] ?? ''}`, {
+      authorization: `Bearer ${bob.jeton}`,
+    });
+    expect(lu.body).not.toMatch(/"(alea|cle)"/);
+  });
+
+  it('un duel créé avec l’ancien générateur (graine entière) se joue jusqu’au bout', async () => {
+    const { ada, bob, id } = await duelLance();
+    const [ligne] = await ouverte.base.select().from(duels);
+    expect(typeof ligne?.etat?.alea).toBe('number');
+
+    // Chacun finit son tour, puis Ada abandonne : le duel se termine normalement.
+    for (let tour = 0; tour < 4; tour++) {
+      const duel = (await requete('GET', `/duels/${id}`, ada)).json<DuelVisible>();
+      const actif = duel.vue?.actif === 'j1' ? ada : bob;
+      const fin = await requete('POST', `/duels/${id}/actions`, actif, { type: 'finirTour' });
+      expect(fin.statusCode).toBe(200);
+    }
+    const abandon = await requete('POST', `/duels/${id}/abandon`, ada);
+    expect(abandon.json<DuelVisible>()).toMatchObject({ statut: 'termine' });
   });
 });

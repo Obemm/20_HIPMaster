@@ -1,4 +1,3 @@
-import { randomInt } from 'node:crypto';
 import {
   type Action,
   appliquer,
@@ -7,6 +6,7 @@ import {
   type EntreeJournal,
   type ErreurAction,
   type EtatPartie,
+  type Graine,
   journalDe,
   NIVEAU_PAR_DEFAUT,
   type NiveauBot,
@@ -18,6 +18,7 @@ import {
 import { and, asc, eq, inArray, lt, sql } from 'drizzle-orm';
 import type { Base } from '../db/index.ts';
 import { parties } from '../db/schema.ts';
+import { premierMot, tirerGraine } from '../hasard.ts';
 
 /** Parties contre le bot (US-052, ADR 0030) : l'état vit en base, le joueur ne reçoit que sa vue. */
 
@@ -39,8 +40,9 @@ export interface OptionsParties {
   partiesMax?: number;
   /** Horloge, injectable pour les tests. */
   maintenant?: () => number;
-  /** Graine de chaque nouvelle partie, injectable pour des parties reproductibles. */
-  tirerGraine?: () => number;
+  /** Graine de chaque nouvelle partie (clé ChaCha20 tirée par `node:crypto`, ADR 0034), injectable pour des parties
+   * reproductibles. */
+  tirerGraine?: () => Graine;
 }
 
 /** Le joueur connecté qui a lancé une partie, et la session d'où il l'a lancée. */
@@ -147,8 +149,8 @@ export async function lancerPartie(
   if (!deck) return echec('deck-inconnu');
   const niveau = trouverNiveau(idNiveau);
   if (!niveau) return echec('niveau-inconnu');
-  const graine = (options.tirerGraine ?? (() => randomInt(0, 2 ** 31)))();
-  const deckBot = DECKS_PRETES[graine % DECKS_PRETES.length] ?? deck;
+  const graine = (options.tirerGraine ?? tirerGraine)();
+  const deckBot = DECKS_PRETES[premierMot(graine) % DECKS_PRETES.length] ?? deck;
   const initial = creerPartie({ j1: deck.cartes, j2: deckBot.cartes }, graine);
   const etat = faireJouerLeBot(initial, niveau.strategie);
   await faireDeLaPlace(base, options);

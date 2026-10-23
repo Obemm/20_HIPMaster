@@ -53,8 +53,10 @@ paths:
       description: >
         Rejoint le plus ancien duel ouvert d'un autre joueur (en évitant, si possible, le dernier adversaire) : le
         duel commence (200). S'il n'y en a pas, ouvre un duel et place le joueur dans la file (201) ; un joueur
-        déjà dans la file y garde sa place. Les défis privés (lien, POST /duels) ne sont jamais proposés. Limite : 60
-        recherches par heure et par adresse.
+        déjà dans la file y garde sa place. Les défis privés (lien, POST /duels) ne sont jamais proposés. Les
+        recherches simultanées passent une à une (US-058) : deux joueurs qui cherchent en même temps se retrouvent
+        dans le même duel, et un joueur n'a jamais deux duels ouverts dans la file. Limite : 60 recherches par heure et
+        par adresse.
       requestBody:
         required: true
         content:
@@ -336,7 +338,8 @@ components:
           description: >
             Présente quand le joueur qui demande a gagné le duel (US-038) : un booster, dans le même plafond quotidien
             que les victoires contre le bot, une seule fois par duel. Une victoire par abandon ou forfait ne rapporte
-            rien contre un adversaire déjà affronté le même jour (UTC).
+            rien contre un adversaire déjà affronté le même jour (UTC) : le jour de la fin du duel, quelle que soit la
+            date de lecture (US-058).
           required: [booster, plafondAtteint, motif]
           properties:
             booster: { type: boolean }
