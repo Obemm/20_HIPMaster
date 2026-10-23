@@ -91,6 +91,42 @@
   }
 }
 
+/*
+ * Écran de partie (US-059) : sur téléphone, une colonne qui tient dans l'écran (camp adverse, journal en bandeau, mon
+ * camp, ma main) ; au bureau, le plateau au centre et, sur le côté, l'objectif, les capacités en jeu et le journal.
+ */
+@layer components {
+  .plateau-partie {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.375rem;
+  }
+
+  @media (min-width: 64rem) {
+    .plateau-partie {
+      grid-template-columns: minmax(0, 1fr) 20rem;
+      grid-template-rows: auto auto 1fr;
+      grid-template-areas:
+        'adversaire cote'
+        'moi cote'
+        'bas cote';
+      column-gap: 1.5rem;
+    }
+    .zone-adversaire {
+      grid-area: adversaire;
+    }
+    .zone-moi {
+      grid-area: moi;
+    }
+    .zone-bas {
+      grid-area: bas;
+    }
+    .zone-cote {
+      grid-area: cote;
+    }
+  }
+}
+
 /* La page ne défile pas derrière une fenêtre modale ouverte. */
 html:has(dialog[open]) {
   overflow: hidden;

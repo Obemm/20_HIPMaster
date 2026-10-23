@@ -10,8 +10,17 @@ async function commencer(page: Page, deck = 'Hybride') {
   await page.getByRole('button', { name: `Jouer avec ${deck}` }).click();
   await expect(page).toHaveURL(/\/jouer\/[0-9a-f-]{36}$/);
   await expect(page.getByRole('heading', { level: 1, name: 'Partie contre le bot' })).toBeVisible();
-  await expect(page.getByText('Objectif :')).toBeVisible();
-  await expect(page.getByText('Comment gagner ?')).toBeVisible();
+  await fermerAide(page);
+}
+
+/** À la première partie dans ce navigateur, l'aide s'ouvre d'elle-même, par-dessus le plateau (US-059). */
+async function fermerAide(page: Page) {
+  const aide = page.getByRole('dialog', { name: 'Comment jouer ?' });
+  await expect(aide).toBeVisible();
+  await expect(aide.getByText('Objectif :')).toBeVisible();
+  await expect(aide.getByText('Comment gagner ?')).toBeVisible();
+  await aide.getByRole('button', { name: 'C’est parti' }).click();
+  await expect(aide).toBeHidden();
 }
 
 /** Joue un tour simple : pose ou joue la première carte jouable de la main, attaque si possible, puis finit le tour. */
@@ -29,7 +38,8 @@ async function jouerUnTour(page: Page) {
       await poser.click();
       break;
     }
-    await carte.click();
+    // Le détail recouvre la main (US-059) : Échap le referme avant de choisir une autre carte.
+    await page.keyboard.press('Escape');
   }
   // Attaquer : l'attaquant, puis sa cible (qui s'affiche en grand), puis la confirmation (US-041).
   const attaquant = page.getByRole('button', { name: /peut attaquer$/ }).first();
@@ -41,6 +51,8 @@ async function jouerUnTour(page: Page) {
       await page.getByRole('button', { name: /^Attaquer avec / }).click();
     }
   }
+  // Un détail resté ouvert recouvrirait « Finir mon tour ».
+  await page.keyboard.press('Escape');
   const finir = page.getByRole('button', { name: 'Finir mon tour' });
   if (await finir.isVisible()) await finir.click();
 }
@@ -87,6 +99,7 @@ test('on choisit la difficulté du bot avant son deck, et elle est rappelée pen
   await expect(niveaux.getByRole('radio', { name: /Stagiaire/ })).toBeChecked();
   await niveaux.getByRole('radio', { name: /Agent autonome/ }).check();
   await page.getByRole('button', { name: 'Jouer avec Moderne' }).click();
+  await fermerAide(page);
   await expect(page.getByText('Niveau : Agent autonome')).toBeVisible();
   await page.getByRole('button', { name: 'Finir mon tour' }).click();
   await expect(page.getByRole('button', { name: 'Finir mon tour' })).toBeEnabled();
@@ -103,6 +116,8 @@ for (const theme of ['light', 'dark'] as const) {
   test(`le choix du deck et la partie ne présentent aucune violation d’accessibilité (thème ${theme})`, async ({
     page,
   }) => {
+    // Quatre audits : le choix du deck, l'aide, le plateau, puis le détail d'une carte.
+    test.slow();
     await page.emulateMedia({ colorScheme: theme });
     await page.goto('/jouer');
     await expect(page.getByRole('button', { name: 'Jouer avec Héritage' })).toBeVisible();
@@ -110,9 +125,24 @@ for (const theme of ['light', 'dark'] as const) {
     expect(choix.violations).toEqual([]);
 
     await page.getByRole('button', { name: 'Jouer avec Héritage' }).click();
+    await expect(page.getByRole('dialog', { name: 'Comment jouer ?' })).toBeVisible();
+    const aide = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
+    expect(aide.violations).toEqual([]);
+
+    await fermerAide(page);
     await expect(page.getByRole('button', { name: 'Finir mon tour' })).toBeVisible();
     const partie = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
     expect(partie.violations).toEqual([]);
+
+    // Le détail d'une carte, en feuille au bas de l'écran (US-059).
+    await page
+      .getByRole('region', { name: /Votre main/ })
+      .getByRole('button')
+      .first()
+      .click();
+    await expect(page.getByRole('button', { name: 'Fermer le détail' })).toBeVisible();
+    const detail = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
+    expect(detail.violations).toEqual([]);
   });
 }
 
@@ -137,6 +167,7 @@ test('une évolution sans sa carte d’origine dit pourquoi elle ne se joue pas 
   expect(id).toBeDefined();
 
   await page.goto(`/jouer/${id}`);
+  await fermerAide(page);
   const main = page.getByRole('region', { name: /Votre main/ });
   const carte = main.getByRole('button', { name: 'Apigee AI Gateway' });
   const raison =
@@ -159,4 +190,55 @@ test('une évolution sans sa carte d’origine dit pourquoi elle ne se joue pas 
 
   const audit = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
   expect(audit.violations).toEqual([]);
+});
+
+test.describe('sur un petit téléphone (375 × 667)', () => {
+  test.use({ viewport: { width: 375, height: 667 } });
+
+  test('le plateau tient dans l’écran, sans défiler, et le journal s’affiche à la demande (US-059)', async ({
+    page,
+  }) => {
+    await commencer(page);
+    // Le SLA et le camp adverses, mon camp, ma main et « Finir mon tour » : tous dans l'écran, sans défilement.
+    const zones = [
+      page.getByRole('button', { name: /^SI du bot/ }),
+      page.getByRole('list', { name: 'Plateau du bot' }),
+      page.getByRole('list', { name: 'Votre plateau' }),
+      page.getByRole('region', { name: /Votre main/ }),
+      page.getByRole('button', { name: 'Finir mon tour' }),
+    ];
+    for (const zone of zones) {
+      const boite = await zone.boundingBox();
+      expect(boite).not.toBeNull();
+      expect(boite!.y).toBeGreaterThanOrEqual(0);
+      expect(boite!.y + boite!.height).toBeLessThanOrEqual(667);
+    }
+    const debords = await page.evaluate(() => {
+      const racine = document.documentElement;
+      return {
+        vertical: racine.scrollHeight - racine.clientHeight,
+        horizontal: racine.scrollWidth - racine.clientWidth,
+      };
+    });
+    expect(debords).toEqual({ vertical: 0, horizontal: 0 });
+
+    // Le journal : ses dernières lignes en bandeau, entier à la demande, replié par Échap.
+    const journal = page.getByRole('button', { name: 'Journal' });
+    await expect(journal).toHaveAttribute('aria-expanded', 'false');
+    await journal.click();
+    await expect(journal).toHaveAttribute('aria-expanded', 'true');
+    await expect(page.getByRole('log')).toContainText('Vous piochez');
+    await page.keyboard.press('Escape');
+    await expect(journal).toHaveAttribute('aria-expanded', 'false');
+    await expect(journal).toBeFocused();
+
+    // L'aide a été vue : elle ne se rouvre plus d'elle-même, mais le bouton « ? » la rouvre.
+    await page.reload();
+    await expect(page.getByRole('button', { name: 'Finir mon tour' })).toBeVisible();
+    await expect(page.getByRole('dialog')).toBeHidden();
+    await page.getByRole('button', { name: 'Comment jouer ?' }).click();
+    await expect(page.getByRole('dialog', { name: 'Comment jouer ?' })).toBeVisible();
+    await page.keyboard.press('Escape');
+    await expect(page.getByRole('dialog')).toBeHidden();
+  });
 });

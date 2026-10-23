@@ -180,6 +180,13 @@ Toutes les évolutions notables du projet sont consignées ici
   sont purgées à chaque création ; au-delà de 1 000, la partie anonyme la moins récemment jouée part la première.
   Fermer sa session supprime ses parties. Plus rien dans les parties n'impose une seule instance Cloud Run
   (US-052, ADR 0030, qui remplace l'ADR 0014).
+- L'écran de partie et de duel tient dans un écran de téléphone (375 × 667) sans faire défiler la page : en-tête
+  compact, camps et main en rangées qui défilent horizontalement, journal en bandeau de deux lignes qui se déplie à la
+  demande, détail d'une carte ou d'un composant en feuille au bas de l'écran, « Finir mon tour » collé au bas.
+  L'aide « Comment jouer ? » (objectif, règle, capacités en jeu) devient une fenêtre qui s'ouvre d'elle-même à la
+  première partie dans le navigateur, puis depuis le bouton « ? ». Au bureau, l'objectif, les capacités en jeu et le
+  journal passent sur le côté du plateau. Le texte des cartes et des jetons suit la taille de texte choisie sur le
+  téléphone (tailles en `rem`) (US-059, ADR 0032).
 - Les parcours e2e de la CI tournent sur le build de production, servi avec les en-têtes de `firebase.json` : la
   moindre violation de la CSP fait échouer la série (`npm run test:e2e:production`). Le build de production
   n'insère plus de CSS critique en ligne, que la CSP bloquerait. Le compte de déploiement lit les métadonnées des

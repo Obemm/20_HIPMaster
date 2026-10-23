@@ -22,12 +22,12 @@ import type { Composant } from './modele';
         <span class="line-clamp-2">{{ c.nom }}</span>
       </p>
       @if (capacites()) {
-        <p class="truncate text-[10px] text-texte-doux" [class.line-through]="sansCapacites()">
+        <p class="truncate text-[0.625rem] text-texte-doux" [class.line-through]="sansCapacites()">
           {{ capacites() }}
         </p>
       }
       @for (statut of statuts(); track statut) {
-        <p class="text-[10px] leading-tight font-semibold text-alerte">{{ statut }}</p>
+        <p class="text-[0.625rem] leading-tight font-semibold text-alerte">{{ statut }}</p>
       }
       <p class="mt-auto flex items-center justify-between text-sm font-bold">
         <span class="flex items-center gap-0.5">

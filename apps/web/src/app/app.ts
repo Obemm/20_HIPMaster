@@ -1,12 +1,16 @@
-import { Component, DestroyRef, inject } from '@angular/core';
+import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs';
 import { CompteService } from './compte/compte.service';
 import { MesDuelsService } from './duels/mes-duels.service';
 
+/** Une partie ou un duel ouvert : le pied de page s'efface pour laisser l'écran au plateau. */
+const EN_PARTIE = /^\/(jouer|duels)\/(?!nouveau|hasard)[^/?#]+/;
+
 /**
  * Coquille de l'application : un bandeau (accueil, compte du joueur), puis la page, qui fournit son propre `<main>`,
- * et un pied de page qui mène à « À propos et confidentialité » (US-053).
+ * et un pied de page qui mène à « À propos et confidentialité » (US-053), effacé pendant une partie ou un duel pour
+ * laisser tout l'écran au plateau (US-059).
  */
 @Component({
   selector: 'hip-root',
@@ -41,18 +45,21 @@ import { MesDuelsService } from './duels/mes-duels.service';
       </nav>
     </header>
     <router-outlet />
-    <footer class="mt-auto border-t border-bordure">
-      <p class="mx-auto w-full max-w-6xl px-4 py-3 text-sm sm:px-6">
-        <a routerLink="/confidentialite" class="underline underline-offset-4"
-          >À propos et confidentialité</a
-        >
-      </p>
-    </footer>
+    @if (!enPartie()) {
+      <footer class="mt-auto border-t border-bordure">
+        <p class="mx-auto w-full max-w-6xl px-4 py-3 text-sm sm:px-6">
+          <a routerLink="/confidentialite" class="underline underline-offset-4"
+            >À propos et confidentialité</a
+          >
+        </p>
+      </footer>
+    }
   `,
 })
 export class App {
   protected readonly compte = inject(CompteService);
   protected readonly duels = inject(MesDuelsService);
+  protected readonly enPartie = signal(false);
 
   constructor() {
     // Vérifie la session gardée par le navigateur, sans retarder l'affichage.
@@ -60,8 +67,9 @@ export class App {
     // « À vous de jouer » se met à jour à chaque changement de page (US-035), et une session que le serveur n'a pas
     // pu vérifier est revérifiée (US-055).
     const navigation = inject(Router)
-      .events.pipe(filter((e) => e instanceof NavigationEnd))
-      .subscribe(() => {
+      .events.pipe(filter((e): e is NavigationEnd => e instanceof NavigationEnd))
+      .subscribe((e) => {
+        this.enPartie.set(EN_PARTIE.test(e.urlAfterRedirects));
         void this.duels.charger();
         if (this.compte.echec()) void this.compte.charger();
       });

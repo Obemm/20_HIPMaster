@@ -40,6 +40,7 @@ référence the company.
 | [0029](0029-administrateurs-par-configuration.md)      | Administrateurs désignés par la configuration, routes cachées en 404  | [ref] ; 010, 034 écartés     | Acceptée                      |
 | [0030](0030-parties-bot-en-base.md)                    | Parties contre le bot en base : version, une écriture par action      | [ref]                        | Acceptée                      |
 | [0031](0031-suppression-compte.md)                     | Suppression de son compte : forfait des duels, historique sans lui    | [ref] ; [ref] écarté       | Acceptée                      |
+| [0032](0032-preferences-interface-navigateur.md)       | Préférences d'interface gardées par le navigateur (`localStorage`)    | [ref] écarté                 | Acceptée                      |
 | [0033](0033-supervision-sauvegardes.md)                | Supervision, sauvegardes et erreurs : Cloud Monitoring, jobs, journal | [ref], 012, 043 ; 009 écarté | Proposée                      |
 
 Modèle : [template.md](template.md).

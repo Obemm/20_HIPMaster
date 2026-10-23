@@ -68,6 +68,32 @@ test('abandonner un duel, après confirmation : l’adversaire voit sa victoire 
   await contexte.close();
 });
 
+test('sur un petit téléphone, le plateau du duel tient dans l’écran (US-059)', async ({
+  page,
+  browser,
+}) => {
+  await page.setViewportSize({ width: 375, height: 667 });
+  const { ada, contexte } = await duelParApi(page, browser, 'mobile');
+  await expect(ada.getByText(/sinon forfait\./)).toBeVisible();
+  const zones = [
+    ada.locator('#plateau-si'),
+    ada.getByRole('list', { name: /^Plateau de / }),
+    ada.getByRole('list', { name: 'Votre plateau' }),
+    ada.getByRole('region', { name: /Votre main/ }),
+    finir(ada),
+  ];
+  for (const zone of zones) {
+    const boite = await zone.boundingBox();
+    expect(boite).not.toBeNull();
+    expect(boite!.y + boite!.height).toBeLessThanOrEqual(667);
+  }
+  const debord = await ada.evaluate(
+    () => document.documentElement.scrollHeight - document.documentElement.clientHeight,
+  );
+  expect(debord).toBeLessThanOrEqual(0);
+  await contexte.close();
+});
+
 for (const theme of ['light', 'dark'] as const) {
   test(`le plateau du duel ne présente aucune violation d’accessibilité (thème ${theme})`, async ({
     page,

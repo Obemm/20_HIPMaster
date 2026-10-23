@@ -148,6 +148,9 @@ describe('PartieEcran', () => {
       imports: [PartieEcran],
       providers: [provideHttpClient(), provideHttpClientTesting(), provideRouter([])],
     });
+    // L'aide a déjà été vue (ADR 0032), sauf dans les tests qui portent sur elle : sinon elle s'ouvre par-dessus tout.
+    localStorage.clear();
+    localStorage.setItem('hipmaster.aide-vue', 'oui');
   });
 
   it('affiche les deux camps, la main et le journal avec les noms des cartes', async () => {
@@ -159,18 +162,45 @@ describe('PartieEcran', () => {
     expect(page.querySelector('[role="log"]')?.textContent).toContain('Le bot pose SOAP / WSDL.');
   });
 
-  it('rappelle l’objectif, et ouvre « Comment jouer ? » au début de la partie seulement', async () => {
-    const debut = vue();
-    debut.moi.tours = 1;
-    const { page } = await ouvrir(debut);
-    expect(page.textContent).toContain('faire tomber le SLA du SI du bot à 0');
-    expect(page.querySelector('details')?.open).toBe(true);
-    expect(page.querySelector('details')?.textContent).toContain('Comment gagner ?');
+  it('ouvre l’aide d’elle-même à la première partie, avec l’objectif, et le retient (US-059)', async () => {
+    localStorage.removeItem('hipmaster.aide-vue');
+    const { fixture, page } = await ouvrir();
+    const aide = page.querySelector('dialog');
+    expect(aide?.open).toBe(true);
+    expect(aide?.textContent).toContain('faire tomber le SLA du SI du bot à 0');
+    expect(aide?.textContent).toContain('Comment gagner ?');
+    expect(localStorage.getItem('hipmaster.aide-vue')).toBe('oui');
+
+    bouton(page, 'C’est parti')?.click();
+    fixture.detectChanges();
+    expect(aide?.open).toBe(false);
+    // Le bouton « ? » de l'en-tête la rouvre à tout moment.
+    bouton(page, 'Comment jouer ?')?.click();
+    fixture.detectChanges();
+    expect(aide?.open).toBe(true);
   });
 
-  it('replie « Comment jouer ? » une fois la partie avancée', async () => {
+  it('n’ouvre plus l’aide d’elle-même une fois qu’elle a été vue (US-059)', async () => {
     const { page } = await ouvrir();
-    expect(page.querySelector('details')?.open).toBe(false);
+    expect(page.querySelector('dialog')?.open).toBe(false);
+  });
+
+  it('déplie le journal à la demande, et Échap le replie (US-059)', async () => {
+    const { fixture, page } = await ouvrir();
+    const basculer = bouton(page, 'Journal');
+    expect(basculer?.getAttribute('aria-expanded')).toBe('false');
+    expect(basculer?.getAttribute('aria-controls')).toBe('journal-partie');
+    basculer?.click();
+    fixture.detectChanges();
+    expect(basculer?.getAttribute('aria-expanded')).toBe('true');
+    expect(page.querySelector('[role="log"]')?.classList).toContain('max-h-[55dvh]');
+
+    page
+      .querySelector('[role="log"]')
+      ?.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+    fixture.detectChanges();
+    expect(basculer?.getAttribute('aria-expanded')).toBe('false');
+    expect(document.activeElement).toBe(basculer);
   });
 
   it('explique Garde quand le bot en a une : aide à l’attaque et capacités en jeu', async () => {
@@ -223,6 +253,9 @@ describe('PartieEcran', () => {
     expect(detail?.textContent).toContain('Des ressources et des verbes HTTP.');
     expect(detail?.querySelector('[role="group"]')?.textContent).toContain('Poser (2 Débit)');
     expect(bouton(page, 'API REST')?.getAttribute('aria-controls')).toBe('detail-main');
+    // Le détail s'affiche en feuille par-dessus la main (US-059) : le focus y passe.
+    await fixture.whenStable();
+    expect(document.activeElement).toBe(detail?.querySelector('h3'));
 
     detail?.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
     fixture.detectChanges();

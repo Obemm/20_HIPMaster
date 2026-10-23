@@ -7,6 +7,8 @@ import { type Browser, expect, type Page } from '@playwright/test';
  */
 
 const CLE_JETON = 'hipmaster.jeton';
+/** L'aide « Comment jouer ? » déjà vue : elle ne s'ouvre pas par-dessus le plateau (US-059, ADR 0032). */
+const CLE_AIDE_VUE = 'hipmaster.aide-vue';
 
 const auth = (jeton: string) => ({ authorization: `Bearer ${jeton}` });
 
@@ -15,10 +17,13 @@ export async function creerCompteParApi(page: Page, pseudo: string): Promise<str
   const reponse = await page.request.post('/api/v1/joueurs', { data: { pseudo } });
   expect(reponse.status(), `création du compte ${pseudo}`).toBe(201);
   const { jeton } = (await reponse.json()) as { jeton: string };
-  await page.addInitScript(([cle, valeur]) => localStorage.setItem(cle, valeur), [
-    CLE_JETON,
-    jeton,
-  ] as const);
+  await page.addInitScript(
+    ([cleJeton, valeur, cleAide]) => {
+      localStorage.setItem(cleJeton, valeur);
+      localStorage.setItem(cleAide, 'oui');
+    },
+    [CLE_JETON, jeton, CLE_AIDE_VUE] as const,
+  );
   return jeton;
 }
 
