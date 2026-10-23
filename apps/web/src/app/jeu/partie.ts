@@ -1,11 +1,13 @@
 import { NgTemplateOutlet } from '@angular/common';
 import { HttpClient, HttpErrorResponse, httpResource } from '@angular/common/http';
 import {
+  afterNextRender,
   afterRenderEffect,
   Component,
   computed,
   type ElementRef,
   inject,
+  Injector,
   input,
   type OnDestroy,
   type OnInit,
@@ -38,6 +40,7 @@ import {
   TOURS_MAX,
 } from './modele';
 import { CompteService } from '../compte/compte.service';
+import { PreferencesService } from '../preferences';
 
 type ActionCarte = Extract<Action, { carte: string }>;
 type Attaque = Extract<Action, { type: 'attaquer' }>;
@@ -72,8 +75,9 @@ const INTERROGATION_DUEL_MS = 3000;
     ErreurChargement,
   ],
   templateUrl: './partie.html',
-  // Échap referme le détail de la carte ou du composant choisi (US-040, US-041), où que soit le focus dans l'écran.
-  host: { '(keydown.escape)': 'fermerDetail()' },
+  // Échap replie le journal, sinon referme le détail de la carte ou du composant choisi (US-040, US-041, US-059), où
+  // que soit le focus dans l'écran.
+  host: { '(keydown.escape)': 'echap()' },
 })
 export class PartieEcran implements OnInit, OnDestroy {
   /** Paramètre de route `:id`. */
@@ -88,7 +92,15 @@ export class PartieEcran implements OnInit, OnDestroy {
 
   private readonly http = inject(HttpClient);
   protected readonly compte = inject(CompteService);
+  private readonly preferences = inject(PreferencesService);
+  private readonly injecteur = inject(Injector);
   private readonly titreFin = viewChild<ElementRef<HTMLElement>>('titreFin');
+  private readonly fenetreAide = viewChild<ElementRef<HTMLDialogElement>>('fenetreAide');
+  private readonly boutonJournal = viewChild<ElementRef<HTMLElement>>('boutonJournal');
+  /** L'aide doit s'ouvrir d'elle-même dès qu'elle est affichée : première partie dans ce navigateur (US-059). */
+  private aideAOuvrir = false;
+  /** La fenêtre d'aide qui écoute déjà les clics sur son fond (elle est recréée si l'écran se réaffiche). */
+  private aideEcoutee: HTMLDialogElement | null = null;
   /** Événements reçus, pas encore affichés : ils passent un par un, toujours dans l'ordre. */
   private readonly enAttente: Evenement[] = [];
   private minuterie: ReturnType<typeof setTimeout> | null = null;
@@ -129,8 +141,8 @@ export class PartieEcran implements OnInit, OnDestroy {
       .map((e) => decrireEvenement(e, joueur, this.nommer, this.autre()))
       .filter((ligne): ligne is string => ligne !== null);
   });
-  /** L'aide « Comment jouer ? » est ouverte en début de partie, repliable ensuite. */
-  protected reglesOuvertes = false;
+  /** Le journal déplié par-dessus le plateau, sur téléphone (US-059) ; au bureau, il est toujours entier. */
+  protected readonly journalOuvert = signal(false);
   /** La carte de la main choisie (US-040), ou le composant du plateau choisi, `si` compris (US-041) : un seul détail. */
   protected readonly carteChoisie = signal<string | null>(null);
   protected readonly composantChoisi = signal<string | null>(null);
@@ -225,6 +237,14 @@ export class PartieEcran implements OnInit, OnDestroy {
       ? `${noms[0]} peut encore attaquer : sélectionnez-le, puis sa cible, et confirmez.`
       : `${noms.length} composants peuvent encore attaquer (${noms.join(', ')}) : sélectionnez-les, puis leur cible, et confirmez.`;
   });
+  /** La même chose en quelques mots, pour la barre d'action d'un écran de téléphone (US-059). */
+  protected readonly attaquesOublieesCourt = computed(() => {
+    const [premier, ...autres] = this.attaquantsPossibles();
+    if (!this.monTour() || premier === undefined) return '';
+    return autres.length === 0
+      ? `${this.nommer(premier)} peut encore attaquer.`
+      : `${autres.length + 1} composants peuvent encore attaquer.`;
+  });
   protected readonly ciblesPossibles = computed(() => {
     const attaquant = this.attaquant();
     return new Set(
@@ -277,6 +297,19 @@ export class PartieEcran implements OnInit, OnDestroy {
   constructor() {
     // En fin de partie, le focus va au résultat pour qu'il soit annoncé.
     afterRenderEffect(() => this.titreFin()?.nativeElement.focus());
+    // À la première partie jouée dans ce navigateur, l'aide s'ouvre d'elle-même, une seule fois (US-059, ADR 0032).
+    afterRenderEffect(() => {
+      const aide = this.fenetreAide()?.nativeElement;
+      if (aide && aide !== this.aideEcoutee) {
+        // Clic sur le fond : équivalent souris de la touche Échap, que le `<dialog>` gère seul.
+        aide.addEventListener('click', (evenement) => this.clicFondAide(evenement));
+        this.aideEcoutee = aide;
+      }
+      if (!aide || !this.aideAOuvrir) return;
+      this.aideAOuvrir = false;
+      montrer(aide);
+      this.preferences.marquerAideVue();
+    });
     // En duel, tant que le joueur est là : onglet visible, geste depuis moins de 10 minutes (US-055).
     interroger(
       () => this.actualiserDuel(),
@@ -306,6 +339,7 @@ export class PartieEcran implements OnInit, OnDestroy {
     this.attaquant.set(null);
     this.composantChoisi.set(null);
     this.carteChoisie.update((actuelle) => (actuelle === id ? null : id));
+    if (this.carteChoisie()) this.focaliserDetail('titre-detail-main');
   }
 
   /**
@@ -322,6 +356,50 @@ export class PartieEcran implements OnInit, OnDestroy {
     }
     this.composantChoisi.set(id);
     if (camp === 'moi') this.attaquant.set(this.attaquantsPossibles().has(id) ? id : null);
+    this.focaliserDetail('titre-detail-plateau');
+  }
+
+  /**
+   * Le détail s'affiche en feuille au bas de l'écran, par-dessus la main (US-059) : le focus y passe, pour que la
+   * feuille ne cache pas l'élément qui l'a. Fermer le détail le rend à la carte ou au jeton choisi.
+   */
+  private focaliserDetail(titre: string): void {
+    afterNextRender(() => globalThis.document?.getElementById(titre)?.focus(), {
+      injector: this.injecteur,
+    });
+  }
+
+  /** Échap : replie d'abord le journal déplié, sinon referme le détail ; l'aide se ferme seule (`<dialog>`). */
+  protected echap(): void {
+    if (this.fenetreAide()?.nativeElement.open) return;
+    if (this.journalOuvert()) {
+      this.journalOuvert.set(false);
+      this.boutonJournal()?.nativeElement.focus();
+      return;
+    }
+    this.fermerDetail();
+  }
+
+  protected basculerJournal(): void {
+    this.journalOuvert.update((ouvert) => !ouvert);
+  }
+
+  /** Le bouton « ? » de l'en-tête rouvre l'aide à tout moment. */
+  protected ouvrirAide(): void {
+    const aide = this.fenetreAide()?.nativeElement;
+    if (aide) montrer(aide);
+  }
+
+  protected fermerAide(): void {
+    const aide = this.fenetreAide()?.nativeElement;
+    if (!aide) return;
+    if (typeof aide.close === 'function') aide.close();
+    else aide.removeAttribute('open');
+  }
+
+  /** Un clic sur le fond de l'aide (hors de son contenu) a pour cible le `<dialog>` lui-même : il la ferme. */
+  private clicFondAide(evenement: MouseEvent): void {
+    if (evenement.target === this.fenetreAide()?.nativeElement) this.fermerAide();
   }
 
   /** Referme le détail et rend le focus à la carte de la main ou au jeton choisi (US-040, US-041). */
@@ -428,7 +506,7 @@ export class PartieEcran implements OnInit, OnDestroy {
           ? this.depuisDuel(await firstValueFrom(this.http.get<Duel>(this.cheminApi())))
           : await firstValueFrom(this.http.get<Partie>(this.cheminApi()));
       this.echecLecture.set(null);
-      this.reglesOuvertes = partie.vue.moi.tours <= 1;
+      if (!this.preferences.aideVue()) this.aideAOuvrir = true;
       this.recevoir(partie, false);
     } catch (erreur) {
       if (erreur instanceof HttpErrorResponse && erreur.status === 404) this.introuvable.set(true);
@@ -575,4 +653,10 @@ export class PartieEcran implements OnInit, OnDestroy {
       if (instance && typeof instance === 'object') this.numeros.set(instance.id, instance.numero);
     }
   }
+}
+
+/** Ouvre une fenêtre modale ; jsdom (tests unitaires) ne connaît pas `showModal`. */
+function montrer(dialogue: HTMLDialogElement): void {
+  if (typeof dialogue.showModal !== 'function') dialogue.setAttribute('open', '');
+  else if (!dialogue.open) dialogue.showModal();
 }

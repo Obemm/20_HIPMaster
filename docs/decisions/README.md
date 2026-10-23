@@ -38,5 +38,6 @@ référence Elis.
 | [0027](0027-inscription-sur-invitation.md)             | Inscription sur invitation : codes à usages comptés, sous HMAC        | ADR-020 ; 010, 034 écartés     | Acceptée (complétée par 0029) |
 | [0028](0028-deploiement-continu.md)                    | Déploiement continu : révision vérifiée avant bascule, front par API  | ADR-011, 032 écartés, 039, 033 | Acceptée                      |
 | [0029](0029-administrateurs-par-configuration.md)      | Administrateurs désignés par la configuration, routes cachées en 404  | ADR-020 ; 010, 034 écartés     | Acceptée                      |
+| [0032](0032-preferences-interface-navigateur.md)       | Préférences d'interface gardées par le navigateur (`localStorage`)    | ADR-032 écarté                 | Acceptée                      |
 
 Modèle : [template.md](template.md).
