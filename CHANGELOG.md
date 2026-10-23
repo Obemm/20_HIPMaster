@@ -171,6 +171,13 @@ Toutes les évolutions notables du projet sont consignées ici
 
 ### Corrigé
 
+- L'écran de partie et de duel dit pourquoi une carte de la main ne se joue pas, avec les mots du serveur : une
+  évolution sans sa carte d'origine (« Évolution d’Apigee API Gateway : posez d’abord Apigee API Gateway, puis
+  faites-la évoluer. »), le Débit qui manque (coût effectif, Cache sémantique compris), le plateau plein, un sort ou
+  un incident sans cible, une carte pas encore prise en charge, le tour de l'adversaire. Le message générique, qui
+  ne s'affichait même pas tant que « Décommissionner » restait proposé, disparaît. Une carte injouable reste lisible,
+  avec la mention « Pas jouable » sous sa vignette et la raison dans sa description accessible. La vue de l'API porte
+  `injouable` sur chaque carte de la main (contrats `parties.yaml` et `duels.yaml`, version 1.2.0) (US-071).
 - Le front tient au démarrage à froid et aux sessions expirées : une panne du serveur ne fait plus perdre son
   compte (seul un 401 oublie la session, avec « Session expirée » puis retour à sa page après reconnexion, et aucun
   écran ne propose de créer un compte tant qu'un jeton est gardé) ; une lecture en panne passagère est retentée deux

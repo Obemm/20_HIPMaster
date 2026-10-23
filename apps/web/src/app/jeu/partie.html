@@ -292,7 +292,8 @@
         <!-- Focusable : la main défile au clavier même quand ses cartes sont désactivées (tour adverse). -->
         <ul class="flex gap-2 overflow-x-auto pb-2" tabindex="0" aria-labelledby="titre-main">
           @for (instance of v.moi.main; track instance.id) {
-            <li class="w-28 shrink-0 sm:w-32">
+            <!-- relative : le texte réservé aux lecteurs d'écran reste dans la main qui défile, sans élargir la page. -->
+            <li class="relative w-28 shrink-0 sm:w-32">
               <button
                 type="button"
                 class="w-full rounded-[1rem] focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-default"
@@ -302,11 +303,23 @@
                 [attr.aria-pressed]="carteChoisie() === instance.id"
                 [attr.aria-label]="carteDe(instance.numero)?.nom"
                 [attr.aria-controls]="carteChoisie() === instance.id ? 'detail-main' : null"
+                [attr.aria-describedby]="
+                  monTour() && instance.injouable ? 'raison-main-' + instance.id : null
+                "
                 [disabled]="occupe()"
                 (click)="choisirCarte(instance.id)"
               >
                 <hip-vignette-carte [carte]="carteDe(instance.numero)!" [titre]="false" />
               </button>
+              <!-- Carte injouable (US-071) : une mention visible, pas un grisé ; la raison complète pour les lecteurs d'écran. -->
+              @if (monTour() && instance.injouable) {
+                <p
+                  [id]="'raison-main-' + instance.id"
+                  class="mt-1 text-center text-xs font-semibold text-texte-doux"
+                >
+                  Pas jouable<span class="sr-only"> : {{ instance.injouable }}</span>
+                </p>
+              }
             </li>
           } @empty {
             <li class="text-sm text-texte-doux">Main vide.</li>
@@ -490,6 +503,14 @@
 
             @if (monTour()) {
               @if (d.zone === 'main') {
+                @if (d.injouable) {
+                  <!-- Pourquoi elle ne se joue pas : le serveur le dit (US-071, ADR 0004). -->
+                  <p
+                    class="rounded-lg border-2 border-amber-600 px-3 py-2 text-sm dark:border-amber-400"
+                  >
+                    {{ d.injouable }}
+                  </p>
+                }
                 <div
                   class="flex flex-wrap gap-2"
                   role="group"
@@ -504,11 +525,6 @@
                     >
                       {{ libelleAction(action) }}
                     </button>
-                  } @empty {
-                    <p class="text-sm text-texte-doux">
-                      Cette carte ne peut pas être jouée maintenant (Débit, plateau plein, ou carte
-                      pas encore jouable).
-                    </p>
                   }
                 </div>
               } @else if (d.zone === 'moi') {
@@ -544,7 +560,7 @@
             } @else if (!vue()?.issue) {
               <p class="text-sm text-texte-doux">
                 @if (d.zone === 'main') {
-                  Ce n’est pas votre tour : vous pourrez jouer cette carte au prochain.
+                  {{ d.injouable }}
                 } @else {
                   Ce n’est pas votre tour : vous pourrez attaquer au prochain.
                 }

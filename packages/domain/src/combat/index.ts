@@ -37,6 +37,7 @@ export {
 export {
   journalDe,
   vueDe,
+  type CarteEnMain,
   type ComposantVisible,
   type MarqueursJoueur,
   type VueAdversaire,

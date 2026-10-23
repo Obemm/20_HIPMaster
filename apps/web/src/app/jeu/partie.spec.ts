@@ -70,6 +70,24 @@ const CATALOGUE: Carte[] = [
   },
 ];
 
+const APIGEE_AI_GATEWAY: Carte = {
+  numero: 40,
+  nom: 'Apigee AI Gateway',
+  famille: 'ia',
+  type: 'evolution',
+  rarete: 'legendaire',
+  cout: 5,
+  attaque: 4,
+  pv: 7,
+  capacites: [],
+  origine: 18,
+  enVrai: 'La passerelle des appels aux modèles.',
+};
+CATALOGUE.push(APIGEE_AI_GATEWAY);
+
+const RAISON_EVOLUTION =
+  'Évolution d’Apigee API Gateway : posez d’abord Apigee API Gateway, puis faites-la évoluer.';
+
 function vue(modifs: Partial<Vue> = {}): Vue {
   const camp = { sla: 20, debit: 3, tours: 2, plateau: [], defausse: [], pioche: 14 };
   return {
@@ -227,7 +245,15 @@ describe('PartieEcran', () => {
   });
 
   it('pendant le tour adverse, la carte se consulte quand même, sans actions', async () => {
-    const { fixture, page } = await ouvrir(vue({ actif: 'j2', actions: [] }));
+    const v = vue({ actif: 'j2', actions: [] });
+    v.moi.main = [
+      {
+        id: 'j1-01',
+        numero: 22,
+        injouable: 'Ce n’est pas votre tour : attendez le vôtre pour jouer cette carte.',
+      },
+    ];
+    const { fixture, page } = await ouvrir(v);
     const carte = bouton(page, 'API REST');
     expect(carte?.disabled).toBe(false);
     carte?.click();
@@ -235,7 +261,41 @@ describe('PartieEcran', () => {
     const detail = page.querySelector('#detail-main');
     expect(detail?.textContent).toContain('API REST');
     expect(detail?.querySelector('[role="group"]')).toBeNull();
-    expect(detail?.textContent).toContain('vous pourrez jouer cette carte au prochain');
+    expect(detail?.textContent).toContain(
+      'Ce n’est pas votre tour : attendez le vôtre pour jouer cette carte.',
+    );
+    // Pendant le tour adverse, la main n'affiche pas « Pas jouable » sur chaque carte.
+    expect(page.querySelector('#raison-main-j1-01')).toBeNull();
+  });
+
+  it('dit pourquoi une carte de la main ne se joue pas, avec les mots du serveur (US-071)', async () => {
+    const v = vue({
+      actions: [{ type: 'decommissionner', carte: 'j1-09' }, { type: 'finirTour' }],
+    });
+    v.moi.main = [{ id: 'j1-09', numero: 40, injouable: RAISON_EVOLUTION }];
+    const { fixture, page } = await ouvrir(v);
+    const carte = bouton(page, 'Apigee AI Gateway');
+    // La vignette reste lisible : une mention visible, et la raison dans la description accessible.
+    const mention = page.querySelector('#raison-main-j1-09');
+    expect(mention?.textContent).toContain('Pas jouable');
+    expect(mention?.textContent).toContain(RAISON_EVOLUTION);
+    expect(carte?.getAttribute('aria-describedby')).toBe('raison-main-j1-09');
+    expect(carte?.disabled).toBe(false);
+
+    carte?.click();
+    fixture.detectChanges();
+    const detail = page.querySelector('#detail-main');
+    expect(detail?.textContent).toContain(RAISON_EVOLUTION);
+    expect(detail?.textContent).not.toContain('Débit, plateau plein');
+    expect(detail?.querySelector('[role="group"]')?.textContent).toContain('Décommissionner');
+  });
+
+  it('une carte jouable ne porte ni mention ni description', async () => {
+    const v = vue();
+    v.moi.main = [{ id: 'j1-01', numero: 22, injouable: null }];
+    const { page } = await ouvrir(v);
+    expect(page.querySelector('#raison-main-j1-01')).toBeNull();
+    expect(bouton(page, 'API REST')?.hasAttribute('aria-describedby')).toBe(false);
   });
 
   it('choisit un attaquant, puis sa cible, et confirme l’attaque sous le détail de la cible (US-041)', async () => {

@@ -47,7 +47,7 @@ type Attaque = Extract<Action, { type: 'attaquer' }>;
  * l'adversaire, avec son état du moment), ou le SI adverse quand il est visé.
  */
 type Detail =
-  | { zone: 'main'; id: string; carte: Carte }
+  | { zone: 'main'; id: string; carte: Carte; injouable: string | null }
   | { zone: 'moi' | 'adversaire'; id: string; carte: Carte; composant: Composant }
   | { zone: 'si'; id: 'si' };
 
@@ -177,7 +177,9 @@ export class PartieEcran implements OnInit, OnDestroy {
     if (main) {
       const instance = vue.moi.main.find((c) => c.id === main);
       const carte = instance && this.carteDe(instance.numero);
-      return carte ? { zone: 'main', id: main, carte } : null;
+      return carte
+        ? { zone: 'main', id: main, carte, injouable: instance.injouable ?? null }
+        : null;
     }
     const id = this.composantChoisi();
     if (!id) return null;

@@ -10,7 +10,7 @@ _Dernière mise à jour : 2026-10-23_
 | [EPIC-01 — Univers et modèle de carte](epics/EPIC-01-univers-cartes.md)                           | Must     | Terminé   | 2/2        |
 | [EPIC-02 — Comptes joueurs](epics/EPIC-02-comptes-joueurs.md)                                     | Must     | Terminé   | 1/1        |
 | [EPIC-03 — Boosters et collection](epics/EPIC-03-boosters-collection.md)                          | Must     | Terminé   | 2/2        |
-| [EPIC-04 — Combat contre le bot](epics/EPIC-04-combat-bot.md)                                     | Must     | Terminé   | 14/14      |
+| [EPIC-04 — Combat contre le bot](epics/EPIC-04-combat-bot.md)                                     | Must     | Terminé   | 15/15      |
 | [EPIC-05 — Illustrations des cartes](epics/EPIC-05-illustrations.md)                              | Should   | En cours  | 3/5        |
 | [EPIC-06 — Duels entre joueurs](epics/EPIC-06-duels-joueurs.md)                                   | Should   | Terminé   | 8/8        |
 | [EPIC-07 — Vie sociale](epics/EPIC-07-vie-sociale.md)                                             | Could    | À affiner | 0/0        |
@@ -110,6 +110,12 @@ Retour du porteur du projet le 2026-10-22 : « presque impossible de gagner cont
 | Story                                                                                             | Epic    | Priorité | Taille | Statut |
 | ------------------------------------------------------------------------------------------------- | ------- | -------- | ------ | ------ |
 | [US-064 — Un bot battable par un débutant, une partie équitable](stories/US-064-bot-equilibre.md) | EPIC-04 | Must     | M      | Faite  |
+
+Retour du porteur du projet le 2026-10-23 : impossible de jouer Apigee AI Gateway, sans savoir pourquoi.
+
+| Story                                                                                             | Epic    | Priorité | Taille | Statut |
+| ------------------------------------------------------------------------------------------------- | ------- | -------- | ------ | ------ |
+| [US-071 — Dire pourquoi une carte de la main ne se joue pas](stories/US-071-raison-carte-main.md) | EPIC-04 | Must     | M      | Faite  |
 
 ## Itération 6 (à venir) — mise en ligne
 

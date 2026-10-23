@@ -1,5 +1,5 @@
 import { adversaire, attaqueEffective, raisonDeNePasAttaquer } from './outils.ts';
-import { actionsPossibles } from './possibles.ts';
+import { actionsPossibles, raisonDeNePasJouer } from './possibles.ts';
 import type {
   Action,
   ComposantEnJeu,
@@ -19,6 +19,15 @@ export interface ComposantVisible extends ComposantEnJeu {
    * composants, pendant son tour : c'est le serveur qui explique, l'écran ne fait qu'afficher (ADR 0004).
    */
   sansAttaque?: string | null;
+}
+
+/** Une carte de sa main, telle qu'on la voit. */
+export interface CarteEnMain extends InstanceCarte {
+  /**
+   * Pourquoi cette carte ne se joue pas maintenant (US-071) ; `null` si elle se joue. Absent une fois la partie
+   * terminée : c'est le serveur qui explique, l'écran ne fait qu'afficher (ADR 0004).
+   */
+  injouable?: string | null;
 }
 
 interface VueCommune {
@@ -45,7 +54,7 @@ export type MarqueursJoueur = Pick<
 >;
 
 export interface VueMoi extends VueCommune {
-  main: InstanceCarte[];
+  main: CarteEnMain[];
   aDecommissionne: boolean;
   marqueurs: MarqueursJoueur;
 }
@@ -93,12 +102,16 @@ export function vueDe(etat: EtatPartie, joueur: IdJoueur): VueJoueur {
     etat.actif === joueur && !etat.issue
       ? commune.plateau.map((c) => ({ ...c, sansAttaque: raisonDeNePasAttaquer(etat, joueur, c) }))
       : commune.plateau;
+  const actions = etat.actif === joueur ? actionsPossibles(etat) : [];
+  const main = etat.issue
+    ? structuredClone(moi.main)
+    : moi.main.map((c) => ({ ...c, injouable: raisonDeNePasJouer(etat, joueur, c, actions) }));
   return {
     joueur,
     moi: {
       ...commune,
       plateau,
-      main: structuredClone(moi.main),
+      main,
       aDecommissionne: moi.aDecommissionne,
       marqueurs: {
         fileDurableUtilisee: moi.fileDurableUtilisee,
@@ -117,6 +130,6 @@ export function vueDe(etat: EtatPartie, joueur: IdJoueur): VueJoueur {
     tour: etat.tour,
     issue: etat.issue ? { ...etat.issue } : null,
     journal: journalDe(etat.journal, joueur),
-    actions: etat.actif === joueur ? actionsPossibles(etat) : [],
+    actions,
   };
 }
