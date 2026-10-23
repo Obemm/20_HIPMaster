@@ -17,6 +17,13 @@
     <p role="alert" class="text-alerte">{{ erreur() }}</p>
   }
 
+  @if (supprime()) {
+    <p role="status" class="rounded-lg border-2 border-accent p-3">
+      <strong>Votre compte a été supprimé</strong>, sur tous vos appareils. Vous pouvez continuer à
+      jouer contre le bot sans compte, ou en créer un nouveau.
+    </p>
+  }
+
   @if (codeAffiche(); as code) {
     <section
       aria-labelledby="titre-code"
@@ -117,6 +124,58 @@
         </p>
         <p class="mt-1 font-mono break-all text-texte select-all">{{ joueur.id }}</p>
       </details>
+    </section>
+
+    <section
+      aria-labelledby="titre-supprimer"
+      class="flex flex-col gap-3 rounded-xl border-2 border-alerte p-4"
+    >
+      <h2 id="titre-supprimer" class="text-lg font-semibold">Supprimer mon compte</h2>
+      <p class="text-texte-doux">
+        Votre collection, vos boosters et vos parties en cours disparaissent pour de bon, et vos
+        duels en cours sont perdus par forfait. Vos adversaires gardent leurs duels terminés, sans
+        votre pseudo. Rien ne pourra être restauré.
+        <a routerLink="/confidentialite" class="underline underline-offset-4"
+          >Ce que le jeu garde sur vous</a
+        >.
+      </p>
+      @if (confirmerSuppression()) {
+        <p
+          class="flex flex-wrap items-center gap-2"
+          role="group"
+          aria-label="Confirmer la suppression du compte"
+        >
+          <span class="font-semibold"
+            >Supprimer définitivement le compte {{ joueur.pseudo }} ?</span
+          >
+          <button
+            type="button"
+            class="rounded-lg bg-accent px-3 py-2 font-semibold text-sur-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:opacity-60"
+            [disabled]="occupe()"
+            (click)="supprimer()"
+          >
+            Oui, supprimer mon compte
+          </button>
+          <button
+            type="button"
+            class="rounded-lg border-2 border-bordure px-3 py-2 font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+            (click)="confirmerSuppression.set(false)"
+          >
+            Non, le garder
+          </button>
+        </p>
+      } @else {
+        <p>
+          <button
+            type="button"
+            class="rounded-lg border-2 border-alerte px-3 py-2 font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:opacity-60"
+            [disabled]="occupe()"
+            (click)="confirmerSuppression.set(true)"
+          >
+            Supprimer mon compte…
+          </button>
+        </p>
+      }
     </section>
   } @else if (compte.pret()) {
     <section aria-labelledby="titre-creer" class="flex flex-col gap-3">

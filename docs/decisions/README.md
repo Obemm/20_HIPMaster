@@ -39,6 +39,7 @@ référence Elis.
 | [0028](0028-deploiement-continu.md)                    | Déploiement continu : révision vérifiée avant bascule, front par API  | ADR-011, 032 écartés, 039, 033 | Acceptée                      |
 | [0029](0029-administrateurs-par-configuration.md)      | Administrateurs désignés par la configuration, routes cachées en 404  | ADR-020 ; 010, 034 écartés     | Acceptée                      |
 | [0030](0030-parties-bot-en-base.md)                    | Parties contre le bot en base : version, une écriture par action      | ADR-020                        | Acceptée                      |
+| [0031](0031-suppression-compte.md)                     | Suppression de son compte : forfait des duels, historique sans lui    | ADR-020 ; ADR-015 écarté       | Acceptée                      |
 | [0033](0033-supervision-sauvegardes.md)                | Supervision, sauvegardes et erreurs : Cloud Monitoring, jobs, journal | ADR-006, 012, 043 ; 009 écarté | Proposée                      |
 
 Modèle : [template.md](template.md).
