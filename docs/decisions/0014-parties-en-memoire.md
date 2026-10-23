@@ -1,7 +1,7 @@
 # 0014 — État des parties en cours gardé en mémoire par l'API
 
 - **Date** : 2026-10-18
-- **Statut** : Acceptée
+- **Statut** : Remplacée par 0030
 - **Référence Elis** : ADR-020 (API REST : réponse en moins de 3 s pour une API front, design first) — retenu ; aucun
   ADR Elis ne traite de l'état applicatif
 

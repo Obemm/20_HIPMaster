@@ -6,13 +6,13 @@ import {
   type ZodTypeProvider,
 } from 'fastify-type-provider-zod';
 import type { Logger } from 'pino';
-import { DepotParties, type OptionsDepot } from './parties/depot.ts';
 import type { OptionsBoosters } from './comptes/boosters.ts';
 import { type Administrateurs, AUCUN } from './comptes/administrateurs.ts';
 import { CLE_CODES_DEVELOPPEMENT } from './comptes/comptes.ts';
 import { SITE_DEVELOPPEMENT } from './comptes/invitations.ts';
 import type { Base } from './db/index.ts';
 import type { OptionsDuels } from './duels/duels.ts';
+import type { OptionsParties } from './parties/parties.ts';
 import { champsTrace, messageErreur } from './journaux.ts';
 import type { LimitesDebit } from './limites.ts';
 import { routesAdministration } from './routes/administration.ts';
@@ -44,7 +44,8 @@ export function construireApp(
     journal?: Logger;
     /** Projet Google Cloud : chaque journal d'une requête porte alors sa trace (US-046). */
     projet?: string | null;
-    parties?: OptionsDepot;
+    /** Réglages des parties contre le bot (US-052) : durée de vie, plafond, horloge, graines. */
+    parties?: OptionsParties;
     base?: Base;
     boosters?: OptionsBoosters;
     duels?: OptionsDuels;
@@ -141,8 +142,8 @@ export function construireApp(
   app.register(routesErreurs, { prefix: '/api/v1', ...(limites && { limites }) });
   app.register(routesRaretes, { prefix: '/api/v1' });
   app.register(routesCartes, { prefix: '/api/v1' });
-  // Parties en cours, gardées en mémoire (ADR 0014).
-  // Comptes invités (US-022) : seulement quand une base est fournie (ADR 0018).
+  // Comptes invités (US-022), parties contre le bot (US-052) et duels : seulement quand une base est fournie
+  // (ADR 0018).
   if (options.base) {
     app.register(routesComptes, {
       prefix: '/api/v1',
@@ -174,14 +175,15 @@ export function construireApp(
       duels: { ...options.duels, ...(options.boosters && { boosters: options.boosters }) },
       ...(limites && { limites }),
     });
+    // Parties contre le bot, gardées en base (ADR 0030).
+    app.register(routesParties, {
+      prefix: '/api/v1',
+      base: options.base,
+      ...(options.parties && { parties: options.parties }),
+      ...(options.boosters && { boosters: options.boosters }),
+      ...(limites && { limites }),
+    });
   }
-  app.register(routesParties, {
-    prefix: '/api/v1',
-    depot: new DepotParties(options.parties),
-    ...(options.base && { base: options.base }),
-    ...(options.boosters && { boosters: options.boosters }),
-    ...(limites && { limites }),
-  });
 
   return app;
 }
