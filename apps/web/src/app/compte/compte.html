@@ -62,7 +62,12 @@
       </h2>
       <p class="text-texte-doux">
         Votre compte est gardé par ce navigateur. Pour le retrouver ailleurs, utilisez votre code de
-        récupération ; perdu, vous pouvez en générer un nouveau (l’ancien cessera de fonctionner).
+        récupération. Perdu, ou vu par quelqu’un d’autre ? Générez-en un nouveau : l’ancien cessera
+        de fonctionner, et vos autres appareils seront déconnectés.
+      </p>
+      <p class="text-texte-doux">
+        Resté connecté sur un appareil prêté ? « Déconnecter mes autres appareils » ferme votre
+        compte partout sauf ici, sans changer de code.
       </p>
       <p class="flex flex-wrap gap-2">
         <button
@@ -75,6 +80,14 @@
         </button>
         <button
           type="button"
+          class="rounded-lg border-2 border-accent px-3 py-2 font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:opacity-60"
+          [disabled]="occupe()"
+          (click)="deconnecterAutres()"
+        >
+          Déconnecter mes autres appareils
+        </button>
+        <button
+          type="button"
           class="rounded-lg border-2 border-bordure px-3 py-2 font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:opacity-60"
           [disabled]="occupe()"
           (click)="deconnecter()"
@@ -82,6 +95,7 @@
           Se déconnecter
         </button>
       </p>
+      <p role="status">{{ info() }}</p>
     </section>
   } @else if (compte.pret()) {
     <section aria-labelledby="titre-creer" class="flex flex-col gap-3">

@@ -14,7 +14,7 @@ import {
 export const joueurs = pgTable('joueurs', {
   id: uuid().primaryKey().defaultRandom(),
   pseudo: text().notNull(),
-  /** Empreinte SHA-256 du code de récupération : le code lui-même n'est jamais stocké. */
+  /** Empreinte HMAC-SHA-256 du code de récupération (ADR 0025) : le code lui-même n'est jamais stocké. */
   empreinteCode: text().notNull().unique(),
   creeLe: timestamp({ withTimezone: true }).notNull().defaultNow(),
   /** Boosters en stock (US-023, ADR 0019) : 5 offerts à la création du compte. */

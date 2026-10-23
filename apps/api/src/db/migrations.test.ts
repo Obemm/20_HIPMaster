@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { count } from 'drizzle-orm';
 import { pgSchema, serial } from 'drizzle-orm/pg-core';
 import { describe, expect, it } from 'vitest';
-import { creerJoueur } from '../comptes/comptes.ts';
+import { CLE_CODES_DEVELOPPEMENT, creerJoueur } from '../comptes/comptes.ts';
 import { creerBaseVide } from './base-de-test.ts';
 import { type Base, ouvrirBase } from './index.ts';
 import { joueurs } from './schema.ts';
@@ -30,7 +30,7 @@ describe.skipIf(!process.env['DATABASE_URL'])('migrations sur PostgreSQL (US-056
     try {
       const premiere = await ouvrirBase({ url: vide.url, locale: 'memory://' });
       expect(await migrationsEnregistrees(premiere.base)).toBe(MIGRATIONS);
-      await creerJoueur(premiere.base, 'Ada');
+      await creerJoueur(premiere.base, 'Ada', CLE_CODES_DEVELOPPEMENT);
       await premiere.fermer();
 
       const seconde = await ouvrirBase({ url: vide.url, locale: 'memory://' });

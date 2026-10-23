@@ -4,7 +4,7 @@ import { eq } from 'drizzle-orm';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { construireApp } from './app.ts';
 import { recompenserVictoire } from './comptes/boosters.ts';
-import { creerJoueur } from './comptes/comptes.ts';
+import { CLE_CODES_DEVELOPPEMENT, creerJoueur } from './comptes/comptes.ts';
 import { baseDeTest } from './db/base-de-test.ts';
 import { joueurs } from './db/schema.ts';
 import type { PartieVisible } from './parties/depot.ts';
@@ -29,7 +29,7 @@ describe('récompense de victoire', () => {
   const options = () => ({ maintenant: () => maintenant });
 
   it('rapporte un booster, une seule fois par partie', async () => {
-    const { joueur } = await creerJoueur(ouverte.base, 'Ada');
+    const { joueur } = await creerJoueur(ouverte.base, 'Ada', CLE_CODES_DEVELOPPEMENT);
     const partie = randomUUID();
     expect(await recompenserVictoire(ouverte.base, partie, joueur.id, options())).toEqual({
       booster: true,
@@ -45,7 +45,7 @@ describe('récompense de victoire', () => {
   });
 
   it('plafonne à 3 boosters par jour, puis recommence le lendemain', async () => {
-    const { joueur } = await creerJoueur(ouverte.base, 'Ada');
+    const { joueur } = await creerJoueur(ouverte.base, 'Ada', CLE_CODES_DEVELOPPEMENT);
     for (let i = 0; i < 3; i++) {
       const r = await recompenserVictoire(ouverte.base, randomUUID(), joueur.id, options());
       expect(r.booster).toBe(true);
@@ -63,7 +63,7 @@ describe('récompense de victoire', () => {
   });
 
   it('peut faire dépasser le plafond de recharge', async () => {
-    const { joueur } = await creerJoueur(ouverte.base, 'Ada');
+    const { joueur } = await creerJoueur(ouverte.base, 'Ada', CLE_CODES_DEVELOPPEMENT);
     await ouverte.base.update(joueurs).set({ boosters: 10 }).where(eq(joueurs.id, joueur.id));
     await recompenserVictoire(ouverte.base, randomUUID(), joueur.id, options());
     expect(await stock(joueur.id)).toBe(11);
@@ -81,7 +81,10 @@ describe('parties récompensées', () => {
     await app.close();
   });
 
-  /** Joue une partie complète avec la stratégie du Batch de nuit contre le Batch de nuit. */
+  /**
+   * Joue une partie complète avec la stratégie du Batch de nuit contre le Batch de nuit ; chaque requête porte les
+   * `entetes`, comme le front envoie le jeton de sa session (une partie connectée n'appartient qu'à elle, US-047).
+   */
   async function jouerPartie(entetes: Record<string, string>): Promise<PartieVisible> {
     let partie = (
       await app.inject({
@@ -100,6 +103,7 @@ describe('parties récompensées', () => {
         await app.inject({
           method: 'POST',
           url: `/api/v1/parties/${partie.id}/actions`,
+          headers: entetes,
           payload: choisirActionBatchDeNuit(vue),
         })
       ).json<PartieVisible>();
@@ -108,7 +112,7 @@ describe('parties récompensées', () => {
   }
 
   it('une victoire en étant connecté rapporte un booster, annoncé dans la partie', async () => {
-    const { joueur, jeton } = await creerJoueur(ouverte.base, 'Ada');
+    const { joueur, jeton } = await creerJoueur(ouverte.base, 'Ada', CLE_CODES_DEVELOPPEMENT);
     const entetes = { authorization: `Bearer ${jeton}` };
     let partie = await jouerPartie(entetes);
     let essais = 0;
@@ -122,7 +126,11 @@ describe('parties récompensées', () => {
     expect(await stock(joueur.id)).toBe(6);
 
     // Relire la partie terminée ne rapporte rien de plus.
-    const relue = await app.inject({ method: 'GET', url: `/api/v1/parties/${partie.id}` });
+    const relue = await app.inject({
+      method: 'GET',
+      url: `/api/v1/parties/${partie.id}`,
+      headers: entetes,
+    });
     expect(relue.json()).toMatchObject({ recompense: { booster: true } });
     expect(await stock(joueur.id)).toBe(6);
   });

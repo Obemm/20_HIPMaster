@@ -5,9 +5,17 @@ import { expliquer } from '../reseau/reseau';
 import { CompteService } from './compte.service';
 import { EtatSession } from './etat-session';
 
+/** Ce que dit la page après la fermeture des autres sessions du compte (US-047). */
+export function bilanDeconnexion(sessionsFermees: number): string {
+  if (sessionsFermees === 0) return 'Aucun autre appareil n’était connecté.';
+  if (sessionsFermees === 1) return 'Votre autre appareil a été déconnecté.';
+  return `Vos ${sessionsFermees} autres appareils ont été déconnectés.`;
+}
+
 /**
  * Page « Mon compte » (US-022) : créer un compte invité, le retrouver avec son code, se déconnecter. Après un 401, elle
- * dit « Session expirée » et ramène le joueur à sa page une fois reconnecté (US-055).
+ * dit « Session expirée » et ramène le joueur à sa page une fois reconnecté (US-055). Un nouveau code, ou « Déconnecter
+ * mes autres appareils », ferme les autres sessions du compte (US-047).
  */
 @Component({
   selector: 'hip-compte',
@@ -38,6 +46,8 @@ export class CompteEcran {
   /** Le code de récupération à montrer (une seule fois). */
   protected readonly codeAffiche = signal<string | null>(null);
   protected readonly erreur = signal<string | null>(null);
+  /** Le bilan de la dernière action, annoncé aux lecteurs d'écran (appareils déconnectés). */
+  protected readonly info = signal<string | null>(null);
   protected readonly occupe = signal(false);
   protected readonly copie = signal(false);
 
@@ -59,8 +69,16 @@ export class CompteEcran {
 
   protected async regenerer(): Promise<void> {
     await this.agir(async () => {
-      this.codeAffiche.set(await this.compte.nouveauCode());
+      const { codeRecuperation, sessionsFermees } = await this.compte.nouveauCode();
+      this.codeAffiche.set(codeRecuperation);
+      this.info.set(bilanDeconnexion(sessionsFermees));
     }, 'Le code n’a pas pu être régénéré.');
+  }
+
+  protected async deconnecterAutres(): Promise<void> {
+    await this.agir(async () => {
+      this.info.set(bilanDeconnexion(await this.compte.deconnecterAutresAppareils()));
+    }, 'Les autres appareils n’ont pas pu être déconnectés.');
   }
 
   protected async deconnecter(): Promise<void> {
@@ -83,6 +101,7 @@ export class CompteEcran {
   private async agir(action: () => Promise<void>, messageRefus: string): Promise<void> {
     this.occupe.set(true);
     this.erreur.set(null);
+    this.info.set(null);
     this.copie.set(false);
     try {
       await action();

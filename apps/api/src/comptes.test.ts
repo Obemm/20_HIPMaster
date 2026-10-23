@@ -1,5 +1,8 @@
+import { createHash } from 'node:crypto';
+import { eq } from 'drizzle-orm';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { construireApp } from './app.ts';
+import { CLE_CODES_DEVELOPPEMENT, empreinteCode } from './comptes/comptes.ts';
 import { baseDeTest } from './db/base-de-test.ts';
 import { joueurs, sessions } from './db/schema.ts';
 
@@ -26,6 +29,10 @@ const moi = (jeton?: string) =>
     url: '/api/v1/moi',
     headers: jeton ? { authorization: `Bearer ${jeton}` } : {},
   });
+const connecter = async (code: string) =>
+  (await app.inject({ method: 'POST', url: '/api/v1/sessions', payload: { code } })).json<{
+    jeton: string;
+  }>().jeton;
 
 describe('comptes invités', () => {
   it('crée un compte avec un pseudo : jeton de session et code de récupération lisible', async () => {
@@ -114,5 +121,79 @@ describe('comptes invités', () => {
       app.inject({ method: 'POST', url: '/api/v1/sessions', payload: { code: c } });
     expect((await connecter(codeRecuperation)).statusCode).toBe(401);
     expect((await connecter(code)).statusCode).toBe(201);
+  });
+
+  it('un nouveau code ferme toutes les autres sessions du compte, pas celle qui le demande (US-047)', async () => {
+    const { jeton, codeRecuperation } = (await creer()).json<Creation>();
+    const telephone = await connecter(codeRecuperation);
+    const tablette = await connecter(codeRecuperation);
+    const autreJoueur = (await creer('Bob')).json<Creation>().jeton;
+
+    const nouveau = await app.inject({
+      method: 'POST',
+      url: '/api/v1/moi/code',
+      headers: { authorization: `Bearer ${jeton}` },
+    });
+    expect(nouveau.statusCode).toBe(201);
+    expect(nouveau.json()).toMatchObject({ sessionsFermees: 2 });
+    expect((await moi(jeton)).statusCode).toBe(200);
+    expect((await moi(telephone)).statusCode).toBe(401);
+    expect((await moi(tablette)).statusCode).toBe(401);
+    expect((await moi(autreJoueur)).statusCode).toBe(200);
+  });
+
+  it('« Déconnecter mes autres appareils » ferme les autres sessions et garde celle-ci (US-047)', async () => {
+    const { jeton, codeRecuperation } = (await creer()).json<Creation>();
+    const telephone = await connecter(codeRecuperation);
+    const autreJoueur = (await creer('Bob')).json<Creation>().jeton;
+    const deconnecter = (j?: string) =>
+      app.inject({
+        method: 'DELETE',
+        url: '/api/v1/sessions/autres',
+        headers: j ? { authorization: `Bearer ${j}` } : {},
+      });
+
+    const reponse = await deconnecter(jeton);
+    expect(reponse.statusCode).toBe(200);
+    expect(reponse.json()).toEqual({ sessionsFermees: 1 });
+    expect((await moi(jeton)).statusCode).toBe(200);
+    expect((await moi(telephone)).statusCode).toBe(401);
+    expect((await moi(autreJoueur)).statusCode).toBe(200);
+    expect((await deconnecter(jeton)).json()).toEqual({ sessionsFermees: 0 });
+    expect((await deconnecter()).statusCode).toBe(401);
+    expect((await deconnecter(telephone)).statusCode).toBe(401);
+    // Le code, lui, fonctionne toujours : l'appareil déconnecté peut revenir.
+    expect((await moi(await connecter(codeRecuperation))).statusCode).toBe(200);
+  });
+
+  it('garde du code une empreinte HMAC : sans la clé, ni SHA-256 ni une autre clé ne le retrouvent (ADR 0025)', async () => {
+    const cle = 'cle-de-test-tiree-au-hasard-0123456789abcdef';
+    await app.close();
+    app = construireApp({ base: ouverte.base, cleCodes: cle });
+    const { joueur, codeRecuperation } = (await creer()).json<Creation>();
+    const [ligne] = await ouverte.base
+      .select({ empreinte: joueurs.empreinteCode })
+      .from(joueurs)
+      .where(eq(joueurs.id, joueur.id));
+    const normalise = codeRecuperation.replaceAll('-', '');
+    expect(ligne?.empreinte).toBe(empreinteCode(cle, 'recuperation', codeRecuperation));
+    expect(ligne?.empreinte).not.toBe(createHash('sha256').update(normalise).digest('hex'));
+    expect(ligne?.empreinte).not.toBe(
+      empreinteCode(CLE_CODES_DEVELOPPEMENT, 'recuperation', codeRecuperation),
+    );
+
+    // Une API qui n'a pas la bonne clé ne reconnaît pas le code.
+    const autreCle = construireApp({ base: ouverte.base });
+    try {
+      const refus = await autreCle.inject({
+        method: 'POST',
+        url: '/api/v1/sessions',
+        payload: { code: codeRecuperation },
+      });
+      expect(refus.statusCode).toBe(401);
+    } finally {
+      await autreCle.close();
+    }
+    expect(await connecter(codeRecuperation)).toBeTruthy();
   });
 });
