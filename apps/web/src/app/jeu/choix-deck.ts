@@ -19,8 +19,8 @@ export class ChoixDeck {
 
   protected readonly decks = httpResource<Deck[]>(() => '/api/v1/decks');
   protected readonly niveaux = httpResource<Niveau[]>(() => '/api/v1/niveaux');
-  /** Niveau du bot choisi (Batch de nuit par défaut, le plus simple). */
-  protected readonly niveau = signal('batch-de-nuit');
+  /** Niveau du bot choisi (Stagiaire par défaut, le plus simple : US-064). */
+  protected readonly niveau = signal('stagiaire');
   protected readonly enCours = signal<string | null>(null);
   protected readonly erreur = signal<string | null>(null);
 

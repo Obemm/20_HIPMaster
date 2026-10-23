@@ -46,19 +46,20 @@ describe('decks prêtés', () => {
 });
 
 describe('niveaux du bot', () => {
-  it('GET /api/v1/niveaux liste les trois niveaux, du plus simple au plus fort', async () => {
+  it('GET /api/v1/niveaux liste les quatre niveaux, du plus simple au plus fort', async () => {
     const { app } = appli();
     const reponse = await app.inject({ method: 'GET', url: '/api/v1/niveaux' });
     expect(reponse.json<{ id: string }[]>().map((n) => n.id)).toEqual([
+      'stagiaire',
       'batch-de-nuit',
       'architecte-esb',
       'agent-autonome',
     ]);
   });
 
-  it('crée une partie au niveau demandé (Batch de nuit par défaut), refuse un niveau inconnu', async () => {
+  it('crée une partie au niveau demandé (Stagiaire par défaut), refuse un niveau inconnu', async () => {
     const { app } = appli();
-    expect((await creer(app)).partie.niveau).toBe('batch-de-nuit');
+    expect((await creer(app)).partie.niveau).toBe('stagiaire');
     const difficile = await app.inject({
       method: 'POST',
       url: '/api/v1/parties',

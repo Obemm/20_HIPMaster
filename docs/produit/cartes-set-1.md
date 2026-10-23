@@ -222,3 +222,75 @@ mesurer que le jeu.
 
 Les écarts restent modestes : le tirage des cartes pèse lourd dans une partie de 20 tours. Une recherche plus
 profonde, ou qui simule le tour adverse, s'est révélée moins forte (voir la story US-021).
+
+## Un bot battable et une partie équitable (US-064, 2026-10-22)
+
+Deux constats : aucun niveau n'était vraiment facile, et commencer donnait un gros avantage. Trois changements :
+le second joueur reçoit **1 Débit de plus à son premier tour** ([ADR 0026](../decisions/0026-debit-du-second-joueur.md)),
+un niveau facile, **Stagiaire**, passe devant les trois autres (Batch de nuit devient moyen, Architecte ESB difficile,
+Agent autonome expert), et Architecte ESB étudie **4 actions candidates au lieu de 3** (voir la story US-064).
+
+`npm run simuler -- 200 1` (graine 1001 entre parenthèses quand elle diffère de plus de 2 points). Les deux
+dernières mesures croisent les decks prêtés : 200 parties pour chacune des 9 paires de decks, soit 1 800 parties par
+ligne. Le **profil débutant** joue comme quelqu'un qui découvre le jeu : il pose sa carte la plus chère tant qu'il
+peut, attaque le SI dès qu'il peut (sinon la première cible permise), sans sort, incident ni décommissionnement.
+« Avant » : les mêmes mesures sur le moteur sans la règle, avec les niveaux d'US-021 (graine 1).
+
+**Premier et second joueur**, chaque joueur contre lui-même (les nulles font le complément) :
+
+| Joueurs         | Avant : premier | Avant : second | Après : premier | Après : second |
+| --------------- | --------------- | -------------- | --------------- | -------------- |
+| Profil débutant | 73 %            | 27 %           | 54 %            | 46 %           |
+| Stagiaire       | —               | —              | 53 %            | 48 %           |
+| Batch de nuit   | 63 %            | 36 %           | 52 %            | 46 %           |
+| Architecte ESB  | 66 %            | 33 %           | 54 %            | 46 %           |
+| Agent autonome  | 62 %            | 38 %           | 49 %            | 51 %           |
+
+**Victoires d'un joueur contre chaque niveau**, en tout, quand il commence et quand il joue en second. Avant :
+
+| Niveau du bot (d'alors)    | Débutant | en commençant | en second | Joueur « Batch de nuit » | en commençant | en second |
+| -------------------------- | -------- | ------------- | --------- | ------------------------ | ------------- | --------- |
+| Batch de nuit (facile)     | 14 %     | 21 %          | 7 %       | 50 %                     | 63 %          | 36 %      |
+| Architecte ESB (moyen)     | 13 %     | 19 %          | 7 %       | 46 %                     | 61 %          | 31 %      |
+| Agent autonome (difficile) | 4 %      | 6 %           | 1 %       | 39 %                     | 51 %          | 25 %      |
+
+Après :
+
+| Niveau du bot              | Débutant | en commençant | en second | Joueur « Batch de nuit » | en commençant | en second |
+| -------------------------- | -------- | ------------- | --------- | ------------------------ | ------------- | --------- |
+| Stagiaire (facile)         | 56 %     | 59 %          | 53 %      | 90 %                     | 91 %          | 89 %      |
+| Batch de nuit (moyen)      | 14 %     | 16 %          | 12 %      | 50 %                     | 53 % (50 %)   | 46 %      |
+| Architecte ESB (difficile) | 8 %      | 9 %           | 7 %       | 44 % (40 %)              | 49 % (42 %)   | 40 %      |
+| Agent autonome (expert)    | 4 %      | 5 %           | 2 %       | 39 % (36 %)              | 42 % (37 %)   | 36 %      |
+
+**Niveaux deux à deux**, même deck des deux côtés (600 parties par ligne) :
+
+| Niveau A       | Niveau B       | Victoires A | Victoires B | Nulles |
+| -------------- | -------------- | ----------- | ----------- | ------ |
+| Stagiaire      | Batch de nuit  | 9 %         | 91 %        | 0 %    |
+| Stagiaire      | Architecte ESB | 8 %         | 92 %        | 0 %    |
+| Stagiaire      | Agent autonome | 3 %         | 97 %        | 0 %    |
+| Batch de nuit  | Architecte ESB | 40 %        | 59 %        | 1 %    |
+| Batch de nuit  | Agent autonome | 37 %        | 63 %        | 1 %    |
+| Architecte ESB | Agent autonome | 43 % (47 %) | 57 % (53 %) | 0 %    |
+
+**Decks prêtés** avec la règle (Batch de nuit des deux côtés, 200 parties par duel) :
+
+| Deck A   | Deck B   | Victoires A | Victoires B | Nulles | Finies par SLA | Tours moyens |
+| -------- | -------- | ----------- | ----------- | ------ | -------------- | ------------ |
+| Héritage | Héritage | 50 %        | 48 %        | 2 %    | 72 % (76 %)    | 17.2         |
+| Héritage | Moderne  | 52 %        | 46 %        | 3 %    | 69 %           | 17.5         |
+| Héritage | Hybride  | 50 %        | 49 %        | 2 %    | 74 %           | 17.2         |
+| Moderne  | Moderne  | 51 % (54 %) | 48 %        | 2 %    | 54 %           | 18.3         |
+| Moderne  | Hybride  | 54 % (46 %) | 45 % (52 %) | 2 %    | 64 %           | 17.7         |
+| Hybride  | Hybride  | 54 % (48 %) | 45 % (52 %) | 2 %    | 70 %           | 17.4         |
+
+**Lecture** :
+
+- Le Débit du second joueur ramène l'avantage du premier de 62–73 % à 49–54 % des parties, à chaque niveau. Contre
+  Batch de nuit, un débutant qui joue en second passe de 7 à 12 % de victoires, un joueur du même niveau de 36 à 46 %.
+- Le Stagiaire laisse 54 à 56 % de victoires à un débutant (plus de la moitié en commençant comme en second) et 90 %
+  à un joueur du niveau de Batch de nuit. Il perd au moins 90 % de ses parties contre chacun des autres niveaux.
+- L'échelle des niveaux tient : chaque niveau bat le précédent, de 53 à 91 % du temps. Agent autonome ne bat plus
+  Architecte ESB que 53 à 57 % du temps, contre 57 à 60 % quand ESB n'étudiait que 3 actions candidates.
+- Les decks restent équilibrés : tous les duels entre 45 et 55 %, aux deux graines.

@@ -83,8 +83,8 @@ test('on choisit la difficulté du bot avant son deck, et elle est rappelée pen
 }) => {
   await page.goto('/jouer');
   const niveaux = page.getByRole('group', { name: '1. Difficulté du bot' });
-  await expect(niveaux.getByRole('radio')).toHaveCount(3);
-  await expect(niveaux.getByRole('radio', { name: /Batch de nuit/ })).toBeChecked();
+  await expect(niveaux.getByRole('radio')).toHaveCount(4);
+  await expect(niveaux.getByRole('radio', { name: /Stagiaire/ })).toBeChecked();
   await niveaux.getByRole('radio', { name: /Agent autonome/ }).check();
   await page.getByRole('button', { name: 'Jouer avec Moderne' }).click();
   await expect(page.getByText('Niveau : Agent autonome')).toBeVisible();

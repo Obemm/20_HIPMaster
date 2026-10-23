@@ -3,7 +3,7 @@ import { scenario } from './aide-tests.ts';
 import { choisirActionBatchDeNuit } from './bot.ts';
 import { DECKS_PRETES, trouverDeckPrete, validerDeck } from './decks.ts';
 import { CARTES_PRISES_EN_CHARGE } from './prise-en-charge.ts';
-import { jouerPartie, simuler } from './simulation.ts';
+import { jouerPartie, simuler, simulerCroise } from './simulation.ts';
 import type { Scenario } from './aide-tests.ts';
 import { vueDe } from './vue.ts';
 
@@ -113,7 +113,18 @@ describe('simulation bot contre bot', () => {
     const r = simuler(heritage.cartes, hybride.cartes, 12, 3);
     expect(simuler(heritage.cartes, hybride.cartes, 12, 3)).toEqual(r);
     expect(r.victoiresA + r.victoiresB + r.nulles).toBe(12);
+    expect(r.victoiresPremier + r.victoiresSecond + r.nulles).toBe(12);
     expect(r.toursMoyens).toBeGreaterThan(1);
     expect(r.toursMoyens).toBeLessThanOrEqual(20);
+  });
+
+  it('croise les decks : chaque paire de decks joue ses parties, chaque victoire va au premier ou au second', () => {
+    const decks = DECKS_PRETES.map((d) => d.cartes);
+    const r = simulerCroise(decks, 2, 5, choisirActionBatchDeNuit);
+    expect(simulerCroise(decks, 2, 5, choisirActionBatchDeNuit)).toEqual(r);
+    expect(r.parties).toBe(18);
+    expect(r.victoiresA + r.victoiresB).toBe(r.victoiresPremier + r.victoiresSecond);
+    expect(r.victoiresPremier + r.victoiresSecond + r.nulles).toBe(18);
+    expect(r.victoiresAPremier).toBeLessThanOrEqual(Math.min(r.victoiresA, r.partiesAPremier));
   });
 });
