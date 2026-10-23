@@ -3,7 +3,6 @@ import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
 import { z } from 'zod';
 import {
   connecterParCode,
-  creerJoueur,
   empreinteJeton,
   fermerAutresSessions,
   fermerSession,
@@ -11,10 +10,12 @@ import {
   type Joueur,
   regenererCode,
 } from '../comptes/comptes.ts';
+import { inscrire } from '../comptes/invitations.ts';
 import type { Base } from '../db/index.ts';
 import { limiter, type LimitesDebit } from '../limites.ts';
 
-// Contrat : apps/api/openapi/comptes.yaml (US-022, ADR 0017 ; protections : US-047, ADR 0025).
+// Contrat : apps/api/openapi/comptes.yaml (US-022, ADR 0017 ; protections : US-047, ADR 0025 ; invitations : US-048,
+// ADR 0027).
 
 const PROBLEME = 'application/problem+json';
 export const refuser = (reponse: FastifyReply, status: number, title: string) =>
@@ -63,23 +64,34 @@ export async function exigerJoueur(
 
 export const routesComptes: FastifyPluginAsyncZod<{
   base: Base;
-  /** Clé secrète des codes de récupération (ADR 0025). */
+  /** Clé secrète des codes de récupération et d'invitation (ADR 0025, 0027). */
   cleCodes: string;
+  /** Création de compte réservée aux invités (ADR 0027) ; libre sinon, mais un code fourni est toujours vérifié. */
+  inscriptionSurInvitation?: boolean;
   limites?: LimitesDebit;
-}> = async (app, { base, cleCodes, limites }) => {
+}> = async (app, { base, cleCodes, inscriptionSurInvitation = false, limites }) => {
   app.post(
     '/joueurs',
     {
       config: limiter(limites, 'inscription'),
       schema: {
-        body: z.object({ pseudo }),
+        body: z.object({ pseudo, invitation: z.string().trim().min(1).max(40).optional() }),
         response: {
           201: z.object({ joueur: schemaJoueur, jeton: z.string(), codeRecuperation: z.string() }),
         },
       },
     },
-    async (requete, reponse) =>
-      reponse.status(201).send(await creerJoueur(base, requete.body.pseudo, cleCodes)),
+    async (requete, reponse) => {
+      const creation = await inscrire(base, requete.body.pseudo, cleCodes, {
+        code: requete.body.invitation,
+        exigee: inscriptionSurInvitation,
+      });
+      // Un seul message pour un code absent, inconnu, expiré ou épuisé : il ne dit pas lequel (ADR 0027).
+      if (!creation) {
+        return refuser(reponse, 403, 'Invitation refusée : code absent, inconnu, expiré ou épuisé');
+      }
+      return reponse.status(201).send(creation);
+    },
   );
 
   app.post(

@@ -4,8 +4,9 @@ import { eq, sql, sum } from 'drizzle-orm';
 import { describe, expect, it } from 'vitest';
 import { type OptionsBoosters, ouvrirUnBooster, recompenserVictoire } from './comptes/boosters.ts';
 import { CLE_CODES_DEVELOPPEMENT, creerJoueur } from './comptes/comptes.ts';
+import { creerInvitation, inscrire } from './comptes/invitations.ts';
 import { baseDeTest } from './db/base-de-test.ts';
-import { collection, duels, joueurs, recompenses } from './db/schema.ts';
+import { collection, duels, invitations, joueurs, recompenses } from './db/schema.ts';
 import { chercherAdversaire, creerDuel, jouerDuel, rejoindreDuel } from './duels/duels.ts';
 
 /**
@@ -163,5 +164,28 @@ describe('opérations simultanées (US-056)', () => {
       );
       expect(await versionEnBase(id)).toBe(version + 1);
     });
+  });
+
+  it('des inscriptions simultanées ne dépassent jamais les utilisations d’une invitation (US-048)', async () => {
+    const { id, code } = await creerInvitation(
+      ouverte.base,
+      { libelle: 'Équipe', utilisations: 3, expireLe: new Date(Date.now() + 60_000) },
+      CLE_CODES_DEVELOPPEMENT,
+    );
+    const inscriptions = await enParallele((i) =>
+      inscrire(ouverte.base, `Joueur ${i}`, CLE_CODES_DEVELOPPEMENT, { code, exigee: true }),
+    );
+
+    expect(inscriptions.filter((creation) => creation !== null)).toHaveLength(3);
+    const [invitation] = await ouverte.base
+      .select({ utilisations: invitations.utilisations })
+      .from(invitations)
+      .where(eq(invitations.id, id));
+    expect(invitation?.utilisations).toBe(3);
+    const comptes = await ouverte.base
+      .select({ id: joueurs.id })
+      .from(joueurs)
+      .where(eq(joueurs.invitationId, id));
+    expect(comptes).toHaveLength(3);
   });
 });

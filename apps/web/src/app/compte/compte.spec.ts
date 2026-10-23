@@ -340,4 +340,39 @@ describe('Compte', () => {
     expect(bilanDeconnexion(1)).toBe('Votre autre appareil a été déconnecté.');
     expect(bilanDeconnexion(3)).toBe('Vos 3 autres appareils ont été déconnectés.');
   });
+
+  it('un lien d’invitation remplit le code, envoyé avec le pseudo (US-048)', async () => {
+    const { fixture, page } = await afficher();
+    fixture.componentRef.setInput('invitation', ' abcd-efgh-jklm-npqr ');
+    fixture.detectChanges();
+    expect(page.querySelector<HTMLInputElement>('#invitation')?.value).toBe('abcd-efgh-jklm-npqr');
+    saisir(page, 'pseudo', 'Ada');
+    page.querySelector<HTMLFormElement>('form')?.requestSubmit();
+    const requete = TestBed.inject(HttpTestingController).expectOne('/api/v1/joueurs');
+    expect(requete.request.body).toEqual({ pseudo: 'Ada', invitation: 'abcd-efgh-jklm-npqr' });
+    requete.flush({ joueur: JOUEUR, jeton: 'jeton-5', codeRecuperation: 'ABCD-EFGH-JKLM' });
+    await fixture.whenStable();
+    fixture.detectChanges();
+    expect(page.textContent).toContain('Connecté en tant que Ada');
+  });
+
+  it('explique une invitation refusée (403), sans créer de compte', async () => {
+    const { fixture, page } = await afficher();
+    saisir(page, 'pseudo', 'Ada');
+    saisir(page, 'invitation', 'ZZZZ-ZZZZ-ZZZZ-ZZZZ');
+    page.querySelector<HTMLFormElement>('form')?.requestSubmit();
+    TestBed.inject(HttpTestingController)
+      .expectOne('/api/v1/joueurs')
+      .flush(
+        { title: 'Invitation refusée : code absent, inconnu, expiré ou épuisé', status: 403 },
+        { status: 403, statusText: 'Forbidden' },
+      );
+    await fixture.whenStable();
+    fixture.detectChanges();
+    expect(page.querySelector('[role="alert"]')?.textContent).toContain(
+      'Ce code d’invitation n’est pas accepté',
+    );
+    expect(localStorage.getItem('hipmaster.jeton')).toBeNull();
+    expect(page.querySelector<HTMLInputElement>('#invitation')?.value).toBe('ZZZZ-ZZZZ-ZZZZ-ZZZZ');
+  });
 });

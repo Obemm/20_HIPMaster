@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { CLE_CODES_DEVELOPPEMENT } from './comptes/comptes.ts';
-import { ErreurConfig, lireConfig, lireConfigApi } from './config.ts';
+import { ErreurConfig, lireConfig, lireConfigApi, lireConfigCle } from './config.ts';
 
 const NEON =
   'postgresql://hipmaster:secret@ep-calme-1234.eu-central-1.aws.neon.tech/hipmaster?sslmode=require';
@@ -125,5 +125,40 @@ describe('configuration des protections de l’API (US-047, ADR 0025)', () => {
   it('refuse un nombre de relais négatif ou déraisonnable', () => {
     expect(() => lireConfigApi({ PROXYS_DE_CONFIANCE: '-1' })).toThrow(/PROXYS_DE_CONFIANCE/);
     expect(() => lireConfigApi({ PROXYS_DE_CONFIANCE: '50' })).toThrow(/PROXYS_DE_CONFIANCE/);
+  });
+});
+
+describe('configuration de l’inscription sur invitation (US-048, ADR 0027)', () => {
+  const PRODUCTION = {
+    NODE_ENV: 'production',
+    DATABASE_URL: NEON,
+    CLE_CODES_RECUPERATION: 'k'.repeat(43),
+    PROXYS_DE_CONFIANCE: '2',
+  };
+
+  it('exige une invitation par défaut en production seulement', () => {
+    expect(lireConfigApi(PRODUCTION).inscriptionSurInvitation).toBe(true);
+    expect(lireConfigApi({}).inscriptionSurInvitation).toBe(false);
+  });
+
+  it('INSCRIPTION_SUR_INVITATION se règle par oui ou non, partout', () => {
+    expect(
+      lireConfigApi({ ...PRODUCTION, INSCRIPTION_SUR_INVITATION: 'non' }).inscriptionSurInvitation,
+    ).toBe(false);
+    expect(lireConfigApi({ INSCRIPTION_SUR_INVITATION: 'oui' }).inscriptionSurInvitation).toBe(
+      true,
+    );
+    expect(() => lireConfigApi({ INSCRIPTION_SUR_INVITATION: 'peut-être' })).toThrow(
+      /INSCRIPTION_SUR_INVITATION/,
+    );
+  });
+
+  it('la commande des invitations exige la clé des codes en production, pas les relais', () => {
+    const sansRelais = { ...PRODUCTION, PROXYS_DE_CONFIANCE: undefined };
+    expect(lireConfigCle(sansRelais)).toMatchObject({ cleCodes: 'k'.repeat(43) });
+    expect(() => lireConfigCle({ NODE_ENV: 'production', DATABASE_URL: NEON })).toThrow(
+      /obligatoire en production[\s\S]*CLE_CODES_RECUPERATION/,
+    );
+    expect(lireConfigCle({})).toMatchObject({ cleCodes: CLE_CODES_DEVELOPPEMENT });
   });
 });

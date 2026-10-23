@@ -44,8 +44,10 @@ export function construireApp(
     base?: Base;
     boosters?: OptionsBoosters;
     duels?: OptionsDuels;
-    /** Clé secrète des codes de récupération (ADR 0025) ; une clé publique de développement par défaut. */
+    /** Clé secrète des codes de récupération et d'invitation (ADR 0025, 0027) ; une clé publique par défaut. */
     cleCodes?: string;
+    /** Création de compte réservée aux invités (ADR 0027) ; libre par défaut (développement, tests). */
+    inscriptionSurInvitation?: boolean;
     /** Limites de débit par adresse (ADR 0025) ; aucune limitation sans elles (développement, tests). */
     limites?: LimitesDebit;
     /**
@@ -130,6 +132,7 @@ export function construireApp(
       prefix: '/api/v1',
       base: options.base,
       cleCodes,
+      inscriptionSurInvitation: options.inscriptionSurInvitation ?? false,
       ...(limites && { limites }),
     });
     app.register(routesBoosters, {

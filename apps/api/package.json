@@ -10,7 +10,8 @@
     "typecheck": "tsc -p tsconfig.json",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "node src/migrer.ts",
-    "db:studio": "drizzle-kit studio"
+    "db:studio": "drizzle-kit studio",
+    "invitation": "node src/invitation.ts"
   },
   "dependencies": {
     "@fastify/rate-limit": "^11.2.1",

@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: HIPMaster — comptes invités
-  version: 1.1.0
+  version: 1.2.0
   description: >
     Comptes invités (US-022, ADR 0017) : un pseudo, un jeton de session gardé par le navigateur et un code de
     récupération pour retrouver son compte sur un autre appareil. Ni mot de passe ni e-mail. Les routes marquées
@@ -21,6 +21,10 @@ paths:
       description: >
         Renvoie le jeton de session et le code de récupération, affiché une seule fois (le serveur n'en garde qu'une
         empreinte HMAC). Limite : 30 créations par heure et par adresse.
+
+        Inscription sur invitation (US-048, ADR 0027) : quand l'API l'exige (réglage `INSCRIPTION_SUR_INVITATION`,
+        activé par défaut en production), le compte n'est créé qu'avec un code d'invitation valide, qui compte alors
+        une utilisation. Un code fourni est toujours vérifié, même quand l'invitation n'est pas exigée.
       requestBody:
         required: true
         content:
@@ -34,6 +38,14 @@ paths:
                   minLength: 2
                   maxLength: 24
                   description: Lettres, chiffres, espaces, tirets, points et soulignés.
+                invitation:
+                  type: string
+                  minLength: 1
+                  maxLength: 40
+                  description: >
+                    Code d'invitation (`/compte?invitation=…`) ; majuscules, minuscules, espaces et tirets sont
+                    acceptés.
+                  examples: [ABCD-EFGH-JKLM-NPQR]
       responses:
         '201':
           description: Le compte créé.
@@ -47,6 +59,13 @@ paths:
                   jeton: { type: string }
                   codeRecuperation: { type: string, examples: [ABCD-EFGH-JKLM] }
         '400': { $ref: '#/components/responses/Probleme' }
+        '403':
+          description: >
+            Invitation refusée : code absent alors qu'il est exigé, inconnu, expiré ou déjà utilisé autant de fois que
+            permis. Le message est le même dans tous les cas, sans dire lequel (Problem Details).
+          content:
+            application/problem+json:
+              schema: { $ref: '#/components/schemas/Probleme' }
         '413': { $ref: '#/components/responses/Probleme' }
         '429': { $ref: '#/components/responses/TropDeRequetes' }
   /sessions:
