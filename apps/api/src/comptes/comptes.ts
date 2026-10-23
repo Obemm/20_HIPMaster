@@ -1,6 +1,6 @@
 import { createHash, createHmac, randomBytes, randomInt } from 'node:crypto';
 import { REGLES_BOOSTERS } from '@hipmaster/domain';
-import { and, eq, ne } from 'drizzle-orm';
+import { and, eq, gt, lte, ne } from 'drizzle-orm';
 import type { Base } from '../db/index.ts';
 import { joueurs, sessions } from '../db/schema.ts';
 import { oublierDuelsSansJoueur, quitterSesDuels } from '../duels/duels.ts';
@@ -14,6 +14,18 @@ export interface Joueur {
   id: string;
   pseudo: string;
 }
+
+/** Expiration des sessions (US-054, ADR 0035). */
+export interface OptionsSessions {
+  /** Durée sans usage au-delà de laquelle une session expire : 90 jours par défaut. */
+  dureeMs?: number;
+  /** Horloge, injectable pour les tests. */
+  maintenant?: () => number;
+}
+
+const JOUR_MS = 24 * 60 * 60 * 1000;
+/** Une session inutilisée 90 jours expire : le joueur se reconnecte avec son code de récupération (ADR 0031). */
+export const DUREE_SESSION_MS = 90 * JOUR_MS;
 
 /** Une transaction ouverte sur la base. */
 export type Transaction = Parameters<Parameters<Base['transaction']>[0]>[0];
@@ -112,14 +124,52 @@ export async function connecterParCode(
   return { joueur, jeton: await ouvrirSession(base, joueur.id) };
 }
 
-/** Le joueur d'un jeton de session ; `null` si la session n'existe pas (ou plus). */
-export async function joueurDuJeton(base: Base, jeton: string): Promise<Joueur | null> {
-  const [joueur] = await base
-    .select({ id: joueurs.id, pseudo: joueurs.pseudo })
+/**
+ * Le joueur d'un jeton de session ; `null` si la session n'existe pas, ou plus, ou si elle a expiré faute d'usage
+ * (US-054). Chaque usage prolonge la session, avec au plus une écriture par jour et par session : la plupart des
+ * requêtes ne font que lire.
+ */
+export async function joueurDuJeton(
+  base: Base,
+  jeton: string,
+  options: OptionsSessions = {},
+): Promise<Joueur | null> {
+  const maintenant = (options.maintenant ?? Date.now)();
+  const empreinte = empreinteJeton(jeton);
+  const [ligne] = await base
+    .select({ id: joueurs.id, pseudo: joueurs.pseudo, utiliseeLe: sessions.utiliseeLe })
     .from(sessions)
     .innerJoin(joueurs, eq(sessions.joueurId, joueurs.id))
-    .where(eq(sessions.empreinteJeton, empreinteJeton(jeton)));
-  return joueur ?? null;
+    .where(
+      and(
+        eq(sessions.empreinteJeton, empreinte),
+        gt(sessions.utiliseeLe, new Date(maintenant - (options.dureeMs ?? DUREE_SESSION_MS))),
+      ),
+    );
+  if (!ligne) return null;
+  if (maintenant - ligne.utiliseeLe.getTime() >= JOUR_MS) {
+    await base
+      .update(sessions)
+      .set({ utiliseeLe: new Date(maintenant) })
+      .where(eq(sessions.empreinteJeton, empreinte));
+  }
+  return { id: ligne.id, pseudo: ligne.pseudo };
+}
+
+/**
+ * Purge (US-054, ADR 0035) : supprime les sessions expirées faute d'usage, et avec elles les parties contre le bot
+ * qu'elles avaient lancées (expirées depuis longtemps) ; renvoie le nombre de sessions supprimées. Le compte reste.
+ */
+export async function purgerSessionsExpirees(
+  base: Base,
+  options: OptionsSessions = {},
+): Promise<number> {
+  const limite = (options.maintenant ?? Date.now)() - (options.dureeMs ?? DUREE_SESSION_MS);
+  const supprimees = await base
+    .delete(sessions)
+    .where(lte(sessions.utiliseeLe, new Date(limite)))
+    .returning({ empreinte: sessions.empreinteJeton });
+  return supprimees.length;
 }
 
 export async function fermerSession(base: Base, jeton: string): Promise<void> {

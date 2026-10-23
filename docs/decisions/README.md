@@ -43,5 +43,6 @@ référence the company.
 | [0032](0032-preferences-interface-navigateur.md)       | Préférences d'interface gardées par le navigateur (`localStorage`)    | [ref] écarté                 | Acceptée                      |
 | [0033](0033-supervision-sauvegardes.md)                | Supervision, sauvegardes et erreurs : Cloud Monitoring, jobs, journal | [ref], 012, 043 ; 009 écarté | Proposée                      |
 | [0034](0034-hasard-et-appariement.md)                  | Hasard ChaCha20 à clé tirée par le serveur ; appariement sous verrou  | aucune ; [ref] retenu        | Acceptée                      |
+| [0035](0035-purge-donnees-techniques.md)               | Sessions qui expirent, purge nocturne des seules données techniques   | aucune ; [ref] (adapté)      | Acceptée                      |
 
 Modèle : [template.md](template.md).

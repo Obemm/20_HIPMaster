@@ -288,3 +288,13 @@ Toutes les évolutions notables du projet sont consignées ici
     l'un l'autre, et un double clic n'ouvre plus deux duels ;
   - la règle « pas de booster contre un adversaire déjà affronté le même jour » vaut au jour de la fin du duel : lire
     son résultat le lendemain ne la contourne plus.
+- Des sessions qui expirent et des données qui ne s'accumulent pas (US-054, ADR 0035) :
+  - une session inutilisée pendant 90 jours est refusée (401) ; chaque usage la prolonge, avec au plus une écriture par
+    jour. Le joueur se reconnecte avec son code de récupération (`SESSIONS_DUREE_JOURS`, contrat `comptes.yaml`
+    1.5.0) ;
+  - une purge (`npm run purge -w apps/api`) supprime les sessions expirées, les défis jamais acceptés depuis 7 jours et
+    les parties contre le bot abandonnées depuis 24 heures, et journalise ce qu'elle a supprimé ; elle ne touche jamais
+    un compte, une collection, une récompense ni un duel commencé ;
+  - en production, job Cloud Run `hipmaster-purge` lancé chaque nuit à 5 h 25 par Cloud Scheduler, ajouté aux scripts
+    `infrastructure.sh` et `deployer.sh` et au guide d'exploitation ; mise en service par le porteur du projet ;
+  - la page « À propos et confidentialité » ne marque plus ces durées « bientôt ».

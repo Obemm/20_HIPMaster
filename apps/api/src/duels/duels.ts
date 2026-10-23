@@ -638,6 +638,20 @@ export async function quitterSesDuels(tx: Transaction, joueurId: string): Promis
   }
 }
 
+/**
+ * Purge (US-054, ADR 0035) : supprime les défis jamais acceptés, expirés (7 jours par défaut, US-033) ; renvoie leur
+ * nombre. Un duel commencé n'est jamais touché : il porte un résultat, même en cours (forfait à la lecture). Un défi
+ * rejoint au même instant est verrouillé par `rejoindreDuel` : la suppression l'attend, puis le relit commencé.
+ */
+export async function purgerDefisExpires(base: Base, options: OptionsDuels = {}): Promise<number> {
+  const limite = horloge(options) - (options.expirationDefiMs ?? SEPT_JOURS);
+  const supprimes = await base
+    .delete(duels)
+    .where(and(eq(duels.statut, 'attente'), lt(duels.creeLe, new Date(limite))))
+    .returning({ id: duels.id });
+  return supprimes.length;
+}
+
 /** Après la suppression d'un compte : un duel dont les deux joueurs sont partis ne sert plus à personne. */
 export async function oublierDuelsSansJoueur(tx: Transaction): Promise<void> {
   await tx.delete(duels).where(and(isNull(duels.createurId), isNull(duels.adversaireId)));

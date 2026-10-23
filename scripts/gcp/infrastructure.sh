@@ -92,11 +92,17 @@ readonly SA_CONSOMMATION=hipmaster-consommation
 readonly SECRET_NEON=neon-cle-api
 readonly JOB_SAUVEGARDE=hipmaster-sauvegarde
 readonly JOB_CONSOMMATION=hipmaster-consommation
+# Purge de chaque nuit (US-054, ADR 0035) : job créé avec l'image de l'API (scripts/gcp/deployer.sh purge).
+readonly SA_PURGE=hipmaster-purge
+readonly JOB_PURGE=hipmaster-purge
 # Heure de Paris. La sauvegarde évite la fenêtre de maintenance de Neon (jeudi, 2 h à 3 h UTC) ; le relevé arrive
 # avant la journée de travail.
 readonly FUSEAU=Europe/Paris
 readonly HORAIRE_SAUVEGARDE='30 5 * * *'
 readonly HORAIRE_CONSOMMATION='0 8 * * *'
+# La purge passe juste avant la sauvegarde : un seul réveil de la base Neon pour les deux (veille après 5 minutes), et
+# une sauvegarde déjà allégée.
+readonly HORAIRE_PURGE='25 5 * * *'
 readonly MONITORING=https://monitoring.googleapis.com/v3
 readonly NOM_CANAL="HIPMaster : porteur du projet"
 readonly NOM_TEST="HIPMaster : santé de l'API"
@@ -117,7 +123,7 @@ readonly -a API=(
   run.googleapis.com                  # API et jobs (US-050, US-051)
   secretmanager.googleapis.com        # URL de la base
   storage.googleapis.com              # sauvegardes
-  cloudscheduler.googleapis.com       # sauvegarde de chaque nuit (US-051)
+  cloudscheduler.googleapis.com       # sauvegarde et purge de chaque nuit (US-051, US-054)
   logging.googleapis.com              # journaux
   monitoring.googleapis.com           # test de disponibilité, alertes (US-051)
   clouderrorreporting.googleapis.com  # erreurs de l'API (US-051)
@@ -136,6 +142,7 @@ readonly EMAIL_API=$SA_API@$PROJET.iam.gserviceaccount.com
 readonly EMAIL_DEPLOIEMENT=$SA_DEPLOIEMENT@$PROJET.iam.gserviceaccount.com
 readonly EMAIL_SAUVEGARDE=$SA_SAUVEGARDE@$PROJET.iam.gserviceaccount.com
 readonly EMAIL_CONSOMMATION=$SA_CONSOMMATION@$PROJET.iam.gserviceaccount.com
+readonly EMAIL_PURGE=$SA_PURGE@$PROJET.iam.gserviceaccount.com
 readonly CORRESPONDANCE=google.subject=assertion.sub,attribute.repository=assertion.repository,attribute.repository_id=assertion.repository_id,attribute.ref=assertion.ref
 NUMERO=''
 CONDITION=''
@@ -575,6 +582,7 @@ etape_comptes_service() {
     "Sauvegarde la base chaque nuit : lit l'URL de la base, ajoute des objets au bucket de sauvegardes (US-051)"
   compte_service "$SA_CONSOMMATION" "Consommation Neon HIPMaster (Cloud Run Job)" \
     "Relève chaque jour la consommation Neon : lit la clé de l'API Neon, jamais la base (US-051)"
+  compte_service "$SA_PURGE" "Purge HIPMaster (Cloud Run Job)"     "Purge chaque nuit les données techniques expirées : lit l'URL de la base, rien d'autre (US-054)"
 }
 
 compte_service() {
@@ -687,7 +695,7 @@ etape_droits_deploiement() {
     "serviceAccount:$EMAIL_DEPLOIEMENT" roles/artifactregistry.writer "artifacts repositories" \
     "$DEPOT_IMAGES" --location="$REGION" --project="$PROJET"
   local email
-  for email in "$EMAIL_API" "$EMAIL_SAUVEGARDE" "$EMAIL_CONSOMMATION"; do
+  for email in "$EMAIL_API" "$EMAIL_SAUVEGARDE" "$EMAIL_CONSOMMATION" "$EMAIL_PURGE"; do
     lier_role "roles/iam.serviceAccountUser sur ${email%%@*} seulement (déployer l'API ou un job sous ce compte)" \
       "serviceAccount:$EMAIL_DEPLOIEMENT" roles/iam.serviceAccountUser "iam service-accounts" \
       "$email" --project="$PROJET"
@@ -1015,7 +1023,7 @@ planifier() {
     lier_role "$job peut être lancé par ${email%%@*} (ce job seulement)" "serviceAccount:$email" \
       roles/run.invoker "run jobs" "$job" --project="$PROJET" --region="$REGION"
   else
-    alerte "le job $job n'existe pas encore : il naît au déploiement (deployer.sh exploitation) ; relancer ensuite ce script pour que la tâche planifiée ait le droit de le lancer."
+    alerte "le job $job n'existe pas encore : il naît au déploiement (deployer.sh exploitation, ou deployer.sh purge) ; relancer ensuite ce script pour que la tâche planifiée ait le droit de le lancer."
   fi
   local -a options=(--project="$PROJET" --location="$REGION" --schedule="$horaire" --time-zone="$FUSEAU"
     --uri="$uri" --http-method=POST --oauth-service-account-email="$email"
@@ -1099,12 +1107,23 @@ ranger_cle_neon() {
     ' | silencieux gc secrets versions add "$SECRET_NEON" --project="$PROJET" --data-file=-
 }
 
-# --- 17. Supervision (US-051) -----------------------------------------------------------------------
+# --- 17. Purge de chaque nuit (US-054) --------------------------------------------------------------
+
+# Le job hipmaster-purge (deployer.sh purge) lance `node apps/api/src/purger.ts` avec l'image de l'API : il supprime les
+# sessions inutilisées 90 jours, les défis jamais acceptés et les parties contre le bot abandonnées, jamais un compte,
+# une collection, une récompense ni un duel commencé (ADR 0035). Son compte ne lit que l'URL de la base.
+etape_purge() {
+  etape "17. Purge de chaque nuit : job $JOB_PURGE (« $HORAIRE_PURGE », heure de Paris)"
+  lier_role "$SA_PURGE peut lire le secret $SECRET" "serviceAccount:$EMAIL_PURGE"     roles/secretmanager.secretAccessor secrets "$SECRET" --project="$PROJET"
+  planifier "$JOB_PURGE" "$EMAIL_PURGE" "$HORAIRE_PURGE"     "Purge des données techniques expirées : sessions, défis, parties contre le bot (US-054)"
+}
+
+# --- 18. Supervision (US-051) -----------------------------------------------------------------------
 
 # Cloud Monitoring par son API REST : un canal e-mail, un test de disponibilité et deux alertes. Chaque objet est
 # retrouvé par son nom affiché, et remis à la cible s'il s'en écarte.
 etape_supervision() {
-  etape "17. Supervision : test de disponibilité de https://$SITE.web.app/api/v1/sante, alertes par e-mail"
+  etape "18. Supervision : test de disponibilité de https://$SITE.web.app/api/v1/sante, alertes par e-mail"
   supervision_canal
   supervision_test
   supervision_alerte "$NOM_ALERTE_SITE" "$(alerte_site)"
@@ -1219,17 +1238,18 @@ alerte_site() {
     notificationChannels: [process.env.CANAL], severity: "CRITICAL", enabled: true }))'
 }
 
-# Une seule condition sur les journaux pour les deux jobs et leurs tâches planifiées : un échec (ERROR) ou un
-# dépassement du seuil de consommation (WARNING) envoie un e-mail, au plus un par heure.
+# Une seule condition sur les journaux pour les trois jobs et leurs tâches planifiées : un échec (ERROR) ou un
+# dépassement du seuil de consommation (WARNING) envoie un e-mail, au plus un par heure. Le nom de l'alerte reste celui
+# d'US-051 : c'est par lui que le script la retrouve.
 alerte_jobs() {
-  NOM=$NOM_ALERTE_JOBS CANAL=$CANAL A=$JOB_SAUVEGARDE B=$JOB_CONSOMMATION node -e 'console.log(JSON.stringify({
+  NOM=$NOM_ALERTE_JOBS CANAL=$CANAL A=$JOB_SAUVEGARDE B=$JOB_CONSOMMATION C=$JOB_PURGE node -e 'console.log(JSON.stringify({
     displayName: process.env.NOM,
     documentation: { mimeType: "text/markdown",
-      content: "Sauvegarde ou relevé de consommation en échec, ou consommation Neon au-delà de 70 % du quota du mois. Voir docs/exploitation/README.md, section Supervision." },
+      content: "Sauvegarde, purge ou relevé de consommation en échec, ou consommation Neon au-delà de 70 % du quota du mois. Voir docs/exploitation/README.md, section Supervision." },
     combiner: "OR",
     conditions: [{ displayName: "Avertissement ou erreur d’un job d’exploitation",
       conditionMatchedLog: {
-        filter: `(resource.type="cloud_run_job" AND resource.labels.job_name=("${process.env.A}" OR "${process.env.B}") AND severity>=WARNING) OR (resource.type="cloud_scheduler_job" AND resource.labels.job_id=("${process.env.A}" OR "${process.env.B}") AND severity>=ERROR)` } }],
+        filter: `(resource.type="cloud_run_job" AND resource.labels.job_name=("${process.env.A}" OR "${process.env.B}" OR "${process.env.C}") AND severity>=WARNING) OR (resource.type="cloud_scheduler_job" AND resource.labels.job_id=("${process.env.A}" OR "${process.env.B}" OR "${process.env.C}") AND severity>=ERROR)` } }],
     alertStrategy: { notificationRateLimit: { period: "3600s" }, autoClose: "86400s" },
     notificationChannels: [process.env.CANAL], severity: "ERROR", enabled: true }))'
 }
@@ -1286,7 +1306,7 @@ bilan() {
   printf '  Secret de la base      %s\n' "$SECRET (variable DATABASE_URL de l'API)"
   printf '  Clé des codes          %s\n' "$SECRET_CLE (variable CLE_CODES_RECUPERATION de l'API)"
   printf '  Sauvegardes            %s\n' "gs://$BUCKET"
-  printf '  Comptes des jobs       %s\n' "$EMAIL_SAUVEGARDE, $EMAIL_CONSOMMATION"
+  printf '  Comptes des jobs       %s\n' "$EMAIL_SAUVEGARDE, $EMAIL_CONSOMMATION, $EMAIL_PURGE"
   printf "  Clé de l'API Neon      %s\n" "$SECRET_NEON (variable NEON_CLE_API du job $JOB_CONSOMMATION)"
   printf '  Front                  %s\n' "https://$SITE.web.app"
   printf '  Base Neon              %s\n' \
@@ -1313,6 +1333,7 @@ principal() {
   etape_cle_codes
   etape_sauvegarde
   etape_consommation
+  etape_purge
   etape_supervision
   bilan
 }

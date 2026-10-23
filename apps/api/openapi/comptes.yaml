@@ -1,11 +1,15 @@
 openapi: 3.1.0
 info:
   title: HIPMaster — comptes invités
-  version: 1.4.0
+  version: 1.5.0
   description: >
     Comptes invités (US-022, ADR 0017) : un pseudo, un jeton de session gardé par le navigateur et un code de
     récupération pour retrouver son compte sur un autre appareil. Ni mot de passe ni e-mail. Les routes marquées
     « compte requis » attendent l'en-tête `Authorization: Bearer <jeton>` et répondent 401 sans jeton valide.
+
+    Expiration (US-054, ADR 0035) : une session inutilisée pendant 90 jours (réglage `SESSIONS_DUREE_JOURS` de l'API)
+    expire, et répond 401 comme un jeton inconnu ; chaque requête authentifiée la prolonge. Le joueur se reconnecte
+    avec son code de récupération (POST /sessions) : son compte, sa collection et ses duels sont intacts.
 
     Protections (US-047, ADR 0025) : la création de compte et la connexion par code sont limitées par adresse IP
     (valeurs de production ci-dessous, multipliées par le réglage `LIMITES_DEBIT` de l'API) ; au-delà, la réponse est

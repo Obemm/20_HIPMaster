@@ -8,7 +8,7 @@ import {
 import type { Logger } from 'pino';
 import type { OptionsBoosters } from './comptes/boosters.ts';
 import { type Administrateurs, AUCUN } from './comptes/administrateurs.ts';
-import { CLE_CODES_DEVELOPPEMENT } from './comptes/comptes.ts';
+import { CLE_CODES_DEVELOPPEMENT, type OptionsSessions } from './comptes/comptes.ts';
 import { SITE_DEVELOPPEMENT } from './comptes/invitations.ts';
 import type { Base } from './db/index.ts';
 import type { OptionsDuels } from './duels/duels.ts';
@@ -25,6 +25,13 @@ import { routesComptes } from './routes/comptes.ts';
 import { routesParties } from './routes/parties.ts';
 import { routesRaretes } from './routes/raretes.ts';
 import { routesSante } from './routes/sante.ts';
+
+declare module 'fastify' {
+  interface FastifyInstance {
+    /** Expiration des sessions (US-054), lue par chaque route qui reconnaît un joueur à son jeton. */
+    optionsSessions: OptionsSessions;
+  }
+}
 
 const PROBLEME = 'application/problem+json';
 const probleme = (status: number, title: string) => ({ type: 'about:blank', title, status });
@@ -49,6 +56,8 @@ export function construireApp(
     base?: Base;
     boosters?: OptionsBoosters;
     duels?: OptionsDuels;
+    /** Expiration des sessions inutilisées (US-054) : durée, horloge. 90 jours par défaut. */
+    sessions?: OptionsSessions;
     /** Clé secrète des codes de récupération et d'invitation (ADR 0025, 0027) ; une clé publique par défaut. */
     cleCodes?: string;
     /** Création de compte réservée aux invités (ADR 0027) ; libre par défaut (développement, tests). */
@@ -95,6 +104,7 @@ export function construireApp(
     }),
   }).withTypeProvider<ZodTypeProvider>();
 
+  app.decorate('optionsSessions', options.sessions ?? {});
   app.setValidatorCompiler(validatorCompiler);
   app.setSerializerCompiler(serializerCompiler);
 

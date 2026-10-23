@@ -19,6 +19,8 @@
 #   site        le site public sert ce front, avec ses en-têtes, et relaie /api vers Cloud Run (--public)
 #   exploitation  image des jobs d'exploitation (construite seulement si ses sources ont changé), puis jobs
 #               hipmaster-sauvegarde et hipmaster-consommation mis à jour (US-051, ADR 0033)
+#   purge       job hipmaster-purge mis à jour avec l'image de l'API (US-054, ADR 0035) ; le workflow ne fait que le
+#               tenir à jour, seul un poste le crée (décision du porteur du projet, voir le guide d'exploitation)
 #
 # Exploitation :
 #   etat                     trafic et révisions de l'API, dernières publications du front
@@ -65,6 +67,9 @@ readonly JOB_SAUVEGARDE=hipmaster-sauvegarde
 readonly JOB_CONSOMMATION=hipmaster-consommation
 readonly COMPTE_SAUVEGARDE=hipmaster-sauvegarde@$PROJET.iam.gserviceaccount.com
 readonly COMPTE_CONSOMMATION=hipmaster-consommation@$PROJET.iam.gserviceaccount.com
+# Purge de chaque nuit (US-054, ADR 0035), déclenchée par Cloud Scheduler (scripts/gcp/infrastructure.sh).
+readonly JOB_PURGE=hipmaster-purge
+readonly COMPTE_PURGE=hipmaster-purge@$PROJET.iam.gserviceaccount.com
 readonly BUCKET=hipmaster-sauvegardes
 # Projet Neon suivi par le relevé de consommation : sa clé, limitée au projet, ne peut pas lister les projets.
 readonly NEON_PROJET=lingering-firefly-04102994
@@ -78,8 +83,8 @@ readonly BUILD_FRONT=apps/web/dist/web/browser
 # Variables de l'API, hors secrets : projet pour relier journaux et traces (US-046) ; deux relais devant l'API,
 # Firebase Hosting puis le frontal de Cloud Run, sans quoi elle refuse de démarrer (US-047, ADR 0025).
 readonly VARIABLES=GOOGLE_CLOUD_PROJECT=$PROJET,PROXYS_DE_CONFIANCE=2
-readonly -a ETAPES_CONNUES=(prerequis image migrations revision sante trafic front site exploitation etat retour-api
-  retour-front)
+readonly -a ETAPES_CONNUES=(prerequis image migrations revision sante trafic front site exploitation purge etat
+  retour-api retour-front)
 
 GITHUB=0
 if [[ ${GITHUB_ACTIONS:-} == true ]]; then GITHUB=1; fi
@@ -492,6 +497,23 @@ etape_exploitation() {
   gc run jobs deploy "$JOB_CONSOMMATION" "${communes[@]}" --service-account="$COMPTE_CONSOMMATION"     --set-secrets=NEON_CLE_API=neon-cle-api:latest --set-env-vars=NEON_PROJET=$NEON_PROJET     --args=consommation.ts --task-timeout=2m
 }
 
+# Purge de chaque nuit (US-054, ADR 0035) : la commande `purger.ts` de l'image de l'API, pour que son code suive le
+# schéma. Son compte ne lit que l'URL de la base. Le workflow tient le job à jour à chaque déploiement, mais ne le crée
+# jamais : sa création, depuis un poste, est une décision du porteur du projet (guide d'exploitation).
+etape_purge() {
+  titre "Purge : job $JOB_PURGE, image du commit ${COMMIT:0:7}"
+  if ! gc run jobs describe "$JOB_PURGE" --project="$PROJET" --region="$REGION" >/dev/null 2>&1; then
+    if ((GITHUB)); then
+      info "le job n'existe pas : rien à mettre à jour (il se crée depuis un poste, voir le guide d'exploitation)"
+      return 0
+    fi
+    info "le job n'existe pas encore : il est créé"
+  fi
+  gc artifacts docker images describe "$IMAGE" --format='value(image_summary.digest)' >/dev/null 2>&1 ||
+    arret "l'image $IMAGE n'est pas dans Artifact Registry : ce commit n'a pas encore été déployé."
+  gc run jobs deploy "$JOB_PURGE" --project="$PROJET" --region="$REGION" --image="$IMAGE"     --service-account="$COMPTE_PURGE" --set-secrets=DATABASE_URL=database-url:latest     --set-env-vars=GOOGLE_CLOUD_PROJECT=$PROJET --command=node --args=apps/api/src/purger.ts     --tasks=1 --max-retries=1 --task-timeout=5m --cpu=1 --memory=512Mi --labels=application=hipmaster
+}
+
 # --- Exploitation -----------------------------------------------------------------------------------
 
 etape_etat() {
@@ -589,6 +611,7 @@ principal() {
       front) etape_front ;;
       site) etape_site ;;
       exploitation) etape_exploitation ;;
+      purge) etape_purge ;;
       etat) etape_etat ;;
       retour-api) etape_retour_api "${ETAPES[i + 1]:-}" && break ;;
       retour-front) etape_retour_front "${ETAPES[i + 1]:-}" && break ;;

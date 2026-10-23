@@ -34,6 +34,7 @@ const app = construireApp({
   administrateurs: config.administrateurs,
   site: config.site,
   proxysDeConfiance: config.proxysDeConfiance,
+  sessions: { dureeMs: config.dureeSessionMs },
   ...(config.limitesDebit !== null && { limites: limitesMultipliees(config.limitesDebit) }),
 });
 // De quoi vérifier dans les journaux la configuration des protections (ADR 0025), sans aucun secret.

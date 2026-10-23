@@ -40,8 +40,7 @@ export interface OptionsParties {
   partiesMax?: number;
   /** Horloge, injectable pour les tests. */
   maintenant?: () => number;
-  /** Graine de chaque nouvelle partie (clé ChaCha20 tirée par `node:crypto`, ADR 0034), injectable pour des parties
-   * reproductibles. */
+  /** Graine de chaque nouvelle partie (clé ChaCha20 tirée par `node:crypto`, ADR 0034), injectable. */
   tirerGraine?: () => Graine;
 }
 
@@ -120,13 +119,28 @@ function visible(
 }
 
 /**
+ * Supprime les parties expirées (24 heures sans coup joué par défaut) ; renvoie leur nombre. Appelée avant chaque
+ * création, et chaque nuit par la purge (US-054), qui rattrape les jours sans nouvelle partie.
+ */
+export async function purgerPartiesExpirees(
+  base: Base,
+  options: OptionsParties = {},
+): Promise<number> {
+  const dureeVie = options.dureeVieMs ?? VINGT_QUATRE_HEURES;
+  const supprimees = await base
+    .delete(parties)
+    .where(lt(parties.majLe, new Date(horloge(options) - dureeVie)))
+    .returning({ id: parties.id });
+  return supprimees.length;
+}
+
+/**
  * Avant une création : supprime les parties expirées, puis, au plafond, la partie anonyme la moins récemment jouée,
  * et seulement à défaut celle d'un joueur connecté (ADR 0025) : un afflux de parties anonymes ne fait pas perdre la
  * sienne à un joueur connecté. Deux créations simultanées peuvent supprimer une partie de trop : sans conséquence.
  */
 async function faireDeLaPlace(base: Base, options: OptionsParties): Promise<void> {
-  const dureeVie = options.dureeVieMs ?? VINGT_QUATRE_HEURES;
-  await base.delete(parties).where(lt(parties.majLe, new Date(horloge(options) - dureeVie)));
+  await purgerPartiesExpirees(base, options);
   const surplus = (await base.$count(parties)) - (options.partiesMax ?? 1000) + 1;
   if (surplus <= 0) return;
   const plusAnciennes = base
