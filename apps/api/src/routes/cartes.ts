@@ -37,7 +37,7 @@ const schemaCarte = z.object({
   enVrai: z.string(),
 });
 
-// Fiche « En savoir plus » (US-073, ADR 0034) : servie avec le détail d'une carte seulement.
+// Fiche « En savoir plus » (US-073, ADR 0036) : servie avec le détail d'une carte seulement.
 const schemaFiche = z.object({
   definition: z.string(),
   usage: z.string(),

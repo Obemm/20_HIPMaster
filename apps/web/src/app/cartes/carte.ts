@@ -35,7 +35,7 @@ export interface LienExterne {
   langue: 'fr' | 'en';
 }
 
-/** La fiche « En savoir plus » d'une carte (US-073, ADR 0034). */
+/** La fiche « En savoir plus » d'une carte (US-073, ADR 0036). */
 export interface Fiche {
   definition: string;
   usage: string;

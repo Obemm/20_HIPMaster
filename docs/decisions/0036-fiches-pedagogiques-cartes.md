@@ -1,4 +1,4 @@
-# 0034 — Les fiches « En savoir plus » sont versionnées avec le catalogue et servies avec le détail d'une carte
+# 0036 — Les fiches « En savoir plus » sont versionnées avec le catalogue et servies avec le détail d'une carte
 
 - **Date** : 2026-10-24
 - **Statut** : Acceptée

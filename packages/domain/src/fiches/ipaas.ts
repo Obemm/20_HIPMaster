@@ -1,6 +1,6 @@
 import type { Fiche } from './fiche.ts';
 
-/** Fiches « En savoir plus » de la famille iPaaS, par numéro de carte (ADR 0034). */
+/** Fiches « En savoir plus » de la famille iPaaS, par numéro de carte (ADR 0036). */
 export const FICHES_IPAAS: Readonly<Record<number, Fiche>> = {
   26: {
     definition:

@@ -42,6 +42,6 @@ référence Elis.
 | [0031](0031-suppression-compte.md)                     | Suppression de son compte : forfait des duels, historique sans lui      | ADR-020 ; ADR-015 écarté       | Acceptée                      |
 | [0032](0032-preferences-interface-navigateur.md)       | Préférences d'interface gardées par le navigateur (`localStorage`)      | ADR-032 écarté                 | Acceptée                      |
 | [0033](0033-supervision-sauvegardes.md)                | Supervision, sauvegardes et erreurs : Cloud Monitoring, jobs, journal   | ADR-006, 012, 043 ; 009 écarté | Proposée                      |
-| [0034](0034-fiches-pedagogiques-cartes.md)             | Fiches « En savoir plus » versionnées avec le catalogue, dans le détail | ADR-001, 026 écartés           | Acceptée                      |
+| [0036](0036-fiches-pedagogiques-cartes.md)             | Fiches « En savoir plus » versionnées avec le catalogue, dans le détail | ADR-001, 026 écartés           | Acceptée                      |
 
 Modèle : [template.md](template.md).

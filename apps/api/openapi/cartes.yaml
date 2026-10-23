@@ -5,7 +5,7 @@ info:
   description: >
     Catalogue en lecture seule des cartes du set 1 (US-008, ADR 0011). Les cartes sont des données versionnées du
     domaine : aucune écriture n'est exposée. Le détail d'une carte porte en plus sa fiche « En savoir plus »
-    (US-073, ADR 0034), absente de la liste pour la garder légère.
+    (US-073, ADR 0036), absente de la liste pour la garder légère.
 servers:
   - url: /api/v1
 paths:
@@ -85,7 +85,7 @@ components:
     Fiche:
       type: object
       description: >
-        Fiche « En savoir plus » (US-073, ADR 0034) : se lit en moins d'une minute, avec des ressources externes.
+        Fiche « En savoir plus » (US-073, ADR 0036) : se lit en moins d'une minute, avec des ressources externes.
       required: [definition, usage, exemple, aRetenir, liens]
       properties:
         definition: { type: string, maxLength: 220, description: Ce que c'est, en une phrase. }

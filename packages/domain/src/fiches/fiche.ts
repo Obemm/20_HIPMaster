@@ -2,7 +2,7 @@
 export const LANGUES_LIEN = ['fr', 'en'] as const;
 export type LangueLien = (typeof LANGUES_LIEN)[number];
 
-/** Une ressource pour aller plus loin : Wikipédia, documentation d'éditeur, standard (ADR 0034). */
+/** Une ressource pour aller plus loin : Wikipédia, documentation d'éditeur, standard (ADR 0036). */
 export interface LienExterne {
   titre: string;
   /** Adresse `https` absolue, ouverte et vérifiée avant d'être publiée. */
@@ -11,7 +11,7 @@ export interface LienExterne {
 }
 
 /**
- * La fiche « En savoir plus » d'une carte (US-073, ADR 0034) : la profondeur à la demande, qui se lit en moins d'une
+ * La fiche « En savoir plus » d'une carte (US-073, ADR 0036) : la profondeur à la demande, qui se lit en moins d'une
  * minute. Le texte court et ludique reste sur la carte (`enVrai`) ; la fiche, elle, reste exacte.
  */
 export interface Fiche {
