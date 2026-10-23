@@ -30,7 +30,7 @@ gratuite, que Claude installe, déploie et maintient en ligne de commande
 - [x] US-051 — Supervision, sauvegardes vérifiées et scan de sécurité
 - [x] US-052 — Parties contre le bot gardées en base
 - [x] US-053 — Page de confidentialité et suppression de son compte
-- [ ] US-054 — Des sessions qui expirent et des données qui ne s'accumulent pas
+- [x] US-054 — Des sessions qui expirent et des données qui ne s'accumulent pas
 - [x] US-055 — Un front robuste au démarrage à froid et aux sessions expirées
 - [x] US-056 — La CI teste l'API sur un vrai PostgreSQL
 - [ ] US-057 — Des requêtes légères : index, lectures bornées, cache et chargement à la demande
