@@ -24,3 +24,13 @@ export {
 export { CHANCES_BOOSTER, RARETES, tirerRarete, type Rarete } from './rarete.ts';
 export { SET_1, trouverCarte } from './set-1.ts';
 export * from './combat/index.ts';
+export {
+  ficheDe,
+  FICHES_PAR_FAMILLE,
+  LANGUES_LIEN,
+  LIMITES_FICHE,
+  problemesFiche,
+  type Fiche,
+  type LangueLien,
+  type LienExterne,
+} from './fiches/index.ts';

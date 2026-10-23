@@ -1,6 +1,6 @@
 # EPIC-12 — Des cartes qui enseignent
 
-- **Statut** : À affiner
+- **Statut** : En cours
 - **Priorité** : Must
 
 ## Objectif
@@ -20,7 +20,7 @@ un éventuel texte d'ambiance (ADR 0011).
 
 ## Stories
 
-- [ ] US-073 — Une fiche « En savoir plus » et des liens externes pour chaque carte
+- [x] US-073 — Une fiche « En savoir plus » et des liens externes pour chaque carte
 - [ ] US-074 — Enrichir le contenu des 71 cartes du set 1
 
 Ordre suggéré : US-073 (le modèle et l'écran, avec quelques cartes pilotes), puis US-074 (le contenu, famille par

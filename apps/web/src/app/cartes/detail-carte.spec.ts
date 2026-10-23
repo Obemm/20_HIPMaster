@@ -98,6 +98,29 @@ describe('DetailCarte', () => {
     expect(naviguer).toHaveBeenCalledWith(['/collection']);
   });
 
+  it('propose « En savoir plus » quand la carte a une fiche', async () => {
+    const fixture = creer('26');
+    TestBed.inject(HttpTestingController)
+      .expectOne('/api/v1/cartes/26')
+      .flush({
+        ...SANS_ORIGINE,
+        fiche: {
+          definition: 'L’offre iPaaS de webMethods.',
+          usage: 'Assembler des intégrations.',
+          exemple: 'Un client créé dans le CRM.',
+          aRetenir: 'Versionner les flux.',
+          liens: [{ titre: 'iPaaS', url: 'https://en.wikipedia.org/wiki/iPaaS', langue: 'en' }],
+        },
+      });
+    await fixture.whenStable();
+    const page = fixture.nativeElement as HTMLElement;
+    const bouton = page.querySelector<HTMLButtonElement>('button[aria-expanded]');
+    expect(bouton?.textContent).toContain('En savoir plus');
+    bouton?.click();
+    await fixture.whenStable();
+    expect(page.textContent).toContain('L’offre iPaaS de webMethods.');
+  });
+
   it('annonce une carte introuvable quand l’API répond 404', async () => {
     const fixture = creer('72');
     TestBed.inject(HttpTestingController)

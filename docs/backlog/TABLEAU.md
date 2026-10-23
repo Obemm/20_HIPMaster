@@ -18,7 +18,7 @@ _Dernière mise à jour : 2026-10-24_
 | [EPIC-09 — Mise en ligne sur Google Cloud](epics/EPIC-09-mise-en-ligne-gcp.md)                    | Must     | En cours  | 13/14      |
 | [EPIC-10 — Identité visuelle et confort sur téléphone](epics/EPIC-10-identite-visuelle-mobile.md) | Should   | En cours  | 2/6        |
 | [EPIC-11 — Apprendre à jouer](epics/EPIC-11-apprendre-a-jouer.md)                                 | Should   | En cours  | 1/3        |
-| [EPIC-12 — Des cartes qui enseignent](epics/EPIC-12-cartes-qui-enseignent.md)                     | Must     | À affiner | 0/2        |
+| [EPIC-12 — Des cartes qui enseignent](epics/EPIC-12-cartes-qui-enseignent.md)                     | Must     | En cours  | 1/2        |
 
 ## Itération 0 (en cours) — fondations
 
@@ -157,7 +157,7 @@ riches tout en restant ludiques, avec des liens vers des ressources externes.
 
 | Story                                                                                                                   | Epic    | Priorité | Taille | Statut    |
 | ----------------------------------------------------------------------------------------------------------------------- | ------- | -------- | ------ | --------- |
-| [US-073 — Une fiche « En savoir plus » et des liens externes pour chaque carte](stories/US-073-fiche-en-savoir-plus.md) | EPIC-12 | Must     | M      | À affiner |
+| [US-073 — Une fiche « En savoir plus » et des liens externes pour chaque carte](stories/US-073-fiche-en-savoir-plus.md) | EPIC-12 | Must     | M      | Faite     |
 | [US-074 — Enrichir le contenu des 71 cartes du set 1](stories/US-074-contenu-cartes-set-1.md)                           | EPIC-12 | Must     | L      | À affiner |
 
 ## Plus tard — évolutions notées le 2026-10-23
