@@ -3,7 +3,7 @@ import { REGLES_BOOSTERS, TAILLE_BOOSTER } from '@hipmaster/domain';
 import { eq, sql, sum } from 'drizzle-orm';
 import { describe, expect, it } from 'vitest';
 import { type OptionsBoosters, ouvrirUnBooster, recompenserVictoire } from './comptes/boosters.ts';
-import { creerJoueur } from './comptes/comptes.ts';
+import { CLE_CODES_DEVELOPPEMENT, creerJoueur } from './comptes/comptes.ts';
 import { baseDeTest } from './db/base-de-test.ts';
 import { collection, duels, joueurs, recompenses } from './db/schema.ts';
 import { chercherAdversaire, creerDuel, jouerDuel, rejoindreDuel } from './duels/duels.ts';
@@ -27,7 +27,7 @@ async function enParallele<T>(operation: (i: number) => Promise<T>): Promise<T[]
 
 /** Un joueur neuf (5 boosters offerts), et une horloge calée sur sa création : aucune recharge pendant le test. */
 async function joueurSansRecharge(pseudo: string) {
-  const { joueur } = await creerJoueur(ouverte.base, pseudo);
+  const { joueur } = await creerJoueur(ouverte.base, pseudo, CLE_CODES_DEVELOPPEMENT);
   const [ligne] = await ouverte.base
     .select({ depuis: joueurs.rechargeDepuis })
     .from(joueurs)
@@ -91,9 +91,11 @@ describe('opérations simultanées (US-056)', () => {
   });
 
   it('des joueurs qui cherchent un adversaire en même temps ne rejoignent jamais le même duel', async () => {
-    const ada = await creerJoueur(ouverte.base, 'Ada');
+    const ada = await creerJoueur(ouverte.base, 'Ada', CLE_CODES_DEVELOPPEMENT);
     expect((await chercherAdversaire(ouverte.base, ada.joueur.id, 'moderne')).ok).toBe(true);
-    const enFile = await enParallele((i) => creerJoueur(ouverte.base, `Joueur ${i}`));
+    const enFile = await enParallele((i) =>
+      creerJoueur(ouverte.base, `Joueur ${i}`, CLE_CODES_DEVELOPPEMENT),
+    );
 
     const resultats = await Promise.all(
       enFile.map(({ joueur }) => chercherAdversaire(ouverte.base, joueur.id, 'heritage')),
@@ -118,8 +120,8 @@ describe('opérations simultanées (US-056)', () => {
   describe('actions simultanées dans un duel', () => {
     /** Un duel lancé entre Ada et Bob ; renvoie aussi le joueur dont c'est le tour. */
     async function duelLance() {
-      const ada = await creerJoueur(ouverte.base, 'Ada');
-      const bob = await creerJoueur(ouverte.base, 'Bob');
+      const ada = await creerJoueur(ouverte.base, 'Ada', CLE_CODES_DEVELOPPEMENT);
+      const bob = await creerJoueur(ouverte.base, 'Bob', CLE_CODES_DEVELOPPEMENT);
       const cree = await creerDuel(ouverte.base, ada.joueur.id, 'moderne');
       if (!cree.ok) throw new Error('Duel non créé.');
       const lance = await rejoindreDuel(ouverte.base, cree.valeur.id, bob.joueur.id, 'heritage');

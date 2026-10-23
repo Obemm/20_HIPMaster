@@ -31,6 +31,19 @@ test('créer un compte invité, le retrouver avec son code sur un autre appareil
   await expect(
     autrePage.getByRole('heading', { name: 'Connecté en tant que Joueuse e2e' }),
   ).toBeVisible();
+
+  // Depuis le premier appareil, on déconnecte l'autre (US-047) : celui-ci reste connecté.
+  await page.getByRole('button', { name: 'Déconnecter mes autres appareils' }).click();
+  await expect(page.getByRole('status').filter({ hasText: 'Votre autre appareil' })).toHaveText(
+    'Votre autre appareil a été déconnecté.',
+  );
+  await expect(
+    page.getByRole('heading', { name: 'Connecté en tant que Joueuse e2e' }),
+  ).toBeVisible();
+  const { violations } = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
+  expect(violations).toEqual([]);
+  await autrePage.reload();
+  await expect(autrePage.getByRole('alert').filter({ hasText: 'Session expirée' })).toBeVisible();
   await autre.close();
 
   await page.getByRole('button', { name: 'Se déconnecter' }).click();

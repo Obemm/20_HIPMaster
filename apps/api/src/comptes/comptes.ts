@@ -1,21 +1,49 @@
-import { createHash, randomBytes, randomInt } from 'node:crypto';
+import { createHash, createHmac, randomBytes, randomInt } from 'node:crypto';
 import { REGLES_BOOSTERS } from '@hipmaster/domain';
-import { eq } from 'drizzle-orm';
+import { and, eq, ne } from 'drizzle-orm';
 import type { Base } from '../db/index.ts';
 import { joueurs, sessions } from '../db/schema.ts';
 
-/** Comptes invités (US-022, ADR 0017) : jetons de session et codes de récupération, jamais stockés en clair. */
+/**
+ * Comptes invités (US-022, ADR 0017) : jetons de session et codes de récupération, jamais stockés en clair. Les codes
+ * sont protégés par une clé secrète (HMAC), les sessions se révoquent (US-047, ADR 0025).
+ */
 
 export interface Joueur {
   id: string;
   pseudo: string;
 }
 
+/** Une transaction ouverte sur la base. */
+type Transaction = Parameters<Parameters<Base['transaction']>[0]>[0];
+
+/**
+ * Clé des codes en développement et en tests : publique, elle ne protège rien. En production, l'API refuse de démarrer
+ * sans `CLE_CODES_RECUPERATION`, tirée au hasard et gardée dans Secret Manager (ADR 0025).
+ */
+export const CLE_CODES_DEVELOPPEMENT = 'hipmaster-developpement-cle-publique-des-codes';
+
 /** 32 symboles sans caractères ambigus (ni I, O, 0, 1) : 5 bits par caractère, 60 bits pour 12 caractères. */
 const ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const LONGUEUR_CODE = 12;
 
-const empreinte = (secret: string) => createHash('sha256').update(secret).digest('hex');
+/** Ce que permet un code saisi par un humain ; l'usage entre dans l'empreinte, pour qu'un code ne vaille que pour lui. */
+type UsageCode = 'recuperation';
+
+/** Forme canonique d'un code saisi : majuscules, sans espaces ni tirets. */
+const normaliserCode = (code: string) => code.toUpperCase().replaceAll(/[^A-Z0-9]/g, '');
+
+/** Empreinte d'un jeton de session : SHA-256 suffit à 256 bits aléatoires, qui ne se devinent pas (ADR 0017). */
+export const empreinteJeton = (jeton: string) => createHash('sha256').update(jeton).digest('hex');
+
+/**
+ * Empreinte d'un code : HMAC-SHA-256 avec la clé secrète (ADR 0025). Sans la clé, une copie de la base ne permet pas
+ * d'essayer des codes hors ligne, alors que 60 bits se parcourent.
+ */
+export const empreinteCode = (cle: string, usage: UsageCode, code: string) =>
+  createHmac('sha256', cle)
+    .update(`${usage}:${normaliserCode(code)}`)
+    .digest('hex');
 
 /** Un code de récupération lisible : « ABCD-EFGH-JKLM ». */
 function nouveauCode(): string {
@@ -26,14 +54,11 @@ function nouveauCode(): string {
   return [0, 4, 8].map((i) => caracteres.slice(i, i + 4).join('')).join('-');
 }
 
-/** Forme canonique d'un code saisi : majuscules, sans espaces ni tirets. */
-const normaliserCode = (code: string) => code.toUpperCase().replaceAll(/[^A-Z0-9]/g, '');
-
 const nouveauJeton = () => randomBytes(32).toString('base64url');
 
 async function ouvrirSession(base: Base, joueurId: string): Promise<string> {
   const jeton = nouveauJeton();
-  await base.insert(sessions).values({ empreinteJeton: empreinte(jeton), joueurId });
+  await base.insert(sessions).values({ empreinteJeton: empreinteJeton(jeton), joueurId });
   return jeton;
 }
 
@@ -41,13 +66,14 @@ async function ouvrirSession(base: Base, joueurId: string): Promise<string> {
 export async function creerJoueur(
   base: Base,
   pseudo: string,
+  cle: string,
 ): Promise<{ joueur: Joueur; jeton: string; codeRecuperation: string }> {
   const codeRecuperation = nouveauCode();
   const [joueur] = await base
     .insert(joueurs)
     .values({
       pseudo,
-      empreinteCode: empreinte(normaliserCode(codeRecuperation)),
+      empreinteCode: empreinteCode(cle, 'recuperation', codeRecuperation),
       // Cadeau de bienvenue (US-023).
       boosters: REGLES_BOOSTERS.bienvenue,
     })
@@ -60,11 +86,12 @@ export async function creerJoueur(
 export async function connecterParCode(
   base: Base,
   code: string,
+  cle: string,
 ): Promise<{ joueur: Joueur; jeton: string } | null> {
   const [joueur] = await base
     .select({ id: joueurs.id, pseudo: joueurs.pseudo })
     .from(joueurs)
-    .where(eq(joueurs.empreinteCode, empreinte(normaliserCode(code))));
+    .where(eq(joueurs.empreinteCode, empreinteCode(cle, 'recuperation', code)));
   if (!joueur) return null;
   return { joueur, jeton: await ouvrirSession(base, joueur.id) };
 }
@@ -75,20 +102,46 @@ export async function joueurDuJeton(base: Base, jeton: string): Promise<Joueur |
     .select({ id: joueurs.id, pseudo: joueurs.pseudo })
     .from(sessions)
     .innerJoin(joueurs, eq(sessions.joueurId, joueurs.id))
-    .where(eq(sessions.empreinteJeton, empreinte(jeton)));
+    .where(eq(sessions.empreinteJeton, empreinteJeton(jeton)));
   return joueur ?? null;
 }
 
 export async function fermerSession(base: Base, jeton: string): Promise<void> {
-  await base.delete(sessions).where(eq(sessions.empreinteJeton, empreinte(jeton)));
+  await base.delete(sessions).where(eq(sessions.empreinteJeton, empreinteJeton(jeton)));
 }
 
-/** Remplace le code de récupération ; l'ancien cesse aussitôt de fonctionner. */
-export async function regenererCode(base: Base, joueurId: string): Promise<string> {
+/**
+ * Ferme toutes les sessions du joueur sauf celle de `jeton`, l'appareil qui le demande (« Déconnecter mes autres
+ * appareils », US-047) ; renvoie le nombre de sessions fermées.
+ */
+export async function fermerAutresSessions(
+  base: Base | Transaction,
+  joueurId: string,
+  jeton: string,
+): Promise<number> {
+  const fermees = await base
+    .delete(sessions)
+    .where(and(eq(sessions.joueurId, joueurId), ne(sessions.empreinteJeton, empreinteJeton(jeton))))
+    .returning({ joueurId: sessions.joueurId });
+  return fermees.length;
+}
+
+/**
+ * Remplace le code de récupération : l'ancien cesse aussitôt de fonctionner, et les autres sessions du joueur, qui ont
+ * pu s'ouvrir avec lui, sont fermées dans la même transaction (US-047). La session de `jeton` reste ouverte.
+ */
+export async function regenererCode(
+  base: Base,
+  joueurId: string,
+  jeton: string,
+  cle: string,
+): Promise<{ codeRecuperation: string; sessionsFermees: number }> {
   const codeRecuperation = nouveauCode();
-  await base
-    .update(joueurs)
-    .set({ empreinteCode: empreinte(normaliserCode(codeRecuperation)) })
-    .where(eq(joueurs.id, joueurId));
-  return codeRecuperation;
+  return base.transaction(async (tx) => {
+    await tx
+      .update(joueurs)
+      .set({ empreinteCode: empreinteCode(cle, 'recuperation', codeRecuperation) })
+      .where(eq(joueurs.id, joueurId));
+    return { codeRecuperation, sessionsFermees: await fermerAutresSessions(tx, joueurId, jeton) };
+  });
 }

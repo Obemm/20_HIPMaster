@@ -1,11 +1,19 @@
 openapi: 3.1.0
 info:
   title: HIPMaster — parties contre le bot
-  version: 1.0.0
+  version: 1.1.0
   description: >
     Parties contre le bot (US-012), à quatre niveaux (US-021, US-064). Le serveur fait foi : il applique les règles (moteur du domaine,
     ADR 0013), fait jouer le bot et ne renvoie que la vue du joueur. Les parties en cours sont gardées en mémoire
     (ADR 0014) : elles expirent après 30 minutes sans activité. Le joueur est toujours `j1`, le bot `j2`.
+
+    Une partie créée avec le jeton d'un compte appartient à cette session : elle ne se lit et ne se joue qu'avec le
+    même jeton, et reste introuvable (404) pour toute autre requête (US-047). Une partie sans compte appartient à qui
+    connaît son identifiant.
+
+    Protections (ADR 0025) : création et actions limitées par adresse IP (valeurs de production ci-dessous,
+    multipliées par le réglage `LIMITES_DEBIT` de l'API), 429 avec `Retry-After` au-delà ; réponses en
+    `Cache-Control: no-store` ; corps de 16 Ko au plus (413).
 servers:
   - url: /api/v1
 paths:
@@ -45,7 +53,8 @@ paths:
       summary: Crée une partie contre le bot avec un deck prêté
       description: >
         Si le bot commence, son premier tour est déjà joué dans la réponse. Avec l'en-tête `Authorization: Bearer`
-        d'un compte (facultatif), une victoire rapportera un booster (US-025, voir `recompense`).
+        d'un compte (facultatif), une victoire rapportera un booster (US-025, voir `recompense`), et la partie
+        n'appartient qu'à cette session. Limite : 20 créations par minute et par adresse.
       requestBody:
         required: true
         content:
@@ -66,11 +75,15 @@ paths:
             application/json:
               schema: { $ref: '#/components/schemas/Partie' }
         '400': { $ref: '#/components/responses/Probleme' }
+        '413': { $ref: '#/components/responses/Probleme' }
         '422': { $ref: '#/components/responses/Probleme' }
+        '429': { $ref: '#/components/responses/TropDeRequetes' }
   /parties/{id}:
     get:
       operationId: lirePartie
       summary: Lit la vue du joueur ; `evenements` contient tout le journal visible
+      description: >
+        Une partie lancée par un compte ne se lit qu'avec le jeton de la session qui l'a créée.
       parameters: [{ $ref: '#/components/parameters/IdPartie' }]
       responses:
         '200':
@@ -78,14 +91,19 @@ paths:
           content:
             application/json:
               schema: { $ref: '#/components/schemas/Partie' }
-        '404': { $ref: '#/components/responses/Probleme' }
+        '404':
+          description: Partie inconnue, expirée, ou appartenant à une autre session (Problem Details).
+          content:
+            application/problem+json:
+              schema: { $ref: '#/components/schemas/Probleme' }
   /parties/{id}/actions:
     post:
       operationId: jouerAction
       summary: Joue une action du joueur
       description: >
         Après `finirTour`, le bot joue tout son tour dans la même requête. `evenements` ne contient que ce qui s'est
-        passé pendant la requête (action du joueur, puis tour du bot).
+        passé pendant la requête (action du joueur, puis tour du bot). Une partie lancée par un compte ne se joue
+        qu'avec le jeton de la session qui l'a créée. Limite : 300 actions par minute et par adresse.
       parameters: [{ $ref: '#/components/parameters/IdPartie' }]
       requestBody:
         required: true
@@ -99,12 +117,18 @@ paths:
             application/json:
               schema: { $ref: '#/components/schemas/Partie' }
         '400': { $ref: '#/components/responses/Probleme' }
-        '404': { $ref: '#/components/responses/Probleme' }
+        '404':
+          description: Partie inconnue, expirée, ou appartenant à une autre session (Problem Details).
+          content:
+            application/problem+json:
+              schema: { $ref: '#/components/schemas/Probleme' }
+        '413': { $ref: '#/components/responses/Probleme' }
         '422':
           description: Action refusée par les règles (`code` en donne la raison).
           content:
             application/problem+json:
               schema: { $ref: '#/components/schemas/Probleme' }
+        '429': { $ref: '#/components/responses/TropDeRequetes' }
 components:
   parameters:
     IdPartie:
@@ -118,6 +142,7 @@ components:
       content:
         application/problem+json:
           schema: { $ref: '#/components/schemas/Probleme' }
+    TropDeRequetes: { $ref: 'comptes.yaml#/components/responses/TropDeRequetes' }
   schemas:
     Deck:
       type: object

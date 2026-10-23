@@ -1,7 +1,7 @@
 import { choisirActionBatchDeNuit, type VueJoueur } from '@hipmaster/domain';
 import { afterEach, describe, expect, it } from 'vitest';
 import { construireApp } from './app.ts';
-import type { PartieVisible } from './parties/depot.ts';
+import { DepotParties, type PartieVisible } from './parties/depot.ts';
 
 type App = ReturnType<typeof construireApp>;
 const applis: App[] = [];
@@ -186,6 +186,34 @@ describe('parties contre le bot', () => {
     const lire = (id: string) => app.inject({ method: 'GET', url: `/api/v1/parties/${id}` });
     expect((await lire(premiere.id)).statusCode).toBe(404);
     expect((await lire(deuxieme.id)).statusCode).toBe(200);
+  });
+
+  it('au plafond, oublie d’abord les parties anonymes, puis celles des joueurs connectés (US-047)', () => {
+    let temps = 0;
+    const depot = new DepotParties({
+      partiesMax: 2,
+      maintenant: () => temps,
+      tirerGraine: () => 1,
+    });
+    const ada = { joueurId: '00000000-0000-4000-8000-000000000001', session: 'session-ada' };
+    const creerDans = (proprietaire?: typeof ada) => {
+      temps += 10;
+      const resultat = depot.creer('moderne', undefined, proprietaire);
+      if (!resultat.ok) throw new Error(resultat.raison);
+      return resultat.valeur.id;
+    };
+    const connectee = creerDans(ada);
+    const anonyme = creerDans();
+    // Un afflux de parties anonymes n'évince que des parties anonymes, même plus récentes.
+    const suivante = creerDans();
+    expect(depot.lire(anonyme, null)).toMatchObject({ ok: false, raison: 'partie-inconnue' });
+    expect(depot.lire(connectee, 'session-ada').ok).toBe(true);
+    expect(depot.lire(suivante, null).ok).toBe(true);
+    // Sans partie anonyme à évincer, la moins récemment jouée part.
+    creerDans(ada);
+    creerDans(ada);
+    expect(depot.lire(connectee, 'session-ada').ok).toBe(false);
+    expect(depot.taille).toBe(2);
   });
 
   it('accepte l’action jouer (sort ou incident) avec ses cibles, et refuse des cibles invalides', async () => {

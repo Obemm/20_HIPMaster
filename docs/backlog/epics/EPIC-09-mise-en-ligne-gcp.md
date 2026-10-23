@@ -23,7 +23,7 @@ gratuite, que Claude installe, déploie et maintient en ligne de commande
 ## Stories
 
 - [x] US-046 — Une API prête pour Cloud Run
-- [ ] US-047 — Les protections indispensables avant l'ouverture
+- [x] US-047 — Les protections indispensables avant l'ouverture
 - [ ] US-048 — Inscription sur invitation
 - [x] US-049 — Infrastructure gratuite et reproductible
 - [ ] US-050 — Déploiement continu vers Cloud Run et Firebase Hosting
