@@ -32,6 +32,8 @@ au plafond.
   pas la partie), valeur réglable. Une partie expirée répond 404 comme une partie inconnue. **Purge à la création** :
   chaque nouvelle partie supprime d'abord toutes les parties expirées. Aucune tâche de fond, comme pour les boosters
   (ADR 0019) et les duels (ADR 0020).
+- **Une partie est une donnée de jeu en cours, pas un score** : elle peut expirer et être purgée, mais la récompense
+  d'une victoire, gardée à part (`recompenses`, une ligne par partie), reste acquise.
 - **Plafond : 1 000 parties**, réglable. Au-delà, la création supprime la partie anonyme la moins récemment jouée, et
   seulement à défaut celle d'un joueur connecté : la règle d'ADR 0025 est reprise telle quelle. Avec la limitation de
   débit (20 créations par minute et par adresse, ADR 0025), le volume reste borné : 1 000 parties de 18 Ko au plus

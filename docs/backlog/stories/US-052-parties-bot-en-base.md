@@ -69,3 +69,5 @@ Décision : ADR [0030](../../decisions/0030-parties-bot-en-base.md), qui remplac
 - 2026-10-22 — création, issue de la revue avant mise en ligne (ADR 0014 et 0021).
 - 2026-10-23 — affinée : conception, ADR [0030](../../decisions/0030-parties-bot-en-base.md), contrat OpenAPI d'abord.
 - 2026-10-23 — livrée : parties contre le bot en base (table parties, migration 0010 en ajout seul) : une action et le tour du bot écrits en une seule fois sous condition de version (409 au perdant, If-Match facultatif, ETag) ; expiration 24 h sans coup joué évaluée à la lecture, purge et plafond de 1 000 parties (anonymes d'abord) à la création ; reprise après redémarrage testée ; concurrence éprouvée sur PostgreSQL 18 ; ADR 0030 remplace 0014
+- 2026-10-23 — décision du porteur du projet : les parties contre le bot sont des données de partie en cours, pas des
+  scores ; leur expiration reste possible, mais une récompense gagnée reste acquise (test ajouté, ADR 0030).
