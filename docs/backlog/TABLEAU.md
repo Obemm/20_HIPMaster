@@ -18,6 +18,7 @@ _Dernière mise à jour : 2026-10-23_
 | [EPIC-09 — Mise en ligne sur Google Cloud](epics/EPIC-09-mise-en-ligne-gcp.md)                    | Must     | En cours  | 7/14       |
 | [EPIC-10 — Identité visuelle et confort sur téléphone](epics/EPIC-10-identite-visuelle-mobile.md) | Should   | À affiner | 0/5        |
 | [EPIC-11 — Apprendre à jouer](epics/EPIC-11-apprendre-a-jouer.md)                                 | Should   | À affiner | 0/3        |
+| [EPIC-12 — Des cartes qui enseignent](epics/EPIC-12-cartes-qui-enseignent.md)                     | Must     | À affiner | 0/2        |
 
 ## Itération 0 (en cours) — fondations
 
@@ -147,6 +148,16 @@ Google Cloud, Firebase Hosting et une base Neon gratuite (ADR 0021, accepté le 
 | [US-063 — Installer le jeu sur son téléphone (PWA)](stories/US-063-pwa-installable.md)                                                | EPIC-10 | Could    | S      | 3   | À affiner |
 | [US-062 — Ouvrir un booster, un vrai moment](stories/US-062-ouverture-booster-mise-en-scene.md)                                       | EPIC-10 | Could    | M      | 3   | À affiner |
 | [US-067 — Une première partie guidée](stories/US-067-premiere-partie-guidee.md)                                                       | EPIC-11 | Should   | L      | 3   | À affiner |
+
+## Acculturation — des cartes qui enseignent
+
+Demande du porteur du projet (2026-10-23) : l'objectif premier du jeu est l'acculturation ; les cartes doivent être
+riches tout en restant ludiques, avec des liens vers des ressources externes.
+
+| Story                                                                                                                   | Epic    | Priorité | Taille | Statut    |
+| ----------------------------------------------------------------------------------------------------------------------- | ------- | -------- | ------ | --------- |
+| [US-073 — Une fiche « En savoir plus » et des liens externes pour chaque carte](stories/US-073-fiche-en-savoir-plus.md) | EPIC-12 | Must     | M      | À affiner |
+| [US-074 — Enrichir le contenu des 71 cartes du set 1](stories/US-074-contenu-cartes-set-1.md)                           | EPIC-12 | Must     | L      | À affiner |
 
 ## Plus tard — évolutions notées le 2026-10-23
 
