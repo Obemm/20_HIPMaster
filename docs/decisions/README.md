@@ -43,5 +43,6 @@ référence Elis.
 | [0032](0032-preferences-interface-navigateur.md)       | Préférences d'interface gardées par le navigateur (`localStorage`)    | ADR-032 écarté                 | Acceptée                      |
 | [0033](0033-supervision-sauvegardes.md)                | Supervision, sauvegardes et erreurs : Cloud Monitoring, jobs, journal | ADR-006, 012, 043 ; 009 écarté | Proposée                      |
 | [0034](0034-hasard-et-appariement.md)                  | Hasard ChaCha20 à clé tirée par le serveur ; appariement sous verrou  | aucune ; ADR-020 retenu        | Acceptée                      |
+| [0035](0035-purge-donnees-techniques.md)               | Sessions qui expirent, purge nocturne des seules données techniques   | aucune ; ADR-006 (adapté)      | Acceptée                      |
 
 Modèle : [template.md](template.md).

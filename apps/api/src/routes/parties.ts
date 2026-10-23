@@ -122,7 +122,9 @@ export const routesParties: FastifyPluginAsyncZod<{
       // Connecté, le joueur pourra être récompensé, et la partie n'appartient qu'à sa session (US-047) ; sans compte
       // (ou session expirée), la partie reste jouable par qui connaît son identifiant.
       const jeton = jetonDe(requete);
-      const joueur = jeton ? await joueurDuJeton(base, jeton) : null;
+      const joueur = jeton
+        ? await joueurDuJeton(base, jeton, requete.server.optionsSessions)
+        : null;
       const proprietaire =
         joueur && jeton ? { joueurId: joueur.id, session: empreinteJeton(jeton) } : null;
       const resultat = await lancerPartie(

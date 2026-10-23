@@ -30,14 +30,15 @@ describe('À propos et confidentialité', () => {
     expect(page.querySelector('a[href="/compte"]')?.textContent).toContain('Mon compte');
   });
 
-  it('donne chaque durée de conservation, et marque celles qui ne sont pas encore appliquées', async () => {
+  it('donne chaque durée de conservation, toutes appliquées (US-054)', async () => {
     const page = await afficher();
     const lignes = [...page.querySelectorAll('dl > div')].map((l) => l.textContent ?? '');
     expect(lignes).toHaveLength(CONSERVATIONS.length);
     for (const [i, c] of CONSERVATIONS.entries()) {
       expect(lignes[i]).toContain(c.duree);
-      expect(lignes[i]?.includes('(bientôt)')).toBe(c.aVenir === true);
     }
+    expect(page.textContent).not.toMatch(/bientôt/i);
+    expect(page.textContent).toContain('effacées chaque nuit');
     expect(lignes.join(' ')).toContain('90 jours');
     expect(lignes.join(' ')).not.toContain('12 mois');
     expect(lignes[0]).toContain('sans limite');
