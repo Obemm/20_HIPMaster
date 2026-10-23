@@ -12,16 +12,16 @@ complémentaires).
 
 ## Fichiers & Batch (8)
 
-| N°  | Carte                     | Type      | Rareté     | Coût | Att/PV | Capacités / effet                                                                                      | En vrai                                  |
-| --- | ------------------------- | --------- | ---------- | ---- | ------ | ------------------------------------------------------------------------------------------------------ | ---------------------------------------- |
-| 1   | FTP                       | Composant | Légendaire | 3    | 5/4    | Batch, Vétéran, Non conforme                                                                           | Officiellement interdit. Officieusement… |
-| 2   | SFTP                      | Composant | Rare       | 3    | 3/4    | Migration                                                                                              | FTP chiffré, progressivement remplacé    |
-| 3   | EDI                       | Composant | Rare       | 4    | 5/5    | Batch                                                                                                  | Échanges normés entre partenaires        |
-| 4   | Fichier CSV               | Composant | Commune    | 1    | 2/1    | —                                                                                                      | Le format universel, séparateur variable |
-| 5   | Fichier à positions fixes | Composant | Commune    | 2    | 2/3    | —                                                                                                      | « Le montant est en colonnes 47 à 52. »  |
-| 6   | Cron                      | Composant | Commune    | 2    | 1/3    | Au début de votre tour, un de vos composants Batch peut attaquer même s'il a attaqué au tour précédent | Planificateur des traitements de nuit    |
-| 7   | Répertoire de dépôt       | Composant | Commune    | 2    | 1/4    | Garde                                                                                                  | Là où les fichiers attendent             |
-| 8   | Fichier `.ok` témoin      | Composant | Commune    | 1    | 1/2    | Vos cartes sont immunisées contre Fichier vide à 3 h du matin                                          | Prouve que le fichier est complet        |
+| N°  | Carte                     | Type      | Rareté     | Coût | Att/PV | Capacités / effet                                                                                      | En vrai                                       |
+| --- | ------------------------- | --------- | ---------- | ---- | ------ | ------------------------------------------------------------------------------------------------------ | --------------------------------------------- |
+| 1   | FTP                       | Composant | Légendaire | 3    | 5/4    | Batch, Vétéran, Non conforme                                                                           | Officiellement interdit. Officieusement…      |
+| 2   | SFTP                      | Composant | Rare       | 3    | 3/4    | Migration                                                                                              | Transfert chiffré par SSH, peu à peu remplacé |
+| 3   | EDI                       | Composant | Rare       | 4    | 5/5    | Batch                                                                                                  | Échanges normés entre partenaires             |
+| 4   | Fichier CSV               | Composant | Commune    | 1    | 2/1    | —                                                                                                      | Le format universel, séparateur variable      |
+| 5   | Fichier à positions fixes | Composant | Commune    | 2    | 2/3    | —                                                                                                      | « Le montant est en colonnes 47 à 52. »       |
+| 6   | Cron                      | Composant | Commune    | 2    | 1/3    | Au début de votre tour, un de vos composants Batch peut attaquer même s'il a attaqué au tour précédent | Planificateur des traitements de nuit         |
+| 7   | Répertoire de dépôt       | Composant | Commune    | 2    | 1/4    | Garde                                                                                                  | Là où les fichiers attendent                  |
+| 8   | Fichier `.ok` témoin      | Composant | Commune    | 1    | 1/2    | Vos cartes sont immunisées contre Fichier vide à 3 h du matin                                          | Prouve que le fichier est complet             |
 
 ## Messagerie & ESB (9)
 
