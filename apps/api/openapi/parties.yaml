@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: HIPMaster — parties contre le bot
-  version: 1.1.0
+  version: 1.2.0
   description: >
     Parties contre le bot (US-012), à quatre niveaux (US-021, US-064). Le serveur fait foi : il applique les règles (moteur du domaine,
     ADR 0013), fait jouer le bot et ne renvoie que la vue du joueur. Les parties en cours sont gardées en mémoire
@@ -190,7 +190,7 @@ components:
             - type: object
               required: [main, aDecommissionne, marqueurs]
               properties:
-                main: { type: array, items: { $ref: '#/components/schemas/Instance' } }
+                main: { type: array, items: { $ref: '#/components/schemas/CarteEnMain' } }
                 aDecommissionne: { type: boolean }
                 marqueurs: { $ref: '#/components/schemas/Marqueurs' }
         adversaire:
@@ -263,6 +263,21 @@ components:
       properties:
         id: { type: string, description: Identifiant de la carte dans la partie. }
         numero: { type: integer, description: Numéro de la carte du catalogue. }
+    CarteEnMain:
+      allOf:
+        - $ref: '#/components/schemas/Instance'
+        - type: object
+          properties:
+            injouable:
+              type: [string, 'null']
+              description: >
+                Pourquoi cette carte ne se joue pas maintenant (US-071), null si une action la joue (poser, evoluer,
+                jouer, migrer, router ; décommissionner ne compte pas). Par ordre de priorité : pas votre tour, carte
+                pas encore prise en charge, évolution sans sa carte d'origine sur le plateau, plateau plein, Débit
+                insuffisant (coût effectif), aucune cible possible. Absent une fois la partie terminée.
+              examples:
+                - Évolution d’Apigee API Gateway: posez d’abord Apigee API Gateway, puis faites-la évoluer.
+                - Il vous faut 5 Débit, vous en avez 3.
     Composant:
       allOf:
         - $ref: '#/components/schemas/Instance'

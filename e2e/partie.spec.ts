@@ -113,3 +113,48 @@ for (const theme of ['light', 'dark'] as const) {
     expect(partie.violations).toEqual([]);
   });
 }
+
+test('une évolution sans sa carte d’origine dit pourquoi elle ne se joue pas (US-071)', async ({
+  page,
+}) => {
+  // Le tirage est au hasard : on crée des parties (deck Moderne) jusqu'à tenir Apigee AI Gateway (n° 40) en main,
+  // sans Apigee API Gateway (n° 18) en jeu. Une partie sans compte appartient à qui connaît son identifiant.
+  let id: string | undefined;
+  for (let essai = 0; essai < 40 && !id; essai++) {
+    const reponse = await page.request.post('/api/v1/parties', {
+      data: { deck: 'moderne', niveau: 'stagiaire' },
+    });
+    expect(reponse.ok()).toBe(true);
+    const partie = (await reponse.json()) as {
+      id: string;
+      vue: { moi: { main: { numero: number }[]; plateau: { numero: number }[] } };
+    };
+    const { main, plateau } = partie.vue.moi;
+    if (main.some((c) => c.numero === 40) && !plateau.some((c) => c.numero === 18)) id = partie.id;
+  }
+  expect(id).toBeDefined();
+
+  await page.goto(`/jouer/${id}`);
+  const main = page.getByRole('region', { name: /Votre main/ });
+  const carte = main.getByRole('button', { name: 'Apigee AI Gateway' });
+  const raison =
+    'Évolution d’Apigee API Gateway : posez d’abord Apigee API Gateway, puis faites-la évoluer.';
+  // La vignette reste lisible, avec une mention visible ; la raison est annoncée aux lecteurs d'écran.
+  await expect(carte).toBeEnabled();
+  await expect(carte).toHaveAccessibleDescription(`Pas jouable : ${raison}`);
+  await expect(main.getByText('Pas jouable').first()).toBeVisible();
+  // Le texte réservé aux lecteurs d'écran n'élargit pas la page sur téléphone.
+  const debord = await page.evaluate(
+    () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+  );
+  expect(debord).toBeLessThanOrEqual(0);
+
+  await carte.click();
+  const detail = page.getByRole('region', { name: 'Apigee AI Gateway' });
+  await expect(detail.getByText(raison)).toBeVisible();
+  await expect(detail.getByRole('button', { name: /^Décommissionner/ })).toBeVisible();
+  await expect(page.getByText('Débit, plateau plein')).toHaveCount(0);
+
+  const audit = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
+  expect(audit.violations).toEqual([]);
+});

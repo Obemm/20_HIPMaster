@@ -107,6 +107,22 @@ describe('parties contre le bot', () => {
     expect(JSON.stringify(partie)).not.toContain('"journal"');
   });
 
+  it('dit pourquoi chaque carte de la main qui ne se joue pas ne se joue pas (US-071)', async () => {
+    const { app } = appli();
+    const { partie } = await creer(app, 'heritage');
+    const { main } = partie.vue.moi;
+    const joue = new Set(['poser', 'evoluer', 'jouer', 'migrer', 'router']);
+    for (const carte of main) {
+      const jouable = partie.vue.actions.some(
+        (a) => joue.has(a.type) && 'carte' in a && a.carte === carte.id,
+      );
+      expect(carte.injouable === null).toBe(jouable);
+      if (!jouable) expect(carte.injouable).toEqual(expect.any(String));
+    }
+    // Premier tour, 1 Débit : au moins une carte de la main est trop chère.
+    expect(main.some((c) => c.injouable?.startsWith('Il vous faut'))).toBe(true);
+  });
+
   it('fait jouer le premier tour du bot quand il commence', async () => {
     // Graine 3 : le tirage au sort fait commencer le bot (j2), qui a donc déjà joué son tour.
     const { app } = appli({ premiereGraine: 3 });

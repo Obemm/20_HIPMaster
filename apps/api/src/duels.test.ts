@@ -81,6 +81,20 @@ describe('duels entre joueurs', () => {
     expect(vueAda?.actif).toBe(vueBob?.actif);
   });
 
+  it('dit à chacun pourquoi ses cartes ne se jouent pas, et au joueur en attente que ce n’est pas son tour (US-071)', async () => {
+    const { ada, bob, id, lance } = await duelLance();
+    const [actif, enAttente] = lance.vue?.actif === 'j1' ? [ada, bob] : [bob, ada];
+    const vueActive = (await requete('GET', `/duels/${id}`, actif)).json<DuelVisible>().vue;
+    const vueEnAttente = (await requete('GET', `/duels/${id}`, enAttente)).json<DuelVisible>().vue;
+    expect(vueActive?.moi.main.every((c) => 'injouable' in c)).toBe(true);
+    expect(vueActive?.moi.main.some((c) => c.injouable?.startsWith('Ce n’est pas'))).toBe(false);
+    expect(vueEnAttente?.moi.main.map((c) => c.injouable)).toEqual(
+      vueEnAttente?.moi.main.map(
+        () => 'Ce n’est pas votre tour : attendez le vôtre pour jouer cette carte.',
+      ),
+    );
+  });
+
   it('refuse de rejoindre son propre duel, ou un duel déjà commencé ; un tiers ne le voit plus', async () => {
     const ada = await joueur('Ada');
     const cree = (await requete('POST', '/duels', ada, { deck: 'moderne' })).json<DuelVisible>();

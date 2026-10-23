@@ -1,12 +1,13 @@
 openapi: 3.1.0
 info:
   title: HIPMaster — duels entre joueurs
-  version: 1.1.0
+  version: 1.2.0
   description: >
     Duels asynchrones, au tour par tour, entre deux comptes (US-032, ADR 0020). Le serveur tient l'état complet du
     moteur et ne renvoie à chacun que sa vue. Le créateur d'un duel le lance avec son deck ; un autre joueur le
     rejoint avec le sien, et le tirage désigne qui commence. Compte requis (`Authorization: Bearer <jeton>`, voir
-    comptes.yaml). Les schémas `Vue`, `Action` et `Evenement` sont ceux de parties.yaml.
+    comptes.yaml). Les schémas `Vue`, `Action` et `Evenement` sont ceux de parties.yaml : la vue dit aussi pourquoi
+    une carte de la main ne se joue pas (`injouable`, US-071), y compris pendant le tour de l'adversaire.
 
     Protections (US-047, ADR 0025) : chaque route est limitée par adresse IP (valeurs de production dans sa
     description, multipliées par le réglage `LIMITES_DEBIT` de l'API), 429 avec `Retry-After` au-delà ; réponses en

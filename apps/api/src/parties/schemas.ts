@@ -39,6 +39,9 @@ export const schemaAction = z.discriminatedUnion('type', [
 
 const schemaInstance = z.object({ id: z.string(), numero: z.number().int() });
 
+// Pourquoi une carte de sa main ne se joue pas maintenant (US-071) ; absent une fois la partie terminée.
+const schemaCarteEnMain = schemaInstance.extend({ injouable: z.string().nullable().optional() });
+
 const schemaComposant = schemaInstance.extend({
   pv: z.number().int(),
   attaque: z.number().int(),
@@ -89,7 +92,7 @@ const schemaMarqueurs = z.object({
 export const schemaVue = z.object({
   joueur,
   moi: schemaCamp.extend({
-    main: z.array(schemaInstance),
+    main: z.array(schemaCarteEnMain),
     aDecommissionne: z.boolean(),
     marqueurs: schemaMarqueurs,
   }),
