@@ -35,6 +35,12 @@ describe('vue publique d’une partie (US-026)', () => {
     }
   });
 
+  it('garde la raison de ne pas jouer une carte de la main (US-071)', () => {
+    const vue = vueDe(creerPartie({ j1: heritage.cartes, j2: hybride.cartes }, 42), 'j1');
+    expect(vue.moi.main.some((c) => typeof c.injouable === 'string')).toBe(true);
+    expect(commeLApi(vue).moi.main).toEqual(vue.moi.main);
+  });
+
   // Dix parties complètes : plusieurs secondes sur un poste chargé, sans rapport avec une régression (US-043).
   it(
     'l’Agent autonome joué depuis la vue de l’API bat le Batch de nuit',

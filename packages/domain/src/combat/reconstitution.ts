@@ -1,6 +1,6 @@
 import { adversaire } from './outils.ts';
 import type { ComposantEnJeu, EtatJoueur, EtatPartie, InstanceCarte } from './types.ts';
-import type { ComposantVisible, VueJoueur } from './vue.ts';
+import type { CarteEnMain, ComposantVisible, VueJoueur } from './vue.ts';
 
 /**
  * Reconstitue un état de partie à partir de la seule vue d'un joueur, pour que les bots évaluent leurs actions avec
@@ -21,6 +21,11 @@ function versComposant(visible: ComposantVisible): ComposantEnJeu {
   const copie: ComposantEnJeu & { attaque?: number } = structuredClone(visible);
   delete copie.attaque;
   return copie;
+}
+
+/** Retire la raison calculée par la vue (US-071) : ce n'est pas une donnée de l'état. */
+function versInstance(carte: CarteEnMain): InstanceCarte {
+  return { id: carte.id, numero: carte.numero };
 }
 
 const MARQUEURS_PAR_DEFAUT = {
@@ -44,7 +49,7 @@ export function reconstituer(vue: VueJoueur): EtatPartie {
     debit: moi.debit,
     tours: moi.tours,
     pioche: neutres('pioche-moi', moi.pioche),
-    main: structuredClone(moi.main),
+    main: moi.main.map(versInstance),
     plateau: moi.plateau.map(versComposant),
     defausse: structuredClone(moi.defausse),
     aDecommissionne: moi.aDecommissionne,

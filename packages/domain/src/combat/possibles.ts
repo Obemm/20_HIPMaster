@@ -3,7 +3,14 @@ import { ciblesDeRenfort } from './effets-composants.ts';
 import { combinaisonsCibles } from './effets.ts';
 import { actionsIaPossibles, coutEffectif } from './ia.ts';
 import { estPriseEnCharge } from './prise-en-charge.ts';
-import type { Action, Cible, ComposantEnJeu, EtatPartie, IdJoueur } from './types.ts';
+import type {
+  Action,
+  Cible,
+  ComposantEnJeu,
+  EtatPartie,
+  IdJoueur,
+  InstanceCarte,
+} from './types.ts';
 
 /** Poses de composants et d'évolutions que le joueur peut payer. */
 function posesPossibles(etat: EtatPartie, joueur: IdJoueur): Action[] {
@@ -74,4 +81,48 @@ export function actionsPossibles(etat: EtatPartie): Action[] {
     ...actionsIaPossibles(etat, joueur),
     { type: 'finirTour' },
   ];
+}
+
+/** Les actions qui jouent une carte de la main (Décommissionner n'en est pas une : la carte n'entre pas en jeu). */
+const JOUE_LA_CARTE: ReadonlySet<Action['type']> = new Set([
+  'poser',
+  'evoluer',
+  'jouer',
+  'migrer',
+  'router',
+]);
+
+/** « de Solace Event Mesh », « d’Apigee API Gateway ». */
+const de = (nom: string): string => (/^[aeiouyàâéèêîôû]/i.test(nom) ? `d’${nom}` : `de ${nom}`);
+
+/**
+ * Pourquoi cette carte de la main ne se joue pas maintenant (US-071) ; `null` si une action légale la joue. Se
+ * déduit des actions légales déjà calculées (`actions`, celles de `actionsPossibles`), puis nomme l'obstacle : c'est
+ * le serveur qui explique, l'écran ne fait qu'afficher (ADR 0004).
+ */
+export function raisonDeNePasJouer(
+  etat: EtatPartie,
+  joueur: IdJoueur,
+  instance: InstanceCarte,
+  actions: readonly Action[],
+): string | null {
+  if (etat.actif !== joueur)
+    return 'Ce n’est pas votre tour : attendez le vôtre pour jouer cette carte.';
+  if (actions.some((a) => JOUE_LA_CARTE.has(a.type) && 'carte' in a && a.carte === instance.id)) {
+    return null;
+  }
+  const carte = carteDe(instance.numero);
+  if (!estPriseEnCharge(carte)) return 'Cette carte n’est pas encore prise en charge par le jeu.';
+  const etatJoueur = etat.joueurs[joueur];
+  if (carte.type === 'evolution' && !etatJoueur.plateau.some((c) => c.numero === carte.origine)) {
+    const origine = carteDe(carte.origine).nom;
+    return `Évolution ${de(origine)} : posez d’abord ${origine}, puis faites-la évoluer.`;
+  }
+  if (carte.type === 'composant' && etatJoueur.plateau.length >= PLATEAU_MAX) {
+    return `Plateau plein : ${PLATEAU_MAX} composants au plus.`;
+  }
+  const cout = coutEffectif(etat, joueur, carte.numero);
+  if (cout > etatJoueur.debit)
+    return `Il vous faut ${cout} Débit, vous en avez ${etatJoueur.debit}.`;
+  return 'Aucune cible possible pour cette carte maintenant.';
 }

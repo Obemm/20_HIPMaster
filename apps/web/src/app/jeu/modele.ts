@@ -25,6 +25,11 @@ export interface Composant extends Instance {
   sansAttaque?: string | null;
 }
 
+/** Une carte de ma main : `injouable` dit pourquoi elle ne se joue pas maintenant (US-071), `null` si elle se joue. */
+export interface CarteEnMain extends Instance {
+  injouable?: string | null;
+}
+
 interface Camp {
   sla: number;
   debit: number;
@@ -52,7 +57,7 @@ export interface Issue {
 
 export interface Vue {
   joueur: IdJoueur;
-  moi: Camp & { main: Instance[]; aDecommissionne: boolean };
+  moi: Camp & { main: CarteEnMain[]; aDecommissionne: boolean };
   adversaire: Camp & { main: number };
   actif: IdJoueur;
   tour: number;
