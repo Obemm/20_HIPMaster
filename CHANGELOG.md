@@ -143,7 +143,8 @@ Toutes les évolutions notables du projet sont consignées ici
   Cloud Run, renvoie `index.html` aux routes Angular, règle le cache (aucun pour `index.html`, un jour pour les
   illustrations, un an pour les fichiers à empreinte) et pose une CSP stricte avec les en-têtes de sécurité ;
   `robots.txt` et `noindex` tiennent les robots à l'écart. Guide d'exploitation complété : déploiement, retour
-  arrière, migrations compatibles (US-050, ADR 0028).
+  arrière, migrations compatibles Vérifié en production : retour arrière essayé (API en
+  32 s, front en 42 s), base Neon en veille 6 minutes au plus après la dernière requête (US-050, ADR 0028).
 - Page « Inviter », réservée au porteur du projet : créer une invitation (pour qui, nombre de comptes, date limite),
   copier son lien en un geste ou le partager par le menu du téléphone, suivre les comptes créés par chaque invitation et
   en révoquer une après confirmation. Les administrateurs sont désignés par le réglage `ADMINISTRATEURS` de l'API
@@ -169,6 +170,12 @@ Toutes les évolutions notables du projet sont consignées ici
   restauration essayée dans une branche Neon temporaire (`scripts/gcp/restaurer.sh`). Les erreurs JavaScript des
   joueurs partent vers Error Reporting par `POST /api/v1/erreurs` (contrat OpenAPI, débit limité), sans jeton ni
   paramètres d'adresse. Scan OWASP ZAP de base : aucune alerte élevée ni moyenne (US-051, ADR 0033).
+- Coups de pouce au bon moment, contre le bot comme en duel : avant de finir son tour, un message non bloquant dit
+  ce qui reste possible (« 2 de vos composants peuvent encore attaquer », « Vous pouvez encore poser Pub/Sub »), avec
+  « Revenir au plateau » et « Finir quand même » ; quand un attaquant est choisi et que le SI adverse ne lui est pas
+  proposé, le SI est signalé « Indisponible : Garde » et le détail rappelle quel composant doit tomber d'abord. Tout
+  vient des actions proposées par le serveur. Une case de l'aide « Comment jouer ? » les désactive, réglage gardé par
+  le navigateur (US-065, ADR 0032).
 
 ### Modifié
 

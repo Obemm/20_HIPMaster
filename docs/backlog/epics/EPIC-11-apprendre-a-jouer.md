@@ -1,6 +1,6 @@
 # EPIC-11 — Apprendre à jouer
 
-- **Statut** : À affiner
+- **Statut** : En cours
 - **Priorité** : Should
 
 ## Objectif
@@ -21,7 +21,7 @@ documentation. Les règles sont riches (Débit, Garde, riposte, capacités), et 
 
 ## Stories
 
-- [ ] US-065 — Des coups de pouce au bon moment
+- [x] US-065 — Des coups de pouce au bon moment
 - [ ] US-066 — Un conseil à la demande, contre le bot
 - [ ] US-067 — Une première partie guidée
 
