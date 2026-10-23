@@ -6,7 +6,7 @@ import { construireApp } from './app.ts';
 import { recompenserVictoire } from './comptes/boosters.ts';
 import { CLE_CODES_DEVELOPPEMENT, creerJoueur } from './comptes/comptes.ts';
 import { baseDeTest } from './db/base-de-test.ts';
-import { joueurs } from './db/schema.ts';
+import { joueurs, parties, recompenses } from './db/schema.ts';
 import type { PartieVisible } from './parties/parties.ts';
 
 const HEURE = 60 * 60 * 1000;
@@ -132,6 +132,19 @@ describe('parties récompensées', () => {
       headers: entetes,
     });
     expect(relue.json()).toMatchObject({ recompense: { booster: true } });
+    expect(await stock(joueur.id)).toBe(6);
+
+    // La partie finit par expirer et être purgée (US-052) : la récompense reste acquise.
+    await ouverte.base.delete(parties).where(eq(parties.id, partie.id));
+    const purgee = await app.inject({
+      method: 'GET',
+      url: `/api/v1/parties/${partie.id}`,
+      headers: entetes,
+    });
+    expect(purgee.statusCode).toBe(404);
+    expect(
+      await ouverte.base.select().from(recompenses).where(eq(recompenses.partieId, partie.id)),
+    ).toHaveLength(1);
     expect(await stock(joueur.id)).toBe(6);
   });
 
