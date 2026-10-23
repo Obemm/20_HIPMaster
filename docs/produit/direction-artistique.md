@@ -56,3 +56,7 @@ Une phrase en français qui décrit **ce que montre l'image**, sans répéter le
 | 9   | webMethods Integration Server 10.15 | Messagerie & ESB | Énorme moyeu mécanique au centre d'une salle, des dizaines de tuyaux en étoile, un peu daté, tenu par des rustines  |
 | 18  | Apigee API Gateway                  | API              | Forteresse-porte lumineuse qui filtre une file de petits paquets, sentinelles et compteurs de quotas                |
 | 39  | Solace Agent Mesh                   | IA agentique     | Créatures lumineuses reliées par un maillage d'ondes, qui se passent des messages dans un ciel de constellations    |
+
+## Prompts pour Gemini
+
+Un prompt prêt à l'emploi par carte du set 1, avec le bloc de style ci-dessus : [prompts-illustrations-gemini.md](prompts-illustrations-gemini.md).
