@@ -603,6 +603,28 @@ describe('PartieEcran', () => {
       http.expectNone(`/api/v1/parties/${ID}/actions`);
     });
 
+    it('se referme quand on choisit une carte ou un composant : le détail ne le recouvre jamais', async () => {
+      const v = vue({
+        actions: [
+          { type: 'attaquer', attaquant: 'j1-02', cible: 'si' },
+          { type: 'poser', carte: 'j1-01' },
+          { type: 'finirTour' },
+        ],
+      });
+      v.moi.plateau = [attaquant];
+      const { fixture, http, page } = await ouvrir(v);
+      for (const choisir of ['SI du bot', 'API REST']) {
+        bouton(page, 'Finir mon tour')?.click();
+        fixture.detectChanges();
+        expect(page.querySelector('[role="alertdialog"]')).not.toBeNull();
+        bouton(page, choisir)?.click();
+        fixture.detectChanges();
+        expect(page.querySelector('[role="alertdialog"]')).toBeNull();
+        expect(page.querySelector('#detail-plateau, #detail-main')).not.toBeNull();
+      }
+      http.expectNone(`/api/v1/parties/${ID}/actions`);
+    });
+
     it('compte les attaquants, distingue poser et jouer, et ignore le décommissionnement', async () => {
       const v = vue({
         actions: [

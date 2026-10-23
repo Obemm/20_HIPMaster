@@ -282,7 +282,10 @@ export class PartieEcran implements OnInit, OnDestroy {
     if (aJouer.size) phrases.push(`Vous pouvez encore jouer ${enListe([...aJouer])}.`);
     return phrases;
   });
-  /** Le message « Avant de finir votre tour » est affiché (US-065). */
+  /**
+   * Le message « Avant de finir votre tour » est affiché (US-065). Choisir une carte ou un composant le referme : sa
+   * feuille et celle du détail occupent le même bas d'écran, et le détail cachait ses boutons.
+   */
   protected readonly confirmerFin = signal(false);
   /**
    * Garde (US-065) : un attaquant est choisi et le serveur ne propose pas le SI adverse comme cible. Le nom des
@@ -394,6 +397,7 @@ export class PartieEcran implements OnInit, OnDestroy {
   };
 
   protected choisirCarte(id: string): void {
+    this.confirmerFin.set(false);
     this.attaquant.set(null);
     this.composantChoisi.set(null);
     this.carteChoisie.update((actuelle) => (actuelle === id ? null : id));
@@ -406,6 +410,7 @@ export class PartieEcran implements OnInit, OnDestroy {
    * désélectionne, attaque comprise.
    */
   protected choisirComposant(id: string, camp: 'moi' | 'adversaire'): void {
+    this.confirmerFin.set(false);
     this.carteChoisie.set(null);
     if (this.composantChoisi() === id) {
       this.composantChoisi.set(null);
