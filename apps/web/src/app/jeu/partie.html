@@ -1,70 +1,84 @@
-<main class="mx-auto flex w-full max-w-3xl flex-col gap-4 px-3 py-4 sm:px-6">
-  <header class="flex flex-wrap items-center justify-between gap-2">
-    <div>
-      <h1 class="text-xl font-bold tracking-tight">
+<main class="mx-auto flex w-full max-w-3xl flex-col gap-1.5 px-3 pt-1 sm:px-6 sm:pt-2 lg:max-w-6xl">
+  <!-- En-tête compact (US-059) : sur téléphone, tout le plateau doit tenir dans l'écran sous lui. -->
+  <header class="flex flex-col gap-0.5">
+    <div class="flex items-center justify-between gap-2">
+      <h1 class="min-w-0 truncate text-base font-bold tracking-tight sm:text-xl">
         {{
           mode() === 'duel' ? 'Duel contre ' + (pseudoAdversaire() ?? '…') : 'Partie contre le bot'
         }}
       </h1>
-      @if (mode() === 'bot' && nomNiveau()) {
-        <p class="text-sm text-texte-doux">Niveau : {{ nomNiveau() }}</p>
-      }
-    </div>
-    <p class="flex items-center gap-3 text-sm">
-      @if (vue(); as v) {
-        <span class="font-semibold">Tour {{ v.tour }} / {{ TOURS_MAX }}</span>
-      }
-      <a routerLink="/jouer" class="text-texte-doux underline underline-offset-4">Quitter</a>
-    </p>
-  </header>
-
-  @if (mode() === 'duel' && vue(); as v) {
-    @if (!v.issue) {
-      <div class="flex flex-wrap items-center justify-between gap-2 text-sm">
-        <p class="text-texte-doux">
-          @if (reste(); as reste) {
-            {{ v.actif === v.joueur ? 'À vous de jouer' : autre().sujet + ' doit jouer' }} dans les
-            {{ reste }}, sinon forfait.
-          }
-        </p>
-        @if (confirmerAbandon()) {
-          <p
-            class="flex flex-wrap items-center gap-2"
-            role="group"
-            aria-label="Confirmer l’abandon"
-          >
-            <span class="font-semibold">Abandonner ce duel ? {{ autre().sujet }} gagnera.</span>
-            <button
-              type="button"
-              class="rounded-lg bg-accent px-3 py-1.5 font-semibold text-sur-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:opacity-60"
-              [disabled]="occupe()"
-              (click)="abandonner()"
-            >
-              Oui, abandonner
-            </button>
-            <button
-              type="button"
-              class="rounded-lg border-2 border-bordure px-3 py-1.5 font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-              (click)="confirmerAbandon.set(false)"
-            >
-              Non, continuer
-            </button>
-          </p>
-        } @else {
+      <p class="flex shrink-0 items-center gap-1 text-sm">
+        @if (vue(); as v) {
+          <span class="me-1 font-semibold">Tour {{ v.tour }} / {{ TOURS_MAX }}</span>
+        }
+        @if (pret()) {
           <button
             type="button"
-            class="rounded-lg border-2 border-bordure px-3 py-1.5 font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-            (click)="confirmerAbandon.set(true)"
+            class="flex size-9 items-center justify-center rounded-full border-2 border-bordure font-bold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+            aria-haspopup="dialog"
+            (click)="ouvrirAide()"
           >
-            Abandonner
+            <span aria-hidden="true">?</span><span class="sr-only">Comment jouer ?</span>
           </button>
         }
-      </div>
+        <a
+          routerLink="/jouer"
+          class="px-2 py-2 text-texte-doux underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-accent"
+          >Quitter</a
+        >
+      </p>
+    </div>
+    @if (mode() === 'bot' && nomNiveau()) {
+      <p class="text-xs text-texte-doux">Niveau : {{ nomNiveau() }}</p>
     }
-  }
+    @if (mode() === 'duel' && vue(); as v) {
+      @if (!v.issue) {
+        <div class="flex flex-wrap items-center justify-between gap-x-2 text-xs">
+          <p class="text-texte-doux">
+            @if (reste(); as reste) {
+              {{ v.actif === v.joueur ? 'À vous de jouer' : autre().sujet + ' doit jouer' }} dans
+              les {{ reste }}, sinon forfait.
+            }
+          </p>
+          @if (confirmerAbandon()) {
+            <p
+              class="flex flex-wrap items-center gap-2"
+              role="group"
+              aria-label="Confirmer l’abandon"
+            >
+              <span class="font-semibold">Abandonner ce duel ? {{ autre().sujet }} gagnera.</span>
+              <button
+                type="button"
+                class="rounded-lg bg-accent px-3 py-1.5 font-semibold text-sur-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:opacity-60"
+                [disabled]="occupe()"
+                (click)="abandonner()"
+              >
+                Oui, abandonner
+              </button>
+              <button
+                type="button"
+                class="rounded-lg border-2 border-bordure px-3 py-1.5 font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                (click)="confirmerAbandon.set(false)"
+              >
+                Non, continuer
+              </button>
+            </p>
+          } @else {
+            <button
+              type="button"
+              class="min-h-6 font-semibold underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+              (click)="confirmerAbandon.set(true)"
+            >
+              Abandonner
+            </button>
+          }
+        </div>
+      }
+    }
+  </header>
 
   @if (introuvable()) {
-    <section class="flex flex-col gap-2" aria-labelledby="titre-introuvable">
+    <section class="flex flex-col gap-2 py-4" aria-labelledby="titre-introuvable">
       <h2 id="titre-introuvable" class="text-lg font-semibold">
         {{ mode() === 'duel' ? 'Duel introuvable' : 'Partie introuvable' }}
       </h2>
@@ -81,309 +95,424 @@
   } @else if (pret()) {
     @let v = vue()!;
 
-    <p class="rounded-lg bg-surface px-3 py-2 text-sm">
-      <strong>Objectif :</strong> faire tomber le SLA du SI {{ autre().de }} à 0. Après 20 tours, le
-      meilleur SLA gagne.
-    </p>
-    <details class="rounded-lg border border-bordure px-3 py-2" [open]="reglesOuvertes">
-      <summary class="cursor-pointer font-semibold">Comment jouer ?</summary>
-      <div class="pt-2"><hip-regle-courte [adversaire]="autre()" /></div>
-    </details>
-    @if (capacitesEnJeu().length) {
-      <details class="rounded-lg border border-bordure px-3 py-2">
-        <summary class="cursor-pointer font-semibold">
-          Capacités en jeu ({{ capacitesEnJeu().length }})
-        </summary>
-        <dl class="flex flex-col gap-2 pt-2 text-sm">
-          @for (capacite of capacitesEnJeu(); track capacite.nom) {
-            <div>
-              <dt class="font-semibold">{{ capacite.nom }}</dt>
-              <dd class="text-texte-doux">{{ capacite.description }}</dd>
-            </div>
-          }
-        </dl>
-      </details>
-    }
-
-    <!-- Camp de l'adversaire (le bot, ou un joueur en duel) -->
-    <section aria-labelledby="titre-bot" class="flex flex-col gap-2">
-      <div class="flex flex-wrap items-center justify-between gap-2">
-        <h2 id="titre-bot" class="font-semibold">{{ autre().sujet }}</h2>
-        <p class="flex gap-3 text-sm text-texte-doux">
-          <span><hip-icone nom="debit" class="size-3.5" /> Débit {{ v.adversaire.debit }}</span>
-          <span>Main {{ v.adversaire.main }}</span>
-          <span>Pioche {{ v.adversaire.pioche }}</span>
-        </p>
-      </div>
-      <!-- Le SI adverse : une cible, choisie pour la lire, attaquée depuis son détail (US-041). -->
-      <button
-        type="button"
-        id="plateau-si"
-        class="flex items-center justify-between rounded-lg border-2 px-3 py-2 text-left font-semibold focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-default"
-        [class]="
-          ciblesPossibles().has('si') ? 'border-red-600 dark:border-red-400' : 'border-bordure'
-        "
-        [class.ring-3]="composantChoisi() === 'si'"
-        [class.ring-accent]="composantChoisi() === 'si'"
-        [class.ring-offset-2]="composantChoisi() === 'si'"
-        [class.ring-offset-fond]="composantChoisi() === 'si'"
-        [disabled]="occupe()"
-        [attr.aria-pressed]="composantChoisi() === 'si'"
-        [attr.aria-controls]="composantChoisi() === 'si' ? 'detail-plateau' : null"
-        (click)="choisirComposant('si', 'adversaire')"
-      >
-        <span>SI {{ autre().de }}</span>
-        <span>SLA {{ v.adversaire.sla }} / 20</span>
-        @if (ciblesPossibles().has('si')) {
-          <span class="sr-only">: cible possible</span>
-        }
-      </button>
-      <ul
-        class="grid min-h-24 grid-cols-3 gap-2 sm:grid-cols-5"
-        [attr.aria-label]="'Plateau ' + autre().de"
-      >
-        @for (c of v.adversaire.plateau; track c.id) {
-          @let carte = carteDe(c.numero)!;
-          @let choisi = composantChoisi() === c.id;
-          <li>
-            <!-- Toujours cliquable : on regarde d'abord, on attaque depuis le détail (US-041). -->
-            <button
-              type="button"
-              [id]="'plateau-' + c.id"
-              class="h-full w-full rounded-lg focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-default"
-              [class.ring-3]="choisi || ciblesPossibles().has(c.id)"
-              [class.ring-accent]="choisi"
-              [class.ring-offset-2]="choisi"
-              [class.ring-offset-fond]="choisi"
-              [class.ring-red-600]="!choisi && ciblesPossibles().has(c.id)"
-              [disabled]="occupe()"
-              [attr.aria-pressed]="choisi"
-              [attr.aria-controls]="choisi ? 'detail-plateau' : null"
-              [attr.aria-label]="
-                decrireComposant(c, carte) +
-                (ciblesPossibles().has(c.id) ? ' : cible possible' : '')
-              "
-              (click)="choisirComposant(c.id, 'adversaire')"
-            >
-              <hip-jeton-composant [composant]="c" [carte]="carte" />
-            </button>
-          </li>
-        } @empty {
-          <li class="col-span-full self-center text-center text-sm text-texte-doux">
-            Aucun composant.
-          </li>
-        }
-      </ul>
-    </section>
-
-    <hr class="border-bordure" />
-
-    <!-- Mon camp -->
-    <section aria-labelledby="titre-moi" class="flex flex-col gap-2">
-      <ul class="grid min-h-24 grid-cols-3 gap-2 sm:grid-cols-5" aria-label="Votre plateau">
-        @for (c of v.moi.plateau; track c.id) {
-          @let carte = carteDe(c.numero)!;
-          @let choisi = composantChoisi() === c.id;
-          <li>
-            <!-- L'anneau plein marque l'attaquant désigné ; l'anneau décollé, le composant lu en grand. -->
-            <button
-              type="button"
-              [id]="'plateau-' + c.id"
-              class="h-full w-full rounded-lg focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-default"
-              [class.ring-3]="choisi || attaquant() === c.id"
-              [class.ring-accent]="choisi || attaquant() === c.id"
-              [class.ring-offset-2]="choisi"
-              [class.ring-offset-fond]="choisi"
-              [disabled]="occupe()"
-              [attr.aria-pressed]="choisi"
-              [attr.aria-controls]="choisi ? 'detail-plateau' : null"
-              [attr.aria-label]="
-                decrireComposant(c, carte) +
-                (attaquantsPossibles().has(c.id) ? ' : peut attaquer' : '')
-              "
-              (click)="choisirComposant(c.id, 'moi')"
-            >
-              <hip-jeton-composant [composant]="c" [carte]="carte" />
-            </button>
-          </li>
-        } @empty {
-          <li class="col-span-full self-center text-center text-sm text-texte-doux">
-            Aucun composant : posez une carte de votre main.
-          </li>
-        }
-      </ul>
-      @if (detail()?.zone !== 'main') {
-        <ng-container *ngTemplateOutlet="panneauDetail" />
-      }
-      <div class="flex flex-wrap items-center justify-between gap-2">
-        <h2 id="titre-moi" class="font-semibold">Vous</h2>
-        <p class="flex flex-wrap gap-3 text-sm">
-          <span class="font-semibold">Votre SI : SLA {{ v.moi.sla }} / 20</span>
-          <span class="font-semibold">
-            <hip-icone nom="debit" class="size-3.5 text-amber-600 dark:text-amber-400" /> Débit
-            {{ v.moi.debit }}
-          </span>
-          <span class="text-texte-doux">Pioche {{ v.moi.pioche }}</span>
-        </p>
-      </div>
-    </section>
-
-    @if (v.issue; as issue) {
-      <section
-        aria-labelledby="titre-fin"
-        class="flex flex-col items-center gap-3 rounded-xl border-2 border-accent p-5 text-center"
-      >
-        <h2 id="titre-fin" #titreFin tabindex="-1" class="text-3xl font-bold focus:outline-none">
-          @if (issue.gagnant === null) {
-            Partie nulle
-          } @else if (issue.gagnant === v.joueur) {
-            Victoire !
-          } @else {
-            Défaite
-          }
-        </h2>
-        <p class="text-texte-doux">
-          {{ raisonFin(issue, v.joueur) }}
-          SLA final : vous {{ v.moi.sla }}, {{ autre().nom }} {{ v.adversaire.sla }}.
-        </p>
-        @if (partie()?.recompense; as recompense) {
-          <p class="font-semibold">
-            @if (recompense.booster) {
-              Un booster gagné ! Il vous attend dans vos boosters.
-            } @else if (recompense.motif === 'adversaire-deja-affronte') {
-              Pas de booster cette fois : une victoire par abandon ou forfait ne compte qu’une fois
-              par jour contre le même adversaire.
-            } @else {
-              Plafond atteint : 3 boosters gagnés aujourd’hui. Revenez demain pour en gagner
-              d’autres.
-            }
-          </p>
-        } @else if (
-          mode() === 'bot' && issue.gagnant === v.joueur && compte.pret() && !compte.joueur()
-        ) {
-          <p>
-            Avec un compte, chaque victoire rapporte un booster :
-            <a routerLink="/compte" class="font-semibold underline underline-offset-4"
-              >créer un compte</a
-            >
-            (un pseudo suffit).
-          </p>
-        }
-        <p class="flex flex-wrap justify-center gap-3">
-          @if (partie()?.recompense?.booster) {
-            <a
-              routerLink="/boosters"
-              class="rounded-lg bg-accent px-4 py-3 font-semibold text-sur-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-              >Ouvrir mon booster</a
-            >
-          }
-          <a
-            [routerLink]="mode() === 'duel' ? '/duels/nouveau' : '/jouer'"
-            class="rounded-lg bg-accent px-4 py-3 font-semibold text-sur-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-            >{{ mode() === 'duel' ? 'Lancer une revanche' : 'Rejouer' }}</a
+    <!--
+      Sur téléphone, une colonne : camp adverse, journal en bandeau, mon camp, ma main et l'action principale. Au
+      bureau (styles.css, .plateau-partie), le plateau au centre et, sur le côté, l'objectif, le glossaire et le journal.
+    -->
+    <div class="plateau-partie">
+      <!-- Camp de l'adversaire (le bot, ou un joueur en duel) -->
+      <section aria-labelledby="titre-bot" class="zone-adversaire flex flex-col gap-1.5">
+        <h2 id="titre-bot" class="sr-only">{{ autre().sujet }}</h2>
+        <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
+          <!-- Le SI adverse : une cible, choisie pour la lire, attaquée depuis son détail (US-041). -->
+          <button
+            type="button"
+            id="plateau-si"
+            class="flex min-h-11 flex-1 items-center justify-between gap-2 rounded-lg border-2 px-3 py-1.5 text-left text-sm font-semibold focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-default"
+            [class]="
+              ciblesPossibles().has('si') ? 'border-red-600 dark:border-red-400' : 'border-bordure'
+            "
+            [class.ring-3]="composantChoisi() === 'si'"
+            [class.ring-accent]="composantChoisi() === 'si'"
+            [class.ring-offset-2]="composantChoisi() === 'si'"
+            [class.ring-offset-fond]="composantChoisi() === 'si'"
+            [disabled]="occupe()"
+            [attr.aria-pressed]="composantChoisi() === 'si'"
+            [attr.aria-controls]="composantChoisi() === 'si' ? 'detail-plateau' : null"
+            (click)="choisirComposant('si', 'adversaire')"
           >
-          <a routerLink="/" class="px-4 py-3 underline underline-offset-4">Accueil</a>
-        </p>
-      </section>
-    } @else {
-      <!-- Ma main et mes actions -->
-      <section aria-labelledby="titre-main" class="flex flex-col gap-2">
-        <h2 id="titre-main" class="font-semibold">Votre main ({{ v.moi.main.length }})</h2>
-        <!-- Focusable : la main défile au clavier même quand ses cartes sont désactivées (tour adverse). -->
-        <ul class="flex gap-2 overflow-x-auto pb-2" tabindex="0" aria-labelledby="titre-main">
-          @for (instance of v.moi.main; track instance.id) {
-            <!-- relative : le texte réservé aux lecteurs d'écran reste dans la main qui défile, sans élargir la page. -->
-            <li class="relative w-28 shrink-0 sm:w-32">
+            <span>SI {{ autre().de }}</span>
+            <span class="whitespace-nowrap">SLA {{ v.adversaire.sla }} / 20</span>
+            @if (ciblesPossibles().has('si')) {
+              <span class="sr-only">: cible possible</span>
+            }
+          </button>
+          <p class="flex gap-2 text-xs text-texte-doux">
+            <span class="whitespace-nowrap"
+              ><hip-icone nom="debit" class="size-3.5" /> Débit {{ v.adversaire.debit }}</span
+            >
+            <span class="whitespace-nowrap">Main {{ v.adversaire.main }}</span>
+            <span class="whitespace-nowrap">Pioche {{ v.adversaire.pioche }}</span>
+          </p>
+        </div>
+        <ul
+          class="flex min-h-[5.5rem] gap-2 overflow-x-auto pb-1"
+          [attr.aria-label]="'Plateau ' + autre().de"
+        >
+          @for (c of v.adversaire.plateau; track c.id) {
+            @let carte = carteDe(c.numero)!;
+            @let choisi = composantChoisi() === c.id;
+            <li class="w-[6.5rem] shrink-0 sm:w-28">
+              <!-- Toujours cliquable : on regarde d'abord, on attaque depuis le détail (US-041). -->
               <button
                 type="button"
-                class="w-full rounded-[1rem] focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-default"
-                [class.ring-3]="carteChoisie() === instance.id"
-                [class.ring-accent]="carteChoisie() === instance.id"
-                [id]="'main-' + instance.id"
-                [attr.aria-pressed]="carteChoisie() === instance.id"
-                [attr.aria-label]="carteDe(instance.numero)?.nom"
-                [attr.aria-controls]="carteChoisie() === instance.id ? 'detail-main' : null"
-                [attr.aria-describedby]="
-                  monTour() && instance.injouable ? 'raison-main-' + instance.id : null
-                "
+                [id]="'plateau-' + c.id"
+                class="h-full w-full rounded-lg focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-default"
+                [class.ring-3]="choisi || ciblesPossibles().has(c.id)"
+                [class.ring-accent]="choisi"
+                [class.ring-offset-2]="choisi"
+                [class.ring-offset-fond]="choisi"
+                [class.ring-red-600]="!choisi && ciblesPossibles().has(c.id)"
                 [disabled]="occupe()"
-                (click)="choisirCarte(instance.id)"
+                [attr.aria-pressed]="choisi"
+                [attr.aria-controls]="choisi ? 'detail-plateau' : null"
+                [attr.aria-label]="
+                  decrireComposant(c, carte) +
+                  (ciblesPossibles().has(c.id) ? ' : cible possible' : '')
+                "
+                (click)="choisirComposant(c.id, 'adversaire')"
               >
-                <hip-vignette-carte [carte]="carteDe(instance.numero)!" [titre]="false" />
+                <hip-jeton-composant [composant]="c" [carte]="carte" />
               </button>
-              <!-- Carte injouable (US-071) : une mention visible, pas un grisé ; la raison complète pour les lecteurs d'écran. -->
-              @if (monTour() && instance.injouable) {
-                <p
-                  [id]="'raison-main-' + instance.id"
-                  class="mt-1 text-center text-xs font-semibold text-texte-doux"
-                >
-                  Pas jouable<span class="sr-only"> : {{ instance.injouable }}</span>
-                </p>
-              }
             </li>
           } @empty {
-            <li class="text-sm text-texte-doux">Main vide.</li>
+            <li class="flex-1 self-center text-center text-sm text-texte-doux">Aucun composant.</li>
           }
         </ul>
-
-        @if (detail()?.zone === 'main') {
-          <ng-container *ngTemplateOutlet="panneauDetail" />
-        }
       </section>
 
-      @if (actionsOutillage().length) {
-        <div class="flex flex-wrap gap-2" role="group" aria-label="Outillage de vos agents">
-          @for (action of actionsOutillage(); track action.source) {
-            <button
-              type="button"
-              class="rounded-lg border-2 border-accent px-3 py-2 text-sm font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:opacity-60"
-              [disabled]="occupe()"
-              (click)="jouer(action)"
-            >
-              Outillage : vos agents prennent les capacités de {{ nommer(action.source) }}
-            </button>
-          }
-        </div>
-      }
-
-      <div class="flex flex-wrap items-center justify-between gap-3">
-        <p class="text-sm text-texte-doux">
-          {{
-            monTour()
-              ? aide()
-              : mode() === 'duel'
-                ? 'Au tour de ' + autre().nom + ' : son coup s’affichera ici.'
-                : 'Le bot joue…'
-          }}
+      <!--
+        Sur le côté au bureau ; sur téléphone, seul le journal reste, en bandeau entre les deux camps (l'objectif et
+        les capacités en jeu sont dans l'aide).
+      -->
+      <div class="zone-cote flex flex-col gap-3">
+        <p class="hidden rounded-lg bg-surface px-3 py-2 text-sm lg:block">
+          <ng-container *ngTemplateOutlet="objectif" />
         </p>
+        @if (capacitesEnJeu().length) {
+          <details class="hidden rounded-lg border border-bordure px-3 py-2 lg:block">
+            <summary class="cursor-pointer font-semibold">
+              Capacités en jeu ({{ capacitesEnJeu().length }})
+            </summary>
+            <div class="pt-2"><ng-container *ngTemplateOutlet="glossaire" /></div>
+          </details>
+        }
+
+        <!-- Le bandeau garde sa hauteur : déplié, le journal passe par-dessus le plateau sans le pousser. -->
+        <section aria-labelledby="titre-journal" class="relative h-11 sm:h-[3.25rem] lg:h-auto">
+          <div
+            class="absolute inset-x-0 top-0 z-10 flex items-start gap-2 rounded-lg bg-surface py-1.5 lg:static lg:flex-col lg:py-2"
+            [class.shadow-xl]="journalOuvert()"
+          >
+            <h2 id="titre-journal" class="sr-only lg:not-sr-only lg:px-2 lg:font-semibold">
+              Journal
+            </h2>
+            <!--
+              flex-col-reverse garde le défilement en bas : la dernière ligne reste visible. Replié, le journal montre
+              exactement ses deux dernières lignes (hauteur de deux interlignes, marges portées par le bandeau).
+            -->
+            <div
+              id="journal-partie"
+              role="log"
+              tabindex="0"
+              aria-labelledby="titre-journal"
+              class="flex min-w-0 flex-1 flex-col-reverse overflow-y-auto px-2 text-xs/4 focus-visible:outline-2 focus-visible:outline-accent sm:text-sm/5 lg:max-h-[65dvh] lg:w-full"
+              [class]="journalOuvert() ? 'max-h-[55dvh]' : 'max-h-8 sm:max-h-10'"
+            >
+              <ol class="flex flex-col">
+                @for (ligne of journal(); track $index) {
+                  <li>{{ ligne }}</li>
+                }
+              </ol>
+            </div>
+            <button
+              #boutonJournal
+              type="button"
+              class="-my-1.5 min-h-11 shrink-0 rounded-lg px-3 text-xs font-semibold underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-accent lg:hidden"
+              aria-controls="journal-partie"
+              [attr.aria-expanded]="journalOuvert()"
+              (click)="basculerJournal()"
+            >
+              Journal
+            </button>
+          </div>
+        </section>
+      </div>
+
+      <!-- Mon camp -->
+      <section aria-labelledby="titre-moi" class="zone-moi flex flex-col gap-1.5">
+        <ul class="flex min-h-[5.5rem] gap-2 overflow-x-auto pb-1" aria-label="Votre plateau">
+          @for (c of v.moi.plateau; track c.id) {
+            @let carte = carteDe(c.numero)!;
+            @let choisi = composantChoisi() === c.id;
+            <li class="w-[6.5rem] shrink-0 sm:w-28">
+              <!-- L'anneau plein marque l'attaquant désigné ; l'anneau décollé, le composant lu en grand. -->
+              <button
+                type="button"
+                [id]="'plateau-' + c.id"
+                class="h-full w-full rounded-lg focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-default"
+                [class.ring-3]="choisi || attaquant() === c.id"
+                [class.ring-accent]="choisi || attaquant() === c.id"
+                [class.ring-offset-2]="choisi"
+                [class.ring-offset-fond]="choisi"
+                [disabled]="occupe()"
+                [attr.aria-pressed]="choisi"
+                [attr.aria-controls]="choisi ? 'detail-plateau' : null"
+                [attr.aria-label]="
+                  decrireComposant(c, carte) +
+                  (attaquantsPossibles().has(c.id) ? ' : peut attaquer' : '')
+                "
+                (click)="choisirComposant(c.id, 'moi')"
+              >
+                <hip-jeton-composant [composant]="c" [carte]="carte" />
+              </button>
+            </li>
+          } @empty {
+            <li class="flex-1 self-center text-center text-sm text-texte-doux">
+              Aucun composant : posez une carte de votre main.
+            </li>
+          }
+        </ul>
+        @if (detail()?.zone !== 'main') {
+          <ng-container *ngTemplateOutlet="panneauDetail" />
+        }
+        <div class="flex flex-wrap items-center justify-between gap-x-3 text-sm">
+          <h2 id="titre-moi" class="font-semibold">Vous</h2>
+          <p class="flex flex-wrap gap-x-3">
+            <span class="font-semibold">Votre SI : SLA {{ v.moi.sla }} / 20</span>
+            <span class="font-semibold">
+              <hip-icone nom="debit" class="size-3.5 text-amber-600 dark:text-amber-400" /> Débit
+              {{ v.moi.debit }}
+            </span>
+            <span class="text-texte-doux">Pioche {{ v.moi.pioche }}</span>
+          </p>
+        </div>
+      </section>
+
+      <div class="zone-bas flex flex-col gap-2">
+        @if (v.issue; as issue) {
+          <section
+            aria-labelledby="titre-fin"
+            class="flex flex-col items-center gap-3 rounded-xl border-2 border-accent p-5 text-center"
+          >
+            <h2
+              id="titre-fin"
+              #titreFin
+              tabindex="-1"
+              class="text-3xl font-bold focus:outline-none"
+            >
+              @if (issue.gagnant === null) {
+                Partie nulle
+              } @else if (issue.gagnant === v.joueur) {
+                Victoire !
+              } @else {
+                Défaite
+              }
+            </h2>
+            <p class="text-texte-doux">
+              {{ raisonFin(issue, v.joueur) }}
+              SLA final : vous {{ v.moi.sla }}, {{ autre().nom }} {{ v.adversaire.sla }}.
+            </p>
+            @if (partie()?.recompense; as recompense) {
+              <p class="font-semibold">
+                @if (recompense.booster) {
+                  Un booster gagné ! Il vous attend dans vos boosters.
+                } @else if (recompense.motif === 'adversaire-deja-affronte') {
+                  Pas de booster cette fois : une victoire par abandon ou forfait ne compte qu’une
+                  fois par jour contre le même adversaire.
+                } @else {
+                  Plafond atteint : 3 boosters gagnés aujourd’hui. Revenez demain pour en gagner
+                  d’autres.
+                }
+              </p>
+            } @else if (
+              mode() === 'bot' && issue.gagnant === v.joueur && compte.pret() && !compte.joueur()
+            ) {
+              <p>
+                Avec un compte, chaque victoire rapporte un booster :
+                <a routerLink="/compte" class="font-semibold underline underline-offset-4"
+                  >créer un compte</a
+                >
+                (un pseudo suffit).
+              </p>
+            }
+            <p class="flex flex-wrap justify-center gap-3">
+              @if (partie()?.recompense?.booster) {
+                <a
+                  routerLink="/boosters"
+                  class="rounded-lg bg-accent px-4 py-3 font-semibold text-sur-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                  >Ouvrir mon booster</a
+                >
+              }
+              <a
+                [routerLink]="mode() === 'duel' ? '/duels/nouveau' : '/jouer'"
+                class="rounded-lg bg-accent px-4 py-3 font-semibold text-sur-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                >{{ mode() === 'duel' ? 'Lancer une revanche' : 'Rejouer' }}</a
+              >
+              <a routerLink="/" class="px-4 py-3 underline underline-offset-4">Accueil</a>
+            </p>
+          </section>
+        } @else {
+          <!-- Ma main -->
+          <section aria-labelledby="titre-main" class="flex flex-col">
+            <h2 id="titre-main" class="sr-only">Votre main ({{ v.moi.main.length }})</h2>
+            <!-- Focusable : la main défile au clavier même quand ses cartes sont désactivées (tour adverse). -->
+            <ul
+              class="flex gap-2 overflow-x-auto pb-1 focus-visible:outline-2 focus-visible:outline-accent"
+              tabindex="0"
+              aria-labelledby="titre-main"
+            >
+              @for (instance of v.moi.main; track instance.id) {
+                <!-- relative : le texte réservé aux lecteurs d'écran reste dans la main qui défile, sans élargir la page. -->
+                <li class="relative w-20 shrink-0 sm:w-28">
+                  <button
+                    type="button"
+                    class="w-full rounded-[1rem] focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-default"
+                    [class.ring-3]="carteChoisie() === instance.id"
+                    [class.ring-accent]="carteChoisie() === instance.id"
+                    [id]="'main-' + instance.id"
+                    [attr.aria-pressed]="carteChoisie() === instance.id"
+                    [attr.aria-label]="carteDe(instance.numero)?.nom"
+                    [attr.aria-controls]="carteChoisie() === instance.id ? 'detail-main' : null"
+                    [attr.aria-describedby]="
+                      monTour() && instance.injouable ? 'raison-main-' + instance.id : null
+                    "
+                    [disabled]="occupe()"
+                    (click)="choisirCarte(instance.id)"
+                  >
+                    <hip-vignette-carte [carte]="carteDe(instance.numero)!" [titre]="false" />
+                  </button>
+                  <!-- Carte injouable (US-071) : une mention visible, pas un grisé ; la raison complète pour les lecteurs d'écran. -->
+                  @if (monTour() && instance.injouable) {
+                    <p
+                      [id]="'raison-main-' + instance.id"
+                      class="mt-0.5 text-center text-xs font-semibold text-texte-doux"
+                    >
+                      Pas jouable<span class="sr-only"> : {{ instance.injouable }}</span>
+                    </p>
+                  }
+                </li>
+              } @empty {
+                <li class="text-sm text-texte-doux">Main vide.</li>
+              }
+            </ul>
+
+            @if (detail()?.zone === 'main') {
+              <ng-container *ngTemplateOutlet="panneauDetail" />
+            }
+          </section>
+
+          <!-- L'action principale reste collée au bas de l'écran. -->
+          <div class="sticky bottom-0 flex flex-col gap-2 bg-fond pt-1 pb-2">
+            @if (actionsOutillage().length) {
+              <div class="flex flex-wrap gap-2" role="group" aria-label="Outillage de vos agents">
+                @for (action of actionsOutillage(); track action.source) {
+                  <button
+                    type="button"
+                    class="rounded-lg border-2 border-accent px-3 py-2 text-sm font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:opacity-60"
+                    [disabled]="occupe()"
+                    (click)="jouer(action)"
+                  >
+                    Outillage : vos agents prennent les capacités de {{ nommer(action.source) }}
+                  </button>
+                }
+              </div>
+            }
+            <div class="flex items-center justify-between gap-3">
+              @if (attaquesOubliees() && !attaquant()) {
+                <p
+                  id="attaques-oubliees"
+                  class="min-w-0 rounded-lg border-2 border-amber-600 px-2 py-1 text-xs dark:border-amber-400"
+                >
+                  <!-- Court à l'écran, pour que la barre reste basse (US-059) ; en entier pour les lecteurs d'écran. -->
+                  <span aria-hidden="true"
+                    ><strong>Attention :</strong> {{ attaquesOublieesCourt() }}</span
+                  ><span class="sr-only"
+                    >Attention : {{ attaquesOubliees() }} Si vous finissez votre tour, ces attaques
+                    sont perdues.</span
+                  >
+                </p>
+              } @else {
+                <p class="min-w-0 text-xs text-texte-doux sm:text-sm">
+                  {{
+                    monTour()
+                      ? aide()
+                      : mode() === 'duel'
+                        ? 'Au tour de ' + autre().nom + ' : son coup s’affichera ici.'
+                        : 'Le bot joue…'
+                  }}
+                </p>
+              }
+              <button
+                type="button"
+                class="shrink-0 rounded-lg bg-accent px-4 py-3 font-semibold text-sur-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:opacity-60"
+                [disabled]="!monTour() || occupe()"
+                [attr.aria-describedby]="
+                  attaquesOubliees() && !attaquant() ? 'attaques-oubliees' : null
+                "
+                (click)="jouer({ type: 'finirTour' })"
+              >
+                Finir mon tour
+              </button>
+            </div>
+          </div>
+        }
+
+        @if (erreur()) {
+          <p role="alert" class="text-alerte">{{ erreur() }}</p>
+        }
+      </div>
+    </div>
+
+    <!-- L'aide (US-059) : ouverte d'elle-même à la première partie, puis depuis le bouton « ? ». -->
+    <dialog
+      #fenetreAide
+      aria-labelledby="titre-aide"
+      class="m-auto max-h-[90dvh] w-[min(40rem,calc(100%-1.5rem))] overflow-y-auto rounded-2xl border border-bordure bg-fond p-0 text-texte shadow-2xl backdrop:bg-black/70"
+    >
+      <div class="flex flex-col gap-4 p-5">
+        <div class="flex items-start justify-between gap-2">
+          <h2 id="titre-aide" class="text-xl font-bold">Comment jouer ?</h2>
+          <button
+            type="button"
+            class="shrink-0 rounded-full p-2 text-texte-doux hover:bg-surface focus-visible:outline-2 focus-visible:outline-accent"
+            (click)="fermerAide()"
+          >
+            <hip-icone nom="fermer" class="size-5" />
+            <span class="sr-only">Fermer l’aide</span>
+          </button>
+        </div>
+        <p class="rounded-lg bg-surface px-3 py-2 text-sm">
+          <ng-container *ngTemplateOutlet="objectif" />
+        </p>
+        <hip-regle-courte [adversaire]="autre()" />
+        @if (capacitesEnJeu().length) {
+          <section aria-labelledby="titre-glossaire" class="flex flex-col gap-2">
+            <h3 id="titre-glossaire" class="font-semibold">
+              Capacités en jeu ({{ capacitesEnJeu().length }})
+            </h3>
+            <ng-container *ngTemplateOutlet="glossaire" />
+          </section>
+        }
         <button
           type="button"
-          class="rounded-lg bg-accent px-4 py-3 font-semibold text-sur-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:opacity-60"
-          [disabled]="!monTour() || occupe()"
-          [attr.aria-describedby]="attaquesOubliees() ? 'attaques-oubliees' : null"
-          (click)="jouer({ type: 'finirTour' })"
+          class="self-end rounded-lg bg-accent px-4 py-3 font-semibold text-sur-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+          (click)="fermerAide()"
         >
-          Finir mon tour
+          C’est parti
         </button>
       </div>
-      @if (attaquesOubliees()) {
-        <p
-          id="attaques-oubliees"
-          class="rounded-lg border-2 border-amber-600 px-3 py-2 text-sm dark:border-amber-400"
-        >
-          <strong>Attention :</strong> {{ attaquesOubliees() }} Si vous finissez votre tour, ces
-          attaques sont perdues.
-        </p>
-      }
-    }
+    </dialog>
 
-    @if (erreur()) {
-      <p role="alert" class="text-alerte">{{ erreur() }}</p>
-    }
+    <ng-template #objectif>
+      <strong>Objectif :</strong> faire tomber le SLA du SI {{ autre().de }} à 0. Après 20 tours, le
+      meilleur SLA gagne.
+    </ng-template>
+
+    <ng-template #glossaire>
+      <dl class="flex flex-col gap-2 text-sm">
+        @for (capacite of capacitesEnJeu(); track capacite.nom) {
+          <div>
+            <dt class="font-semibold">{{ capacite.nom }}</dt>
+            <dd class="text-texte-doux">{{ capacite.description }}</dd>
+          </div>
+        }
+      </dl>
+    </ng-template>
 
     <!--
-      Le détail de ce qui est choisi (US-040, US-041), affiché sous le plateau ou sous la main : on le lit d'abord, on
-      agit ensuite (ou pas), par les boutons placés dessous.
+      Le détail de ce qui est choisi (US-040, US-041), en feuille fixée au bas de l'écran (US-059) : il recouvre la
+      main sans pousser le plateau. On le lit d'abord, on agit ensuite (ou pas), par les boutons placés dessous.
     -->
     <ng-template #panneauDetail>
       @if (detail(); as d) {
@@ -391,19 +520,25 @@
         <section
           [id]="plateau ? 'detail-plateau' : 'detail-main'"
           [attr.aria-labelledby]="plateau ? 'titre-detail-plateau' : 'titre-detail-main'"
-          class="flex flex-col gap-4 rounded-xl border border-bordure p-3 sm:flex-row"
+          class="fixed inset-x-0 bottom-0 z-20 mx-auto flex max-h-[70dvh] max-w-3xl gap-3 overflow-y-auto rounded-t-2xl border border-b-0 border-bordure bg-fond p-3 pb-4 shadow-2xl sm:gap-4"
         >
           @if (d.zone !== 'si') {
             <!-- La grande carte reprend le texte ci-contre : elle est masquée aux lecteurs d'écran. -->
-            <div class="mx-auto w-44 shrink-0 sm:mx-0 sm:w-52" aria-hidden="true">
+            <div class="w-24 shrink-0 sm:w-44" aria-hidden="true">
               <hip-vignette-carte [carte]="d.carte" [titre]="false" />
             </div>
           }
-          <div class="flex min-w-0 flex-1 flex-col gap-3">
+          <div class="flex min-w-0 flex-1 flex-col gap-2 sm:gap-3">
             <div class="flex items-start justify-between gap-2">
               @if (d.zone === 'si') {
                 <div>
-                  <h3 id="titre-detail-plateau" class="text-lg font-bold">SI {{ autre().de }}</h3>
+                  <h3
+                    id="titre-detail-plateau"
+                    tabindex="-1"
+                    class="text-lg font-bold focus:outline-none"
+                  >
+                    SI {{ autre().de }}
+                  </h3>
                   <p class="text-sm text-texte-doux">
                     SLA {{ vue()?.adversaire?.sla }} / 20. À 0, {{ autre().nom }} a perdu : chaque
                     attaque qui l’atteint lui retire autant de SLA que l’attaque du composant.
@@ -414,7 +549,8 @@
                 <div>
                   <h3
                     [id]="plateau ? 'titre-detail-plateau' : 'titre-detail-main'"
-                    class="text-lg font-bold"
+                    tabindex="-1"
+                    class="text-lg leading-tight font-bold focus:outline-none"
                   >
                     {{ c.nom }}
                   </h3>
@@ -472,33 +608,6 @@
                   </div>
                 }
               </dl>
-            }
-
-            @if (d.zone !== 'si') {
-              @let c = d.carte;
-              @if (c.origine !== undefined) {
-                <p class="text-sm">
-                  Évolution de
-                  <strong>{{ carteDe(c.origine)?.nom ?? 'la carte n° ' + c.origine }}</strong> :
-                  elle se pose à sa place.
-                </p>
-              }
-              @if (c.effet) {
-                <p><span class="font-semibold">Effet :</span> {{ c.effet }}</p>
-              }
-              @if (c.capacites.length) {
-                <dl class="flex flex-col gap-1 text-sm">
-                  @for (capacite of c.capacites; track capacite.id) {
-                    <div>
-                      <dt class="me-1 inline font-semibold">{{ capacite.nom }} :</dt>
-                      <dd class="inline text-texte-doux">{{ capacite.description }}</dd>
-                    </div>
-                  }
-                </dl>
-              }
-              <p class="rounded-lg bg-surface p-2 text-sm">
-                <span class="font-semibold">En vrai :</span> {{ c.enVrai }}
-              </p>
             }
 
             @if (monTour()) {
@@ -566,27 +675,37 @@
                 }
               </p>
             }
+
+            @if (d.zone !== 'si') {
+              @let c = d.carte;
+              @if (c.origine !== undefined) {
+                <p class="text-sm">
+                  Évolution de
+                  <strong>{{ carteDe(c.origine)?.nom ?? 'la carte n° ' + c.origine }}</strong> :
+                  elle se pose à sa place.
+                </p>
+              }
+              @if (c.effet) {
+                <p class="text-sm"><span class="font-semibold">Effet :</span> {{ c.effet }}</p>
+              }
+              @if (c.capacites.length) {
+                <dl class="flex flex-col gap-1 text-sm">
+                  @for (capacite of c.capacites; track capacite.id) {
+                    <div>
+                      <dt class="me-1 inline font-semibold">{{ capacite.nom }} :</dt>
+                      <dd class="inline text-texte-doux">{{ capacite.description }}</dd>
+                    </div>
+                  }
+                </dl>
+              }
+              <p class="rounded-lg bg-surface p-2 text-sm">
+                <span class="font-semibold">En vrai :</span> {{ c.enVrai }}
+              </p>
+            }
           </div>
         </section>
       }
     </ng-template>
-
-    <section aria-labelledby="titre-journal" class="flex flex-col gap-1">
-      <h2 id="titre-journal" class="font-semibold">Journal</h2>
-      <!-- flex-col-reverse garde le défilement en bas : la dernière ligne reste visible. -->
-      <div
-        role="log"
-        tabindex="0"
-        aria-labelledby="titre-journal"
-        class="flex max-h-48 flex-col-reverse overflow-y-auto rounded-lg bg-surface p-2 text-sm"
-      >
-        <ol class="flex flex-col gap-0.5">
-          @for (ligne of journal(); track $index) {
-            <li>{{ ligne }}</li>
-          }
-        </ol>
-      </div>
-    </section>
   } @else if (echec(); as e) {
     <hip-erreur-chargement
       [quoi]="
