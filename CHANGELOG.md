@@ -175,6 +175,10 @@ Toutes les évolutions notables du projet sont consignées ici
   annoncés. Depuis le détail d'une carte (catalogue, collection, booster) et le panneau de la carte choisie en partie.
   Fiches versionnées dans le domaine, format validé par les tests ; `GET /api/v1/cartes/{numero}` les renvoie
   (`cartes.yaml` 1.1.0), la liste reste légère. Huit cartes pilotes, une par famille (US-073, ADR 0034).
+- Les 71 cartes du set 1 ont leur fiche « En savoir plus » : 127 liens vers Wikipédia, la documentation des éditeurs
+  (Apigee, Solace, IBM, Anthropic), des standards (RFC, OpenAPI, AsyncAPI, A2A) et les _Enterprise Integration
+  Patterns_, tous vérifiés ; `npm run fiches:liens` signale les liens morts. Le texte de SFTP, inexact, est corrigé
+  (US-074).
 - Coups de pouce au bon moment, contre le bot comme en duel : avant de finir son tour, un message non bloquant dit
   ce qui reste possible (« 2 de vos composants peuvent encore attaquer », « Vous pouvez encore poser Pub/Sub »), avec
   « Revenir au plateau » et « Finir quand même » ; quand un attaquant est choisi et que le SI adverse ne lui est pas
