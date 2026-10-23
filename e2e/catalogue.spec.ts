@@ -73,6 +73,34 @@ test('une évolution mène à sa carte d’origine, et le bouton Fermer referme 
   await expect(page).toHaveURL(/\/cartes$/);
 });
 
+test('« En savoir plus » déplie la fiche d’une carte, et ses liens partent dans un nouvel onglet', async ({
+  page,
+}) => {
+  await page.goto('/cartes/1');
+  const fenetre = page.getByRole('dialog', { name: 'FTP' });
+  const bouton = fenetre.getByRole('button', { name: 'En savoir plus' });
+  await expect(bouton).toHaveAttribute('aria-expanded', 'false');
+  await expect(fenetre.getByText('C’est quoi ?')).toBeHidden();
+
+  await bouton.click();
+  await expect(bouton).toHaveAttribute('aria-expanded', 'true');
+  await expect(fenetre.getByText('C’est quoi ?')).toBeVisible();
+  await expect(fenetre.getByText('Chez Elis', { exact: true })).toBeVisible();
+  const lien = fenetre.getByRole('link', {
+    name: 'File Transfer Protocol (nouvel onglet)',
+    exact: true,
+  });
+  await expect(lien).toHaveAttribute(
+    'href',
+    'https://fr.wikipedia.org/wiki/File_Transfer_Protocol',
+  );
+  await expect(lien).toHaveAttribute('target', '_blank');
+  await expect(lien).toHaveAttribute('rel', 'noopener noreferrer');
+  await expect(fenetre.getByText('rfc-editor.org · en anglais')).toBeVisible();
+  await sansDefilementHorizontal(page);
+  await auditer(page);
+});
+
 test('une carte inconnue est annoncée comme introuvable', async ({ page }) => {
   await page.goto('/cartes/999');
   await expect(page.getByRole('dialog', { name: 'Carte introuvable' })).toBeVisible();

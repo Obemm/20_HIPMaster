@@ -114,6 +114,8 @@
           <h3 id="titre-en-vrai" class="mb-1 font-semibold">En vrai</h3>
           <p>{{ c.enVrai }}</p>
         </section>
+
+        <hip-en-savoir-plus [carte]="c" class="flex flex-col gap-3" />
       </div>
     } @else if (introuvable()) {
       <div class="flex flex-col gap-2 pr-10">

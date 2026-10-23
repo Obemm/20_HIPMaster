@@ -28,6 +28,28 @@ export interface Carte {
   enVrai: string;
 }
 
+/** Une ressource externe de la fiche « En savoir plus » (US-073). */
+export interface LienExterne {
+  titre: string;
+  url: string;
+  langue: 'fr' | 'en';
+}
+
+/** La fiche « En savoir plus » d'une carte (US-073, ADR 0036). */
+export interface Fiche {
+  definition: string;
+  usage: string;
+  exemple: string;
+  aRetenir: string;
+  chezElis?: string;
+  liens: LienExterne[];
+}
+
+/** Le détail d'une carte (`GET /cartes/{numero}`) : la liste du catalogue ne porte pas la fiche. */
+export interface CarteDetaillee extends Carte {
+  fiche?: Fiche;
+}
+
 export const LIBELLES_FAMILLE: Record<Famille, string> = {
   fichiers: 'Fichiers & Batch',
   esb: 'Messagerie & ESB',

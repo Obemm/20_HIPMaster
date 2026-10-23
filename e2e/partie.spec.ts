@@ -63,6 +63,26 @@ async function jouerUnTour(page: Page) {
   if (await finir.isVisible()) await finir.click();
 }
 
+test('en partie, le détail d’une carte de la main déplie sa fiche « En savoir plus »', async ({
+  page,
+}) => {
+  await commencer(page);
+  await page
+    .getByRole('region', { name: /Votre main/ })
+    .getByRole('listitem')
+    .getByRole('button')
+    .first()
+    .click();
+  const detail = page.locator('#detail-main');
+  await detail.getByRole('button', { name: 'En savoir plus' }).click();
+  // Une fiche rédigée, ou l'annonce qu'elle est en cours d'écriture : les deux viennent de l'API.
+  await expect(
+    detail.getByText('C’est quoi ?').or(detail.getByText('en cours d’écriture')),
+  ).toBeVisible();
+  const { violations } = await new AxeBuilder({ page }).withTags(REGLES_WCAG).analyze();
+  expect(violations).toEqual([]);
+});
+
 test('une partie complète contre le bot, jusqu’au résultat', async ({ page }) => {
   test.setTimeout(120_000);
   await commencer(page);
