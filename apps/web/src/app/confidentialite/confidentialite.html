@@ -70,6 +70,10 @@
 
   <section aria-labelledby="titre-duree" class="flex flex-col gap-2">
     <h2 id="titre-duree" class="text-lg font-semibold">Combien de temps</h2>
+    <p>
+      Le jeu ne supprime jamais de lui-même votre compte, votre collection ni vos résultats : seules
+      des données techniques expirent.
+    </p>
     <dl class="flex flex-col divide-y divide-bordure rounded-lg border border-bordure">
       @for (c of conservations; track c.donnees) {
         <div class="flex flex-col gap-0.5 px-3 py-2 sm:flex-row sm:justify-between sm:gap-4">
@@ -86,7 +90,8 @@
     @if (aVenir) {
       <p class="text-sm text-texte-doux">
         « Bientôt » : la suppression automatique est en cours de mise en place. D’ici là, ces
-        données restent jusqu’à ce que vous fermiez la session ou supprimiez votre compte.
+        données restent jusqu’à ce que vous fermiez la session, annuliez le défi ou supprimiez votre
+        compte.
       </p>
     }
   </section>

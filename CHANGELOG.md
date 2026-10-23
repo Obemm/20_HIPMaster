@@ -155,9 +155,10 @@ Toutes les évolutions notables du projet sont consignées ici
 - Page « À propos et confidentialité », à laquelle mène un lien en pied de chaque page : qui édite et héberge le jeu
   (Firebase Hosting, Cloud Run et Neon à Francfort), ce qu'il garde et pourquoi (pseudo, collection, duels, sessions,
   adresses IP des journaux), combien de temps, et comment exercer ses droits ; le seul stockage du navigateur est le
-  jeton de session, strictement nécessaire : ni bandeau de consentement, ni traceur, ni mesure d'audience. Les durées
-  de conservation (sessions 90 jours, comptes inactifs 12 mois, journaux et sauvegardes 30 jours) sont proposées, à
-  valider ; celles que la purge d'US-054 appliquera sont marquées « bientôt ». « Mon compte » permet de supprimer son
+  jeton de session, strictement nécessaire : ni bandeau de consentement, ni traceur, ni mesure d'audience. Comptes, collections,
+  récompenses et résultats sont gardés sans limite, sauf suppression par le joueur ; seules des données techniques
+  expirent (sessions inutilisées 90 jours, journaux et sauvegardes 30 jours, parties abandonnées, défis jamais
+  acceptés) ; celles que la purge d'US-054 appliquera sont marquées « bientôt ». « Mon compte » permet de supprimer son
   compte après confirmation (`DELETE /api/v1/moi`, contrat `comptes.yaml` 1.4.0) : compte, sessions sur tous les
   appareils, collection, récompenses et parties disparaissent en une transaction ; ses duels en cours se terminent
   par forfait au lieu de disparaître pour l'adversaire, qui garde ses duels terminés face à « Compte supprimé »

@@ -40,8 +40,10 @@ compte** afin de **jouer en confiance**.
 - Front : un lien « À propos et confidentialité » en pied de toutes les pages (coquille `app.ts`, le strict
   nécessaire), une page `/confidentialite`, et dans « Mon compte » un bouton « Supprimer mon compte » qui demande
   confirmation, puis déconnecte et le dit.
-- Durées de conservation : **proposées**, à valider par le porteur du projet dans la PR ; elles seront appliquées par
-  la purge d'US-054. La page dit honnêtement ce qui est déjà en place et ce qui ne l'est pas encore.
+- Conservation (décision du porteur du projet, 2026-10-23) : comptes, collections, récompenses et résultats gardés sans
+  limite, sauf suppression par le joueur ; seules des données techniques expirent (sessions inutilisées 90 jours,
+  journaux et sauvegardes 30 jours, parties contre le bot abandonnées, défis jamais acceptés). Ce qu'appliquera la
+  purge d'US-054 est marqué « bientôt » : la page dit honnêtement ce qui est déjà en place.
 
 ## Notes
 
@@ -55,3 +57,5 @@ compte** afin de **jouer en confiance**.
 - 2026-10-23 — affinée : conception, ADR [0031](../../decisions/0031-suppression-compte.md), contrat OpenAPI d'abord ;
   durées de conservation proposées, à valider par le porteur du projet dans la PR.
 - 2026-10-23 — livrée : page « À propos et confidentialité » en pied de chaque page (éditeur, hébergeurs, données gardées et pourquoi, durées proposées dont celles d'US-054 marquées « bientôt », droits, aucun traceur ni bandeau) ; suppression du compte depuis « Mon compte » après confirmation (DELETE /api/v1/moi, une transaction) ; duels en cours terminés par forfait, duels terminés gardés par l'adversaire face à « Compte supprimé » (migration 0011, clés étrangères en SET NULL) ; concurrence avec un coup simultané éprouvée sur PostgreSQL 18 ; e2e complets verts ; ADR 0031
+- 2026-10-23 — décision du porteur du projet : comptes, collections et scores conservés ; la page ne prévoit plus de
+  supprimer les comptes inactifs après 12 mois, seules des données techniques expirent. US-054 mise à jour.

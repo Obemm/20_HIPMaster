@@ -39,6 +39,7 @@ describe('À propos et confidentialité', () => {
       expect(lignes[i]?.includes('(bientôt)')).toBe(c.aVenir === true);
     }
     expect(lignes.join(' ')).toContain('90 jours');
-    expect(lignes.join(' ')).toContain('12 mois');
+    expect(lignes.join(' ')).not.toContain('12 mois');
+    expect(lignes[0]).toContain('sans limite');
   });
 });

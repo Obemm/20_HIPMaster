@@ -1,7 +1,7 @@
 # 0031 — Suppression de son compte : forfait des duels en cours, historique sans le joueur
 
 - **Date** : 2026-10-23
-- **Statut** : Acceptée (durées de conservation proposées, à valider par le porteur du projet)
+- **Statut** : Acceptée
 - **Référence Elis** : ADR-020 (API REST, design first) — retenu ; ADR-015 (AT Internet, mesure d'audience) — écarté,
   comme le dit déjà l'ADR 0005 : le jeu ne mesure pas son audience
 
@@ -29,10 +29,12 @@ terminé de son historique. Aucune purge automatique n'existe encore (US-054).
   règles des duels (US-038).
 - Migration compatible avec la version en ligne : les clés étrangères des duels passent de `CASCADE` à `SET NULL` et
   `createur_id` accepte `NULL` (un relâchement de contrainte) ; aucune donnée n'est modifiée.
-- **Durées de conservation proposées** (page « À propos et confidentialité », à valider par le porteur du projet ;
-  appliquées par la purge d'US-054, pas encore en place) : sessions inutilisées 90 jours, comptes inactifs 12 mois,
-  journaux techniques et sauvegardes 30 jours au plus. Déjà en place : parties contre le bot 24 heures sans coup joué
-  (ADR 0030), compteurs de limitation de débit en mémoire une minute à une heure (ADR 0025).
+- **Conservation** (décision du porteur du projet, 2026-10-23) : **les comptes, les collections, les récompenses et les
+  résultats (les futurs scores, US-069) sont gardés sans limite de durée**, sauf si le joueur supprime lui-même son
+  compte. Seules des données techniques expirent : sessions inutilisées après 90 jours (le joueur se reconnecte avec
+  son code ; purge d'US-054, pas encore en place), journaux techniques et sauvegardes après 30 jours au plus, parties
+  contre le bot abandonnées après 24 heures sans coup joué (ADR 0030 : une récompense gagnée reste acquise), défis
+  jamais acceptés après 7 jours (US-033), compteurs de limitation de débit en mémoire une heure au plus (ADR 0025).
 - **Aucun bandeau de consentement** : le seul stockage du navigateur est le jeton de session (`localStorage`), strictement
   nécessaire au service demandé ; aucun traceur ni outil de mesure d'audience.
 
@@ -53,4 +55,5 @@ terminé de son historique. Aucune purge automatique n'existe encore (US-054).
 - L'écran de duel annonce tout forfait par « … n'a pas joué à temps » : pour un compte supprimé, la phrase est
   approximative (« Compte supprimé n'a pas joué à temps : forfait. »). Une raison de fin dédiée demanderait de toucher
   au moteur et aux écrans de partie : laissé à une story du front si le besoin se confirme.
-- Les durées affichées engagent le projet : US-054 doit les appliquer, et la page doit changer si elles changent.
+- Les durées affichées engagent le projet : US-054 doit les appliquer sans jamais supprimer un compte, sa collection
+  ni l'historique utile aux scores, et la page doit changer si elles changent.

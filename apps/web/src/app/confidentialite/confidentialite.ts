@@ -9,18 +9,25 @@ export interface Conservation {
 }
 
 /**
- * Durées de conservation (US-053, ADR 0031). Celles marquées `aVenir` sont proposées et seront appliquées par la purge
- * d'US-054 : la page le dit, pour ne rien promettre qui ne soit pas encore vrai.
+ * Durées de conservation (US-053, ADR 0031). Décision du porteur du projet : les comptes, collections, récompenses et
+ * résultats sont gardés sans limite, sauf suppression par le joueur ; seules des données techniques expirent. Celles
+ * marquées `aVenir` seront appliquées par la purge d'US-054 : la page le dit, pour ne rien promettre de faux.
  */
 export const CONSERVATIONS: readonly Conservation[] = [
-  { donnees: 'Votre compte et vos données de jeu', duree: 'jusqu’à ce que vous le supprimiez' },
-  { donnees: 'Un compte resté inutilisé', duree: '12 mois, puis suppression', aVenir: true },
   {
-    donnees: 'Une session (un appareil connecté)',
+    donnees: 'Votre compte, votre collection, vos récompenses et vos résultats',
+    duree: 'sans limite, jusqu’à ce que vous supprimiez votre compte',
+  },
+  {
+    donnees: 'Une session inutilisée (il suffit ensuite de se reconnecter avec son code)',
     duree: '90 jours sans utilisation',
     aVenir: true,
   },
-  { donnees: 'Une partie contre le bot', duree: '24 heures sans coup joué' },
+  {
+    donnees: 'Une partie contre le bot abandonnée (une récompense gagnée reste acquise)',
+    duree: '24 heures sans coup joué',
+  },
+  { donnees: 'Un défi jamais accepté', duree: '7 jours', aVenir: true },
   { donnees: 'Les journaux techniques (adresses IP comprises)', duree: '30 jours au plus' },
   { donnees: 'Les sauvegardes de la base', duree: '30 jours au plus' },
   { donnees: 'Les compteurs anti-abus (adresse IP)', duree: 'une heure au plus, en mémoire' },
