@@ -17,6 +17,7 @@ _Dernière mise à jour : 2026-10-23_
 | [EPIC-08 — Cartes proposées par la communauté IT](epics/EPIC-08-cartes-communaute.md)             | Should   | À affiner | 0/5        |
 | [EPIC-09 — Mise en ligne sur Google Cloud](epics/EPIC-09-mise-en-ligne-gcp.md)                    | Must     | En cours  | 6/13       |
 | [EPIC-10 — Identité visuelle et confort sur téléphone](epics/EPIC-10-identite-visuelle-mobile.md) | Should   | À affiner | 0/5        |
+| [EPIC-11 — Apprendre à jouer](epics/EPIC-11-apprendre-a-jouer.md)                                 | Should   | À affiner | 0/3        |
 
 ## Itération 0 (en cours) — fondations
 
@@ -130,12 +131,15 @@ Google Cloud, Firebase Hosting et une base Neon gratuite (ADR 0021, accepté le 
 | [US-053 — Page de confidentialité et suppression de son compte](stories/US-053-confidentialite-suppression-compte.md)                 | EPIC-09 | Should   | S      | 2   | À affiner |
 | [US-059 — Un plateau de partie qui tient dans un écran de téléphone](stories/US-059-plateau-mobile-un-ecran.md)                       | EPIC-10 | Should   | M      | 2   | À affiner |
 | [US-060 — Une navigation pensée pour le téléphone](stories/US-060-navigation-mobile.md)                                               | EPIC-10 | Should   | S      | 2   | À affiner |
+| [US-065 — Des coups de pouce au bon moment](stories/US-065-coups-de-pouce.md)                                                         | EPIC-11 | Should   | S      | 2   | À affiner |
+| [US-066 — Un conseil à la demande, contre le bot](stories/US-066-conseil-en-partie.md)                                                | EPIC-11 | Should   | M      | 2   | À affiner |
 | [US-054 — Des sessions qui expirent et des données qui ne s'accumulent pas](stories/US-054-sessions-purge.md)                         | EPIC-09 | Should   | M      | 3   | À affiner |
 | [US-057 — Des requêtes légères : index, lectures bornées, cache et chargement à la demande](stories/US-057-requetes-legeres-cache.md) | EPIC-09 | Should   | M      | 3   | À affiner |
 | [US-058 — Des duels équitables : hasard imprévisible et appariement sûr](stories/US-058-duels-equitables.md)                          | EPIC-09 | Should   | S      | 3   | À affiner |
 | [US-061 — Une identité visuelle et un accueil qui donnent envie](stories/US-061-accueil-identite-visuelle.md)                         | EPIC-10 | Should   | M      | 3   | À affiner |
 | [US-063 — Installer le jeu sur son téléphone (PWA)](stories/US-063-pwa-installable.md)                                                | EPIC-10 | Could    | S      | 3   | À affiner |
 | [US-062 — Ouvrir un booster, un vrai moment](stories/US-062-ouverture-booster-mise-en-scene.md)                                       | EPIC-10 | Could    | M      | 3   | À affiner |
+| [US-067 — Une première partie guidée](stories/US-067-premiere-partie-guidee.md)                                                       | EPIC-11 | Should   | L      | 3   | À affiner |
 
 ## Plus tard — cartes de la communauté IT
 
