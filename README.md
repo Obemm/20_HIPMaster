@@ -44,6 +44,7 @@ npm run dev          # migrations appliquées au démarrage ; API sur localhost:
 | `npm run db:generate`               | Génère une migration depuis le schéma Drizzle                         |
 | `npm run db:migrate`                | Applique les migrations à PostgreSQL (`DATABASE_URL`) ; PGlite : auto |
 | `npm run db:studio`                 | Explore la base PostgreSQL (`DATABASE_URL`) dans le navigateur        |
+| `npm run invitation`                | Crée, liste ou révoque les invitations (PostgreSQL, voir `--aide`)    |
 | `npm run illustrations`             | Décline les illustrations des cartes (voir `packages/illustrations`)  |
 | `npm run illustrations:provisoires` | Dessine les illustrations provisoires des 71 cartes, puis les décline |
 

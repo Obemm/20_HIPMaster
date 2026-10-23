@@ -48,15 +48,24 @@ const variablesCommunes = z.object({
   GOOGLE_CLOUD_PROJECT: z.string().min(1).optional(),
 });
 
-/** Variables du serveur de l'API seul, ses protections (ADR 0025) : le job de migration n'en a pas besoin. */
-const variablesApi = z.object({
+/** La clé des codes, pour l'API et la commande des invitations (ADR 0025, 0027) ; pas pour les migrations. */
+const variablesCle = z.object({
   ...variablesCommunes.shape,
-  /** Clé secrète des codes de récupération : secret `cle-codes-recuperation` en production. */
+  /** Clé secrète des codes de récupération et d'invitation : secret `cle-codes-recuperation` en production. */
   CLE_CODES_RECUPERATION: z.string().min(32).optional(),
+});
+
+/** Variables du serveur de l'API seul, ses protections (ADR 0025, 0027). */
+const variablesApi = z.object({
+  ...variablesCle.shape,
   /** Relais devant l'API qui ajoutent leur maillon à X-Forwarded-For : 2 derrière Firebase Hosting et Cloud Run. */
   PROXYS_DE_CONFIANCE: z.coerce.number().int().min(0).max(10).optional(),
   /** Limites de débit : un facteur appliqué aux valeurs de production, ou `desactivees`. */
   LIMITES_DEBIT: z.union([z.literal('desactivees'), z.coerce.number().positive()]).optional(),
+  /** Création de compte réservée aux invités : `oui` par défaut en production, `non` ailleurs. */
+  INSCRIPTION_SUR_INVITATION: z
+    .stringbool({ truthy: ['oui', 'true', '1'], falsy: ['non', 'false', '0'] })
+    .optional(),
 });
 
 type Contexte = z.core.$RefinementCtx;
@@ -98,9 +107,7 @@ function verifierCommunes(env: z.output<typeof variablesCommunes>, contexte: Con
   }
 }
 
-const schemaCommun = variablesCommunes.superRefine(verifierCommunes);
-
-const schemaApi = variablesApi.superRefine((env, contexte) => {
+function verifierCle(env: z.output<typeof variablesCle>, contexte: Contexte): void {
   verifierCommunes(env, contexte);
   exigerEnProduction(
     env,
@@ -108,6 +115,14 @@ const schemaApi = variablesApi.superRefine((env, contexte) => {
     'CLE_CODES_RECUPERATION',
     'la clé publique de développement ne protège aucun code (ADR 0025)',
   );
+}
+
+const schemaCommun = variablesCommunes.superRefine(verifierCommunes);
+
+const schemaCle = variablesCle.superRefine(verifierCle);
+
+const schemaApi = variablesApi.superRefine((env, contexte) => {
+  verifierCle(env, contexte);
   // Oubliée, cette valeur donnerait à tous les joueurs l'adresse du frontal de Google, donc une seule limite pour tous.
   exigerEnProduction(
     env,
@@ -130,14 +145,20 @@ export interface Config {
   projetGcp: string | null;
 }
 
-/** La configuration du serveur de l'API : la configuration commune et ses protections (ADR 0025). */
-export interface ConfigApi extends Config {
-  /** Clé des codes de récupération ; la clé publique de développement hors production. */
+/** La configuration commune et la clé des codes : celle de la commande des invitations (ADR 0027). */
+export interface ConfigCle extends Config {
+  /** Clé des codes de récupération et d'invitation ; la clé publique de développement hors production. */
   cleCodes: string;
+}
+
+/** La configuration du serveur de l'API : la configuration commune et ses protections (ADR 0025, 0027). */
+export interface ConfigApi extends ConfigCle {
   /** Relais de confiance devant l'API (`trustProxy`) ; 0 hors production. */
   proxysDeConfiance: number;
   /** Facteur des limites de débit ; `null` quand elles sont désactivées (par défaut hors production). */
   limitesDebit: number | null;
+  /** Création de compte réservée aux invités ; par défaut en production seulement. */
+  inscriptionSurInvitation: boolean;
 }
 
 function lire<S extends z.ZodType>(schema: S, env: NodeJS.ProcessEnv): z.output<S> {
@@ -173,6 +194,12 @@ export function lireConfig(env: NodeJS.ProcessEnv = process.env): Config {
   return versConfig(lire(schemaCommun, env));
 }
 
+/** Lit la configuration commune et la clé des codes ; lève une `ErreurConfig` si elle est invalide. */
+export function lireConfigCle(env: NodeJS.ProcessEnv = process.env): ConfigCle {
+  const e = lire(schemaCle, env);
+  return { ...versConfig(e), cleCodes: e.CLE_CODES_RECUPERATION ?? CLE_CODES_DEVELOPPEMENT };
+}
+
 /** Lit la configuration du serveur de l'API, protections comprises ; lève une `ErreurConfig` si elle est invalide. */
 export function lireConfigApi(env: NodeJS.ProcessEnv = process.env): ConfigApi {
   const e = lire(schemaApi, env);
@@ -182,6 +209,8 @@ export function lireConfigApi(env: NodeJS.ProcessEnv = process.env): ConfigApi {
     cleCodes: e.CLE_CODES_RECUPERATION ?? CLE_CODES_DEVELOPPEMENT,
     proxysDeConfiance: e.PROXYS_DE_CONFIANCE ?? 0,
     limitesDebit: facteurLimites(e.LIMITES_DEBIT, config.production),
+    // Hors production, le développement et les parcours e2e créent des comptes librement.
+    inscriptionSurInvitation: e.INSCRIPTION_SUR_INVITATION ?? config.production,
   };
 }
 

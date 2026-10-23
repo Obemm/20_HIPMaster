@@ -128,6 +128,12 @@ Toutes les évolutions notables du projet sont consignées ici
   en simulation, contre 14 % face à Batch de nuit). `npm run simuler` mesure aussi un profil débutant, la part de
   victoires du joueur qui commence et du second, et chaque niveau contre un débutant et contre un joueur du niveau de
   Batch de nuit (US-064).
+- Inscription sur invitation : en production, créer un compte demande un code d'invitation (16 caractères, gardé sous
+  HMAC), valable pour un nombre de comptes et jusqu'à une date ; chaque compte retient de quelle invitation il vient.
+  Un lien `/compte?invitation=…` remplit le code sur « Mon compte », et un code refusé reçoit un 403 qui ne dit pas
+  pourquoi. La commande `npm run invitation` crée une invitation (code affiché une seule fois, avec le lien à envoyer),
+  liste les invitations ou en révoque une ; en production, un Cloud Run Job l'exécute (guide d'exploitation). En
+  développement et dans les e2e, l'inscription reste libre (US-048, ADR 0027).
 
 ### Modifié
 

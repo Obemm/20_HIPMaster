@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, computed, inject, input, signal } from '@angular/core';
+import { Component, computed, inject, input, linkedSignal, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { expliquer } from '../reseau/reseau';
 import { CompteService } from './compte.service';
@@ -12,10 +12,15 @@ export function bilanDeconnexion(sessionsFermees: number): string {
   return `Vos ${sessionsFermees} autres appareils ont été déconnectés.`;
 }
 
+/** Messages des refus de l'API, par statut ; une panne, ou un autre statut, affiche sa cause. */
+type Refus = Partial<Record<number, string>>;
+const refusDe = (message: string): Refus => ({ 400: message, 401: message });
+
 /**
  * Page « Mon compte » (US-022) : créer un compte invité, le retrouver avec son code, se déconnecter. Après un 401, elle
  * dit « Session expirée » et ramène le joueur à sa page une fois reconnecté (US-055). Un nouveau code, ou « Déconnecter
- * mes autres appareils », ferme les autres sessions du compte (US-047).
+ * mes autres appareils », ferme les autres sessions du compte (US-047). Un lien d'invitation (`?invitation=`) remplit
+ * le code d'invitation (US-048).
  */
 @Component({
   selector: 'hip-compte',
@@ -41,7 +46,11 @@ export class CompteEcran {
       : 'Code noté : revenir à ma page',
   );
 
+  /** Paramètre `?invitation=` : le code d'un lien d'invitation (US-048), qui remplit le champ. */
+  readonly invitation = input<string>();
+
   protected readonly pseudo = signal('');
+  protected readonly codeInvitation = linkedSignal(() => this.invitation()?.trim() ?? '');
   protected readonly code = signal('');
   /** Le code de récupération à montrer (une seule fois). */
   protected readonly codeAffiche = signal<string | null>(null);
@@ -53,9 +62,20 @@ export class CompteEcran {
 
   protected async creer(evenement: Event): Promise<void> {
     evenement.preventDefault();
-    await this.agir(async () => {
-      this.codeAffiche.set(await this.compte.creer(this.pseudo().trim()));
-    }, 'Ce pseudo ne convient pas : 2 à 24 lettres, chiffres, espaces, tirets, points ou soulignés.');
+    const invitation = this.codeInvitation().trim() || undefined;
+    await this.agir(
+      async () => {
+        this.codeAffiche.set(await this.compte.creer(this.pseudo().trim(), invitation));
+      },
+      {
+        ...refusDe(
+          'Ce pseudo ne convient pas : 2 à 24 lettres, chiffres, espaces, tirets, points ou soulignés.',
+        ),
+        403:
+          'Ce code d’invitation n’est pas accepté : vérifiez-le auprès de qui vous a invité. Il a pu ' +
+          'expirer, ou déjà servir autant de fois que prévu.',
+      },
+    );
   }
 
   protected async recuperer(evenement: Event): Promise<void> {
@@ -64,7 +84,7 @@ export class CompteEcran {
       await this.compte.recuperer(this.code());
       const retour = this.retourSur();
       if (retour) await this.router.navigateByUrl(retour);
-    }, 'Code de récupération inconnu : vérifiez-le, ou créez un nouveau compte.');
+    }, refusDe('Code de récupération inconnu : vérifiez-le, ou créez un nouveau compte.'));
   }
 
   protected async regenerer(): Promise<void> {
@@ -72,20 +92,20 @@ export class CompteEcran {
       const { codeRecuperation, sessionsFermees } = await this.compte.nouveauCode();
       this.codeAffiche.set(codeRecuperation);
       this.info.set(bilanDeconnexion(sessionsFermees));
-    }, 'Le code n’a pas pu être régénéré.');
+    }, refusDe('Le code n’a pas pu être régénéré.'));
   }
 
   protected async deconnecterAutres(): Promise<void> {
     await this.agir(async () => {
       this.info.set(bilanDeconnexion(await this.compte.deconnecterAutresAppareils()));
-    }, 'Les autres appareils n’ont pas pu être déconnectés.');
+    }, refusDe('Les autres appareils n’ont pas pu être déconnectés.'));
   }
 
   protected async deconnecter(): Promise<void> {
     await this.agir(async () => {
       this.codeAffiche.set(null);
       await this.compte.deconnecter();
-    }, 'La déconnexion a échoué.');
+    }, refusDe('La déconnexion a échoué.'));
   }
 
   protected async copier(code: string): Promise<void> {
@@ -97,8 +117,8 @@ export class CompteEcran {
     }
   }
 
-  /** Lance une action ; un refus de l'API (400, 401) affiche `messageRefus`, une panne sa cause. */
-  private async agir(action: () => Promise<void>, messageRefus: string): Promise<void> {
+  /** Lance une action ; un refus de l'API affiche le message prévu pour son statut, une panne sa cause. */
+  private async agir(action: () => Promise<void>, refus: Refus): Promise<void> {
     this.occupe.set(true);
     this.erreur.set(null);
     this.info.set(null);
@@ -106,8 +126,8 @@ export class CompteEcran {
     try {
       await action();
     } catch (erreur) {
-      const refus = erreur instanceof HttpErrorResponse && [400, 401].includes(erreur.status);
-      this.erreur.set(refus ? messageRefus : expliquer(erreur));
+      const message = erreur instanceof HttpErrorResponse ? refus[erreur.status] : undefined;
+      this.erreur.set(message ?? expliquer(erreur));
     } finally {
       this.occupe.set(false);
     }
