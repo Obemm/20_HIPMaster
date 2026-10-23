@@ -35,7 +35,7 @@ au plafond.
 - **Plafond : 1 000 parties**, réglable. Au-delà, la création supprime la partie anonyme la moins récemment jouée, et
   seulement à défaut celle d'un joueur connecté : la règle d'ADR 0025 est reprise telle quelle. Avec la limitation de
   débit (20 créations par minute et par adresse, ADR 0025), le volume reste borné : 1 000 parties de 18 Ko au plus
-  font moins de 20 Mo, loin des 0,5 Go de Neon Free.
+  font moins de 20 Mo, loin du 1 Go de Neon Free (ADR 0021).
 - Inchangé depuis l'ADR 0014 : l'API ne renvoie **jamais l'état complet**, seulement la vue du joueur ; le joueur est
   toujours `j1`, le bot `j2` ; le bot joue **dans la requête** du joueur, très loin de la limite de 3 s d'ADR-020.
   Une partie lancée par un compte n'est visible que de sa session (ADR 0025), une partie anonyme de qui connaît son
