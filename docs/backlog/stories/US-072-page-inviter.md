@@ -1,7 +1,7 @@
 # US-072 — Une page « Inviter » réservée au porteur du projet
 
 - **Epic** : EPIC-09
-- **Statut** : En cours
+- **Statut** : Faite
 - **Priorité** : Must
 - **Taille** : M
 - **Branche** : `us-072-page-inviter`
@@ -21,28 +21,28 @@ révocables et HMAC (ADR 0025).
 
 ## Critères d'acceptation
 
-- [ ] **Étant donné** la configuration de l'API, **alors** la liste des administrateurs vient de la variable
+- [x] **Étant donné** la configuration de l'API, **alors** la liste des administrateurs vient de la variable
       `ADMINISTRATEURS` (identifiants de joueur), jamais du front ; une valeur invalide empêche l'API de démarrer.
-- [ ] **Étant donné** un joueur qui n'est pas administrateur, un visiteur sans compte ou une session expirée,
+- [x] **Étant donné** un joueur qui n'est pas administrateur, un visiteur sans compte ou une session expirée,
       **quand** il appelle une route d'administration, **alors** l'API répond **404**, exactement comme pour une route
       qui n'existe pas (ni 401, ni 403, ni 429).
-- [ ] **Étant donné** un administrateur, **quand** il crée une invitation (libellé, nombre de comptes, date limite),
+- [x] **Étant donné** un administrateur, **quand** il crée une invitation (libellé, nombre de comptes, date limite),
       **alors** l'API renvoie le code et le lien **une seule fois** ; la base n'en garde que l'empreinte.
-- [ ] **Étant donné** un administrateur, **quand** il liste les invitations, **alors** il voit pour chacune son
+- [x] **Étant donné** un administrateur, **quand** il liste les invitations, **alors** il voit pour chacune son
       libellé, les comptes créés sur le maximum, l'expiration et si elle est révoquée, **jamais le code**.
-- [ ] **Étant donné** un administrateur, **quand** il révoque une invitation, **alors** son code ne crée plus de
+- [x] **Étant donné** un administrateur, **quand** il révoque une invitation, **alors** son code ne crée plus de
       compte, les comptes déjà créés restent, et la liste la dit « révoquée ».
-- [ ] Les routes d'administration sont décrites dans un contrat OpenAPI écrit avant le code, et limitées en débit ;
+- [x] Les routes d'administration sont décrites dans un contrat OpenAPI écrit avant le code, et limitées en débit ;
       elles reprennent la logique de la commande `npm run invitation`, sans la dupliquer.
-- [ ] **Étant donné** « Mon compte », **quand** le joueur est administrateur, **alors** un lien « Inviter » mène à la
+- [x] **Étant donné** « Mon compte », **quand** le joueur est administrateur, **alors** un lien « Inviter » mène à la
       page ; sinon, ni le lien ni la page ne sont accessibles.
-- [ ] **Étant donné** la page « Inviter », **quand** une invitation est créée, **alors** son lien se copie en un geste,
+- [x] **Étant donné** la page « Inviter », **quand** une invitation est créée, **alors** son lien se copie en un geste,
       et se partage par le menu du téléphone (Web Share) quand il existe.
-- [ ] **Étant donné** la page « Inviter », **alors** elle liste les invitations avec leur usage et permet de révoquer
+- [x] **Étant donné** la page « Inviter », **alors** elle liste les invitations avec leur usage et permet de révoquer
       après confirmation ; elle s'utilise au clavier, en 375 px, dans les deux thèmes, sans violation axe-core.
-- [ ] **Étant donné** le déploiement, **alors** `ADMINISTRATEURS` est transmise à l'API par `scripts/gcp/deployer.sh`
+- [x] **Étant donné** le déploiement, **alors** `ADMINISTRATEURS` est transmise à l'API par `scripts/gcp/deployer.sh`
       et le workflow ; le guide d'exploitation explique comment le porteur du projet trouve son identifiant de joueur.
-- [ ] Tests : logique des invitations et de la configuration, API (dont le 404 pour un non-administrateur), écran,
+- [x] Tests : logique des invitations et de la configuration, API (dont le 404 pour un non-administrateur), écran,
       parcours e2e.
 
 ## Notes
@@ -70,3 +70,4 @@ révocables et HMAC (ADR 0025).
 
 - 2026-10-23 — création, après la décision du porteur du projet d'inviter depuis le site, avec son seul compte.
 - 2026-10-23 — ADR [0029](../../decisions/0029-administrateurs-par-configuration.md), contrat OpenAPI d'abord.
+- 2026-10-23 — livrée : page « Inviter » réservée aux administrateurs désignés par ADMINISTRATEURS (variable GitHub HIPMASTER_ADMINISTRATEURS au déploiement) : créer une invitation avec code et lien montrés une seule fois, copier ou partager le lien, suivre l'usage, révoquer après confirmation ; routes /api/v1/admin/invitations en 404 pour tout autre appelant ; révocation distinguée de l'expiration (migration 0009) ; e2e complets et sous CSP de production verts
