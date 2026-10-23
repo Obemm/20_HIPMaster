@@ -6,17 +6,17 @@ _Dernière mise à jour : 2026-10-23_
 
 | Epic                                                                                              | Priorité | Statut    | Avancement |
 | ------------------------------------------------------------------------------------------------- | -------- | --------- | ---------- |
-| [EPIC-00 — Fondations](epics/EPIC-00-fondations.md)                                               | Must     | Terminé   | 9/9        |
+| [EPIC-00 — Fondations](epics/EPIC-00-fondations.md)                                               | Must     | Terminé   | 10/10      |
 | [EPIC-01 — Univers et modèle de carte](epics/EPIC-01-univers-cartes.md)                           | Must     | Terminé   | 2/2        |
 | [EPIC-02 — Comptes joueurs](epics/EPIC-02-comptes-joueurs.md)                                     | Must     | Terminé   | 1/1        |
-| [EPIC-03 — Boosters et collection](epics/EPIC-03-boosters-collection.md)                          | Must     | Terminé   | 2/2        |
+| [EPIC-03 — Boosters et collection](epics/EPIC-03-boosters-collection.md)                          | Must     | En cours  | 2/3        |
 | [EPIC-04 — Combat contre le bot](epics/EPIC-04-combat-bot.md)                                     | Must     | Terminé   | 15/15      |
 | [EPIC-05 — Illustrations des cartes](epics/EPIC-05-illustrations.md)                              | Should   | En cours  | 3/5        |
 | [EPIC-06 — Duels entre joueurs](epics/EPIC-06-duels-joueurs.md)                                   | Should   | Terminé   | 8/8        |
-| [EPIC-07 — Vie sociale](epics/EPIC-07-vie-sociale.md)                                             | Could    | À affiner | 0/0        |
+| [EPIC-07 — Vie sociale](epics/EPIC-07-vie-sociale.md)                                             | Could    | À affiner | 0/1        |
 | [EPIC-08 — Cartes proposées par la communauté IT](epics/EPIC-08-cartes-communaute.md)             | Should   | À affiner | 0/5        |
 | [EPIC-09 — Mise en ligne sur Google Cloud](epics/EPIC-09-mise-en-ligne-gcp.md)                    | Must     | En cours  | 7/14       |
-| [EPIC-10 — Identité visuelle et confort sur téléphone](epics/EPIC-10-identite-visuelle-mobile.md) | Should   | À affiner | 0/5        |
+| [EPIC-10 — Identité visuelle et confort sur téléphone](epics/EPIC-10-identite-visuelle-mobile.md) | Should   | À affiner | 0/6        |
 | [EPIC-11 — Apprendre à jouer](epics/EPIC-11-apprendre-a-jouer.md)                                 | Should   | À affiner | 0/3        |
 
 ## Itération 0 (en cours) — fondations
@@ -34,6 +34,7 @@ Objectif : un socle outillé, vérifié automatiquement, et une méthode de trav
 | [US-043 — Tests de l'API robustes sur un poste chargé](stories/US-043-tests-api-pglite.md)                               | EPIC-00 | Must     | S      | Faite  |
 | [US-044 — Le quality gate ignore les worktrees de l'app Claude Desktop](stories/US-044-quality-gate-ignore-worktrees.md) | EPIC-00 | Must     | XS     | Faite  |
 | [US-045 — `npm run dev` ne redémarre l'API que sur un changement des sources](stories/US-045-api-dev-watch-sources.md)   | EPIC-00 | Must     | XS     | Faite  |
+| [US-075 — Un statut d'epic toujours conforme à ses stories](stories/US-075-statut-epics.md)                              | EPIC-00 | Must     | XS     | Faite  |
 
 ## Itération 1 (à venir) — définir le jeu
 
