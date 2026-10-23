@@ -85,6 +85,13 @@
       "when": 1792786693555,
       "tag": "0011_duels_sans_joueur_supprime",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1792793707987,
+      "tag": "0012_sessions_utilisees",
+      "breakpoints": true
     }
   ]
 }

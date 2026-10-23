@@ -143,7 +143,8 @@ Toutes les évolutions notables du projet sont consignées ici
   Cloud Run, renvoie `index.html` aux routes Angular, règle le cache (aucun pour `index.html`, un jour pour les
   illustrations, un an pour les fichiers à empreinte) et pose une CSP stricte avec les en-têtes de sécurité ;
   `robots.txt` et `noindex` tiennent les robots à l'écart. Guide d'exploitation complété : déploiement, retour
-  arrière, migrations compatibles (US-050, ADR 0028).
+  arrière, migrations compatibles Vérifié en production : retour arrière essayé (API en
+  32 s, front en 42 s), base Neon en veille 6 minutes au plus après la dernière requête (US-050, ADR 0028).
 - Page « Inviter », réservée au porteur du projet : créer une invitation (pour qui, nombre de comptes, date limite),
   copier son lien en un geste ou le partager par le menu du téléphone, suivre les comptes créés par chaque invitation et
   en révoquer une après confirmation. Les administrateurs sont désignés par le réglage `ADMINISTRATEURS` de l'API
@@ -284,3 +285,22 @@ Toutes les évolutions notables du projet sont consignées ici
     mémoire évince d'abord les parties anonymes ;
   - toutes les réponses portent `X-Content-Type-Options: nosniff` et, sauf politique propre à une route,
     `Cache-Control: no-store` ; corps de requête limités à 16 Ko (413).
+- Des duels équitables (US-058, ADR 0034) :
+  - le hasard des duels et des parties contre le bot vient de ChaCha20, dont la clé de 256 bits est tirée par
+    `node:crypto` et ne quitte jamais le serveur : un joueur ne peut plus retrouver la graine à partir de sa main et
+    prévoir la main adverse ou les pioches. Les parties restent rejouables ; celles créées avant gardent leur
+    générateur et se terminent normalement ;
+  - deux joueurs qui cherchent un adversaire au même instant se retrouvent dans le même duel au lieu de s'attendre
+    l'un l'autre, et un double clic n'ouvre plus deux duels ;
+  - la règle « pas de booster contre un adversaire déjà affronté le même jour » vaut au jour de la fin du duel : lire
+    son résultat le lendemain ne la contourne plus.
+- Des sessions qui expirent et des données qui ne s'accumulent pas (US-054, ADR 0035) :
+  - une session inutilisée pendant 90 jours est refusée (401) ; chaque usage la prolonge, avec au plus une écriture par
+    jour. Le joueur se reconnecte avec son code de récupération (`SESSIONS_DUREE_JOURS`, contrat `comptes.yaml`
+    1.5.0) ;
+  - une purge (`npm run purge -w apps/api`) supprime les sessions expirées, les défis jamais acceptés depuis 7 jours et
+    les parties contre le bot abandonnées depuis 24 heures, et journalise ce qu'elle a supprimé ; elle ne touche jamais
+    un compte, une collection, une récompense ni un duel commencé ;
+  - en production, job Cloud Run `hipmaster-purge` lancé chaque nuit à 5 h 25 par Cloud Scheduler, ajouté aux scripts
+    `infrastructure.sh` et `deployer.sh` et au guide d'exploitation ; mise en service par le porteur du projet ;
+  - la page « À propos et confidentialité » ne marque plus ces durées « bientôt ».

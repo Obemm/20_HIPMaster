@@ -119,6 +119,38 @@ describe('opérations simultanées (US-056)', () => {
     expect(chezAda[0]?.statut).toBe('en-cours');
   });
 
+  it('des joueurs qui cherchent en même temps dans une file vide se trouvent deux à deux (US-058)', async () => {
+    const enFile = await enParallele((i) =>
+      creerJoueur(ouverte.base, `Joueur ${i}`, CLE_CODES_DEVELOPPEMENT),
+    );
+
+    const resultats = await Promise.all(
+      enFile.map(({ joueur }) => chercherAdversaire(ouverte.base, joueur.id, 'moderne')),
+    );
+
+    expect(resultats.every((r) => r.ok)).toBe(true);
+    // Aucun joueur n'attend pendant qu'un autre attend aussi : FOIS joueurs, FOIS / 2 duels lancés.
+    const lignes = await ouverte.base.select().from(duels);
+    expect(lignes.map((l) => l.statut)).toEqual(Array.from({ length: FOIS / 2 }, () => 'en-cours'));
+    const participants = lignes.flatMap((l) => [l.createurId, l.adversaireId]);
+    expect(new Set(participants).size).toBe(FOIS);
+    expect(lignes.every((l) => l.createurId !== l.adversaireId)).toBe(true);
+  });
+
+  it('un joueur qui cherche plusieurs fois en même temps n’ouvre qu’un duel (US-058)', async () => {
+    const ada = await creerJoueur(ouverte.base, 'Ada', CLE_CODES_DEVELOPPEMENT);
+    const resultats = await enParallele(() =>
+      chercherAdversaire(ouverte.base, ada.joueur.id, 'moderne'),
+    );
+
+    const ids = resultats.flatMap((r) => (r.ok ? [r.valeur.duel.id] : []));
+    expect(ids).toHaveLength(FOIS);
+    expect(new Set(ids).size).toBe(1);
+    const lignes = await ouverte.base.select().from(duels);
+    expect(lignes).toHaveLength(1);
+    expect(lignes[0]).toMatchObject({ statut: 'attente', ouvert: true, adversaireId: null });
+  });
+
   describe('actions simultanées dans un duel', () => {
     /** Un duel lancé entre Ada et Bob ; renvoie aussi le joueur dont c'est le tour. */
     async function duelLance() {

@@ -1,4 +1,5 @@
 import type { IdCapacite } from '../capacites.ts';
+import type { EtatAlea } from './alea.ts';
 
 /** Types du moteur de combat (ADR 0013) : un état JSON simple, sérialisable et comparable. */
 
@@ -143,8 +144,8 @@ export interface EtatPartie {
   /** Numéro du tour en cours, tous joueurs confondus (1, 2, 3…). */
   tour: number;
   issue: Issue | null;
-  /** État du générateur de hasard à graine. */
-  alea: number;
+  /** État du générateur de hasard à graine (ADR 0013, 0034) : jamais montré aux joueurs. */
+  alea: EtatAlea;
   journal: EntreeJournal[];
 }
 
