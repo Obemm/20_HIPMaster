@@ -42,7 +42,11 @@ pure en TypeScript, PostgreSQL + Drizzle. TypeScript strict, Node ≥ 24.15.
   ni de `namespace` (`erasableSyntaxOnly`). Erreurs au format Problem Details ; contrat OpenAPI avant chaque ressource.
 - Variables d'environnement : `.env` unique à la racine (modèle `.env.example`) ; l'API lit `API_HOST`/`API_PORT`.
 - Tests : Vitest à côté du code (`*.test.ts` pour domain/api, `*.spec.ts` pour Angular via `ng test`) ;
-  `npm run test:e2e` avant de clore une story qui touche un parcours.
+  `npm run test:e2e` avant de clore une story qui touche un parcours (la CI lance `test:e2e:production` : build de
+  production sous la CSP de `firebase.json`, aucun style ni script en ligne).
+- Mise en ligne : chaque merge sur `main` à CI verte est déployé par `.github/workflows/deploy.yml` (ADR 0028) ; une
+  migration reste compatible avec la version en ligne. Guide : `docs/exploitation/README.md` ; GCP toujours avec
+  `--configuration=hipmaster`.
 - Pensé d'abord pour le téléphone ; accessible (clavier, contrastes, `lang="fr"`, règles a11y d'angular-eslint).
 - Commits : Conventional Commits (commitlint via Husky).
 

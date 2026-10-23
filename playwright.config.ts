@@ -4,6 +4,14 @@ const CI = Boolean(process.env.CI);
 // En local : le Chrome déjà installé (aucun navigateur à télécharger). En CI : Chromium installé par Playwright.
 const navigateur = CI ? {} : { channel: 'chrome' };
 
+/** L'API, base en mémoire vierge à chaque lancement (ADR 0018) ; reprise aussi par playwright.production.config.ts. */
+export const serveurApi = {
+  command: 'npm start -w @hipmaster/api',
+  url: 'http://127.0.0.1:3000/api/v1/sante',
+  env: { BASE_LOCALE: 'memory://' },
+  reuseExistingServer: !CI,
+};
+
 export default defineConfig({
   testDir: 'e2e',
   fullyParallel: true,
@@ -32,13 +40,7 @@ export default defineConfig({
   ],
   // L'API puis le front Angular, qui lui relaie /api (proxy.conf.json).
   webServer: [
-    {
-      command: 'npm start -w @hipmaster/api',
-      url: 'http://127.0.0.1:3000/api/v1/sante',
-      // Base en mémoire, vierge à chaque lancement (ADR 0018).
-      env: { BASE_LOCALE: 'memory://' },
-      reuseExistingServer: !CI,
-    },
+    serveurApi,
     {
       command: 'npm start -w @hipmaster/web',
       url: 'http://localhost:4200',

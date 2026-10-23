@@ -1,0 +1,86 @@
+name: Déploiement
+
+# Après chaque CI verte sur main (US-050, ADR 0028) : image de l'API, migrations, nouvelle révision sans trafic,
+# santé, bascule du trafic, puis front sur Firebase Hosting. Chaque étape est une étape de scripts/gcp/deployer.sh,
+# que l'on peut aussi lancer depuis un poste (docs/exploitation/README.md). Une étape en échec arrête tout : tant
+# que le trafic n'a pas basculé, l'ancienne révision de l'API continue de servir.
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+
+# Un déploiement à la fois, jamais interrompu en route : le suivant attend la fin du précédent.
+concurrency:
+  group: deploiement
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  # Jeton OIDC de GitHub, échangé contre un jeton Google (Workload Identity Federation, sans clé).
+  id-token: write
+
+jobs:
+  deployer:
+    name: API sur Cloud Run, front sur Firebase Hosting
+    # Une CI verte, lancée par un push sur main de ce dépôt : jamais le code d'une pull request, même d'une branche
+    # « main » d'une copie du dépôt. Le jeton Google n'est d'ailleurs délivré qu'à refs/heads/main (US-049).
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push' &&
+      github.event.workflow_run.head_branch == 'main' &&
+      github.event.workflow_run.head_repository.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment:
+      name: production
+      url: https://hipmaster.web.app
+    env:
+      # Le commit que la CI a vérifié, pas forcément le dernier de main.
+      HIPMASTER_COMMIT: ${{ github.event.workflow_run.head_sha }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          persist-credentials: false
+
+      - uses: google-github-actions/auth@v3
+        with:
+          workload_identity_provider: projects/307763122401/locations/global/workloadIdentityPools/github/providers/github-actions
+          service_account: hipmaster-deploiement@hipmaster.iam.gserviceaccount.com
+
+      - uses: google-github-actions/setup-gcloud@v3
+
+      - name: Prérequis (secrets de l'API)
+        run: bash scripts/gcp/deployer.sh prerequis
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Construction du front
+        run: |
+          npm ci
+          npm run build
+
+      - name: Image de l'API
+        run: bash scripts/gcp/deployer.sh image
+
+      - name: Migrations de la base
+        run: bash scripts/gcp/deployer.sh migrations
+
+      - name: Nouvelle révision de l'API, sans trafic
+        run: bash scripts/gcp/deployer.sh --public revision
+
+      - name: Santé de la nouvelle révision
+        run: bash scripts/gcp/deployer.sh --public sante
+
+      - name: Bascule du trafic
+        run: bash scripts/gcp/deployer.sh trafic
+
+      - name: Front sur Firebase Hosting
+        run: bash scripts/gcp/deployer.sh --public front
+
+      - name: Vérification du site en ligne
+        run: bash scripts/gcp/deployer.sh --public site

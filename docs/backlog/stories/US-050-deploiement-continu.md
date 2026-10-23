@@ -1,7 +1,7 @@
 # US-050 — Déploiement continu vers Cloud Run et Firebase Hosting
 
 - **Epic** : EPIC-09
-- **Statut** : À affiner
+- **Statut** : En revue
 - **Priorité** : Must
 - **Taille** : M
 - **Branche** : `us-050-deploiement-continu`
@@ -19,23 +19,23 @@ automatiquement** afin de **livrer souvent, sans manipulation à la main ni secr
       déploie le service Cloud Run, vérifie `/api/v1/sante`, puis publie le front sur Firebase Hosting.
 - [ ] **Étant donné** une migration ou une sonde de santé en échec, **alors** le déploiement s'arrête et l'ancienne
       révision continue de servir le trafic.
-- [ ] **Étant donné** `firebase.json`, **alors** il publie le build Angular, relaie `/api/**` vers le service Cloud
+- [x] **Étant donné** `firebase.json`, **alors** il publie le build Angular, relaie `/api/**` vers le service Cloud
       Run, renvoie `index.html` pour les routes Angular, sert les fichiers à empreinte avec un cache long
       (`immutable`), les illustrations avec un cache d'un jour (leur nom n'a pas encore d'empreinte, US-057) et
       `index.html` sans cache, et pose les en-têtes de sécurité : CSP, HSTS, `X-Content-Type-Options`,
       `Referrer-Policy`, `Permissions-Policy`, interdiction d'intégration en cadre.
-- [ ] **Étant donné** la CSP stricte (`script-src 'self'; style-src 'self'`, sans `unsafe-inline`), **alors** le site
+- [x] **Étant donné** la CSP stricte (`script-src 'self'; style-src 'self'`, sans `unsafe-inline`), **alors** le site
       s'affiche normalement : le build de production désactive l'insertion du CSS critique en ligne
       (`inlineCritical: false` dans `angular.json`), qui ajoute aujourd'hui un `<style>` et un script en ligne que
       la CSP bloquerait (site sans styles, vérifié le 2026-10-22). Aucune violation de CSP sur les parcours e2e.
-- [ ] **Étant donné** un robot d'indexation, **quand** il visite le site, **alors** `robots.txt` et
+- [x] **Étant donné** un robot d'indexation, **quand** il visite le site, **alors** `robots.txt` et
       `<meta name="robots" content="noindex">` lui demandent de ne rien indexer (site réservé aux invités).
 - [ ] **Étant donné** le service Cloud Run, **alors** il tourne à Francfort (`europe-west3`, près de la base Neon)
       avec le compte de service de l'API, 1 vCPU, 512 Mio, 0 instance minimum, 1 maximum tant que l'ADR 0014 tient,
       l'accélération au démarrage, et reçoit l'URL de la base par Secret Manager.
 - [ ] **Étant donné** une version défectueuse en ligne, **alors** le guide d'exploitation décrit le retour arrière
       (révision Cloud Run précédente, version Firebase précédente) et il a été essayé une fois.
-- [ ] La règle des migrations compatibles est écrite : une migration ne casse jamais la version encore en ligne
+- [x] La règle des migrations compatibles est écrite : une migration ne casse jamais la version encore en ligne
       (ajouter, déployer, puis retirer), puisqu'elle s'exécute avant la bascule du trafic.
 - [ ] **Étant donné** le service en ligne, **quand** plus aucune requête n'arrive, **alors** la base Neon se met en
       veille en moins de 10 minutes, mesuré selon la procédure d'US-046 (processeur de Cloud Run alloué pendant les
@@ -60,8 +60,36 @@ automatiquement** afin de **livrer souvent, sans manipulation à la main ni secr
   - API et job de migration : ils tournent sous `hipmaster-api@hipmaster.iam.gserviceaccount.com`, avec le secret
     `database-url` dans `DATABASE_URL` ;
   - droit manquant : l'ajouter au script `scripts/gcp/infrastructure.sh`, pas à la main.
+- Réalisation ([ADR 0028](../../decisions/0028-deploiement-continu.md), [guide](../../exploitation/README.md#déployer)) :
+  - `scripts/gcp/deployer.sh` porte chaque étape, que le workflow `deploy.yml` enchaîne et qu'un poste peut lancer ;
+    rien ne devient public sans `--public` ;
+  - l'API passe par une révision sans trafic, étiquetée `essai` et sondée, avant la bascule ; la révision quittée
+    reçoit l'étiquette `precedente`, cible de `retour-api` ;
+  - le front est publié par l'API REST de Firebase Hosting (`scripts/gcp/publier-front.ts`), sans CLI Firebase ;
+    `scripts/gcp/hebergement.ts` traduit `firebase.json` et sert aussi au serveur local des parcours e2e ;
+  - la CI lance les parcours e2e sur le build de production, servi avec les en-têtes de `firebase.json` : chaque
+    violation de la CSP est signalée au serveur local et fait échouer la série ;
+  - sous `/api`, Firebase ne pose pas de `Cache-Control` : l'API garde la main (`no-store` d'US-047, cache d'US-057) ;
+  - le secret `cle-codes-recuperation` (US-047) est attendu en plus de `database-url` : sans lui, le déploiement
+    s'arrête avant toute écriture, avec un message clair. Le compte de déploiement lit pour cela les métadonnées des
+    secrets (`roles/secretmanager.viewer`, ajouté au script d'infrastructure et appliqué le 2026-10-23) ;
+  - l'API reçoit aussi `PROXYS_DE_CONFIANCE=2` (US-047 : Firebase Hosting, puis le frontal de Cloud Run) ; le job
+    de migration reçoit la même configuration que le service ;
+  - la sonde passe par l'adresse `run.app` de la révision `essai` : si US-047 désactive l'adresse par défaut
+    (`--no-default-url`), la sonde est à revoir.
+- À vérifier au premier déploiement réel (après US-047 et US-048) : jeton Workload Identity Federation, publication
+  sur Firebase Hosting et en-têtes réels (étape `site`), retour arrière essayé une fois (API et front), veille de
+  Neon en moins de 10 minutes.
 
 ## Journal
 
 - 2026-10-22 — création, issue de la revue avant mise en ligne (ADR 0021).
 - 2026-10-22 — US-046 : mesure de la veille de Neon en production reprise ici, variables attendues par l'image.
+- 2026-10-23 — en cours : workflow `deploy.yml` et script `deployer.sh` (révision sans trafic, sonde, bascule),
+  `firebase.json` et publication par l'API REST de Firebase (ADR 0028), CSP vérifiée par les parcours e2e sur le
+  build de production (93 parcours, aucune violation ; le CSS critique en ligne en provoque 2, détectées).
+- 2026-10-23 — en revue : `prerequis` vérifié sur le projet (les deux secrets présents ; un secret absent arrête
+  tout avant la moindre écriture) ; droit `roles/secretmanager.viewer` appliqué par `infrastructure.sh` (1 créé,
+  29 déjà en place) ; image construite en local, manifeste simple sans index. Validation sur Google Cloud (image
+  poussée, job de migration sur Neon, service privé sondé avec un jeton d'identité) en attente de l'accord du
+  porteur du projet.

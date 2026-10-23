@@ -27,6 +27,8 @@ export default defineConfig({
           testTimeout: 30_000,
         },
       },
+      // Outillage d'exploitation : lecture de firebase.json pour le déploiement et les parcours e2e (US-050).
+      { test: { name: 'scripts', include: ['scripts/**/*.test.ts'] } },
     ],
     coverage: { provider: 'v8', include: ['packages/*/src/**', 'apps/api/src/**'] },
   },
