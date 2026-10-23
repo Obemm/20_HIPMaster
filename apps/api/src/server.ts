@@ -31,6 +31,8 @@ const app = construireApp({
   base,
   cleCodes: config.cleCodes,
   inscriptionSurInvitation: config.inscriptionSurInvitation,
+  administrateurs: config.administrateurs,
+  site: config.site,
   proxysDeConfiance: config.proxysDeConfiance,
   ...(config.limitesDebit !== null && { limites: limitesMultipliees(config.limitesDebit) }),
 });
@@ -40,6 +42,8 @@ journal.info(
     proxysDeConfiance: config.proxysDeConfiance,
     limitesDebit: config.limitesDebit ?? 'desactivees',
     inscriptionSurInvitation: config.inscriptionSurInvitation,
+    // Le nombre d'administrateurs seulement (ADR 0029).
+    administrateurs: config.administrateurs === 'tous' ? 'tous' : config.administrateurs.size,
   },
   'Protections de l’API',
 );

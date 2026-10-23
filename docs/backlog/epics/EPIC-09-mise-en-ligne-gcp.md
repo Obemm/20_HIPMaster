@@ -35,6 +35,7 @@ gratuite, que Claude installe, déploie et maintient en ligne de commande
 - [x] US-056 — La CI teste l'API sur un vrai PostgreSQL
 - [ ] US-057 — Des requêtes légères : index, lectures bornées, cache et chargement à la demande
 - [ ] US-058 — Des duels équitables : hasard imprévisible et appariement sûr
+- [x] US-072 — Une page « Inviter » réservée au porteur du projet
 
 Ordre suggéré, en trois lots :
 
@@ -43,6 +44,9 @@ Ordre suggéré, en trois lots :
 2. **Avant d'envoyer les invitations** : US-052 (sans elle, chaque déploiement efface les parties en cours), US-051,
    US-053, puis l'ergonomie mobile d'EPIC-10 (US-059, US-060).
 3. **Ensuite** : US-054, US-057, US-058.
+
+US-072 (décidée le 2026-10-23) s'ajoute au lot 2 : inviter depuis le site, avec le seul compte du porteur du
+projet, avant d'envoyer les invitations.
 
 ## Hors périmètre
 

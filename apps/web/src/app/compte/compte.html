@@ -60,6 +60,15 @@
       <h2 id="titre-connecte" class="text-lg font-semibold">
         Connecté en tant que {{ joueur.pseudo }}
       </h2>
+      @if (joueur.administrateur) {
+        <p>
+          <a
+            routerLink="/inviter"
+            class="inline-block rounded-lg bg-accent px-3 py-2 font-semibold text-sur-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+            >Inviter des collègues</a
+          >
+        </p>
+      }
       <p class="text-texte-doux">
         Votre compte est gardé par ce navigateur. Pour le retrouver ailleurs, utilisez votre code de
         récupération. Perdu, ou vu par quelqu’un d’autre ? Générez-en un nouveau : l’ancien cessera
@@ -96,6 +105,18 @@
         </button>
       </p>
       <p role="status">{{ info() }}</p>
+      <details class="text-sm text-texte-doux">
+        <summary
+          class="cursor-pointer font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+        >
+          Identifiant du compte
+        </summary>
+        <p class="mt-2">
+          Utile seulement si l’on vous le demande, par exemple pour faire de ce compte un
+          administrateur (US-072). Il ne permet pas de se connecter.
+        </p>
+        <p class="mt-1 font-mono break-all text-texte select-all">{{ joueur.id }}</p>
+      </details>
     </section>
   } @else if (compte.pret()) {
     <section aria-labelledby="titre-creer" class="flex flex-col gap-3">

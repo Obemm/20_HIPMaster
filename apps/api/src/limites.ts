@@ -32,6 +32,8 @@ export const LIMITES_DEBIT = {
   coupDuel: { max: 300, fenetreMs: MINUTE },
   /** `GET /duels/{id}` et `GET /moi/duels`, interrogés toutes les 3 s et toutes les 60 s (ADR 0020). */
   lectureDuel: { max: 600, fenetreMs: MINUTE },
+  /** Routes d'administration (US-072, ADR 0029), comptées une fois l'administrateur reconnu. */
+  administration: { max: 60, fenetreMs: MINUTE },
 } as const satisfies Record<string, Limite>;
 
 export type NomLimite = keyof typeof LIMITES_DEBIT;

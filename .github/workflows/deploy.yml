@@ -38,6 +38,9 @@ jobs:
     env:
       # Le commit que la CI a vérifié, pas forcément le dernier de main.
       HIPMASTER_COMMIT: ${{ github.event.workflow_run.head_sha }}
+      # Les administrateurs de la page « Inviter » (US-072, ADR 0029) : une variable du dépôt, pas un secret (un
+      # identifiant de joueur n'ouvre aucune session). Vide : personne.
+      HIPMASTER_ADMINISTRATEURS: ${{ vars.HIPMASTER_ADMINISTRATEURS }}
     steps:
       - uses: actions/checkout@v7
         with:
