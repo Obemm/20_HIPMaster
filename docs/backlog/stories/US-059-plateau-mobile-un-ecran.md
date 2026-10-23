@@ -57,3 +57,5 @@ mon tour ». Même disposition dans l'écran de duel.
 - 2026-10-22 — création, issue de la revue du design avant mise en ligne.
 - 2026-10-23 — affinée et commencée (lot 2, session front) : choix de disposition notés ci-dessus.
 - 2026-10-23 — livrée : plateau en un écran de téléphone (375 × 667 sans défilement), aide en fenêtre ouverte une fois puis par « ? », journal en bandeau dépliable, détail en feuille au bas de l'écran, colonne latérale au bureau, textes des cartes en rem (ADR 0032)
+- 2026-10-23 — fusion avec main : le pied de page « À propos et confidentialité » (US-053) s'efface pendant une partie
+  ou un duel, sinon il faisait déborder le plateau d'un petit téléphone.
