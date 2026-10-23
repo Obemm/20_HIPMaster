@@ -17,6 +17,7 @@ import {
 import { RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { type Carte, LIBELLES_FAMILLE, libelleType } from '../cartes/carte';
+import { EnSavoirPlus } from '../cartes/en-savoir-plus';
 import { VignetteCarte } from '../cartes/vignette-carte';
 import { Icone } from '../icone';
 import { estUuid } from '../identifiant';
@@ -74,6 +75,7 @@ const INTERROGATION_DUEL_MS = 3000;
     Icone,
     RegleCourte,
     ErreurChargement,
+    EnSavoirPlus,
   ],
   templateUrl: './partie.html',
   // Échap replie le journal, sinon referme le détail de la carte ou du composant choisi (US-040, US-041, US-059), où

@@ -713,6 +713,11 @@
               <p class="rounded-lg bg-surface p-2 text-sm">
                 <span class="font-semibold">En vrai :</span> {{ c.enVrai }}
               </p>
+              <hip-en-savoir-plus
+                [carte]="c"
+                [charger]="true"
+                class="flex flex-col gap-2 text-sm"
+              />
             }
           </div>
         </section>

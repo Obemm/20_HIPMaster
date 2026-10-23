@@ -1,0 +1,81 @@
+@if (visible()) {
+  <button
+    type="button"
+    class="flex items-center gap-2 self-start rounded-lg border-2 border-accent px-3 py-2 font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+    [attr.aria-expanded]="ouverte()"
+    [attr.aria-controls]="id"
+    (click)="basculer()"
+  >
+    En savoir plus
+    <hip-icone nom="deplier" class="size-4 transition-transform" [class.rotate-180]="ouverte()" />
+  </button>
+
+  <div [id]="id" [hidden]="!ouverte()" class="flex flex-col gap-3">
+    @if (fiche(); as f) {
+      <dl class="flex flex-col gap-3">
+        <div>
+          <dt class="font-semibold">C’est quoi ?</dt>
+          <dd>{{ f.definition }}</dd>
+        </div>
+        <div>
+          <dt class="font-semibold">{{ titreUsage() }}</dt>
+          <dd>{{ f.usage }}</dd>
+        </div>
+        <div>
+          <dt class="font-semibold">Un exemple</dt>
+          <dd>{{ f.exemple }}</dd>
+        </div>
+        <div>
+          <dt class="font-semibold">À retenir</dt>
+          <dd>{{ f.aRetenir }}</dd>
+        </div>
+        @if (f.chezElis) {
+          <div>
+            <dt class="font-semibold">Chez Elis</dt>
+            <dd>{{ f.chezElis }}</dd>
+          </div>
+        }
+        <div>
+          <dt class="font-semibold">Pour aller plus loin</dt>
+          <dd class="flex flex-col gap-2">
+            <p class="text-sm text-texte-doux">
+              Ces liens ouvrent un autre site, dans un nouvel onglet.
+            </p>
+            <ul class="flex flex-col gap-2">
+              @for (lien of f.liens; track lien.url) {
+                <li>
+                  <a
+                    [href]="lien.url"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    [attr.hreflang]="lien.langue"
+                    class="inline-flex items-baseline gap-1 font-semibold underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                    >{{ lien.titre }}<hip-icone nom="externe" class="size-4 self-center" /><span
+                      class="sr-only"
+                    >
+                      (nouvel onglet)</span
+                    ></a
+                  >
+                  <span class="block text-sm text-texte-doux"
+                    >{{ site(lien) }}{{ lien.langue === 'en' ? ' · en anglais' : '' }}</span
+                  >
+                </li>
+              }
+            </ul>
+          </dd>
+        </div>
+      </dl>
+    } @else if (erreur()) {
+      <hip-erreur-chargement
+        quoi="La fiche n’a pas pu être chargée."
+        [erreur]="erreur()"
+        [enCours]="detail.isLoading()"
+        (reessayer)="recharger()"
+      />
+    } @else if (chargement()) {
+      <p>Chargement de la fiche…</p>
+    } @else {
+      <p>La fiche de cette carte est en cours d’écriture.</p>
+    }
+  </div>
+}

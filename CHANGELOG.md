@@ -169,6 +169,12 @@ Toutes les évolutions notables du projet sont consignées ici
   restauration essayée dans une branche Neon temporaire (`scripts/gcp/restaurer.sh`). Les erreurs JavaScript des
   joueurs partent vers Error Reporting par `POST /api/v1/erreurs` (contrat OpenAPI, débit limité), sans jeton ni
   paramètres d'adresse. Scan OWASP ZAP de base : aucune alerte élevée ni moyenne (US-051, ADR 0033).
+- Fiche « En savoir plus » des cartes : un bouton déplie, sous le texte « En vrai », ce qu'est la technologie, à quoi
+  elle sert (ou comment survient l'incident), un exemple, le piège à éviter, le lien avec Elis quand il est public, et
+  de 1 à 3 ressources externes (Wikipédia, éditeurs, standards) qui s'ouvrent dans un nouvel onglet, site et langue
+  annoncés. Depuis le détail d'une carte (catalogue, collection, booster) et le panneau de la carte choisie en partie.
+  Fiches versionnées dans le domaine, format validé par les tests ; `GET /api/v1/cartes/{numero}` les renvoie
+  (`cartes.yaml` 1.1.0), la liste reste légère. Huit cartes pilotes, une par famille (US-073, ADR 0034).
 
 ### Modifié
 

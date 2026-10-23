@@ -39,6 +39,21 @@ describe('API v1', () => {
     });
   });
 
+  it('GET /api/v1/cartes/1 renvoie la fiche « En savoir plus » de FTP, absente de la liste', async () => {
+    const reponse = await app.inject({ method: 'GET', url: '/api/v1/cartes/1' });
+    expect(reponse.statusCode).toBe(200);
+    const { fiche } = reponse.json<{ fiche: { definition: string; liens: unknown[] } }>();
+    expect(fiche.definition).toContain('File Transfer Protocol');
+    expect(fiche.liens).toContainEqual({
+      titre: 'File Transfer Protocol',
+      url: 'https://fr.wikipedia.org/wiki/File_Transfer_Protocol',
+      langue: 'fr',
+    });
+
+    const liste = await app.inject({ method: 'GET', url: '/api/v1/cartes' });
+    expect(liste.json<object[]>().some((carte) => 'fiche' in carte)).toBe(false);
+  });
+
   it('GET /api/v1/cartes/{numero} répond 404 au format Problem Details pour un numéro inconnu', async () => {
     const reponse = await app.inject({ method: 'GET', url: '/api/v1/cartes/72' });
     expect(reponse.statusCode).toBe(404);

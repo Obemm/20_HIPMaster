@@ -2,7 +2,9 @@ import {
   type Carte,
   detaillerCapacites,
   FAMILLES,
+  ficheDe,
   IDS_CAPACITE,
+  LANGUES_LIEN,
   RARETES,
   SET_1,
   TYPES_CARTE,
@@ -35,6 +37,24 @@ const schemaCarte = z.object({
   enVrai: z.string(),
 });
 
+// Fiche « En savoir plus » (US-073, ADR 0034) : servie avec le détail d'une carte seulement.
+const schemaFiche = z.object({
+  definition: z.string(),
+  usage: z.string(),
+  exemple: z.string(),
+  aRetenir: z.string(),
+  chezElis: z.string().optional(),
+  liens: z.array(
+    z.object({
+      titre: z.string(),
+      url: z.url({ protocol: /^https$/ }),
+      langue: z.enum(LANGUES_LIEN),
+    }),
+  ),
+});
+
+const schemaCarteDetaillee = schemaCarte.extend({ fiche: schemaFiche.optional() });
+
 const versApi = (carte: Carte) => ({ ...carte, capacites: detaillerCapacites(carte) });
 
 /** Catalogue des cartes, en lecture seule (ADR 0011). */
@@ -48,13 +68,14 @@ export const routesCartes: FastifyPluginAsyncZod = async (app) => {
     {
       schema: {
         params: z.object({ numero: z.coerce.number().int().positive() }),
-        response: { 200: schemaCarte },
+        response: { 200: schemaCarteDetaillee },
       },
     },
     async (requete) => {
       const carte = trouverCarte(requete.params.numero);
       if (!carte) throw Object.assign(new Error('Carte introuvable'), { statusCode: 404 });
-      return versApi(carte);
+      const fiche = ficheDe(carte.numero);
+      return { ...versApi(carte), ...(fiche && { fiche: { ...fiche, liens: [...fiche.liens] } }) };
     },
   );
 };
