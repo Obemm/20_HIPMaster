@@ -217,6 +217,9 @@ Toutes les évolutions notables du projet sont consignées ici
 - La vue de partie renvoyée par l'API perdait le bonus d'attaque des composants et les marqueurs du joueur : un bot
   du domaine joué depuis l'API (Agent autonome) évaluait tout à `NaN` et ne gagnait plus aucune partie. Le schéma et
   le contrat OpenAPI les exposent ; la vue de l'API suffit désormais à reconstituer la partie (US-026).
+- Statut des epics : `scripts/cloturer-story.py` déduit le statut et l'avancement de chaque epic de ses stories et
+  les écrit à l'identique dans le fichier de l'epic et le tableau ; `--recompter` les recalcule tous (EPIC-00,
+  EPIC-02 et EPIC-04 terminés mais restés « En cours », avancements faux après l'ajout de stories) (US-075).
 
 ### Sécurité
 

@@ -1,6 +1,6 @@
 # EPIC-04 — Combat contre le bot
 
-- **Statut** : En cours
+- **Statut** : Terminé
 - **Priorité** : Must
 
 ## Objectif
