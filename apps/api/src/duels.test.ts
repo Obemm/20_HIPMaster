@@ -118,6 +118,8 @@ describe('duels entre joueurs', () => {
     expect(apres.version).toBe(2);
     expect(apres.vue?.actif).toBe(apres.moi);
     expect(apres.evenements.map((e) => e.type)).toContain('debut-tour');
+    // Le second joueur reçoit 2 Débit à son premier tour, en duel comme contre le bot (ADR 0026).
+    expect(apres.vue?.moi.debit).toBe(2);
   });
 
   it('répond 304 si rien n’a changé, et refuse une action fondée sur une version périmée', async () => {

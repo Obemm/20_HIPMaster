@@ -71,6 +71,29 @@ describe('tours, pioche et Débit', () => {
     expect(apres.joueurs.j2.debit).toBe(3);
   });
 
+  it('donne 1 Débit de plus au second joueur à son premier tour, puis +1 par tour (ADR 0026)', () => {
+    let etat = creerPartie({ j1: DECK_VARIE, j2: DECK_VARIE }, 123);
+    const second = etat.premier === 'j1' ? 'j2' : 'j1';
+    expect(etat.joueurs[etat.premier].debit).toBe(1);
+    const debits: number[] = [];
+    for (let tour = 2; tour <= 7; tour++) {
+      etat = jouer(etat, { type: 'finirTour' });
+      debits.push(etat.joueurs[etat.actif].debit);
+    }
+    // Tours 2 à 7, en alternance : le second (2, 2, 3) et le premier (2, 3, 4).
+    expect(debits).toEqual([2, 2, 2, 3, 3, 4]);
+    expect(etat.journal.filter((e) => e.type === 'debut-tour' && e.bonusDebit)).toEqual([
+      { type: 'debut-tour', joueur: second, tour: 2, bonusDebit: 1 },
+    ]);
+  });
+
+  it('retire le malus de Facture de tokens du Débit du second joueur, bonus compris', () => {
+    const etat = creerPartie({ j1: DECK_VARIE, j2: DECK_VARIE }, 123);
+    const second = etat.premier === 'j1' ? 'j2' : 'j1';
+    etat.joueurs[second].malusDebit = 1;
+    expect(jouer(etat, { type: 'finirTour' }).joueurs[second].debit).toBe(1);
+  });
+
   it('plafonne le Débit à 10', () => {
     const etat = scenario();
     etat.joueurs.j2.tours = 14;

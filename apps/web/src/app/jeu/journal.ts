@@ -135,6 +135,18 @@ function decrireFin(e: Evenement, moi: IdJoueur, autre: Adversaire): string {
     : `Fin de la partie : ${autre.nom} gagne.`;
 }
 
+/** Début de tour, avec le Débit de plus du second joueur à son premier tour (ADR 0026). */
+function decrireDebutTour(e: Evenement, moi: IdJoueur, autre: Adversaire): string {
+  const bonus = e.bonusDebit ? `${e.bonusDebit} Débit de plus à ce premier tour` : null;
+  if (e.joueur === moi) {
+    const debut = `Tour ${e.tour} : à vous de jouer.`;
+    return bonus ? `${debut} Vous jouez en second : ${bonus}.` : debut;
+  }
+  return bonus
+    ? `Tour ${e.tour} : ${autre.nom} joue (en second, ${bonus}).`
+    : `Tour ${e.tour} : ${autre.nom} joue.`;
+}
+
 /**
  * Traduit un événement en phrase, du point de vue du joueur `moi` ; `null` pour un événement sans intérêt à
  * l'écran. Les noms de cartes viennent du catalogue.
@@ -149,9 +161,7 @@ export function decrireEvenement(
   const carte = id ? nommer(id) : '';
   switch (e.type) {
     case 'debut-tour':
-      return e.joueur === moi
-        ? `Tour ${e.tour} : à vous de jouer.`
-        : `Tour ${e.tour} : ${autre.nom} joue.`;
+      return decrireDebutTour(e, moi, autre);
     case 'pioche':
       return e.joueur === moi ? `Vous piochez ${carte}.` : null;
     case 'carte-brulee':

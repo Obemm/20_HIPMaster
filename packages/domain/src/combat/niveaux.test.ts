@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { appliquer } from './moteur.ts';
 import { DECKS_PRETES } from './decks.ts';
-import { NIVEAUX_BOT, trouverNiveau } from './niveaux.ts';
+import { NIVEAU_PAR_DEFAUT, NIVEAUX_BOT, trouverNiveau } from './niveaux.ts';
 import { actionsPossibles } from './possibles.ts';
 import { reconstituer } from './reconstitution.ts';
 import { jouerPartie } from './simulation.ts';
@@ -12,17 +12,25 @@ const [heritage, moderne, hybride] = DECKS_PRETES;
 if (!heritage || !moderne || !hybride) throw new Error('decks prêtés manquants');
 
 describe('niveaux du bot', () => {
-  it('propose trois niveaux, du plus simple au plus fort', () => {
+  it('propose quatre niveaux, du plus simple au plus fort, le plus simple par défaut', () => {
     expect(NIVEAUX_BOT.map((n) => n.id)).toEqual([
+      'stagiaire',
       'batch-de-nuit',
       'architecte-esb',
       'agent-autonome',
     ]);
+    expect(NIVEAUX_BOT.map((n) => n.description.split(' :')[0])).toEqual([
+      'Facile',
+      'Moyen',
+      'Difficile',
+      'Expert',
+    ]);
+    expect(NIVEAU_PAR_DEFAUT).toBe('stagiaire');
     expect(trouverNiveau('agent-autonome')?.nom).toBe('Agent autonome');
     expect(trouverNiveau('inconnu')).toBeUndefined();
   });
 
-  // Neuf parties complètes : plusieurs secondes sur un poste chargé, sans rapport avec une régression (US-043).
+  // Douze parties complètes : plusieurs secondes sur un poste chargé, sans rapport avec une régression (US-043).
   it(
     'chaque niveau ne joue que des actions légales, et ses parties se terminent',
     { timeout: 30_000 },

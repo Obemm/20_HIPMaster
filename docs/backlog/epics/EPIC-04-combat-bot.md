@@ -9,7 +9,12 @@ Jouer une partie courte contre un bot, avec plusieurs niveaux de difficulté, et
 
 ## Indicateur de réussite
 
-Une partie dure moins de 5 minutes ; le bot de niveau moyen gagne environ une partie sur deux contre un joueur débutant.
+Une partie dure moins de 5 minutes ; le bot de niveau facile gagne au plus une partie sur deux contre un joueur
+débutant, et commencer ne donne pas d'avance décisive.
+
+Indicateur revu le 2026-10-22 (US-064) : il visait le niveau moyen (Architecte ESB du temps d'US-021), mais un
+débutant ne gagne qu'environ une partie sur sept contre Batch de nuit, désormais moyen, et moins encore contre
+Architecte ESB. C'est le niveau facile, Stagiaire, qui lui laisse plus d'une partie sur deux.
 
 ## Stories
 
@@ -26,9 +31,13 @@ Une partie dure moins de 5 minutes ; le bot de niveau moyen gagne environ une pa
 - [x] US-039 — Expliquer les attaques et la résolution des combats
 - [x] US-040 — Consulter le détail des cartes de sa main
 - [x] US-041 — Consulter le détail des cartes du plateau
+- [x] US-064 — Un bot battable par un débutant, une partie équitable pour les deux joueurs
 
 Premier jalon jouable à la fin d'US-013, avec les cartes que le moteur prend déjà en charge (décision du porteur du
 projet, 2026-10-18). Niveaux du bot (US-021) et récompense de victoire (US-025, avec EPIC-02 et EPIC-03) rédigés le 2026-10-18.
+
+Epic rouvert le 2026-10-22 : le porteur du projet trouve le bot presque impossible à battre ; une simulation montre
+qu'aucun niveau n'est vraiment facile et que commencer donne un gros avantage (US-064).
 
 ## Hors périmètre
 
