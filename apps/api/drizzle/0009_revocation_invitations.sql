@@ -1,0 +1,1 @@
+ALTER TABLE "invitations" ADD COLUMN "revoquee_le" timestamp with time zone;

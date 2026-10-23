@@ -375,4 +375,19 @@ describe('Compte', () => {
     expect(localStorage.getItem('hipmaster.jeton')).toBeNull();
     expect(page.querySelector<HTMLInputElement>('#invitation')?.value).toBe('ZZZZ-ZZZZ-ZZZZ-ZZZZ');
   });
+
+  it('montre « Inviter des collègues » à l’administrateur seulement, et l’identifiant du compte à tous (US-072)', async () => {
+    const compte = TestBed.inject(CompteService);
+    compte.joueur.set(JOUEUR);
+    compte.pret.set(true);
+    const { fixture, page } = await afficher();
+    const lienInviter = () =>
+      [...page.querySelectorAll('a')].find((a) => a.textContent?.includes('Inviter'));
+    expect(lienInviter()).toBeUndefined();
+    expect(page.querySelector('details')?.textContent).toContain(JOUEUR.id);
+
+    compte.joueur.set({ ...JOUEUR, administrateur: true });
+    fixture.detectChanges();
+    expect(lienInviter()?.getAttribute('href')).toBe('/inviter');
+  });
 });

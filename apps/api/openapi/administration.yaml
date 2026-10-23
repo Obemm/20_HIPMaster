@@ -1,0 +1,180 @@
+openapi: 3.1.0
+info:
+  title: HIPMaster — administration
+  version: 1.0.0
+  description: >
+    Routes réservées aux administrateurs (US-072, ADR 0029) : les comptes dont l'identifiant figure dans le réglage
+    `ADMINISTRATEURS` de l'API. Elles attendent l'en-tête `Authorization: Bearer <jeton>` d'un administrateur.
+
+    **À tout autre appelant** (sans jeton, jeton inconnu ou expiré, joueur ordinaire), chaque route répond **404**, avec
+    la réponse exacte d'une route qui n'existe pas : jamais 400, 401, 403 ni 429. Ce contrôle passe avant la lecture du
+    corps et avant la limite de débit.
+
+    Limite de débit (ADR 0025) : 60 requêtes par minute et par adresse, chaque route avec son propre compteur (valeur
+    de production, multipliée par le réglage `LIMITES_DEBIT`), au-delà de quoi la réponse est 429 avec `Retry-After`.
+    Toutes les réponses portent `Cache-Control: no-store`.
+servers:
+  - url: /api/v1
+security: [{ jeton: [] }]
+paths:
+  /admin/invitations:
+    get:
+      operationId: listerInvitations
+      summary: Les invitations, des plus récentes aux plus anciennes (administrateur)
+      description: >
+        Le code d'une invitation n'est jamais renvoyé : la base n'en garde que l'empreinte (ADR 0027).
+      responses:
+        '200':
+          description: Les invitations.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [invitations]
+                properties:
+                  invitations:
+                    type: array
+                    items: { $ref: '#/components/schemas/Invitation' }
+        '404': { $ref: '#/components/responses/Introuvable' }
+        '429': { $ref: '#/components/responses/TropDeRequetes' }
+    post:
+      operationId: creerInvitation
+      summary: Crée une invitation ; renvoie son code et son lien, cette seule fois (administrateur)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [libelle, utilisations, expire]
+              properties:
+                libelle:
+                  type: string
+                  minLength: 1
+                  maxLength: 80
+                  description: Pour qui, ou pour quelle campagne (espaces de début et de fin retirés).
+                  examples: [Équipe intégration]
+                utilisations:
+                  type: integer
+                  minimum: 1
+                  maximum: 1000
+                  description: Le nombre de comptes que le code peut créer.
+                expire:
+                  type: string
+                  format: date
+                  description: >
+                    Dernier jour de validité : l'invitation expire à la fin de ce jour (minuit UTC). Pas un jour passé.
+                  examples: ['2026-12-31']
+      responses:
+        '201':
+          description: L'invitation créée, avec son code et son lien, qui ne seront plus jamais renvoyés.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [invitation, code, lien]
+                properties:
+                  invitation: { $ref: '#/components/schemas/Invitation' }
+                  code: { type: string, examples: [ABCD-EFGH-JKLM-NPQR] }
+                  lien:
+                    type: string
+                    format: uri
+                    description: '`<adresse du site>/compte?invitation=<code>`, qui remplit le code dans « Mon compte ».'
+                    examples: ['https://hipmaster.web.app/compte?invitation=ABCD-EFGH-JKLM-NPQR']
+        '400':
+          description: Corps invalide (libellé vide ou trop long, nombre de comptes hors bornes, date passée ou mal formée).
+          content:
+            application/problem+json:
+              schema: { $ref: '#/components/schemas/Probleme' }
+        '404': { $ref: '#/components/responses/Introuvable' }
+        '413': { $ref: '#/components/responses/Probleme' }
+        '429': { $ref: '#/components/responses/TropDeRequetes' }
+  /admin/invitations/{id}/revocation:
+    post:
+      operationId: revoquerInvitation
+      summary: Révoque une invitation (administrateur)
+      description: >
+        Elle expire aussitôt : son code ne crée plus de compte ; les comptes déjà créés restent.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: L'invitation révoquée.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Invitation' }
+        '400': { $ref: '#/components/responses/Probleme' }
+        '404':
+          description: >
+            Appelant qui n'est pas administrateur (réponse d'une route inexistante), ou aucune invitation en cours ne
+            porte cet identifiant (inconnue, déjà expirée ou révoquée), avec alors un titre qui le dit.
+          content:
+            application/problem+json:
+              schema: { $ref: '#/components/schemas/Probleme' }
+        '429': { $ref: '#/components/responses/TropDeRequetes' }
+components:
+  securitySchemes:
+    jeton:
+      type: http
+      scheme: bearer
+  responses:
+    Probleme:
+      description: Erreur au format Problem Details (RFC 9457).
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Probleme' }
+    Introuvable:
+      description: >
+        Appelant qui n'est pas administrateur : la réponse exacte d'une route qui n'existe pas
+        (`{ "type": "about:blank", "title": "Ressource introuvable", "status": 404 }`).
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Probleme' }
+    TropDeRequetes:
+      description: >
+        Limite de débit dépassée pour cette adresse (ADR 0025) : réessayer après le délai de `Retry-After`.
+      headers:
+        Retry-After:
+          description: Secondes à attendre avant de réessayer.
+          schema: { type: integer, minimum: 0 }
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Probleme' }
+  schemas:
+    Probleme:
+      type: object
+      required: [type, title, status]
+      properties:
+        type: { type: string }
+        title: { type: string }
+        status: { type: integer }
+    Invitation:
+      type: object
+      required:
+        [id, libelle, utilisations, utilisationsMax, comptes, creeLe, expireLe, revoqueeLe, statut]
+      properties:
+        id: { type: string, format: uuid }
+        libelle: { type: string }
+        utilisations:
+          type: integer
+          minimum: 0
+          description: Comptes créés avec ce code (chaque création compte, même d'un compte supprimé depuis).
+        utilisationsMax:
+          { type: integer, minimum: 1, description: Comptes que le code peut créer au plus. }
+        comptes:
+          { type: integer, minimum: 0, description: Comptes créés avec ce code et encore présents. }
+        creeLe: { type: string, format: date-time }
+        expireLe: { type: string, format: date-time }
+        revoqueeLe:
+          type: [string, 'null']
+          format: date-time
+          description: Instant de la révocation ; `null` pour une invitation jamais révoquée.
+        statut:
+          type: string
+          enum: [active, epuisee, expiree, revoquee]
+          description: >
+            `active` : le code crée encore des comptes ; `epuisee` : toutes ses utilisations sont consommées ;
+            `expiree` : sa date limite est passée ; `revoquee` : révoquée par un administrateur ou la commande.

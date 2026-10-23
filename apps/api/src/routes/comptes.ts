@@ -10,18 +10,24 @@ import {
   type Joueur,
   regenererCode,
 } from '../comptes/comptes.ts';
+import { type Administrateurs, AUCUN, estAdministrateur } from '../comptes/administrateurs.ts';
 import { inscrire } from '../comptes/invitations.ts';
 import type { Base } from '../db/index.ts';
 import { limiter, type LimitesDebit } from '../limites.ts';
 
 // Contrat : apps/api/openapi/comptes.yaml (US-022, ADR 0017 ; protections : US-047, ADR 0025 ; invitations : US-048,
-// ADR 0027).
+// ADR 0027 ; administrateurs : US-072, ADR 0029).
 
 const PROBLEME = 'application/problem+json';
 export const refuser = (reponse: FastifyReply, status: number, title: string) =>
   reponse.status(status).type(PROBLEME).send({ type: 'about:blank', title, status });
 
-const schemaJoueur = z.object({ id: z.uuid(), pseudo: z.string() });
+/** Le joueur renvoyé ; `administrateur` n'apparaît que pour un administrateur (ADR 0029). */
+const schemaJoueur = z.object({
+  id: z.uuid(),
+  pseudo: z.string(),
+  administrateur: z.literal(true).optional(),
+});
 
 const pseudo = z
   .string()
@@ -68,8 +74,18 @@ export const routesComptes: FastifyPluginAsyncZod<{
   cleCodes: string;
   /** Création de compte réservée aux invités (ADR 0027) ; libre sinon, mais un code fourni est toujours vérifié. */
   inscriptionSurInvitation?: boolean;
+  /** Les comptes administrateurs (ADR 0029) : le joueur renvoyé le dit ; personne par défaut. */
+  administrateurs?: Administrateurs;
   limites?: LimitesDebit;
-}> = async (app, { base, cleCodes, inscriptionSurInvitation = false, limites }) => {
+}> = async (
+  app,
+  { base, cleCodes, inscriptionSurInvitation = false, administrateurs = AUCUN, limites },
+) => {
+  const vu = (joueur: Joueur) =>
+    estAdministrateur(administrateurs, joueur.id)
+      ? { ...joueur, administrateur: true as const }
+      : joueur;
+
   app.post(
     '/joueurs',
     {
@@ -90,7 +106,7 @@ export const routesComptes: FastifyPluginAsyncZod<{
       if (!creation) {
         return refuser(reponse, 403, 'Invitation refusée : code absent, inconnu, expiré ou épuisé');
       }
-      return reponse.status(201).send(creation);
+      return reponse.status(201).send({ ...creation, joueur: vu(creation.joueur) });
     },
   );
 
@@ -106,7 +122,7 @@ export const routesComptes: FastifyPluginAsyncZod<{
     async (requete, reponse) => {
       const session = await connecterParCode(base, requete.body.code, cleCodes);
       if (!session) return refuser(reponse, 401, 'Code de récupération inconnu');
-      return reponse.status(201).send(session);
+      return reponse.status(201).send({ ...session, joueur: vu(session.joueur) });
     },
   );
 
@@ -131,7 +147,7 @@ export const routesComptes: FastifyPluginAsyncZod<{
 
   app.get('/moi', { schema: { response: { 200: schemaJoueur } } }, async (requete, reponse) => {
     const connecte = await exigerJoueur(base, requete, reponse);
-    return connecte ? connecte.joueur : reponse;
+    return connecte ? vu(connecte.joueur) : reponse;
   });
 
   app.post(

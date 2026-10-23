@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: HIPMaster — comptes invités
-  version: 1.2.0
+  version: 1.3.0
   description: >
     Comptes invités (US-022, ADR 0017) : un pseudo, un jeton de session gardé par le navigateur et un code de
     récupération pour retrouver son compte sur un autre appareil. Ni mot de passe ni e-mail. Les routes marquées
@@ -11,6 +11,9 @@ info:
     (valeurs de production ci-dessous, multipliées par le réglage `LIMITES_DEBIT` de l'API) ; au-delà, la réponse est
     429 avec `Retry-After`. Toutes les réponses portent `Cache-Control: no-store` et `X-Content-Type-Options: nosniff`.
     Un corps de plus de 16 Ko est refusé (413).
+
+    Administrateurs (US-072, ADR 0029) : le joueur renvoyé porte `administrateur: true` quand son identifiant figure
+    dans le réglage `ADMINISTRATEURS` de l'API ; le champ est absent pour tout autre joueur.
 servers:
   - url: /api/v1
 paths:
@@ -210,3 +213,8 @@ components:
       properties:
         id: { type: string, format: uuid }
         pseudo: { type: string }
+        administrateur:
+          type: boolean
+          const: true
+          description: >
+            Présent, et vrai, pour un administrateur seulement (US-072, ADR 0029) : il ouvre la page « Inviter ».

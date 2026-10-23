@@ -8,11 +8,14 @@ import {
 import type { Logger } from 'pino';
 import { DepotParties, type OptionsDepot } from './parties/depot.ts';
 import type { OptionsBoosters } from './comptes/boosters.ts';
+import { type Administrateurs, AUCUN } from './comptes/administrateurs.ts';
 import { CLE_CODES_DEVELOPPEMENT } from './comptes/comptes.ts';
+import { SITE_DEVELOPPEMENT } from './comptes/invitations.ts';
 import type { Base } from './db/index.ts';
 import type { OptionsDuels } from './duels/duels.ts';
 import { champsTrace, messageErreur } from './journaux.ts';
 import type { LimitesDebit } from './limites.ts';
+import { routesAdministration } from './routes/administration.ts';
 import { routesBoosters } from './routes/boosters.ts';
 import { routesCollection } from './routes/collection.ts';
 import { routesDuels } from './routes/duels.ts';
@@ -48,6 +51,10 @@ export function construireApp(
     cleCodes?: string;
     /** Création de compte réservée aux invités (ADR 0027) ; libre par défaut (développement, tests). */
     inscriptionSurInvitation?: boolean;
+    /** Les comptes administrateurs (US-072, ADR 0029) ; personne par défaut. */
+    administrateurs?: Administrateurs;
+    /** Adresse du site, pour les liens d'invitation ; le front de développement par défaut. */
+    site?: string;
     /** Limites de débit par adresse (ADR 0025) ; aucune limitation sans elles (développement, tests). */
     limites?: LimitesDebit;
     /**
@@ -57,7 +64,13 @@ export function construireApp(
     proxysDeConfiance?: number;
   } = {},
 ) {
-  const { journal, projet = null, cleCodes = CLE_CODES_DEVELOPPEMENT, limites } = options;
+  const {
+    journal,
+    projet = null,
+    cleCodes = CLE_CODES_DEVELOPPEMENT,
+    administrateurs = AUCUN,
+    limites,
+  } = options;
   const proxysDeConfiance = options.proxysDeConfiance ?? 0;
   const app = Fastify({
     ...(journal && {
@@ -133,6 +146,16 @@ export function construireApp(
       base: options.base,
       cleCodes,
       inscriptionSurInvitation: options.inscriptionSurInvitation ?? false,
+      administrateurs,
+      ...(limites && { limites }),
+    });
+    // Routes réservées aux administrateurs, cachées derrière un 404 pour tout autre appelant (US-072, ADR 0029).
+    app.register(routesAdministration, {
+      prefix: '/api/v1',
+      base: options.base,
+      cleCodes,
+      administrateurs,
+      site: options.site ?? SITE_DEVELOPPEMENT,
       ...(limites && { limites }),
     });
     app.register(routesBoosters, {
