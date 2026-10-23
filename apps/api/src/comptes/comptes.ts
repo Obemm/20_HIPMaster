@@ -3,6 +3,7 @@ import { REGLES_BOOSTERS } from '@hipmaster/domain';
 import { and, eq, ne } from 'drizzle-orm';
 import type { Base } from '../db/index.ts';
 import { joueurs, sessions } from '../db/schema.ts';
+import { oublierDuelsSansJoueur, quitterSesDuels } from '../duels/duels.ts';
 
 /**
  * Comptes invités (US-022, ADR 0017) : jetons de session et codes de récupération, jamais stockés en clair. Les codes
@@ -123,6 +124,19 @@ export async function joueurDuJeton(base: Base, jeton: string): Promise<Joueur |
 
 export async function fermerSession(base: Base, jeton: string): Promise<void> {
   await base.delete(sessions).where(eq(sessions.empreinteJeton, empreinteJeton(jeton)));
+}
+
+/**
+ * Supprime définitivement le compte (US-053, ADR 0031), en une transaction : ses duels en cours se terminent par
+ * forfait et ses défis en attente disparaissent, puis le compte part avec ses sessions, sa collection, ses récompenses
+ * et ses parties contre le bot (clés étrangères en cascade). Ses duels terminés restent à ses adversaires.
+ */
+export async function supprimerCompte(base: Base, joueurId: string): Promise<void> {
+  await base.transaction(async (tx) => {
+    await quitterSesDuels(tx, joueurId);
+    await tx.delete(joueurs).where(eq(joueurs.id, joueurId));
+    await oublierDuelsSansJoueur(tx);
+  });
 }
 
 /**

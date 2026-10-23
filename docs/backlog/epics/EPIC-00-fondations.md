@@ -1,6 +1,6 @@
 # EPIC-00 — Fondations du projet
 
-- **Statut** : En cours
+- **Statut** : Terminé
 - **Priorité** : Must
 
 ## Objectif
@@ -22,6 +22,7 @@ Disposer d'un socle de développement propre, outillé et traçable.
 - [x] US-043 — Tests de l'API robustes sur un poste chargé
 - [x] US-044 — Le quality gate ignore les worktrees de l'app Claude Desktop
 - [x] US-045 — `npm run dev` ne redémarre l'API que sur un changement des sources
+- [x] US-075 — Un statut d'epic toujours conforme à ses stories
 
 ## Hors périmètre
 

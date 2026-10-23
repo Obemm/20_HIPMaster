@@ -3,6 +3,7 @@ import { sql } from 'drizzle-orm';
 import {
   boolean,
   check,
+  index,
   integer,
   jsonb,
   pgTable,
@@ -102,6 +103,7 @@ export const recompenses = pgTable('recompenses', {
 /**
  * Duels entre joueurs (US-032, ADR 0020) : le créateur joue le camp j1, l'adversaire qui rejoint le camp j2 ; le
  * tirage du moteur désigne qui commence. `version` change à chaque action et à chaque changement de statut.
+ * Un joueur qui supprime son compte disparaît de ses duels terminés (`NULL`), qui restent à son adversaire (ADR 0031).
  */
 export const duels = pgTable('duels', {
   id: uuid().primaryKey().defaultRandom(),
@@ -109,16 +111,46 @@ export const duels = pgTable('duels', {
     .notNull()
     .default('attente'),
   version: integer().notNull().default(0),
-  createurId: uuid()
-    .notNull()
-    .references(() => joueurs.id, { onDelete: 'cascade' }),
+  /** Vide une fois son compte supprimé (US-053). */
+  createurId: uuid().references(() => joueurs.id, { onDelete: 'set null' }),
   deckCreateur: text().notNull(),
   /** Duel ouvert à tous (adversaire au hasard, US-037) ; sinon défi privé, rejoint par son lien (US-033). */
   ouvert: boolean().notNull().default(false),
-  adversaireId: uuid().references(() => joueurs.id, { onDelete: 'cascade' }),
+  /** Vide tant que personne n'a rejoint le duel, ou une fois son compte supprimé (US-053). */
+  adversaireId: uuid().references(() => joueurs.id, { onDelete: 'set null' }),
   deckAdversaire: text(),
   /** État complet du moteur, jamais renvoyé tel quel (seulement la vue de chaque joueur). */
   etat: jsonb().$type<EtatPartie>(),
   creeLe: timestamp({ withTimezone: true }).notNull().defaultNow(),
   majLe: timestamp({ withTimezone: true }).notNull().defaultNow(),
 });
+
+/**
+ * Parties contre le bot (US-052, ADR 0030) : le joueur joue le camp j1, le bot j2. `version` change à chaque action,
+ * qui s'écrit en une seule fois (action du joueur et tour du bot) à condition que la version n'ait pas bougé.
+ * Une partie anonyme n'a ni joueur ni session ; celle d'un compte n'est visible que de sa session (ADR 0025), et
+ * disparaît avec elle.
+ */
+export const parties = pgTable(
+  'parties',
+  {
+    id: uuid().primaryKey().defaultRandom(),
+    /** Le joueur connecté qui l'a lancée : il recevra la récompense d'une victoire (US-025). */
+    joueurId: uuid().references(() => joueurs.id, { onDelete: 'cascade' }),
+    /** Empreinte du jeton de la session qui l'a lancée : seule cette session la lit et la joue. */
+    session: text().references(() => sessions.empreinteJeton, { onDelete: 'cascade' }),
+    deck: text().notNull(),
+    deckBot: text().notNull(),
+    niveau: text().notNull(),
+    /** État complet du moteur, jamais renvoyé tel quel (seulement la vue du joueur). */
+    etat: jsonb().$type<EtatPartie>().notNull(),
+    version: integer().notNull().default(0),
+    creeLe: timestamp({ withTimezone: true }).notNull().defaultNow(),
+    /** Instant du dernier coup (création ou action) : l'expiration et le plafond se comptent depuis lui. */
+    majLe: timestamp({ withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    index('parties_maj_le').on(table.majLe),
+    check('parties_proprietaire', sql`(${table.joueurId} is null) = (${table.session} is null)`),
+  ],
+);

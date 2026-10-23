@@ -62,6 +62,13 @@
 </header>
 <router-outlet />
 @if (!enPartie()) {
+  <footer class="mt-auto border-t border-bordure">
+    <p class="mx-auto w-full max-w-6xl px-4 py-3 text-sm sm:px-6">
+      <a routerLink="/confidentialite" class="underline underline-offset-4"
+        >À propos et confidentialité</a
+      >
+    </p>
+  </footer>
   <!-- Cale sous la page : la barre d'onglets ne masque jamais le bas d'un écran. -->
   <div class="h-[calc(3.5rem+env(safe-area-inset-bottom))] shrink-0 md:hidden"></div>
 }
