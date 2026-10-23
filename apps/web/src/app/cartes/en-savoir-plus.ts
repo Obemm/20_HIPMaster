@@ -7,7 +7,7 @@ import type { CarteDetaillee, LienExterne } from './carte';
 let suivant = 0;
 
 /**
- * Le bouton « En savoir plus » et la fiche qu'il déplie (US-073, ADR 0034) : la profondeur à la demande, sous le
+ * Le bouton « En savoir plus » et la fiche qu'il déplie (US-073, ADR 0036) : la profondeur à la demande, sous le
  * texte court de la carte. Les liens externes s'ouvrent dans un nouvel onglet, sans transmettre la page d'origine.
  */
 @Component({

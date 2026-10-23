@@ -61,7 +61,7 @@ export async function exigerJoueur(
   reponse: FastifyReply,
 ): Promise<{ joueur: Joueur; jeton: string } | null> {
   const jeton = jetonDe(requete);
-  const joueur = jeton ? await joueurDuJeton(base, jeton) : null;
+  const joueur = jeton ? await joueurDuJeton(base, jeton, requete.server.optionsSessions) : null;
   if (!jeton || !joueur) {
     await refuser(reponse, 401, 'Compte requis : session absente ou expirée');
     return null;

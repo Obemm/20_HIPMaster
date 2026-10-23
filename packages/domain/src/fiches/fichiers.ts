@@ -1,6 +1,6 @@
 import type { Fiche } from './fiche.ts';
 
-/** Fiches « En savoir plus » de la famille Fichiers & Batch, par numéro de carte (ADR 0034). */
+/** Fiches « En savoir plus » de la famille Fichiers & Batch, par numéro de carte (ADR 0036). */
 export const FICHES_FICHIERS: Readonly<Record<number, Fiche>> = {
   1: {
     definition:
@@ -35,6 +35,8 @@ export const FICHES_FICHIERS: Readonly<Record<number, Fiche>> = {
       'Chaque matin, une banque met un relevé à disposition sur son serveur SFTP ; le traitement de la trésorerie s’y connecte avec sa clé et le télécharge.',
     aRetenir:
       'Le chiffrement protège le transport, pas le reste : un fichier peut toujours arriver incomplet, en double ou en retard. Et les clés se gèrent : une par partenaire, renouvelées, révoquées au départ du partenaire.',
+    chezElis:
+      'Proscrit chez Elis, comme FTP, et pourtant encore utilisé par beaucoup de projets : chaque nouvel échange passe par une API ou un événement, et les flux existants sont appelés à y migrer.',
     liens: [
       {
         titre: 'SSH File Transfer Protocol',

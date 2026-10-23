@@ -1,6 +1,6 @@
 import type { Fiche } from './fiche.ts';
 
-/** Fiches « En savoir plus » de la famille Événementiel (EDA), par numéro de carte (ADR 0034). */
+/** Fiches « En savoir plus » de la famille Événementiel (EDA), par numéro de carte (ADR 0036). */
 export const FICHES_EDA: Readonly<Record<number, Fiche>> = {
   31: {
     definition:

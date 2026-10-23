@@ -53,6 +53,8 @@ const variablesCommunes = z.object({
   LOG_LEVEL: z.enum(NIVEAUX_JOURNAL).default('info'),
   /** Projet Google Cloud : relie chaque journal à la trace de sa requête dans Cloud Logging. */
   GOOGLE_CLOUD_PROJECT: z.string().min(1).optional(),
+  /** Jours sans usage au-delà desquels une session expire, puis est purgée (US-054, ADR 0035). */
+  SESSIONS_DUREE_JOURS: entierPositif.default(90),
 });
 
 /** La clé des codes, pour l'API et la commande des invitations (ADR 0025, 0027) ; pas pour les migrations. */
@@ -168,6 +170,8 @@ export interface Config {
   pool: OptionsPool;
   niveauJournal: NiveauJournal;
   projetGcp: string | null;
+  /** Durée sans usage au-delà de laquelle une session expire (US-054) : 90 jours par défaut. */
+  dureeSessionMs: number;
 }
 
 /** La configuration commune et la clé des codes : celle de la commande des invitations (ADR 0027). */
@@ -212,6 +216,7 @@ function versConfig(e: z.output<typeof variablesCommunes>): Config {
     },
     niveauJournal: e.LOG_LEVEL,
     projetGcp: e.GOOGLE_CLOUD_PROJECT ?? null,
+    dureeSessionMs: e.SESSIONS_DUREE_JOURS * 24 * 60 * 60 * 1000,
   };
 }
 

@@ -5,7 +5,7 @@
 - **Priorité** : Must
 - **Taille** : L
 - **Branche** : `us-074-contenu-cartes-set-1`
-- **Décision** : [ADR 0034](../../decisions/0034-fiches-pedagogiques-cartes.md)
+- **Décision** : [ADR 0036](../../decisions/0036-fiches-pedagogiques-cartes.md)
 
 ## Récit
 
@@ -52,3 +52,5 @@ d'utile** afin de **mieux comprendre les technologies, patterns et incidents de 
 - 2026-10-23 — création, à la demande du porteur du projet.
 - 2026-10-24 — affinage et rédaction des 63 fiches restantes (127 liens, 115 adresses, tous vérifiés), test « une
   fiche par carte », script `npm run fiches:liens`, texte de SFTP corrigé. En revue : relecture du porteur du projet.
+- 2026-10-24 — décision du porteur du projet : SFTP est proscrit chez Elis, comme FTP, mais encore utilisé par
+  beaucoup de projets ; la fiche le dit. ADR des fiches renuméroté 0036 (le 0034 est celui d'US-058).

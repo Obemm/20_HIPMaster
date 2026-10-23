@@ -1,5 +1,5 @@
 /**
- * Vérifie les liens externes des fiches « En savoir plus » (US-074, ADR 0034).
+ * Vérifie les liens externes des fiches « En savoir plus » (US-074, ADR 0036).
  * Usage : npm run fiches:liens
  * Ouvre chaque adresse (redirections suivies) et affiche son statut et le titre de la page, pour relire qu'elle parle
  * du bon sujet. Sort en erreur si un lien ne répond pas en 2xx. Réseau requis : ce n'est pas un test de la CI.

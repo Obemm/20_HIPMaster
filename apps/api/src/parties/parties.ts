@@ -1,4 +1,3 @@
-import { randomInt } from 'node:crypto';
 import {
   type Action,
   appliquer,
@@ -7,6 +6,7 @@ import {
   type EntreeJournal,
   type ErreurAction,
   type EtatPartie,
+  type Graine,
   journalDe,
   NIVEAU_PAR_DEFAUT,
   type NiveauBot,
@@ -18,6 +18,7 @@ import {
 import { and, asc, eq, inArray, lt, sql } from 'drizzle-orm';
 import type { Base } from '../db/index.ts';
 import { parties } from '../db/schema.ts';
+import { premierMot, tirerGraine } from '../hasard.ts';
 
 /** Parties contre le bot (US-052, ADR 0030) : l'état vit en base, le joueur ne reçoit que sa vue. */
 
@@ -39,8 +40,8 @@ export interface OptionsParties {
   partiesMax?: number;
   /** Horloge, injectable pour les tests. */
   maintenant?: () => number;
-  /** Graine de chaque nouvelle partie, injectable pour des parties reproductibles. */
-  tirerGraine?: () => number;
+  /** Graine de chaque nouvelle partie (clé ChaCha20 tirée par `node:crypto`, ADR 0034), injectable. */
+  tirerGraine?: () => Graine;
 }
 
 /** Le joueur connecté qui a lancé une partie, et la session d'où il l'a lancée. */
@@ -118,13 +119,28 @@ function visible(
 }
 
 /**
+ * Supprime les parties expirées (24 heures sans coup joué par défaut) ; renvoie leur nombre. Appelée avant chaque
+ * création, et chaque nuit par la purge (US-054), qui rattrape les jours sans nouvelle partie.
+ */
+export async function purgerPartiesExpirees(
+  base: Base,
+  options: OptionsParties = {},
+): Promise<number> {
+  const dureeVie = options.dureeVieMs ?? VINGT_QUATRE_HEURES;
+  const supprimees = await base
+    .delete(parties)
+    .where(lt(parties.majLe, new Date(horloge(options) - dureeVie)))
+    .returning({ id: parties.id });
+  return supprimees.length;
+}
+
+/**
  * Avant une création : supprime les parties expirées, puis, au plafond, la partie anonyme la moins récemment jouée,
  * et seulement à défaut celle d'un joueur connecté (ADR 0025) : un afflux de parties anonymes ne fait pas perdre la
  * sienne à un joueur connecté. Deux créations simultanées peuvent supprimer une partie de trop : sans conséquence.
  */
 async function faireDeLaPlace(base: Base, options: OptionsParties): Promise<void> {
-  const dureeVie = options.dureeVieMs ?? VINGT_QUATRE_HEURES;
-  await base.delete(parties).where(lt(parties.majLe, new Date(horloge(options) - dureeVie)));
+  await purgerPartiesExpirees(base, options);
   const surplus = (await base.$count(parties)) - (options.partiesMax ?? 1000) + 1;
   if (surplus <= 0) return;
   const plusAnciennes = base
@@ -147,8 +163,8 @@ export async function lancerPartie(
   if (!deck) return echec('deck-inconnu');
   const niveau = trouverNiveau(idNiveau);
   if (!niveau) return echec('niveau-inconnu');
-  const graine = (options.tirerGraine ?? (() => randomInt(0, 2 ** 31)))();
-  const deckBot = DECKS_PRETES[graine % DECKS_PRETES.length] ?? deck;
+  const graine = (options.tirerGraine ?? tirerGraine)();
+  const deckBot = DECKS_PRETES[premierMot(graine) % DECKS_PRETES.length] ?? deck;
   const initial = creerPartie({ j1: deck.cartes, j2: deckBot.cartes }, graine);
   const etat = faireJouerLeBot(initial, niveau.strategie);
   await faireDeLaPlace(base, options);

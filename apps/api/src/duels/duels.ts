@@ -1,4 +1,3 @@
-import { randomInt } from 'node:crypto';
 import {
   type Action,
   appliquer,
@@ -6,6 +5,7 @@ import {
   creerPartie,
   type EntreeJournal,
   type ErreurAction,
+  type Graine,
   type IdJoueur,
   journalDe,
   type DeckPrete,
@@ -13,11 +13,27 @@ import {
   vueDe,
   type VueJoueur,
 } from '@hipmaster/domain';
-import { and, asc, desc, eq, gt, inArray, isNotNull, isNull, lt, ne, or, sql } from 'drizzle-orm';
+import {
+  and,
+  asc,
+  desc,
+  eq,
+  gt,
+  gte,
+  inArray,
+  isNotNull,
+  isNull,
+  lt,
+  lte,
+  ne,
+  or,
+  sql,
+} from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import { type OptionsBoosters, type Recompense, recompenserVictoire } from '../comptes/boosters.ts';
 import type { Base } from '../db/index.ts';
 import { duels, joueurs } from '../db/schema.ts';
+import { tirerGraine } from '../hasard.ts';
 
 /** Duels entre joueurs (US-032, ADR 0020) : l'état vit en base, chacun ne reçoit que sa vue. */
 
@@ -65,8 +81,8 @@ export type ResultatDuel<T> =
   | { ok: false; raison: 'action-refusee'; erreur: ErreurAction };
 
 export interface OptionsDuels {
-  /** Graine de chaque duel, injectable pour des duels reproductibles. */
-  tirerGraine?: () => number;
+  /** Graine de chaque duel (clé ChaCha20 tirée par `node:crypto`, ADR 0034), injectable pour des duels reproductibles. */
+  tirerGraine?: () => Graine;
   /** Horloge, injectable pour les tests. */
   maintenant?: () => number;
   /** Durée de vie d'un défi non accepté (7 jours par défaut, US-033). */
@@ -147,7 +163,9 @@ async function pseudos(base: Base, ligne: LigneDuel): Promise<Map<string, string
 
 /**
  * La récompense d'un duel gagné par `joueurId` (US-038), décidée une seule fois. Une victoire par abandon ou forfait
- * ne rapporte rien contre un adversaire déjà affronté le même jour (UTC), pour décourager les arrangements.
+ * ne rapporte rien contre un adversaire déjà affronté le même jour (UTC), pour décourager les arrangements. Ce jour est
+ * celui de la fin du duel, quelle que soit la date de lecture (US-058) : seuls comptent les autres duels entre les
+ * deux joueurs créés ce jour-là, avant cette fin.
  */
 async function recompenseDuel(
   base: Base,
@@ -161,7 +179,7 @@ async function recompenseDuel(
   const autre = moi === 'j1' ? ligne.adversaireId : ligne.createurId;
   let refus: 'adversaire-deja-affronte' | undefined;
   if (autre && (issue.raison === 'abandon' || issue.raison === 'forfait')) {
-    const debutJour = new Date(horloge(options));
+    const debutJour = new Date(ligne.majLe);
     debutJour.setUTCHours(0, 0, 0, 0);
     const [autreDuel] = await base
       .select({ id: duels.id })
@@ -169,7 +187,8 @@ async function recompenseDuel(
       .where(
         and(
           ne(duels.id, ligne.id),
-          gt(duels.creeLe, debutJour),
+          gte(duels.creeLe, debutJour),
+          lte(duels.creeLe, ligne.majLe),
           or(
             and(eq(duels.createurId, joueurId), eq(duels.adversaireId, autre)),
             and(eq(duels.createurId, autre), eq(duels.adversaireId, joueurId)),
@@ -265,7 +284,7 @@ async function lancer(
 ): Promise<LigneDuel> {
   const deckCreateur = trouverDeckPrete(ligne.deckCreateur);
   if (!deckCreateur) throw new Error(`Deck du créateur inconnu : ${ligne.deckCreateur}`);
-  const graine = (options.tirerGraine ?? (() => randomInt(0, 2 ** 31)))();
+  const graine = (options.tirerGraine ?? tirerGraine)();
   const etat = creerPartie({ j1: deckCreateur.cartes, j2: deck.cartes }, graine);
   const [maj] = await tx
     .update(duels)
@@ -302,8 +321,11 @@ async function dernierAdversaire(tx: Transaction, joueurId: string): Promise<str
 
 /**
  * Adversaire au hasard (US-037) : rejoint le plus ancien duel ouvert d'un autre joueur (en évitant, si possible,
- * le dernier adversaire), ou ouvre un duel et attend. Un joueur déjà dans la file y garde sa place. `SKIP LOCKED` :
- * deux joueurs qui cherchent en même temps ne rejoignent jamais le même duel.
+ * le dernier adversaire), ou ouvre un duel et attend. Un joueur déjà dans la file y garde sa place.
+ *
+ * Les recherches passent une à une (verrou consultatif de transaction, ADR 0034) : deux joueurs qui cherchent en
+ * même temps se trouvent au lieu d'ouvrir chacun un duel, et un double clic ne place pas un joueur dans deux duels.
+ * Le verrou tombe avec la transaction ; une recherche ne dure que quelques requêtes.
  */
 export async function chercherAdversaire(
   base: Base,
@@ -315,6 +337,7 @@ export async function chercherAdversaire(
   if (!deck) return echec('deck-inconnu');
   const limite = new Date(horloge(options) - (options.expirationDefiMs ?? SEPT_JOURS));
   const ligne = await base.transaction(async (tx) => {
+    await tx.execute(sql`select pg_advisory_xact_lock(hashtext('hipmaster:appariement'))`);
     const [dejaLa] = await tx
       .select()
       .from(duels)
@@ -342,6 +365,7 @@ export async function chercherAdversaire(
       )
       .orderBy(asc(duels.creeLe))
       .limit(10)
+      // Un défi ouvert rejoint au même instant par son lien (`rejoindreDuel`) est laissé de côté.
       .for('update', { skipLocked: true });
     const choisi = candidats.find((c) => c.createurId !== dernier) ?? candidats[0];
     if (choisi) return lancer(tx, choisi, joueurId, deck, options);
@@ -612,6 +636,20 @@ export async function quitterSesDuels(tx: Transaction, joueurId: string): Promis
       })
       .where(eq(duels.id, ligne.id));
   }
+}
+
+/**
+ * Purge (US-054, ADR 0035) : supprime les défis jamais acceptés, expirés (7 jours par défaut, US-033) ; renvoie leur
+ * nombre. Un duel commencé n'est jamais touché : il porte un résultat, même en cours (forfait à la lecture). Un défi
+ * rejoint au même instant est verrouillé par `rejoindreDuel` : la suppression l'attend, puis le relit commencé.
+ */
+export async function purgerDefisExpires(base: Base, options: OptionsDuels = {}): Promise<number> {
+  const limite = horloge(options) - (options.expirationDefiMs ?? SEPT_JOURS);
+  const supprimes = await base
+    .delete(duels)
+    .where(and(eq(duels.statut, 'attente'), lt(duels.creeLe, new Date(limite))))
+    .returning({ id: duels.id });
+  return supprimes.length;
 }
 
 /** Après la suppression d'un compte : un duel dont les deux joueurs sont partis ne sert plus à personne. */

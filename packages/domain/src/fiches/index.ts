@@ -27,7 +27,7 @@ const FICHES_SET_1 = new Map<number, Fiche>(
   ),
 );
 
-/** La fiche « En savoir plus » d'une carte, si elle est rédigée (ADR 0034). */
+/** La fiche « En savoir plus » d'une carte, si elle est rédigée (ADR 0036). */
 export function ficheDe(numero: number): Fiche | undefined {
   return FICHES_SET_1.get(numero);
 }

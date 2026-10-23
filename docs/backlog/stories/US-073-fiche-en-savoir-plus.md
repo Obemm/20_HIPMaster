@@ -5,7 +5,7 @@
 - **Priorité** : Must
 - **Taille** : M
 - **Branche** : `us-073-fiche-en-savoir-plus`
-- **Décision** : [ADR 0034](../../decisions/0034-fiches-pedagogiques-cartes.md)
+- **Décision** : [ADR 0036](../../decisions/0036-fiches-pedagogiques-cartes.md)
 
 ## Récit
 
@@ -15,7 +15,7 @@ devienne un pavé**.
 
 ## Conception
 
-- **Modèle** (`packages/domain/src/fiches/`, ADR 0034) : une fiche porte `definition` (ce que c'est, en une phrase),
+- **Modèle** (`packages/domain/src/fiches/`, ADR 0036) : une fiche porte `definition` (ce que c'est, en une phrase),
   `usage` (à quoi ça sert ; pour un incident, comment il survient), `exemple`, `aRetenir` (le piège ou la bonne
   pratique), `chezElis` facultatif (seulement des faits déjà publics dans le dépôt) et de 1 à 3 `liens`
   (`titre`, `url` en `https`, `langue` `fr` ou `en`). Un fichier par famille, indexé par numéro de carte.
@@ -63,7 +63,8 @@ devienne un pavé**.
 ## Journal
 
 - 2026-10-23 — création, à la demande du porteur du projet.
-- 2026-10-24 — affinage (conception, ADR 0034) et réalisation : modèle et validation dans le domaine, contrat OpenAPI
+- 2026-10-24 — affinage (conception, ADR 0036) et réalisation : modèle et validation dans le domaine, contrat OpenAPI
   1.1.0 puis API, composant « En savoir plus » dans le détail d'une carte et en partie, 8 fiches pilotes aux liens
   vérifiés (réponse 200, bon sujet), tests unitaires et e2e.
 - 2026-10-24 — livrée : Fiche « En savoir plus » : modèle validé dans le domaine, API (contrat 1.1.0), dépliant accessible dans le détail et en partie, 8 cartes pilotes
+- 2026-10-24 — ADR renuméroté 0036 : le 0034 a été pris en parallèle par US-058 (hasard et appariement).

@@ -62,13 +62,22 @@ export const joueurs = pgTable('joueurs', {
 });
 
 /** Sessions ouvertes (une par appareil) : l'empreinte SHA-256 du jeton, jamais le jeton. */
-export const sessions = pgTable('sessions', {
-  empreinteJeton: text().primaryKey(),
-  joueurId: uuid()
-    .notNull()
-    .references(() => joueurs.id, { onDelete: 'cascade' }),
-  creeLe: timestamp({ withTimezone: true }).notNull().defaultNow(),
-});
+export const sessions = pgTable(
+  'sessions',
+  {
+    empreinteJeton: text().primaryKey(),
+    joueurId: uuid()
+      .notNull()
+      .references(() => joueurs.id, { onDelete: 'cascade' }),
+    creeLe: timestamp({ withTimezone: true }).notNull().defaultNow(),
+    /**
+     * Dernier usage, à un jour près (US-054, ADR 0035) : une session inutilisée 90 jours expire, puis la purge la
+     * supprime. Les sessions d'avant cette colonne la reçoivent à l'instant de la migration.
+     */
+    utiliseeLe: timestamp({ withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [index('sessions_utilisee_le').on(table.utiliseeLe)],
+);
 
 /** Collection d'un joueur (US-023) : les cartes, désignées par leur numéro dans le catalogue (ADR 0011). */
 export const collection = pgTable(
