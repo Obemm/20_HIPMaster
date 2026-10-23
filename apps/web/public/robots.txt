@@ -1,0 +1,4 @@
+# HIPMaster est réservé aux invités : aucun robot n'a à le parcourir ni à l'indexer (US-050).
+# Les pages portent aussi <meta name="robots" content="noindex">, et chaque réponse l'en-tête X-Robots-Tag.
+User-agent: *
+Disallow: /

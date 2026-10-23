@@ -134,9 +134,23 @@ Toutes les évolutions notables du projet sont consignées ici
   pourquoi. La commande `npm run invitation` crée une invitation (code affiché une seule fois, avec le lien à envoyer),
   liste les invitations ou en révoque une ; en production, un Cloud Run Job l'exécute (guide d'exploitation). En
   développement et dans les e2e, l'inscription reste libre (US-048, ADR 0027).
+- Déploiement continu : après chaque CI verte sur `main`, le workflow `deploy.yml` s'authentifie sans clé (Workload
+  Identity Federation), construit l'image de l'API étiquetée par le commit, exécute le job de migration, déploie une
+  révision Cloud Run sans trafic, la sonde (`/api/v1/sante`), lui bascule le trafic, puis publie le front sur
+  Firebase Hosting par son API REST et vérifie le site en ligne. Une étape en échec arrête tout ; avant la bascule,
+  l'ancienne révision continue de servir. `scripts/gcp/deployer.sh` lance les mêmes étapes depuis un poste, montre
+  l'état et fait le retour arrière de l'API et du front en une commande. `firebase.json` relaie `/api/**` vers
+  Cloud Run, renvoie `index.html` aux routes Angular, règle le cache (aucun pour `index.html`, un jour pour les
+  illustrations, un an pour les fichiers à empreinte) et pose une CSP stricte avec les en-têtes de sécurité ;
+  `robots.txt` et `noindex` tiennent les robots à l'écart. Guide d'exploitation complété : déploiement, retour
+  arrière, migrations compatibles (US-050, ADR 0028).
 
 ### Modifié
 
+- Les parcours e2e de la CI tournent sur le build de production, servi avec les en-têtes de `firebase.json` : la
+  moindre violation de la CSP fait échouer la série (`npm run test:e2e:production`). Le build de production
+  n'insère plus de CSS critique en ligne, que la CSP bloquerait. Le compte de déploiement lit les métadonnées des
+  secrets, jamais leur valeur (US-050).
 - `npm run db:migrate` passe par la commande de migration de l'API (verrou, bilan des migrations appliquées) au lieu de
   `drizzle-kit migrate` ; PGlite devient une dépendance de développement ; Dependabot surveille l'image de base de
   l'API (US-046).

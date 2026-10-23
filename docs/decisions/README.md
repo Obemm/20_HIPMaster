@@ -36,5 +36,6 @@ référence Elis.
 | [0025](0025-protections-api.md)                        | Protections de l'API : débit limité, sessions révocables, codes HMAC  | ADR-020 retenu                 | Acceptée                      |
 | [0026](0026-debit-du-second-joueur.md)                 | Le second joueur reçoit +1 Débit à son premier tour                   | aucune                         | Acceptée                      |
 | [0027](0027-inscription-sur-invitation.md)             | Inscription sur invitation : codes à usages comptés, sous HMAC        | ADR-020 ; 010, 034 écartés     | Acceptée                      |
+| [0028](0028-deploiement-continu.md)                    | Déploiement continu : révision vérifiée avant bascule, front par API  | ADR-011, 032 écartés, 039, 033 | Acceptée                      |
 
 Modèle : [template.md](template.md).
