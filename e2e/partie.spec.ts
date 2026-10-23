@@ -4,6 +4,11 @@ import { REGLES_WCAG } from './axe';
 
 const FIN = /Victoire !|Défaite|Partie nulle/;
 
+// Les coups de pouce (US-065) ouvrent un message avant de finir le tour : désactivés ici, sauf dans leur parcours.
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('hipmaster.coups-de-pouce', 'non'));
+});
+
 async function commencer(page: Page, deck = 'Hybride') {
   await page.goto('/');
   await page.getByRole('link', { name: 'Jouer contre le bot' }).click();
@@ -262,4 +267,56 @@ test.describe('sur un petit téléphone (375 × 667)', () => {
     await page.keyboard.press('Escape');
     await expect(page.getByRole('dialog')).toBeHidden();
   });
+});
+
+test('avant de finir son tour, un coup de pouce dit ce qui reste possible ; il se désactive (US-065)', async ({
+  page,
+}) => {
+  // Le réglage par défaut : coups de pouce actifs (le beforeEach les désactive, ce script passe après lui).
+  await page.addInitScript(() => localStorage.removeItem('hipmaster.coups-de-pouce'));
+  // Une partie où le serveur propose de poser une carte dès le premier tour.
+  let id: string | undefined;
+  for (let essai = 0; essai < 40 && !id; essai++) {
+    const reponse = await page.request.post('/api/v1/parties', {
+      data: { deck: 'moderne', niveau: 'stagiaire' },
+    });
+    const partie = (await reponse.json()) as { id: string; vue: { actions: { type: string }[] } };
+    if (partie.vue.actions.some((a) => a.type === 'poser')) id = partie.id;
+  }
+  expect(id).toBeDefined();
+  await page.goto(`/jouer/${id}`);
+  await fermerAide(page);
+
+  const finir = page.getByRole('button', { name: 'Finir mon tour' });
+  await finir.click();
+  const message = page.getByRole('alertdialog', { name: 'Avant de finir votre tour' });
+  await expect(message).toBeVisible();
+  await expect(message).toContainText(/Vous pouvez encore poser /);
+  // Non bloquant, au clavier : le focus est sur « Revenir au plateau », Échap y revient aussi.
+  await expect(message.getByRole('button', { name: 'Revenir au plateau' })).toBeFocused();
+  const audit = await new AxeBuilder({ page }).withTags(REGLES_WCAG).analyze();
+  expect(audit.violations).toEqual([]);
+  await page.keyboard.press('Escape');
+  await expect(message).toBeHidden();
+  await expect(finir).toBeFocused();
+
+  // « Finir quand même » finit le tour.
+  await finir.click();
+  await message.getByRole('button', { name: 'Finir quand même' }).click();
+  await expect(page.getByRole('log')).toContainText('le bot joue');
+  await expect(finir).toBeEnabled();
+
+  // Désactivés dans l'aide, et retenus par le navigateur : « Finir mon tour » finit le tour sans message.
+  await page.getByRole('button', { name: 'Comment jouer ?' }).click();
+  await page.getByRole('checkbox', { name: /Coups de pouce/ }).uncheck();
+  await page.getByRole('button', { name: 'C’est parti' }).click();
+  expect(await page.evaluate(() => localStorage.getItem('hipmaster.coups-de-pouce'))).toBe('non');
+  await expect(finir).toBeEnabled();
+  const tour = Number(
+    /\d+/.exec((await page.getByText(/^Tour \d+ \/ 20$/).textContent()) ?? '')?.[0],
+  );
+  await finir.click();
+  await expect(message).toBeHidden();
+  // Le tour est fini sans détour : le bot a joué le sien, c'est de nouveau au joueur, deux tours plus loin.
+  await expect(page.getByText(`Tour ${tour + 2} / 20`)).toBeVisible();
 });

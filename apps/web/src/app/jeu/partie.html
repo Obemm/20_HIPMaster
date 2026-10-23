@@ -122,7 +122,15 @@
             (click)="choisirComposant('si', 'adversaire')"
           >
             <span>SI {{ autre().de }}</span>
-            <span class="whitespace-nowrap">SLA {{ v.adversaire.sla }} / 20</span>
+            <span class="flex flex-col items-end">
+              <span class="whitespace-nowrap">SLA {{ v.adversaire.sla }} / 20</span>
+              @if (siIndisponible()) {
+                <!-- Coup de pouce (US-065) : le serveur ne propose pas le SI à l'attaquant choisi. -->
+                <span class="text-xs/3 font-normal whitespace-nowrap text-alerte"
+                  >Indisponible{{ gardesAdverses().length ? ' : Garde' : '' }}</span
+                >
+              }
+            </span>
             @if (ciblesPossibles().has('si')) {
               <span class="sr-only">: cible possible</span>
             }
@@ -447,16 +455,58 @@
               }
               <button
                 type="button"
+                id="finir-tour"
                 class="shrink-0 rounded-lg bg-accent px-4 py-3 font-semibold text-sur-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:opacity-60"
                 [disabled]="!monTour() || occupe()"
                 [attr.aria-describedby]="
                   attaquesOubliees() && !attaquant() ? 'attaques-oubliees' : null
                 "
-                (click)="jouer({ type: 'finirTour' })"
+                (click)="finirTour()"
               >
                 Finir mon tour
               </button>
             </div>
+            <!--
+              Coup de pouce (US-065) : avant de finir, ce qui reste possible d'après le serveur. Non modal : le plateau
+              reste lisible au-dessus, Échap ou « Revenir au plateau » le referme.
+            -->
+            @if (confirmerFin() && resteAFaire().length) {
+              <div
+                role="alertdialog"
+                aria-modal="false"
+                aria-labelledby="titre-fin-tour"
+                aria-describedby="texte-fin-tour"
+                class="fixed inset-x-0 bottom-0 z-20 mx-auto flex max-w-3xl flex-col gap-3 rounded-t-2xl border-2 border-b-0 border-amber-600 bg-fond p-4 shadow-2xl dark:border-amber-400"
+              >
+                <h2 id="titre-fin-tour" class="font-bold">Avant de finir votre tour</h2>
+                <ul id="texte-fin-tour" class="flex list-disc flex-col gap-1 ps-5 text-sm">
+                  @for (phrase of resteAFaire(); track phrase) {
+                    <li>{{ phrase }}</li>
+                  }
+                </ul>
+                <p class="flex flex-wrap justify-end gap-2">
+                  <button
+                    type="button"
+                    id="revenir-plateau"
+                    class="rounded-lg border-2 border-accent px-4 py-3 font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                    (click)="revenirAuPlateau()"
+                  >
+                    Revenir au plateau
+                  </button>
+                  <button
+                    type="button"
+                    class="rounded-lg bg-accent px-4 py-3 font-semibold text-sur-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:opacity-60"
+                    [disabled]="occupe()"
+                    (click)="finirQuandMeme()"
+                  >
+                    Finir quand même
+                  </button>
+                </p>
+                <p class="text-xs text-texte-doux">
+                  Ces coups de pouce se désactivent dans l’aide « ? ».
+                </p>
+              </div>
+            }
           </div>
         }
 
@@ -488,6 +538,19 @@
           <ng-container *ngTemplateOutlet="objectif" />
         </p>
         <hip-regle-courte [adversaire]="autre()" />
+        <!-- Réglage gardé par le navigateur (US-065, ADR 0032). -->
+        <label class="flex items-start gap-3 rounded-lg border border-bordure p-3 text-sm">
+          <input
+            type="checkbox"
+            class="mt-0.5 size-5 shrink-0 accent-current"
+            [checked]="preferences.coupsDePouce()"
+            (change)="basculerCoupsDePouce($event)"
+          />
+          <span>
+            <strong>Coups de pouce</strong> : avant de finir votre tour, un message signale une
+            attaque ou une carte encore possible, et le SI protégé par Garde est signalé.
+          </span>
+        </label>
         @if (capacitesEnJeu().length) {
           <section aria-labelledby="titre-glossaire" class="flex flex-col gap-2">
             <h3 id="titre-glossaire" class="font-semibold">
@@ -654,6 +717,13 @@
                     Attaquant désigné : choisissez sa cible, un composant {{ autre().de }} ou son
                     SI, puis confirmez.
                   </p>
+                  @if (rappelGarde(); as rappel) {
+                    <p
+                      class="rounded-lg border-2 border-amber-600 px-3 py-2 text-sm dark:border-amber-400"
+                    >
+                      {{ rappel }}
+                    </p>
+                  }
                 } @else if (d.composant.sansAttaque) {
                   <p class="text-sm text-texte-doux">{{ d.composant.sansAttaque }}</p>
                 }
