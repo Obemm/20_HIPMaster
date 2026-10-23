@@ -87,3 +87,7 @@ jobs:
 
       - name: Vérification du site en ligne
         run: bash scripts/gcp/deployer.sh --public site
+
+      # En dernier : une panne ici ne retarde pas le jeu, et le workflow en échec la signale (US-051).
+      - name: Jobs d'exploitation (sauvegarde, consommation Neon)
+        run: bash scripts/gcp/deployer.sh exploitation

@@ -163,6 +163,12 @@ Toutes les évolutions notables du projet sont consignées ici
   appareils, collection, récompenses et parties disparaissent en une transaction ; ses duels en cours se terminent
   par forfait au lieu de disparaître pour l'adversaire, qui garde ses duels terminés face à « Compte supprimé »
   (`duels.yaml` 1.3.0) (US-053, ADR 0031).
+- Supervision du jeu en ligne : test de disponibilité de `/api/v1/sante` toutes les 15 minutes (sans réveiller la
+  base) et e-mail quand le site tombe ; sauvegarde de chaque nuit de la base Neon (`pg_dump` vérifié, 30 jours dans
+  Cloud Storage) et relevé quotidien de sa consommation, avec un e-mail au moindre échec ou au-delà de 70 % du quota ;
+  restauration essayée dans une branche Neon temporaire (`scripts/gcp/restaurer.sh`). Les erreurs JavaScript des
+  joueurs partent vers Error Reporting par `POST /api/v1/erreurs` (contrat OpenAPI, débit limité), sans jeton ni
+  paramètres d'adresse. Scan OWASP ZAP de base : aucune alerte élevée ni moyenne (US-051, ADR 0033).
 
 ### Modifié
 
@@ -198,6 +204,9 @@ Toutes les évolutions notables du projet sont consignées ici
 
 ### Corrigé
 
+- Scripts d'exploitation sous Windows : les corps JSON envoyés aux API Google passent par un fichier, car un argument
+  de `curl` y perdait ses lettres accentuées (message du retour arrière du front, noms des objets de supervision)
+  (US-051).
 - L'écran de partie et de duel dit pourquoi une carte de la main ne se joue pas, avec les mots du serveur : une
   évolution sans sa carte d'origine (« Évolution d’Apigee API Gateway : posez d’abord Apigee API Gateway, puis
   faites-la évoluer. »), le Débit qui manque (coût effectif, Cache sémantique compris), le plateau plein, un sort ou

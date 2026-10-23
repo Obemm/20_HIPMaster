@@ -34,6 +34,8 @@ export const LIMITES_DEBIT = {
   lectureDuel: { max: 600, fenetreMs: MINUTE },
   /** Routes d'administration (US-072, ADR 0029), comptées une fois l'administrateur reconnu. */
   administration: { max: 60, fenetreMs: MINUTE },
+  /** `POST /erreurs` : erreurs JavaScript des navigateurs (US-051), que le front plafonne déjà à 5 par page. */
+  erreurNavigateur: { max: 30, fenetreMs: HEURE },
 } as const satisfies Record<string, Limite>;
 
 export type NomLimite = keyof typeof LIMITES_DEBIT;
