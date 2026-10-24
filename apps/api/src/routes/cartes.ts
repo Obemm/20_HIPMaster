@@ -6,13 +6,16 @@ import {
   IDS_CAPACITE,
   LANGUES_LIEN,
   RARETES,
+  type Langue,
   SET_1,
   TYPES_CARTE,
+  traduireCarte,
   trouverCarte,
 } from '@hipmaster/domain';
 import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
 import { z } from 'zod';
 import { cacheCatalogue } from '../cache-catalogue.ts';
+import { langueDe } from '../langue.ts';
 
 // Contrat : apps/api/openapi/cartes.yaml.
 const schemaCapacite = z.object({
@@ -56,14 +59,20 @@ const schemaFiche = z.object({
 
 const schemaCarteDetaillee = schemaCarte.extend({ fiche: schemaFiche.optional() });
 
-const versApi = (carte: Carte) => ({ ...carte, capacites: detaillerCapacites(carte) });
+const versApi = (carte: Carte, langue: Langue) => ({
+  ...traduireCarte(carte, langue),
+  capacites: detaillerCapacites(carte, langue),
+});
 
-/** Catalogue des cartes, en lecture seule (ADR 0011), en cache HTTP (US-057). */
+/** Catalogue des cartes, en lecture seule (ADR 0011), en cache HTTP (US-057), dans la langue demandée (US-081). */
 export const routesCartes: FastifyPluginAsyncZod = async (app) => {
   app.get(
     '/cartes',
     { ...cacheCatalogue, schema: { response: { 200: z.array(schemaCarte) } } },
-    async () => SET_1.map(versApi),
+    async (requete) => {
+      const langue = langueDe(requete);
+      return SET_1.map((carte) => versApi(carte, langue));
+    },
   );
 
   app.get(
@@ -78,8 +87,12 @@ export const routesCartes: FastifyPluginAsyncZod = async (app) => {
     async (requete) => {
       const carte = trouverCarte(requete.params.numero);
       if (!carte) throw Object.assign(new Error('Carte introuvable'), { statusCode: 404 });
-      const fiche = ficheDe(carte.numero);
-      return { ...versApi(carte), ...(fiche && { fiche: { ...fiche, liens: [...fiche.liens] } }) };
+      const langue = langueDe(requete);
+      const fiche = ficheDe(carte.numero, langue);
+      return {
+        ...versApi(carte, langue),
+        ...(fiche && { fiche: { ...fiche, liens: [...fiche.liens] } }),
+      };
     },
   );
 };

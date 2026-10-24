@@ -25,7 +25,6 @@ export { CHANCES_BOOSTER, RARETES, tirerRarete, type Rarete } from './rarete.ts'
 export { SET_1, trouverCarte } from './set-1.ts';
 export * from './combat/index.ts';
 export {
-  ficheDe,
   FICHES_PAR_FAMILLE,
   LANGUES_LIEN,
   LIMITES_FICHE,
@@ -34,6 +33,24 @@ export {
   type LangueLien,
   type LienExterne,
 } from './fiches/index.ts';
+export {
+  LANGUE_REFERENCE,
+  LANGUES,
+  type Langue,
+  type TexteCapacite,
+  type TexteCarte,
+  type TexteNomme,
+  type TextesLangue,
+} from './langues/textes.ts';
+export {
+  ficheDe,
+  langueOuReference,
+  texteCapacite,
+  texteCarte,
+  textesDe,
+  traduireCarte,
+  traduireNomme,
+} from './langues/traduire.ts';
 export {
   cotesApresDuel,
   pointsVictoireBot,

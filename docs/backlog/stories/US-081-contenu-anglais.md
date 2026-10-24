@@ -1,7 +1,8 @@
 # US-081 — Les cartes, les capacités, les fiches et la règle en anglais
 
 - **Epic** : EPIC-14
-- **Statut** : À affiner
+- **Statut** : Faite
+- **ADR** : [0043](../../decisions/0043-contenu-traduit-domaine-langue-api.md)
 - **Priorité** : Should
 - **Taille** : L
 - **Branche** : `us-081-contenu-anglais`
@@ -13,14 +14,36 @@ anglais** afin d'**apprendre en jouant, comme les francophones**.
 
 ## Critères d'acceptation
 
-- [ ] Le domaine porte les textes des 71 cartes, des capacités, des fiches « En savoir plus » et de la règle en
+- [x] Le domaine porte les textes des 71 cartes, des capacités, des fiches « En savoir plus » et de la règle en
       français (référence) et en anglais ; un test vérifie qu'aucune carte ne manque de traduction.
-- [ ] L'API sert la langue demandée (contrat OpenAPI d'abord), avec repli sur le français ; le cache HTTP du
+      → `packages/domain/src/langues/` (cartes, capacités, 71 fiches, decks, niveaux, bulles de la partie guidée,
+      phrases du conseil) ; `langues/traductions.test.ts` échoue au moindre texte manquant ou hors des bornes de
+      lecture. « La règle » courte est un texte d'interface, traduit dans US-080.
+- [x] L'API sert la langue demandée (contrat OpenAPI d'abord), avec repli sur le français ; le cache HTTP du
       catalogue (US-057) distingue les langues.
-- [ ] Les noms de produits ne se traduisent pas ; les liens externes des fiches pointent vers une ressource anglaise
+      → paramètre `langue` dans `cartes.yaml` (1.3.0) et `parties.yaml` (1.6.0) ; un `ETag` par langue ;
+      `apps/api/src/langues.test.ts`.
+- [x] Les noms de produits ne se traduisent pas ; les liens externes des fiches pointent vers une ressource anglaise
       quand elle existe.
+      → noms de produits gardés (test) ; tous les liens des fiches anglaises sont anglais, sauf la page de la CNIL
+      sur les mots de passe, qui n'a pas de version anglaise.
 - [ ] Les textes alternatifs des illustrations existent dans les deux langues.
+      → **reporté** : ils sont produits par la chaîne des illustrations (`packages/illustrations`,
+      `illustrations.generated.ts`), qu'une autre session régénère en ce moment ; à faire quand elle aura fini.
+
+## Glossaire et choix à relire
+
+Glossaire commun avec US-080 (voir cette story). Choix propres au contenu, à valider par le porteur :
+
+- exemples traduits pour rester lisibles (`orders.csv`, `/drop/incoming`, topics `sales/order/validated/v1/FR`,
+  outil `search_api`) ; le champ source `dateCommande` est gardé pour montrer deux systèmes qui ne parlent pas pareil ;
+- fiche 51 : le prompt système d'exemple dit « Answer in English » (adaptation au lecteur) ;
+- fiche 60 : le mot de passe d'exemple devient `Summer2012` ;
+- decks : Héritage → Legacy, Moderne → Modern, Hybride → Hybrid, Initiation → Starter.
 
 ## Journal
 
 - 2026-10-24 — création, à la demande du porteur du projet (EPIC-14).
+- 2026-10-24 — ADR 0043 ; textes anglais du catalogue dans le domaine, API selon `langue`, ETag par langue,
+  conseil et partie guidée bilingues ; textes alternatifs reportés (illustrations en cours).
+- 2026-10-24 — livrée : Contenu du jeu en anglais dans le domaine (cartes, capacités, fiches, decks, niveaux, partie guidée, conseil), API selon ?langue= avec un ETag par langue, validé par le porteur le 2026-10-24 ; textes alternatifs des illustrations reportés

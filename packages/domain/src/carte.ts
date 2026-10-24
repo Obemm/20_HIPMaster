@@ -1,4 +1,6 @@
-import { CAPACITES, type Capacite, type IdCapacite } from './capacites.ts';
+import type { Capacite, IdCapacite } from './capacites.ts';
+import { LANGUE_REFERENCE, type Langue } from './langues/textes.ts';
+import { texteCapacite } from './langues/traduire.ts';
 import type { Rarete } from './rarete.ts';
 
 /** Familles de cartes : six époques de l'intégration, puis deux familles transverses (docs/produit/univers.md). */
@@ -67,11 +69,19 @@ export interface CapaciteDetaillee extends Capacite {
   valeur?: number;
 }
 
-/** Remplace les identifiants de capacités d'une carte par leur nom et leur description. */
-export function detaillerCapacites(carte: Carte): CapaciteDetaillee[] {
+/** Remplace les identifiants de capacités d'une carte par leur nom et leur description, dans une langue (US-081). */
+export function detaillerCapacites(
+  carte: Carte,
+  langue: Langue = LANGUE_REFERENCE,
+): CapaciteDetaillee[] {
   return carte.capacites.map((capacite) => {
-    if (typeof capacite === 'string') return { ...CAPACITES[capacite] };
-    const { nom, ...reste } = CAPACITES[capacite.id];
-    return { ...reste, nom: `${nom} (${capacite.valeur})`, valeur: capacite.valeur };
+    if (typeof capacite === 'string') return { id: capacite, ...texteCapacite(capacite, langue) };
+    const { nom, description } = texteCapacite(capacite.id, langue);
+    return {
+      id: capacite.id,
+      nom: `${nom} (${capacite.valeur})`,
+      description,
+      valeur: capacite.valeur,
+    };
   });
 }

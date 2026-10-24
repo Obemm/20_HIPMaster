@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: HIPMaster — catalogue des cartes
-  version: 1.2.0
+  version: 1.3.0
   description: >
     Catalogue en lecture seule des cartes du set 1 (US-008, ADR 0011). Les cartes sont des données versionnées du
     domaine : aucune écriture n'est exposée. Le détail d'une carte porte en plus sa fiche « En savoir plus »
@@ -11,6 +11,10 @@ info:
     contrat des parties) part en `Cache-Control: public, max-age=300` avec un `ETag` commun, l'empreinte du catalogue
     servi ; avec cet `ETag` en `If-None-Match`, la réponse est 304 sans corps. Les erreurs restent en `no-store`.
     Une réponse de plus de 1 Ko est compressée (Brotli ou gzip) si le client l'accepte (`Accept-Encoding`).
+
+    Langue (US-081, ADR 0043) : le paramètre `langue` (`fr`, `en`) choisit la langue des textes (noms, effets,
+    « En vrai », capacités, fiches, decks, niveaux) ; le français, langue de référence, par défaut et pour toute
+    valeur inconnue. Les règles (coûts, statistiques, identifiants) ne changent pas. Chaque langue a son `ETag`.
 servers:
   - url: /api/v1
 paths:
@@ -20,6 +24,7 @@ paths:
       summary: Liste toutes les cartes, triées par numéro, sans leur fiche
       parameters:
         - $ref: '#/components/parameters/IfNoneMatch'
+        - $ref: '#/components/parameters/Langue'
       responses:
         '200':
           description: Les cartes du set 1.
@@ -42,6 +47,7 @@ paths:
           required: true
           schema: { type: integer, minimum: 1 }
         - $ref: '#/components/parameters/IfNoneMatch'
+        - $ref: '#/components/parameters/Langue'
       responses:
         '200':
           description: La carte demandée.
@@ -68,6 +74,7 @@ paths:
       summary: Chances de chaque rareté dans un booster, calculées par le domaine
       parameters:
         - $ref: '#/components/parameters/IfNoneMatch'
+        - $ref: '#/components/parameters/Langue'
       responses:
         '200':
           description: Une chance par rareté, de la plus commune à la plus rare.
@@ -87,6 +94,13 @@ paths:
         '304': { $ref: '#/components/responses/NonModifie' }
 components:
   parameters:
+    Langue:
+      name: langue
+      in: query
+      required: false
+      description: >
+        Langue des textes (US-081) : `fr` (référence, par défaut) ou `en`. Une valeur inconnue vaut `fr`.
+      schema: { type: string, enum: [fr, en], default: fr }
     IfNoneMatch:
       name: If-None-Match
       in: header

@@ -7,6 +7,10 @@ Toutes les évolutions notables du projet sont consignées ici
 
 ### Ajouté
 
+- Le contenu du jeu en anglais : noms, effets et « En vrai » des 71 cartes, capacités, fiches « En savoir plus » (liens
+  vers des ressources anglaises), decks prêtés, niveaux du bot, bulles de la partie guidée et phrases du conseil.
+  L'API sert la langue demandée (`?langue=en`), le français par défaut, avec un `ETag` par langue ; un test vérifie
+  que rien ne manque (US-081, ADR 0043).
 - Toute l'interface en anglais sous `/en/` : chaque écran, bouton, message, aide et texte réservé aux lecteurs d'écran
   (642 messages), avec un glossaire du jeu constant (System, Throughput, HP, deploy…) ; dates, nombres et pluriels
   suivent la langue, et le plateau tient toujours dans un téléphone de 375 × 667. Une règle ESLint interdit tout

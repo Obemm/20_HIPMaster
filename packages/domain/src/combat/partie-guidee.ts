@@ -1,3 +1,4 @@
+import { LANGUE_REFERENCE, type Langue } from '../langues/textes.ts';
 import { deck, type DeckPrete } from './decks.ts';
 import type { Action } from './types.ts';
 
@@ -137,3 +138,75 @@ export const ETAPES_PARTIE_GUIDEE: readonly EtapeGuidee[] = [
     attendu: null,
   },
 ];
+
+/**
+ * Les bulles en anglais (US-081), dans le même ordre que `ETAPES_PARTIE_GUIDEE` : seuls le titre et le texte
+ * changent, l'action attendue reste celle de l'étape française.
+ */
+const BULLES_EN: readonly Pick<EtapeGuidee, 'titre' | 'texte'>[] = [
+  {
+    titre: 'Throughput pays for your cards',
+    texte:
+      'You have 1 Throughput (it goes up by one each turn). Tap CSV file in your hand, then “Deploy”: it costs 1 Throughput.',
+  },
+  {
+    titre: 'Ending your turn',
+    texte:
+      'A component can’t attack on the turn it is deployed, and your Throughput is spent. Tap “End my turn”: the bot plays its own.',
+  },
+  {
+    titre: 'Attacking the System',
+    texte:
+      'The goal: bring the SLA of the bot’s System down to 0. Tap CSV file, then the bot’s System at the top, and confirm the attack: 2 SLA points off.',
+  },
+  {
+    titre: 'Decommissioning for Throughput',
+    texte:
+      'LLM costs 5 Throughput: you won’t deploy it for a long while. Tap it, then “Decommission”: an epic card gives you 2 Throughput right away (once per turn).',
+  },
+  {
+    titre: 'Two cards this turn',
+    texte: 'You have 4 Throughput: deploy REST API (2 Throughput).',
+  },
+  {
+    titre: 'Two cards this turn',
+    texte: 'And deploy JDBC Adapter with the 2 Throughput left.',
+  },
+  {
+    titre: 'Ending your turn',
+    texte: 'Your new components will attack next turn. Tap “End my turn”.',
+  },
+  {
+    titre: 'Guard',
+    texte:
+      'The bot has deployed Drop folder, which has Guard: while it is in play, its System and its other components are protected. Attack it with REST API.',
+  },
+  {
+    titre: 'The counter-attack',
+    texte:
+      'An attacked component counter-attacks: REST API lost 1 HP. Finish off Drop folder with JDBC Adapter: it has 1 HP left, and the counter-attack won’t destroy your JDBC.',
+  },
+  {
+    titre: 'The System is exposed',
+    texte: 'Guard is down: attack the bot’s System again with CSV file.',
+  },
+  {
+    titre: 'Strengthening your board',
+    texte: 'Deploy SOAP / WSDL with your 3 Throughput: a solid component, 3 attack and 4 HP.',
+  },
+  {
+    titre: 'Ending your turn',
+    texte: 'Tap “End my turn”. Then it’s your turn to play!',
+  },
+  {
+    titre: 'Over to you',
+    texte:
+      'You know the essentials: deploy, attack the System, take down whatever has Guard first. If in doubt, the light bulb at the top of the screen gives a hint.',
+  },
+];
+
+/** Les étapes de la partie guidée, bulles dans la langue du joueur (US-081). */
+export function etapesPartieGuidee(langue: Langue = LANGUE_REFERENCE): readonly EtapeGuidee[] {
+  if (langue === 'fr') return ETAPES_PARTIE_GUIDEE;
+  return ETAPES_PARTIE_GUIDEE.map((etape, i) => ({ ...etape, ...BULLES_EN[i] }));
+}

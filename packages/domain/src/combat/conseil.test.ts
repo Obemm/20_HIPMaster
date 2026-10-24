@@ -18,6 +18,17 @@ const conseil = (s: Scenario, modifier?: (e: EtatPartie) => void) => {
 const suivreLeConseil: Strategie = (vue) => conseiller(vue)?.action ?? { type: 'finirTour' };
 
 describe('conseiller (US-066)', () => {
+  it('s’écrit dans la langue du joueur, noms des cartes compris (US-081)', () => {
+    const etat = scenario({ plateau: [41], plateauAdverse: [13] });
+    expect(conseiller(vueDe(etat, 'j1'), 'en')?.explication).toBe(
+      'Attack SAP Adapter with LLM: it has Guard and protects the System; your LLM destroys it and survives the counter-attack.',
+    );
+    const pose = scenario({ main: [4, 17, 41], debit: 3 });
+    expect(conseiller(vueDe(pose, 'j1'), 'en')?.explication).toBe(
+      'Deploy SOAP / WSDL: it’s the strongest card your Throughput allows.',
+    );
+  });
+
   it('conseille de poser la carte la plus forte que le Débit permet, ou la seule possible', () => {
     expect(conseil({ main: [4, 17, 41], debit: 3 })).toEqual({
       action: { type: 'poser', carte: 'm2' },

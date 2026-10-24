@@ -12,9 +12,11 @@ import {
   ETAPES_PARTIE_GUIDEE,
   type ErreurAction,
   type EtatPartie,
+  etapesPartieGuidee,
   GRAINE_PARTIE_GUIDEE,
   type Graine,
   journalDe,
+  type Langue,
   NIVEAU_PAR_DEFAUT,
   NIVEAU_PARTIE_GUIDEE,
   type NiveauBot,
@@ -91,6 +93,15 @@ function etapeGuidee(version: number): EtapeEnCours {
     attendu: null,
   };
   return { etape, total, titre, texte, attendu };
+}
+
+/** La bulle de la partie guidée dans la langue du joueur (US-081) ; l'action attendue ne change pas. */
+export function traduireGuide<P extends { guide?: EtapeEnCours }>(partie: P, langue: Langue): P {
+  if (!partie.guide || langue === 'fr') return partie;
+  const bulle = etapesPartieGuidee(langue)[partie.guide.etape];
+  return bulle
+    ? { ...partie, guide: { ...partie.guide, titre: bulle.titre, texte: bulle.texte } }
+    : partie;
 }
 
 /** Une partie, et le joueur connecté qui l'a lancée (`null` pour une partie anonyme). */
@@ -274,10 +285,11 @@ export async function conseillerPartie(
   id: string,
   session: string | null,
   options: OptionsParties = {},
+  langue: Langue = 'fr',
 ): Promise<ResultatPartie<ConseilPartie>> {
   const ligne = await trouver(base, id, session, options);
   if (!ligne) return echec('partie-inconnue');
-  const conseil = conseiller(vueDe(ligne.etat, HUMAIN));
+  const conseil = conseiller(vueDe(ligne.etat, HUMAIN), langue);
   if (!conseil) return echec('pas-votre-tour');
   return { ok: true, valeur: { version: ligne.version, ...conseil } };
 }

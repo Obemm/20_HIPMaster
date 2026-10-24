@@ -20,7 +20,7 @@ _Dernière mise à jour : 2026-10-24_
 | [EPIC-11 — Apprendre à jouer](epics/EPIC-11-apprendre-a-jouer.md)                                 | Should   | Terminé   | 3/3        |
 | [EPIC-12 — Des cartes qui enseignent](epics/EPIC-12-cartes-qui-enseignent.md)                     | Must     | Terminé   | 2/2        |
 | [EPIC-13 — Un set 2 : architecture et pratiques](epics/EPIC-13-set-2-architecture-pratiques.md)   | Could    | À affiner | 0/2        |
-| [EPIC-14 — Un jeu en français et en anglais](epics/EPIC-14-multilingue.md)                        | Should   | En cours  | 2/4        |
+| [EPIC-14 — Un jeu en français et en anglais](epics/EPIC-14-multilingue.md)                        | Should   | En cours  | 3/4        |
 
 ## Itération 0 (en cours) — fondations
 
@@ -190,5 +190,5 @@ catalogue, set d'accueil).
 | [US-077 — Trois nouvelles cartes : API First, EDA et API GraphQL](stories/US-077-api-first-eda-graphql.md)                             | EPIC-13 | Should   | M      | À affiner |
 | [US-079 — Le socle bilingue : i18n d'Angular, deux versions du site et un sélecteur de langue](stories/US-079-socle-bilingue.md)       | EPIC-14 | Should   | M      | Faite     |
 | [US-080 — Toute l'interface en anglais](stories/US-080-interface-anglais.md)                                                           | EPIC-14 | Should   | L      | Faite     |
-| [US-081 — Les cartes, les capacités, les fiches et la règle en anglais](stories/US-081-contenu-anglais.md)                             | EPIC-14 | Should   | L      | À affiner |
+| [US-081 — Les cartes, les capacités, les fiches et la règle en anglais](stories/US-081-contenu-anglais.md)                             | EPIC-14 | Should   | L      | Faite     |
 | [US-082 — Des messages d'erreur traduits et des parcours vérifiés dans les deux langues](stories/US-082-erreurs-parcours-bilingues.md) | EPIC-14 | Should   | S      | À affiner |

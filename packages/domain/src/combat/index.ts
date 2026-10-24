@@ -72,6 +72,7 @@ export {
   DECK_INITIATION,
   DECK_INITIATION_BOT,
   ETAPES_PARTIE_GUIDEE,
+  etapesPartieGuidee,
   GRAINE_PARTIE_GUIDEE,
   NIVEAU_PARTIE_GUIDEE,
   type EtapeGuidee,

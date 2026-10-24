@@ -1,4 +1,10 @@
-import { type Action, DECKS_PRETES, NIVEAUX_BOT } from '@hipmaster/domain';
+import {
+  type Action,
+  DECKS_PRETES,
+  type Langue,
+  NIVEAUX_BOT,
+  traduireNomme,
+} from '@hipmaster/domain';
 import type { FastifyReply } from 'fastify';
 import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
 import { z } from 'zod';
@@ -6,6 +12,7 @@ import { empreinteJeton, joueurDuJeton } from '../comptes/comptes.ts';
 import { type OptionsBoosters, type Recompense, recompenserVictoire } from '../comptes/boosters.ts';
 import { compterVictoireBot, type OptionsScores } from '../scores/scores.ts';
 import { cacheCatalogue } from '../cache-catalogue.ts';
+import { langueDe } from '../langue.ts';
 import type { Base } from '../db/index.ts';
 import { limiter, type LimitesDebit } from '../limites.ts';
 import {
@@ -18,6 +25,7 @@ import {
   type PartieLue,
   type PartieVisible,
   type ResultatPartie,
+  traduireGuide,
 } from '../parties/parties.ts';
 import { jetonDe, sessionDe } from './comptes.ts';
 import {
@@ -112,8 +120,8 @@ export const routesParties: FastifyPluginAsyncZod<{
     return { ...partie, recompense };
   }
 
-  async function envoyer(reponse: FastifyReply, lue: PartieLue) {
-    const partie = await avecRecompense(lue);
+  async function envoyer(reponse: FastifyReply, lue: PartieLue, langue: Langue) {
+    const partie = traduireGuide(await avecRecompense(lue), langue);
     return reponse.header('etag', etiquette(partie.version)).send(partie);
   }
 
@@ -121,13 +129,20 @@ export const routesParties: FastifyPluginAsyncZod<{
   app.get(
     '/decks',
     { ...cacheCatalogue, schema: { response: { 200: z.array(schemaDeck) } } },
-    async () => DECKS_PRETES.map((deck) => ({ ...deck, cartes: [...deck.cartes] })),
+    async (requete) =>
+      DECKS_PRETES.map((deck) => ({
+        ...traduireNomme(deck, langueDe(requete), 'decks'),
+        cartes: [...deck.cartes],
+      })),
   );
 
   app.get(
     '/niveaux',
     { ...cacheCatalogue, schema: { response: { 200: z.array(schemaNiveau) } } },
-    async () => NIVEAUX_BOT.map(({ id, nom, description }) => ({ id, nom, description })),
+    async (requete) =>
+      NIVEAUX_BOT.map(({ id, nom, description }) =>
+        traduireNomme({ id, nom, description }, langueDe(requete), 'niveaux'),
+      ),
   );
 
   app.post(
@@ -169,7 +184,7 @@ export const routesParties: FastifyPluginAsyncZod<{
       return reponse
         .status(201)
         .header('etag', etiquette(resultat.valeur.version))
-        .send(resultat.valeur);
+        .send(traduireGuide(resultat.valeur, langueDe(requete)));
     },
   );
 
@@ -178,7 +193,9 @@ export const routesParties: FastifyPluginAsyncZod<{
     { schema: { params: parametres, response: { 200: schemaPartieRecompensee } } },
     async (requete, reponse) => {
       const resultat = await lirePartie(base, requete.params.id, sessionDe(requete), parties);
-      return resultat.ok ? envoyer(reponse, resultat.valeur) : refuser(reponse, resultat);
+      return resultat.ok
+        ? envoyer(reponse, resultat.valeur, langueDe(requete))
+        : refuser(reponse, resultat);
     },
   );
 
@@ -190,7 +207,13 @@ export const routesParties: FastifyPluginAsyncZod<{
       schema: { params: parametres, response: { 200: schemaConseil } },
     },
     async (requete, reponse) => {
-      const resultat = await conseillerPartie(base, requete.params.id, sessionDe(requete), parties);
+      const resultat = await conseillerPartie(
+        base,
+        requete.params.id,
+        sessionDe(requete),
+        parties,
+        langueDe(requete),
+      );
       if (!resultat.ok) return refuser(reponse, resultat);
       return reponse.header('etag', etiquette(resultat.valeur.version)).send(resultat.valeur);
     },
@@ -215,7 +238,9 @@ export const routesParties: FastifyPluginAsyncZod<{
         versionDe(requete.headers['if-match']),
         parties,
       );
-      return resultat.ok ? envoyer(reponse, resultat.valeur) : refuser(reponse, resultat);
+      return resultat.ok
+        ? envoyer(reponse, resultat.valeur, langueDe(requete))
+        : refuser(reponse, resultat);
     },
   );
 };

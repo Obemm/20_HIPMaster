@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: HIPMaster — parties contre le bot
-  version: 1.5.0
+  version: 1.6.0
   description: >
     Parties contre le bot (US-012), à quatre niveaux (US-021, US-064). Le serveur fait foi : il applique les règles (moteur du domaine,
     ADR 0013), fait jouer le bot et ne renvoie que la vue du joueur. Les parties en cours sont gardées en base
@@ -31,6 +31,7 @@ paths:
       description: Donnée du catalogue, en cache HTTP de 5 minutes (US-057, voir cartes.yaml).
       parameters:
         - $ref: 'cartes.yaml#/components/parameters/IfNoneMatch'
+        - $ref: 'cartes.yaml#/components/parameters/Langue'
       responses:
         '200':
           description: Les decks prêtés, jouables contre le bot.
@@ -50,6 +51,7 @@ paths:
       description: Donnée du catalogue, en cache HTTP de 5 minutes (US-057, voir cartes.yaml).
       parameters:
         - $ref: 'cartes.yaml#/components/parameters/IfNoneMatch'
+        - $ref: 'cartes.yaml#/components/parameters/Langue'
       responses:
         '200':
           description: Les niveaux du bot.
@@ -79,6 +81,8 @@ paths:
         n'appartient qu'à cette session. Avec `guidee: true`, la partie guidée (US-067, ADR 0041) : decks
         d'initiation et graine fixes contre Stagiaire, `deck` et `niveau` ignorés, aucune récompense ; chaque réponse
         porte alors l'étape `guide` du moment. Limite : 20 créations par minute et par adresse.
+      parameters:
+        - { $ref: 'cartes.yaml#/components/parameters/Langue' }
       requestBody:
         required: true
         content:
@@ -115,7 +119,9 @@ paths:
       summary: Lit la vue du joueur ; `evenements` contient tout le journal visible
       description: >
         Une partie lancée par un compte ne se lit qu'avec le jeton de la session qui l'a créée.
-      parameters: [{ $ref: '#/components/parameters/IdPartie' }]
+      parameters:
+        - { $ref: '#/components/parameters/IdPartie' }
+        - { $ref: 'cartes.yaml#/components/parameters/Langue' }
       responses:
         '200':
           description: La partie.
@@ -142,6 +148,7 @@ paths:
         Limite : 300 actions par minute et par adresse.
       parameters:
         - { $ref: '#/components/parameters/IdPartie' }
+        - { $ref: 'cartes.yaml#/components/parameters/Langue' }
         - name: If-Match
           in: header
           required: false
@@ -189,7 +196,9 @@ paths:
         pioche du bot. L'action conseillée est toujours une des `vue.actions` ; le conseil ne joue rien, et ne change
         pas la récompense de victoire. Les duels n'ont pas de conseil. Même propriété que la partie (US-047). Limite :
         300 conseils par minute et par adresse.
-      parameters: [{ $ref: '#/components/parameters/IdPartie' }]
+      parameters:
+        - { $ref: '#/components/parameters/IdPartie' }
+        - { $ref: 'cartes.yaml#/components/parameters/Langue' }
       responses:
         '200':
           description: Le conseil, pour la version de la partie donnée en `ETag`.
@@ -270,7 +279,8 @@ components:
           type: object
           description: >
             Partie guidée seulement (US-067) : l'étape du moment. L'étape `etape` attend la `etape`-ième action du
-            joueur (la version de la partie) ; la dernière, sans `attendu`, le laisse jouer jusqu'à la fin.
+            joueur (la version de la partie) ; la dernière, sans `attendu`, le laisse jouer jusqu'à la fin. `titre` et
+            `texte` sont dans la langue demandée (`langue`, US-081).
           required: [etape, total, titre, texte, attendu]
           properties:
             etape: { type: integer, description: "Numéro de l'étape, à partir de 0." }
