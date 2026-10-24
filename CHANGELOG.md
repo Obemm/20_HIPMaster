@@ -257,6 +257,8 @@ Toutes les évolutions notables du projet sont consignées ici
 
 ### Corrigé
 
+- Téléphone : les cartes de la main montrent toujours leur attaque et leurs PV ; sur une petite carte, l'illustration
+  rétrécit et la ligne type · famille s'efface, le nom tient sur deux lignes (US-068).
 - Partie : choisir une carte ou un composant pendant le message « Avant de finir votre tour » le referme ; la fiche
   de détail se posait par-dessus et cachait ses boutons (US-065).
 - Scripts d'exploitation sous Windows : les corps JSON envoyés aux API Google passent par un fichier, car un argument

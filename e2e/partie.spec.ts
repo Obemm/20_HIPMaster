@@ -83,6 +83,26 @@ test('en partie, le détail d’une carte de la main déplie sa fiche « En savo
   expect(violations).toEqual([]);
 });
 
+test('sur un téléphone, chaque carte de la main montre son attaque et ses PV (US-068)', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 375, height: 667 });
+  await commencer(page);
+  const cartes = page.getByRole('region', { name: /Votre main/ }).locator('article');
+  expect(await cartes.count()).toBeGreaterThan(0);
+  for (const carte of await cartes.all()) {
+    const boite = await carte.boundingBox();
+    const statistiques = carte.getByText(/^Attaque /).locator('xpath=../..');
+    if ((await statistiques.count()) === 0) continue; // sort ou incident : ni attaque ni PV
+    const bas = await statistiques.boundingBox();
+    expect(boite).not.toBeNull();
+    expect(bas).not.toBeNull();
+    // La ligne attaque / PV est entièrement dans la carte, pas coupée par son bas.
+    expect(bas!.y + bas!.height).toBeLessThanOrEqual(boite!.y + boite!.height + 0.5);
+    expect(bas!.height).toBeGreaterThan(8);
+  }
+});
+
 test('une partie complète contre le bot, jusqu’au résultat', async ({ page }) => {
   test.setTimeout(120_000);
   await commencer(page);

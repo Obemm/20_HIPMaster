@@ -81,3 +81,6 @@ et l'installation sur téléphone (US-063), déjà prévues.
 - 2026-10-23 — création, notée pour plus tard à la demande du porteur du projet.
 - 2026-10-24 — affinée et commencée (session de nuit) : relevé des 16 écrans, corrections, charte complétée.
 - 2026-10-24 — livrée : Relevé visuel des 16 écrans (téléphone et bureau, deux thèmes) et corrections : decks en boîtes de jeu, duels en cartes à pastille d'état, actions principales en or, panneaux, champs et jauge communs, charte complétée.
+- 2026-10-24 — anomalie signalée en ligne : sur téléphone, les cartes de la main (80 px) coupaient l'attaque et les PV,
+  les textes à leur taille minimale débordant du format de la carte. Sous 7,5 rem de large, l'illustration rétrécit,
+  la ligne type · famille s'efface et le nom tient sur deux lignes ; parcours e2e ajouté (échouait avant).
