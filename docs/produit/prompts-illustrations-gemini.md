@@ -26,7 +26,7 @@ Subject: a friendly "machine-creature of the server room" that embodies "FTP" (e
 Fichiers & Batch · composant · Rare
 
 ```text
-Subject: a friendly "machine-creature of the server room" that embodies "SFTP" (enterprise integration, Fichiers & Batch). What it means (French, for context only): « Le FTP chiffré, progressivement remplacé par les API et les événements. ». Visual motifs: folders, punched tapes, clocks. Rarity: a few subtle light effects. Digital illustration for a collectible card game, landscape 4:3, light isometric view, one single central subject readable at small size, clean bold shapes, soft cel shading, dark navy blue background with a subtle amber glow, limited palette dominated by amber and burnt orange. Strictly no text, no letters, no numbers, no logos, no brand marks, no watermark, no real people.
+Subject: a friendly "machine-creature of the server room" that embodies "SFTP" (enterprise integration, Fichiers & Batch). What it means (French, for context only): « Le transfert de fichiers chiffré par SSH, peu à peu remplacé par les API et les événements. ». Visual motifs: folders, punched tapes, clocks. Rarity: a few subtle light effects. Digital illustration for a collectible card game, landscape 4:3, light isometric view, one single central subject readable at small size, clean bold shapes, soft cel shading, dark navy blue background with a subtle amber glow, limited palette dominated by amber and burnt orange. Strictly no text, no letters, no numbers, no logos, no brand marks, no watermark, no real people.
 ```
 
 ## 3 — EDI

@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { FAMILLES } from '../carte.ts';
-import { trouverCarte } from '../set-1.ts';
+import { SET_1, trouverCarte } from '../set-1.ts';
 import { type Fiche, problemesFiche } from './fiche.ts';
 import { ficheDe, FICHES_PAR_FAMILLE } from './index.ts';
 
@@ -27,9 +26,9 @@ describe('fiches du set 1', () => {
       expect(problemesFiche(fiche), `fiche n° ${numero}`).toEqual([]);
   });
 
-  it('a au moins une fiche pilote par famille (US-073)', () => {
-    for (const famille of FAMILLES)
-      expect(Object.keys(FICHES_PAR_FAMILLE[famille]).length, famille).toBeGreaterThan(0);
+  it('rédige une fiche pour chacune des 71 cartes du set 1 (US-074)', () => {
+    const sansFiche = SET_1.filter((carte) => !ficheDe(carte.numero)).map((carte) => carte.nom);
+    expect(sansFiche).toEqual([]);
   });
 
   it('trouve la fiche d’une carte par son numéro', () => {
