@@ -19,7 +19,7 @@ _Dernière mise à jour : 2026-10-24_
 | [EPIC-10 — Identité visuelle et confort sur téléphone](epics/EPIC-10-identite-visuelle-mobile.md) | Should   | Terminé   | 6/6        |
 | [EPIC-11 — Apprendre à jouer](epics/EPIC-11-apprendre-a-jouer.md)                                 | Should   | En cours  | 1/3        |
 | [EPIC-12 — Des cartes qui enseignent](epics/EPIC-12-cartes-qui-enseignent.md)                     | Must     | Terminé   | 2/2        |
-| [EPIC-13 — Un set 2 : architecture et pratiques](epics/EPIC-13-set-2-architecture-pratiques.md)   | Could    | À affiner | 0/1        |
+| [EPIC-13 — Un set 2 : architecture et pratiques](epics/EPIC-13-set-2-architecture-pratiques.md)   | Could    | À affiner | 0/2        |
 
 ## Itération 0 (en cours) — fondations
 
@@ -177,11 +177,12 @@ Demande du porteur du projet (2026-10-19) : permettre à d'autres tech leads et 
 pour aider à l'acculturation IT. À traiter plus tard ; ADR à prévoir (identité, rôle de relecteur, chemin vers le
 catalogue, set d'accueil).
 
-| Story                                                                                          | Epic    | Priorité | Taille | Statut    |
-| ---------------------------------------------------------------------------------------------- | ------- | -------- | ------ | --------- |
-| [US-027 — Guide du contributeur](stories/US-027-guide-contributeur.md)                         | EPIC-08 | Should   | S      | À affiner |
-| [US-028 — Proposer une carte depuis le jeu](stories/US-028-proposer-carte.md)                  | EPIC-08 | Should   | L      | À affiner |
-| [US-029 — Relire et instruire les propositions](stories/US-029-relire-propositions.md)         | EPIC-08 | Should   | M      | À affiner |
-| [US-030 — Intégrer une carte acceptée au catalogue](stories/US-030-integrer-carte-acceptee.md) | EPIC-08 | Should   | M      | À affiner |
-| [US-031 — Créditer les contributeurs](stories/US-031-crediter-contributeurs.md)                | EPIC-08 | Could    | S      | À affiner |
-| [US-076 — Concevoir le set 2 : DDD, microservices, DevOps](stories/US-076-concevoir-set-2.md)  | EPIC-13 | Could    | L      | À affiner |
+| Story                                                                                                      | Epic    | Priorité | Taille | Statut    |
+| ---------------------------------------------------------------------------------------------------------- | ------- | -------- | ------ | --------- |
+| [US-027 — Guide du contributeur](stories/US-027-guide-contributeur.md)                                     | EPIC-08 | Should   | S      | À affiner |
+| [US-028 — Proposer une carte depuis le jeu](stories/US-028-proposer-carte.md)                              | EPIC-08 | Should   | L      | À affiner |
+| [US-029 — Relire et instruire les propositions](stories/US-029-relire-propositions.md)                     | EPIC-08 | Should   | M      | À affiner |
+| [US-030 — Intégrer une carte acceptée au catalogue](stories/US-030-integrer-carte-acceptee.md)             | EPIC-08 | Should   | M      | À affiner |
+| [US-031 — Créditer les contributeurs](stories/US-031-crediter-contributeurs.md)                            | EPIC-08 | Could    | S      | À affiner |
+| [US-076 — Concevoir le set 2 : DDD, microservices, DevOps](stories/US-076-concevoir-set-2.md)              | EPIC-13 | Could    | L      | À affiner |
+| [US-077 — Trois nouvelles cartes : API First, EDA et API GraphQL](stories/US-077-api-first-eda-graphql.md) | EPIC-13 | Should   | M      | À affiner |
