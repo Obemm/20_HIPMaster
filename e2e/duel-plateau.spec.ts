@@ -17,7 +17,7 @@ test('un duel se joue à deux navigateurs, chacun voyant le tour de l’autre ar
 
   // Celui qui commence finit son tour ; l'autre voit son tour arriver sans recharger, et ainsi de suite.
   let actif = (await finir(ada).isEnabled()) ? ada : bob;
-  // Pas de conseil en duel (US-066, ADR 0039), ni à l'écran ni par l'API.
+  // Pas de conseil en duel (US-066, ADR 0040), ni à l'écran ni par l'API.
   await expect(actif.getByRole('button', { name: 'Un conseil ?' })).toHaveCount(0);
   expect((await page.request.get(`/api/v1/duels/${id}/conseil`)).status()).toBe(404);
   for (let tour = 0; tour < 3; tour++) {

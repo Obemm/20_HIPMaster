@@ -1116,7 +1116,7 @@ describe('PartieEcran en duel (US-034)', () => {
     expect(page.querySelector('h1')?.textContent).toContain('Duel contre Bob');
     expect(page.querySelector('#titre-bot')?.textContent).toContain('Bob');
     expect(page.textContent).not.toContain('Niveau :');
-    // Pas de conseil en duel (US-066, ADR 0039), ni de réglage pour lui.
+    // Pas de conseil en duel (US-066, ADR 0040), ni de réglage pour lui.
     expect(bouton(page, 'Un conseil ?')).toBeUndefined();
     expect(page.querySelector('dialog')?.textContent).not.toContain('Un conseil à chaque coup');
 

@@ -16,7 +16,7 @@ Toutes les évolutions notables du projet sont consignées ici
   carte, l'attaquant et sa cible, le SI ou « Finir mon tour ») et dit pourquoi en une phrase. Calculé par le serveur
   depuis la seule vue du joueur (`GET /api/v1/parties/{id}/conseil`, limité en débit), sur les règles de Batch de
   nuit : qui le suit bat Stagiaire 89 % du temps. Jamais en duel ; l'option « Un conseil à chaque coup » se règle
-  dans l'aide (US-066, ADR 0039).
+  dans l'aide (US-066, ADR 0040).
 - Premières vraies illustrations, générées avec Gemini : FTP, Apigee API Gateway et Solace Agent Mesh (essai d'US-017).
 - Le jeu s'installe sur l'écran d'accueil d'un téléphone (PWA) : manifeste web (nom, couleurs de nuit, icônes 192 et
   512 px et masquable, affichage autonome) et service worker d'Angular en production, qui garde l'interface et les
@@ -205,6 +205,12 @@ Toutes les évolutions notables du projet sont consignées ici
 
 ### Modifié
 
+- Des requêtes plus légères (US-057, ADR 0039) : index sur les duels, les récompenses, les sessions et les parties
+  d'un joueur (migration `0013`) ; « Mes duels » ne lit plus que les duels qu'il renvoie (40 ms → 2,6 ms pour un
+  joueur de 400 duels) ; un duel inchangé répond 304 après la seule lecture de sa version ; le catalogue (cartes,
+  decks, niveaux, raretés) part compressé (21,5 Ko → 5 Ko), en cache public de 5 minutes avec un `ETag`, et le front
+  ne le demande qu'une fois par session ; toutes les pages sauf l'accueil se chargent à la demande (bundle initial :
+  457 → 380 Ko). La mesure se rejoue avec `npm run mesurer -w @hipmaster/api`.
 - Ouvrir un booster devient un moment : les paquets en stock sont dessinés (feuille métallisée, logo) ; les cartes
   arrivent face cachée, distribuées une à une, la rareté lisible sur leur dos (liseré, halo, nom) ; on les retourne
   d'un appui, ou toutes avec « Tout révéler » ; une épique ou une légendaire jaillit d'un éclat de lumière. Chaque

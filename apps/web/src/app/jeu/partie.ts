@@ -165,7 +165,7 @@ export class PartieEcran implements OnInit, OnDestroy {
   protected readonly attaquant = signal<string | null>(null);
 
   /**
-   * Le conseil reçu (US-066, ADR 0039), contre le bot seulement : affiché tant que la partie n'a pas changé depuis.
+   * Le conseil reçu (US-066, ADR 0040), contre le bot seulement : affiché tant que la partie n'a pas changé depuis.
    * Il ne joue jamais : il met en évidence l'action et dit pourquoi.
    */
   private readonly conseilRecu = signal<Conseil | null>(null);

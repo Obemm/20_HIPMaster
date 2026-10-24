@@ -40,7 +40,7 @@ coup en une phrase.
 
 - Préférer un conseiller dont les décisions s'expliquent, quitte à jouer un peu moins fort qu'Agent autonome.
 - Le conseil ne change pas la récompense de victoire.
-- Choix retenus ([ADR 0039](../../decisions/0039-conseil-serveur-contre-bot.md)) :
+- Choix retenus ([ADR 0040](../../decisions/0040-conseil-serveur-contre-bot.md)) :
   - **Conseiller** : `conseiller(vue)` dans le domaine (`combat/conseil.ts`) suit les règles de Batch de nuit
     (`bot.ts`, dont les règles sont désormais exportées) et explique la règle qui a choisi le coup : pose la plus
     forte ou seule possible, évolution, Migration, Outillage, sort (par son effet), attaque (victoire, SI sans
@@ -62,5 +62,5 @@ coup en une phrase.
 ## Journal
 
 - 2026-10-23 — création, à la demande du porteur du projet ; conseil contre le bot seulement (sa décision).
-- 2026-10-24 — affinée et commencée : choix notés ci-dessus (ADR 0039).
-- 2026-10-24 — livrée : conseil à la demande contre le bot (ampoule, mise en évidence et explication), GET /parties/{id}/conseil calculé par le domaine sur les règles de Batch de nuit, option « Un conseil à chaque coup », jamais en duel (ADR 0039)
+- 2026-10-24 — affinée et commencée : choix notés ci-dessus (ADR 0040).
+- 2026-10-24 — livrée : conseil à la demande contre le bot (ampoule, mise en évidence et explication), GET /parties/{id}/conseil calculé par le domaine sur les règles de Batch de nuit, option « Un conseil à chaque coup », jamais en duel (ADR 0040)

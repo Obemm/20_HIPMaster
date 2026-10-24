@@ -258,7 +258,8 @@ describe('en-têtes et taille des requêtes', () => {
       await app.inject({ method: 'POST', url: '/api/v1/moi/code', headers: auth(jeton) }),
       await app.inject({ method: 'GET', url: '/api/v1/moi/collection', headers: auth(jeton) }),
       await app.inject({ method: 'GET', url: '/api/v1/moi' }),
-      await app.inject({ method: 'GET', url: '/api/v1/cartes' }),
+      // Une carte inconnue : le catalogue n'est en cache que pour ses réponses réussies (US-057).
+      await app.inject({ method: 'GET', url: '/api/v1/cartes/9999' }),
       await app.inject({ method: 'GET', url: '/api/v1/inconnue' }),
     ];
     for (const reponse of reponses) {
