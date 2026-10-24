@@ -12,6 +12,7 @@
     "db:migrate": "node src/migrer.ts",
     "db:studio": "drizzle-kit studio",
     "invitation": "node src/invitation.ts",
+    "code-boosters": "node src/code-boosters.ts",
     "purge": "node src/purger.ts",
     "mesurer": "node src/mesurer-requetes.ts"
   },

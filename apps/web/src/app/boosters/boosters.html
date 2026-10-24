@@ -136,12 +136,55 @@
       }
       <p role="status" class="sr-only">{{ annonce() }}</p>
     </section>
+
+    <section aria-labelledby="titre-code" class="panneau flex flex-col gap-3 p-4 sm:p-6">
+      <h2 id="titre-code" class="text-xl font-extrabold">Un code cadeau ?</h2>
+      <p class="text-texte-doux">
+        Une réussite de l’équipe récompensée ? Saisissez le code reçu : ses boosters s’ajoutent à
+        votre stock, même au-delà du plafond.
+      </p>
+      <form class="flex flex-col gap-3 sm:flex-row sm:items-end" (submit)="utiliserCode($event)">
+        <div class="flex flex-col gap-1 sm:flex-1">
+          <label for="code-boosters" class="etiquette">Code cadeau</label>
+          <input
+            id="code-boosters"
+            name="code"
+            autocomplete="off"
+            autocapitalize="characters"
+            spellcheck="false"
+            maxlength="64"
+            required
+            placeholder="ABCD-EFGH-JKLM-NPQR"
+            class="champ font-mono"
+            [value]="codeSaisi()"
+            (input)="codeSaisi.set($any($event.target).value)"
+          />
+        </div>
+        <button
+          type="submit"
+          class="bouton bouton-plein"
+          [disabled]="occupeCode() || !codeSaisi().trim()"
+        >
+          {{ occupeCode() ? 'Vérification…' : 'Recevoir les boosters' }}
+        </button>
+      </form>
+      @if (erreurCode()) {
+        <p role="alert" class="text-alerte">{{ erreurCode() }}</p>
+      }
+      <p role="status" class="font-semibold">{{ recus() }}</p>
+    </section>
   } @else if (compte.pret()) {
     <p>
       Les boosters remplissent votre collection : il faut un compte pour la garder.
       <a routerLink="/compte" class="lien">Créer un compte</a>
       en un clic (un pseudo suffit) : 5 boosters vous sont offerts.
     </p>
+    @if (code()) {
+      <p class="panneau p-4">
+        Un code cadeau vous attend : créez votre compte ou connectez-vous, puis rouvrez le lien reçu
+        pour recevoir ses boosters.
+      </p>
+    }
   } @else {
     <hip-etat-session />
   }

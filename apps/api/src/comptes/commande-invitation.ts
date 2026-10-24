@@ -66,7 +66,7 @@ const schemaCreation = z
   });
 
 /** Les refus de `parseArgs` (option inconnue, valeur manquante, argument en trop), en français. */
-function traduireErreurArguments(erreur: unknown): string {
+export function traduireErreurArguments(erreur: unknown): string {
   const { code, message } = erreur as { code?: string; message?: string };
   const cite = /'([^' ]+)/.exec(message ?? '')?.[1] ?? '';
   switch (code) {
@@ -125,7 +125,7 @@ export function lireArguments(argv: string[], maintenant = new Date()): Commande
 }
 
 /** « 2027-01-01 00:00 UTC » : sans ambiguïté, quel que soit le fuseau de qui lit. */
-const dateUtc = (date: Date) => `${date.toISOString().slice(0, 16).replace('T', ' ')} UTC`;
+export const dateUtc = (date: Date) => `${date.toISOString().slice(0, 16).replace('T', ' ')} UTC`;
 
 /** « expire le … », « expirée le … » ou « révoquée le … ». */
 function echeance(invitation: ResumeInvitation, maintenant: Date): string {

@@ -24,6 +24,7 @@
     "db:migrate": "npm run db:migrate -w @hipmaster/api",
     "db:studio": "npm run db:studio -w @hipmaster/api",
     "invitation": "npm run invitation -w @hipmaster/api --",
+    "code-boosters": "npm run code-boosters -w @hipmaster/api --",
     "prepare": "husky",
     "illustrations": "npm run illustrations -w @hipmaster/illustrations",
     "illustrations:provisoires": "npm run illustrations:provisoires -w @hipmaster/illustrations"

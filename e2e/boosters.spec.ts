@@ -24,7 +24,8 @@ test('sans compte, la page des boosters invite à en créer un et montre les cha
 
 test('un nouveau compte reçoit 5 boosters et en ouvre un : 5 cartes révélées', async ({ page }) => {
   await creerCompte(page, 'Ouvreuse e2e');
-  await page.getByRole('link', { name: 'Boosters' }).click();
+  // L'onglet de la navigation, pas « Offrir des boosters » (administrateurs, US-070).
+  await page.getByRole('link', { name: /^Boosters/ }).click();
   await expect(page.getByRole('heading', { level: 1, name: 'Mes boosters' })).toBeVisible();
   await expect(page.getByText('5 boosters en stock')).toBeVisible();
   await expect(page.getByText(/Prochain booster gratuit dans/)).toBeVisible();

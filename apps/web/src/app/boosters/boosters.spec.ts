@@ -1,10 +1,10 @@
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
+import { provideRouter, Router } from '@angular/router';
 import type { Carte } from '../cartes/carte';
 import { CompteService, intercepteurJeton } from '../compte/compte.service';
-import { BoostersEcran } from './boosters';
+import { annonceRecus, BoostersEcran } from './boosters';
 
 const carte = (numero: number, nom: string): Carte => ({
   numero,
@@ -36,11 +36,12 @@ describe('Boosters', () => {
   const bouton = (page: HTMLElement, texte: string) =>
     [...page.querySelectorAll('button')].find((b) => b.textContent?.includes(texte));
 
-  async function afficher(connecte: boolean) {
+  async function afficher(connecte: boolean, code?: string) {
     const compte = TestBed.inject(CompteService);
     if (connecte) compte.joueur.set({ id: 'x', pseudo: 'Ada' });
     else compte.pret.set(true);
     const fixture = TestBed.createComponent(BoostersEcran);
+    if (code !== undefined) fixture.componentRef.setInput('code', code);
     fixture.detectChanges();
     const http = TestBed.inject(HttpTestingController);
     http.expectOne('/api/v1/cartes').flush(CATALOGUE);
@@ -188,5 +189,75 @@ describe('Boosters', () => {
     fixture.detectChanges();
     expect(page.querySelector<HTMLButtonElement>('button')?.disabled).toBe(true);
     expect(page.textContent).toContain('0 booster en stock');
+  });
+
+  describe('code cadeau (US-070)', () => {
+    const saisir = (page: HTMLElement, valeur: string) => {
+      const champ = page.querySelector<HTMLInputElement>('#code-boosters');
+      if (!champ) throw new Error('champ du code absent');
+      champ.value = valeur;
+      champ.dispatchEvent(new Event('input'));
+    };
+    const formulaire = (page: HTMLElement) =>
+      page.querySelector<HTMLFormElement>('#code-boosters')?.closest('form');
+
+    it('un lien remplit le champ et le code quitte l’adresse ; les boosters reçus s’ajoutent au stock', async () => {
+      const naviguer = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+      const { fixture, http, page } = await afficher(true, 'ABCD-EFGH-JKLM-NPQR');
+      http.expectOne('/api/v1/moi/boosters').flush({ stock: 9, plafond: 10, prochainDans: 60 });
+      await fixture.whenStable();
+      fixture.detectChanges();
+      expect(page.querySelector<HTMLInputElement>('#code-boosters')?.value).toBe(
+        'ABCD-EFGH-JKLM-NPQR',
+      );
+      expect(naviguer).toHaveBeenCalledWith([], { queryParams: { code: null }, replaceUrl: true });
+
+      formulaire(page)?.requestSubmit();
+      const requete = http.expectOne('/api/v1/moi/boosters/codes');
+      expect(requete.request.method).toBe('POST');
+      expect(requete.request.body).toEqual({ code: 'ABCD-EFGH-JKLM-NPQR' });
+      requete.flush({
+        libelle: '1re API publiée',
+        offerts: 3,
+        boosters: { stock: 12, plafond: 10, prochainDans: null },
+      });
+      await fixture.whenStable();
+      fixture.detectChanges();
+      expect(page.textContent).toContain('12 boosters en stock');
+      expect(page.textContent).toContain('« 1re API publiée » : 3 boosters offerts !');
+      expect(page.querySelector<HTMLInputElement>('#code-boosters')?.value).toBe('');
+    });
+
+    it('dit qu’un code est refusé, sans dire pourquoi', async () => {
+      const { fixture, http, page } = await afficher(true);
+      http.expectOne('/api/v1/moi/boosters').flush({ stock: 1, plafond: 10, prochainDans: 60 });
+      await fixture.whenStable();
+      fixture.detectChanges();
+      saisir(page, 'XXXX-XXXX-XXXX-XXXX');
+      fixture.detectChanges();
+      formulaire(page)?.requestSubmit();
+      http
+        .expectOne('/api/v1/moi/boosters/codes')
+        .flush({ title: 'Refusé' }, { status: 403, statusText: 'Forbidden' });
+      await fixture.whenStable();
+      fixture.detectChanges();
+      expect(page.querySelector('[role="alert"]')?.textContent).toContain(
+        'Ce code ne donne pas de booster',
+      );
+      expect(page.textContent).toContain('1 booster en stock');
+    });
+
+    it('sans compte, un lien de boosters invite à se connecter puis à rouvrir le lien', async () => {
+      const { fixture, page } = await afficher(false, 'ABCD-EFGH-JKLM-NPQR');
+      await fixture.whenStable();
+      fixture.detectChanges();
+      expect(page.textContent).toContain('Un code cadeau vous attend');
+      expect(page.querySelector('#code-boosters')).toBeNull();
+    });
+
+    it('l’annonce, au singulier comme au pluriel', () => {
+      expect(annonceRecus({ libelle: 'Démo', offerts: 1 })).toContain('1 booster offert !');
+      expect(annonceRecus({ libelle: 'Démo', offerts: 2 })).toContain('2 boosters offerts !');
+    });
   });
 });

@@ -40,10 +40,10 @@ export const CLE_CODES_DEVELOPPEMENT = 'hipmaster-developpement-cle-publique-des
 const ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 
 /**
- * Ce que permet un code saisi par un humain (récupération d'un compte, invitation, ADR 0027) ; l'usage entre dans
- * l'empreinte, pour qu'un code ne vaille que pour lui.
+ * Ce que permet un code saisi par un humain (récupération d'un compte, invitation, ADR 0027, boosters offerts,
+ * ADR 0045) ; l'usage entre dans l'empreinte, pour qu'un code ne vaille que pour lui.
  */
-type UsageCode = 'recuperation' | 'invitation';
+type UsageCode = 'recuperation' | 'invitation' | 'boosters';
 
 /** Forme canonique d'un code saisi : majuscules, sans espaces ni tirets. */
 const normaliserCode = (code: string) => code.toUpperCase().replaceAll(/[^A-Z0-9]/g, '');
@@ -62,7 +62,7 @@ export const empreinteCode = (cle: string, usage: UsageCode, code: string) =>
 
 /**
  * Un code lisible en groupes de 4 caractères : « ABCD-EFGH-JKLM » pour un code de récupération (3 groupes, 60 bits),
- * un groupe de plus pour une invitation (80 bits).
+ * un groupe de plus pour une invitation ou un code de boosters (80 bits).
  */
 export function codeLisible(groupes: number): string {
   return Array.from({ length: groupes }, () =>

@@ -7,6 +7,13 @@ Toutes les évolutions notables du projet sont consignées ici
 
 ### Ajouté
 
+- Des boosters offerts par code, pour récompenser une réussite de l'équipe (« 1re API publiée ») : le porteur du
+  projet crée un code (libellé, boosters par joueur, nombre de joueurs, date limite) sur la page « Offrir des
+  boosters », réservée aux administrateurs, ou par `npm run code-boosters` ; le code et son lien
+  `/boosters?code=…` ne s'affichent qu'une fois, la base n'en garde que l'empreinte HMAC. Le joueur le saisit dans
+  « Un code cadeau ? » sur « Mes boosters » (le lien remplit le champ) et reçoit les boosters, même au-delà du
+  plafond, une fois par code. Refus neutre (403) et 60 essais par heure et par adresse ; la base garde qui a utilisé
+  quel code, et un code qui a fui se révoque (US-070, ADR 0045).
 - Un score et un classement entre collègues : une victoire contre le bot rapporte 1, 2, 3 ou 5 points selon le
   niveau, un duel gagné 5 points, un duel nul 2 points chacun, au plus 10 victoires comptées par jour, sans remise à
   zéro ; une cote de duel à la manière d'Elo (départ 1000) suit chaque duel. Page « Classement » (mon score, mon rang,

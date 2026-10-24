@@ -3,7 +3,7 @@ info:
   title: HIPMaster — administration
   version: 1.0.0
   description: >
-    Routes réservées aux administrateurs (US-072, ADR 0029) : les comptes dont l'identifiant figure dans le réglage
+    Routes réservées aux administrateurs (US-072, ADR 0029 ; codes de boosters : US-070, ADR 0045) : les comptes dont l'identifiant figure dans le réglage
     `ADMINISTRATEURS` de l'API. Elles attendent l'en-tête `Authorization: Bearer <jeton>` d'un administrateur.
 
     **À tout autre appelant** (sans jeton, jeton inconnu ou expiré, joueur ordinaire), chaque route répond **404**, avec
@@ -115,6 +115,151 @@ paths:
             application/problem+json:
               schema: { $ref: '#/components/schemas/Probleme' }
         '429': { $ref: '#/components/responses/TropDeRequetes' }
+  /admin/codes-boosters:
+    get:
+      operationId: listerCodesBoosters
+      summary: Les codes de boosters, des plus récents aux plus anciens (administrateur)
+      description: >
+        Le code lui-même n'est jamais renvoyé : la base n'en garde que l'empreinte (ADR 0045).
+      responses:
+        '200':
+          description: Les codes de boosters.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [codes]
+                properties:
+                  codes:
+                    type: array
+                    items: { $ref: '#/components/schemas/CodeBoosters' }
+        '404': { $ref: '#/components/responses/Introuvable' }
+        '429': { $ref: '#/components/responses/TropDeRequetes' }
+    post:
+      operationId: creerCodeBoosters
+      summary: Crée un code de boosters ; renvoie le code et son lien, cette seule fois (administrateur)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [libelle, boosters, utilisations, expire]
+              properties:
+                libelle:
+                  type: string
+                  minLength: 1
+                  maxLength: 80
+                  description: >
+                    La réussite récompensée (espaces de début et de fin retirés) : le joueur qui utilise le code la voit.
+                  examples: [1re API publiée]
+                boosters:
+                  type: integer
+                  minimum: 1
+                  maximum: 20
+                  description: Boosters offerts à chaque joueur qui utilise le code.
+                utilisations:
+                  type: integer
+                  minimum: 1
+                  maximum: 1000
+                  description: Le nombre de joueurs qui peuvent utiliser le code (une fois chacun).
+                expire:
+                  type: string
+                  format: date
+                  description: >
+                    Dernier jour de validité : le code expire à la fin de ce jour (minuit UTC). Pas un jour passé.
+                  examples: ['2026-12-31']
+      responses:
+        '201':
+          description: Le code créé et son lien, qui ne seront plus jamais renvoyés.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [codeBoosters, code, lien]
+                properties:
+                  codeBoosters: { $ref: '#/components/schemas/CodeBoosters' }
+                  code: { type: string, examples: [ABCD-EFGH-JKLM-NPQR] }
+                  lien:
+                    type: string
+                    format: uri
+                    description: '`<adresse du site>/boosters?code=<code>`, qui remplit le code dans « Mes boosters ».'
+                    examples: ['https://hipmaster.web.app/boosters?code=ABCD-EFGH-JKLM-NPQR']
+        '400':
+          description: >
+            Corps invalide (libellé vide ou trop long, nombre de boosters ou de joueurs hors bornes, date passée ou mal
+            formée).
+          content:
+            application/problem+json:
+              schema: { $ref: '#/components/schemas/Probleme' }
+        '404': { $ref: '#/components/responses/Introuvable' }
+        '413': { $ref: '#/components/responses/Probleme' }
+        '429': { $ref: '#/components/responses/TropDeRequetes' }
+  /admin/codes-boosters/{id}/beneficiaires:
+    get:
+      operationId: beneficiairesCodeBoosters
+      summary: Les joueurs qui ont utilisé un code de boosters, du premier au dernier (administrateur)
+      description: >
+        Comptes supprimés exclus : leur trace disparaît avec eux (ADR 0031).
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Les bénéficiaires.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [beneficiaires]
+                properties:
+                  beneficiaires:
+                    type: array
+                    items:
+                      type: object
+                      required: [joueurId, pseudo, boosters, recuLe]
+                      properties:
+                        joueurId: { type: string, format: uuid }
+                        pseudo: { type: string }
+                        boosters: { type: integer, minimum: 1 }
+                        recuLe: { type: string, format: date-time }
+        '400': { $ref: '#/components/responses/Probleme' }
+        '404':
+          description: >
+            Appelant qui n'est pas administrateur (réponse d'une route inexistante), ou aucun code ne porte cet
+            identifiant, avec alors un titre qui le dit.
+          content:
+            application/problem+json:
+              schema: { $ref: '#/components/schemas/Probleme' }
+        '429': { $ref: '#/components/responses/TropDeRequetes' }
+  /admin/codes-boosters/{id}/revocation:
+    post:
+      operationId: revoquerCodeBoosters
+      summary: Révoque un code de boosters (administrateur)
+      description: >
+        Il expire aussitôt : il n'offre plus de booster ; les boosters déjà reçus restent.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Le code révoqué.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/CodeBoosters' }
+        '400': { $ref: '#/components/responses/Probleme' }
+        '404':
+          description: >
+            Appelant qui n'est pas administrateur (réponse d'une route inexistante), ou aucun code en cours ne porte cet
+            identifiant (inconnu, déjà expiré ou révoqué), avec alors un titre qui le dit.
+          content:
+            application/problem+json:
+              schema: { $ref: '#/components/schemas/Probleme' }
+        '429': { $ref: '#/components/responses/TropDeRequetes' }
 components:
   securitySchemes:
     jeton:
@@ -178,3 +323,34 @@ components:
           description: >
             `active` : le code crée encore des comptes ; `epuisee` : toutes ses utilisations sont consommées ;
             `expiree` : sa date limite est passée ; `revoquee` : révoquée par un administrateur ou la commande.
+    CodeBoosters:
+      type: object
+      required:
+        [id, libelle, boosters, utilisations, utilisationsMax, creeLe, expireLe, revoqueLe, statut]
+      properties:
+        id: { type: string, format: uuid }
+        libelle: { type: string }
+        boosters:
+          {
+            type: integer,
+            minimum: 1,
+            description: Boosters offerts à chaque joueur qui l'utilise.,
+          }
+        utilisations:
+          type: integer
+          minimum: 0
+          description: Joueurs qui ont utilisé ce code (chacun compte, même d'un compte supprimé depuis).
+        utilisationsMax:
+          { type: integer, minimum: 1, description: Joueurs qui peuvent utiliser le code au plus. }
+        creeLe: { type: string, format: date-time }
+        expireLe: { type: string, format: date-time }
+        revoqueLe:
+          type: [string, 'null']
+          format: date-time
+          description: Instant de la révocation ; `null` pour un code jamais révoqué.
+        statut:
+          type: string
+          enum: [actif, epuise, expire, revoque]
+          description: >
+            `actif` : le code offre encore des boosters ; `epuise` : toutes ses utilisations sont consommées ;
+            `expire` : sa date limite est passée ; `revoque` : révoqué par un administrateur ou la commande.

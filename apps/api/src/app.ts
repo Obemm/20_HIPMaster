@@ -64,13 +64,13 @@ export function construireApp(
     duels?: OptionsDuels;
     /** Expiration des sessions inutilisées (US-054) : durée, horloge. 90 jours par défaut. */
     sessions?: OptionsSessions;
-    /** Clé secrète des codes de récupération et d'invitation (ADR 0025, 0027) ; une clé publique par défaut. */
+    /** Clé secrète des codes de récupération, d'invitation et de boosters (ADR 0025, 0027, 0045) ; une clé publique par défaut. */
     cleCodes?: string;
     /** Création de compte réservée aux invités (ADR 0027) ; libre par défaut (développement, tests). */
     inscriptionSurInvitation?: boolean;
     /** Les comptes administrateurs (US-072, ADR 0029) ; personne par défaut. */
     administrateurs?: Administrateurs;
-    /** Adresse du site, pour les liens d'invitation ; le front de développement par défaut. */
+    /** Adresse du site, pour les liens d'invitation et de boosters ; le front de développement par défaut. */
     site?: string;
     /** Limites de débit par adresse (ADR 0025) ; aucune limitation sans elles (développement, tests). */
     limites?: LimitesDebit;
@@ -88,6 +88,8 @@ export function construireApp(
     administrateurs = AUCUN,
     limites,
   } = options;
+  /** Les limites de débit, à passer aux routes limitées ; rien sans limitation. */
+  const avecLimites = limites ? { limites } : {};
   const proxysDeConfiance = options.proxysDeConfiance ?? 0;
   const app = Fastify({
     ...(journal && {
@@ -165,7 +167,7 @@ export function construireApp(
 
   app.register(routesSante, { prefix: '/api/v1' });
   // Erreurs JavaScript des navigateurs, vers Error Reporting (US-051).
-  app.register(routesErreurs, { prefix: '/api/v1', ...(limites && { limites }) });
+  app.register(routesErreurs, { prefix: '/api/v1', ...avecLimites });
   app.register(routesRaretes, { prefix: '/api/v1' });
   app.register(routesCartes, { prefix: '/api/v1' });
   // Comptes invités (US-022), parties contre le bot (US-052) et duels : seulement quand une base est fournie
@@ -177,7 +179,7 @@ export function construireApp(
       cleCodes,
       inscriptionSurInvitation: options.inscriptionSurInvitation ?? false,
       administrateurs,
-      ...(limites && { limites }),
+      ...avecLimites,
     });
     // Routes réservées aux administrateurs, cachées derrière un 404 pour tout autre appelant (US-072, ADR 0029).
     app.register(routesAdministration, {
@@ -186,12 +188,14 @@ export function construireApp(
       cleCodes,
       administrateurs,
       site: options.site ?? SITE_DEVELOPPEMENT,
-      ...(limites && { limites }),
+      ...avecLimites,
     });
     app.register(routesBoosters, {
       prefix: '/api/v1',
       base: options.base,
+      cleCodes,
       ...(options.boosters && { boosters: options.boosters }),
+      ...avecLimites,
     });
     app.register(routesCollection, { prefix: '/api/v1', base: options.base });
     app.register(routesDuels, {
@@ -203,7 +207,7 @@ export function construireApp(
         ...(options.boosters && { boosters: options.boosters }),
         ...(options.scores && { scores: options.scores }),
       },
-      ...(limites && { limites }),
+      ...avecLimites,
     });
     // Parties contre le bot, gardées en base (ADR 0030).
     app.register(routesParties, {
@@ -212,7 +216,7 @@ export function construireApp(
       ...(options.parties && { parties: options.parties }),
       ...(options.boosters && { boosters: options.boosters }),
       ...(options.scores && { scores: options.scores }),
-      ...(limites && { limites }),
+      ...avecLimites,
     });
     // Score et classement (US-069).
     app.register(routesClassement, { prefix: '/api/v1', base: options.base });

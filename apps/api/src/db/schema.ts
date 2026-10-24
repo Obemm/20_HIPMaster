@@ -234,3 +234,57 @@ export const points = pgTable(
     index('points_joueur').on(table.joueurId, table.gagneLe),
   ],
 );
+
+/**
+ * Codes de boosters (US-070, ADR 0045) : le porteur du projet récompense une réussite de l'équipe par un code, qui
+ * offre des boosters tant qu'il lui reste des utilisations et qu'il n'a ni expiré ni été révoqué. La base n'en garde
+ * que l'empreinte, comme pour les invitations.
+ */
+export const codesBoosters = pgTable(
+  'codes_boosters',
+  {
+    id: uuid().primaryKey().defaultRandom(),
+    /** Empreinte HMAC-SHA-256 du code, d'usage `boosters` (ADR 0025, 0045) : le code lui-même n'est jamais stocké. */
+    empreinteCode: text().notNull().unique(),
+    /** La réussite récompensée (« 1re API publiée ») : le joueur qui utilise le code la voit. */
+    libelle: text().notNull(),
+    /** Boosters offerts à chaque joueur qui utilise le code. */
+    boosters: integer().notNull(),
+    utilisationsMax: integer().notNull(),
+    utilisations: integer().notNull().default(0),
+    expireLe: timestamp({ withTimezone: true }).notNull(),
+    creeLe: timestamp({ withTimezone: true }).notNull().defaultNow(),
+    /** Instant de la révocation, qui pose aussi `expireLe` ; vide pour un code jamais révoqué. */
+    revoqueLe: timestamp({ withTimezone: true }),
+  },
+  (table) => [
+    check('codes_boosters_boosters', sql`${table.boosters} between 1 and 20`),
+    check(
+      'codes_boosters_utilisations',
+      sql`${table.utilisationsMax} >= 1 and ${table.utilisations} between 0 and ${table.utilisationsMax}`,
+    ),
+  ],
+);
+
+/**
+ * Boosters reçus par code (US-070) : qui a utilisé quel code, et quand. Une seule ligne par joueur et par code : un
+ * joueur n'utilise un code qu'une fois. La trace disparaît avec le compte (ADR 0031).
+ */
+export const boostersOfferts = pgTable(
+  'boosters_offerts',
+  {
+    codeId: uuid()
+      .notNull()
+      .references(() => codesBoosters.id, { onDelete: 'cascade' }),
+    joueurId: uuid()
+      .notNull()
+      .references(() => joueurs.id, { onDelete: 'cascade' }),
+    boosters: integer().notNull(),
+    recuLe: timestamp({ withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    primaryKey({ columns: [table.codeId, table.joueurId] }),
+    // Supprimer un compte supprime ses lignes (cascade) : sans balayer la table (US-057).
+    index('boosters_offerts_joueur').on(table.joueurId),
+  ],
+);

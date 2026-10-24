@@ -7,9 +7,11 @@ import {
   effect,
   inject,
   Injector,
+  input,
   signal,
+  untracked,
 } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import type { Carte } from '../cartes/carte';
 import { DosCarte } from '../cartes/dos-carte';
@@ -38,6 +40,22 @@ interface Ouverture {
   boosters: Boosters;
 }
 
+/** Les boosters reçus par un code (US-070, ADR 0045). */
+interface BoostersRecus {
+  /** La réussite récompensée. */
+  libelle: string;
+  offerts: number;
+  boosters: Boosters;
+}
+
+/** « « 1re API publiée » : 3 boosters offerts ! » */
+export function annonceRecus({
+  libelle,
+  offerts,
+}: Pick<BoostersRecus, 'libelle' | 'offerts'>): string {
+  return `« ${libelle} » : ${offerts} ${offerts > 1 ? 'boosters offerts' : 'booster offert'} ! Ils vous attendent dans votre stock.`;
+}
+
 /**
  * Page « Mes boosters » (US-023) : le stock, la recharge, et l'ouverture qui révèle 5 cartes. Sans le catalogue, rien
  * ne s'ouvre : les cartes tirées ne pourraient pas être montrées (US-055).
@@ -45,6 +63,9 @@ interface Ouverture {
  * L'ouverture est un moment (US-062) : les paquets en stock se voient, les cartes arrivent face cachée avec leur
  * rareté au dos, et se retournent une à une, ou toutes d'un coup. Le tirage est fait par le serveur avant la mise en
  * scène (ADR 0019) : elle n'y change rien.
+ *
+ * Un code cadeau (US-070, ADR 0045) ajoute des boosters au stock ; un lien `/boosters?code=…` remplit le champ, et le
+ * code quitte l'adresse. Le joueur valide lui-même : un lien ouvert par erreur ne consomme rien.
  */
 @Component({
   selector: 'hip-boosters',
@@ -66,6 +87,15 @@ export class BoostersEcran {
   private readonly presence = inject(PresenceService);
   /** Le stock affiché dans la navigation (US-060), tenu à jour par chaque lecture de cette page. */
   private readonly stockNavigation = inject(StockBoostersService);
+  private readonly router = inject(Router);
+
+  /** Paramètre `?code=` : le code d'un lien de boosters offerts (US-070), qui remplit le champ. */
+  readonly code = input<string>();
+  protected readonly codeSaisi = signal('');
+  protected readonly occupeCode = signal(false);
+  protected readonly erreurCode = signal<string | null>(null);
+  /** Ce que vient d'apporter le dernier code, pour le joueur et les lecteurs d'écran. */
+  protected readonly recus = signal('');
 
   protected readonly catalogue = httpResource<Carte[]>(() => '/api/v1/cartes');
   private readonly parNumero = computed(
@@ -120,6 +150,16 @@ export class BoostersEcran {
     effect(() => {
       if (this.compte.joueur()) void this.charger();
     });
+    // Le code d'un lien remplit le champ, puis quitte l'adresse (historique, capture d'écran) : seulement avec un
+    // compte, qui pourra l'utiliser ; sans compte, le lien reste à rouvrir une fois le compte créé.
+    effect(() => {
+      const code = this.code()?.trim();
+      if (!code || !this.compte.joueur()) return;
+      untracked(() => {
+        this.codeSaisi.set(code);
+        void this.router.navigate([], { queryParams: { code: null }, replaceUrl: true });
+      });
+    });
     // Le stock se relit à la recharge, sauf pour un onglet caché ou délaissé : il réveillerait la base gratuite
     // (ADR 0021, US-055). Il se relira au retour du joueur.
     effect(() => {
@@ -156,6 +196,32 @@ export class BoostersEcran {
       await this.charger();
     } finally {
       this.occupe.set(false);
+    }
+  }
+
+  protected async utiliserCode(evenement: Event): Promise<void> {
+    evenement.preventDefault();
+    const code = this.codeSaisi().trim();
+    if (!code) return;
+    this.occupeCode.set(true);
+    this.erreurCode.set(null);
+    this.recus.set('');
+    try {
+      const recus = await firstValueFrom(
+        this.http.post<BoostersRecus>('/api/v1/moi/boosters/codes', { code }),
+      );
+      this.afficher(recus.boosters);
+      this.recus.set(annonceRecus(recus));
+      this.codeSaisi.set('');
+    } catch (erreur) {
+      const refuse = erreur instanceof HttpErrorResponse && erreur.status === 403;
+      this.erreurCode.set(
+        refuse
+          ? 'Ce code ne donne pas de booster : vérifiez-le. Il a pu expirer, être épuisé, ou vous l’avez déjà utilisé.'
+          : `Le code n’a pas pu être utilisé. ${expliquer(erreur)}`,
+      );
+    } finally {
+      this.occupeCode.set(false);
     }
   }
 

@@ -22,7 +22,11 @@ export interface OptionsBoosters {
 
 const hasardSur = () => randomInt(2 ** 32) / 2 ** 32;
 
-const versEtat = (calcul: ReturnType<typeof stockA>, regles: ReglesBoosters): EtatBoosters => ({
+/** Le stock tel que le renvoie l'API, à partir du calcul du domaine. */
+export const versEtat = (
+  calcul: ReturnType<typeof stockA>,
+  regles: ReglesBoosters,
+): EtatBoosters => ({
   stock: calcul.stock,
   plafond: regles.plafond,
   prochainDans: calcul.prochainDansMs === null ? null : Math.ceil(calcul.prochainDansMs / 1000),

@@ -34,6 +34,11 @@ export const LIMITES_DEBIT = {
   coupDuel: { max: 300, fenetreMs: MINUTE },
   /** `GET /duels/{id}` et `GET /moi/duels`, interrogés toutes les 3 s et toutes les 60 s (ADR 0020). */
   lectureDuel: { max: 600, fenetreMs: MINUTE },
+  /**
+   * `POST /moi/boosters/codes` : essais de codes de boosters (US-070, ADR 0045), assez pour une équipe entière derrière
+   * l'adresse de son bureau.
+   */
+  codeBoosters: { max: 60, fenetreMs: HEURE },
   /** Routes d'administration (US-072, ADR 0029), comptées une fois l'administrateur reconnu. */
   administration: { max: 60, fenetreMs: MINUTE },
   /** `POST /erreurs` : erreurs JavaScript des navigateurs (US-051), que le front plafonne déjà à 5 par page. */

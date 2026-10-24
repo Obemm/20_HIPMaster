@@ -6,6 +6,9 @@ info:
     Boosters du joueur connecté (US-023, ADR 0019). Cinq boosters sont offerts à la création du compte, puis un
     booster gratuit s'ajoute toutes les 10 minutes, jusqu'à un plafond de 10. Le serveur tire les cartes ; elles
     rejoignent la collection du joueur. Compte requis (`Authorization: Bearer <jeton>`, voir comptes.yaml).
+
+    Des boosters peuvent aussi être offerts par code (US-070, ADR 0045) : le porteur du projet récompense une réussite
+    de l'équipe par un code, que chaque joueur utilise une fois.
 servers:
   - url: /api/v1
 security: [{ jeton: [] }]
@@ -54,6 +57,61 @@ paths:
         '401': { $ref: '#/components/responses/Probleme' }
         '409':
           description: Aucun booster en stock (Problem Details).
+          content:
+            application/problem+json:
+              schema: { $ref: '#/components/schemas/Probleme' }
+  /moi/boosters/codes:
+    post:
+      operationId: utiliserCodeBoosters
+      summary: Utilise un code de boosters et reçoit les boosters qu'il offre
+      description: >
+        Les boosters reçus s'ajoutent au stock, quitte à dépasser le plafond de recharge (ADR 0019). Chaque joueur
+        n'utilise un code qu'une fois. Limite de débit (ADR 0025) : 60 essais par heure et par adresse (valeur de
+        production, multipliée par le réglage `LIMITES_DEBIT`), au-delà de quoi la réponse est 429 avec `Retry-After`.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [code]
+              properties:
+                code:
+                  type: string
+                  minLength: 1
+                  maxLength: 64
+                  description: Le code transmis, sans tenir compte de la casse, des espaces ni des tirets.
+                  examples: [ABCD-EFGH-JKLM-NPQR]
+      responses:
+        '201':
+          description: Les boosters reçus et le stock après réception.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [libelle, offerts, boosters]
+                properties:
+                  libelle:
+                    type: string
+                    description: La réussite récompensée.
+                    examples: [1re API publiée]
+                  offerts: { type: integer, minimum: 1, description: Boosters reçus. }
+                  boosters: { $ref: '#/components/schemas/Boosters' }
+        '400': { $ref: '#/components/responses/Probleme' }
+        '401': { $ref: '#/components/responses/Probleme' }
+        '403':
+          description: >
+            Code refusé, avec un seul message : inconnu, expiré, révoqué, épuisé ou déjà utilisé par ce joueur, sans dire
+            lequel. Rien n'est consommé.
+          content:
+            application/problem+json:
+              schema: { $ref: '#/components/schemas/Probleme' }
+        '429':
+          description: Limite de débit dépassée pour cette adresse (Problem Details, en-tête `Retry-After`).
+          headers:
+            Retry-After:
+              description: Secondes à attendre avant de réessayer.
+              schema: { type: integer, minimum: 0 }
           content:
             application/problem+json:
               schema: { $ref: '#/components/schemas/Probleme' }

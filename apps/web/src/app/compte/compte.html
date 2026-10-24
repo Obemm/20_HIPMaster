@@ -68,10 +68,11 @@
         Connecté en tant que {{ joueur.pseudo }}
       </h2>
       @if (joueur.administrateur) {
-        <p>
+        <p class="flex flex-wrap gap-2">
           <a routerLink="/inviter" class="bouton bouton-plein inline-block"
             >Inviter des collègues</a
           >
+          <a routerLink="/offrir" class="bouton bouton-contour inline-block">Offrir des boosters</a>
         </p>
       }
       <p class="text-texte-doux">

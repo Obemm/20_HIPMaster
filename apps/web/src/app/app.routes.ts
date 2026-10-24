@@ -86,5 +86,11 @@ export const routes: Routes = [
     loadComponent: () => import('./administration/inviter').then((m) => m.InviterEcran),
     title: 'Inviter — HIPMaster',
   },
+  // Réservée aux administrateurs, comme « Inviter » (US-070, ADR 0045).
+  {
+    path: 'offrir',
+    loadComponent: () => import('./administration/offrir').then((m) => m.OffrirEcran),
+    title: 'Offrir des boosters — HIPMaster',
+  },
   { path: '**', redirectTo: '' },
 ];

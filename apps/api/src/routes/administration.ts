@@ -2,6 +2,17 @@ import type { FastifyRequest } from 'fastify';
 import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
 import { z } from 'zod';
 import { type Administrateurs, estAdministrateur, TOUS } from '../comptes/administrateurs.ts';
+import {
+  beneficiairesCodeBoosters,
+  BOOSTERS_PAR_CODE_MAX,
+  creerCodeBoosters,
+  lienCodeBoosters,
+  lireCodeBoosters,
+  listerCodesBoosters,
+  type ResumeCodeBoosters,
+  revoquerCodeBoosters,
+  statutCodeBoosters,
+} from '../comptes/codes-boosters.ts';
 import { joueurDuJeton } from '../comptes/comptes.ts';
 import {
   creerInvitation,
@@ -20,7 +31,8 @@ import { limiter, type LimitesDebit } from '../limites.ts';
 import { jetonDe, refuser } from './comptes.ts';
 
 // Contrat : apps/api/openapi/administration.yaml (US-072, ADR 0029). Les invitations passent par les mêmes fonctions
-// que la commande `npm run invitation` (ADR 0027).
+// que la commande `npm run invitation` (ADR 0027), les codes de boosters par celles de `npm run code-boosters`
+// (US-070, ADR 0045).
 
 const schemaInvitation = z.object({
   id: z.uuid(),
@@ -32,6 +44,18 @@ const schemaInvitation = z.object({
   expireLe: z.iso.datetime(),
   revoqueeLe: z.iso.datetime().nullable(),
   statut: z.enum(['active', 'epuisee', 'expiree', 'revoquee']),
+});
+
+const schemaCodeBoosters = z.object({
+  id: z.uuid(),
+  libelle: z.string(),
+  boosters: z.int().min(1),
+  utilisations: z.int().min(0),
+  utilisationsMax: z.int().min(1),
+  creeLe: z.iso.datetime(),
+  expireLe: z.iso.datetime(),
+  revoqueLe: z.iso.datetime().nullable(),
+  statut: z.enum(['actif', 'epuise', 'expire', 'revoque']),
 });
 
 const parametres = z.object({ id: z.uuid() });
@@ -54,12 +78,32 @@ function vue(
   };
 }
 
+/** Un code de boosters tel que le voit l'administrateur : jamais le code ni son empreinte. */
+function vueCode(
+  code: ResumeCodeBoosters,
+  maintenant = new Date(),
+): z.infer<typeof schemaCodeBoosters> {
+  return {
+    id: code.id,
+    libelle: code.libelle,
+    boosters: code.boosters,
+    utilisations: code.utilisations,
+    utilisationsMax: code.utilisationsMax,
+    creeLe: code.creeLe.toISOString(),
+    expireLe: code.expireLe.toISOString(),
+    revoqueLe: code.revoqueLe?.toISOString() ?? null,
+    statut: statutCodeBoosters(code, maintenant),
+  };
+}
+
+const CODE_INCONNU = 'Aucun code de boosters ne porte cet identifiant';
+
 export const routesAdministration: FastifyPluginAsyncZod<{
   base: Base;
-  /** Clé secrète des codes d'invitation (ADR 0025, 0027). */
+  /** Clé secrète des codes d'invitation et de boosters (ADR 0025, 0027, 0045). */
   cleCodes: string;
   administrateurs: Administrateurs;
-  /** Adresse du site, pour le lien d'invitation. */
+  /** Adresse du site, pour les liens d'invitation et de boosters. */
   site: string;
   limites?: LimitesDebit;
 }> = async (app, { base, cleCodes, administrateurs, site, limites }) => {
@@ -153,6 +197,108 @@ export const routesAdministration: FastifyPluginAsyncZod<{
         'Invitation révoquée',
       );
       return vue(invitation);
+    },
+  );
+
+  app.get(
+    '/admin/codes-boosters',
+    {
+      config,
+      schema: { response: { 200: z.object({ codes: z.array(schemaCodeBoosters) }) } },
+    },
+    async () => {
+      const maintenant = new Date();
+      const codes = await listerCodesBoosters(base);
+      // Les plus récents d'abord, comme les invitations.
+      return { codes: codes.reverse().map((c) => vueCode(c, maintenant)) };
+    },
+  );
+
+  app.post(
+    '/admin/codes-boosters',
+    {
+      config,
+      schema: {
+        body: z.object({
+          libelle: z.string().trim().min(1).max(LIBELLE_MAX),
+          boosters: z.int().min(1).max(BOOSTERS_PAR_CODE_MAX),
+          utilisations: z.int().min(1).max(UTILISATIONS_MAX),
+          expire: z.iso.date(),
+        }),
+        response: {
+          201: z.object({ codeBoosters: schemaCodeBoosters, code: z.string(), lien: z.url() }),
+        },
+      },
+    },
+    async (requete, reponse) => {
+      const { libelle, boosters, utilisations, expire } = requete.body;
+      const expireLe = finDuJour(expire);
+      if (expireLe <= new Date()) return refuser(reponse, 400, 'La date limite est déjà passée');
+      const { id, code } = await creerCodeBoosters(
+        base,
+        { libelle, boosters, utilisations, expireLe },
+        cleCodes,
+      );
+      const codeBoosters = await lireCodeBoosters(base, id);
+      if (!codeBoosters) throw new Error('Code de boosters créé introuvable.');
+      // Jamais le code dans le journal : seulement qui a créé quel code.
+      requete.log.info(
+        { administrateur: administrateurDe.get(requete), codeBoosters: id, boosters, utilisations },
+        'Code de boosters créé',
+      );
+      return reponse
+        .status(201)
+        .send({ codeBoosters: vueCode(codeBoosters), code, lien: lienCodeBoosters(code, site) });
+    },
+  );
+
+  app.get(
+    '/admin/codes-boosters/:id/beneficiaires',
+    {
+      config,
+      schema: {
+        params: parametres,
+        response: {
+          200: z.object({
+            beneficiaires: z.array(
+              z.object({
+                joueurId: z.uuid(),
+                pseudo: z.string(),
+                boosters: z.int().min(1),
+                recuLe: z.iso.datetime(),
+              }),
+            ),
+          }),
+        },
+      },
+    },
+    async (requete, reponse) => {
+      const beneficiaires = await beneficiairesCodeBoosters(base, requete.params.id);
+      if (!beneficiaires) return refuser(reponse, 404, CODE_INCONNU);
+      return {
+        beneficiaires: beneficiaires.map((b) => ({ ...b, recuLe: b.recuLe.toISOString() })),
+      };
+    },
+  );
+
+  app.post(
+    '/admin/codes-boosters/:id/revocation',
+    { config, schema: { params: parametres, response: { 200: schemaCodeBoosters } } },
+    async (requete, reponse) => {
+      const { id } = requete.params;
+      const code = (await revoquerCodeBoosters(base, id)) ? await lireCodeBoosters(base, id) : null;
+      if (!code) {
+        return refuser(
+          reponse,
+          404,
+          'Aucun code de boosters en cours ne porte cet identifiant : inconnu, déjà expiré ou révoqué',
+        );
+      }
+      requete.log.info(
+        { administrateur: administrateurDe.get(requete), codeBoosters: id },
+        'Code de boosters révoqué',
+      );
+      return vueCode(code);
     },
   );
 };

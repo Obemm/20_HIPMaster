@@ -1,0 +1,240 @@
+<main class="mx-auto flex w-full max-w-xl flex-col gap-6 px-4 py-8 sm:px-6">
+  <p>
+    <a routerLink="/compte" class="lien text-sm">← Mon compte</a>
+  </p>
+  @if (administrateur()) {
+    <h1 class="titre-page">Offrir des boosters</h1>
+    <p class="text-texte-doux">
+      Récompensez une réussite de l’équipe : créez un code, puis envoyez son lien. Il ouvre la page
+      « Mes boosters » avec le code déjà rempli ; chaque joueur ne l’utilise qu’une fois.
+    </p>
+
+    @if (erreur()) {
+      <p role="alert" class="text-alerte">{{ erreur() }}</p>
+    }
+    <p role="status" class="text-sm">{{ info() }}</p>
+
+    @if (cree(); as c) {
+      <section
+        aria-labelledby="titre-cree"
+        class="panneau flex flex-col gap-3 border-2 border-action p-4"
+      >
+        <h2 id="titre-cree" tabindex="-1" class="text-xl font-extrabold focus:outline-none">
+          Code « {{ c.codeBoosters.libelle }} » créé
+        </h2>
+        <div class="flex flex-col gap-1">
+          <label for="lien-code" class="etiquette">Lien des boosters</label>
+          <input id="lien-code" readonly class="champ font-mono text-sm" [value]="c.lien" />
+        </div>
+        <p class="text-sm">
+          <strong>Copiez-le ou partagez-le maintenant</strong> : il ne sera plus jamais affiché.
+          {{ usage(c.codeBoosters) }}, {{ echeance(c.codeBoosters) }}. Code seul :
+          <span class="font-mono font-semibold">{{ c.code }}</span>
+        </p>
+        <p class="flex flex-wrap gap-2">
+          <button type="button" class="bouton bouton-plein" (click)="copier(c.lien)">
+            Copier le lien
+          </button>
+          @if (partageDisponible) {
+            <button type="button" class="bouton bouton-contour" (click)="partager(c)">
+              Partager
+            </button>
+          }
+          <button type="button" class="bouton bouton-contour" (click)="oublierLien()">
+            C’est envoyé
+          </button>
+        </p>
+        <p role="status" class="text-sm text-texte-doux">{{ copie() ? 'Lien copié.' : '' }}</p>
+      </section>
+    }
+
+    <section aria-labelledby="titre-nouveau" class="panneau flex flex-col gap-3 p-4">
+      <h2 id="titre-nouveau" tabindex="-1" class="text-xl font-extrabold focus:outline-none">
+        Nouveau code
+      </h2>
+      <form class="flex flex-col gap-3" (submit)="creer($event)">
+        <div class="flex flex-col gap-1">
+          <label for="libelle" class="etiquette">Réussite récompensée</label>
+          <input
+            id="libelle"
+            name="libelle"
+            autocomplete="off"
+            maxlength="80"
+            required
+            placeholder="1re API publiée"
+            aria-describedby="aide-libelle"
+            class="champ"
+            [value]="libelle()"
+            (input)="libelle.set($any($event.target).value)"
+          />
+          <p id="aide-libelle" class="text-sm text-texte-doux">
+            Les joueurs la voient en recevant leurs boosters.
+          </p>
+        </div>
+        <div class="flex flex-col gap-3 sm:flex-row">
+          <div class="flex flex-col gap-1 sm:flex-1">
+            <label for="boosters" class="etiquette">Boosters par joueur</label>
+            <input
+              id="boosters"
+              name="boosters"
+              type="number"
+              inputmode="numeric"
+              min="1"
+              max="20"
+              step="1"
+              required
+              class="champ"
+              [value]="boosters()"
+              (input)="boosters.set($any($event.target).value)"
+            />
+          </div>
+          <div class="flex flex-col gap-1 sm:flex-1">
+            <label for="utilisations" class="etiquette">Nombre de joueurs</label>
+            <input
+              id="utilisations"
+              name="utilisations"
+              type="number"
+              inputmode="numeric"
+              min="1"
+              max="1000"
+              step="1"
+              required
+              class="champ"
+              [value]="utilisations()"
+              (input)="utilisations.set($any($event.target).value)"
+            />
+          </div>
+        </div>
+        <div class="flex flex-col gap-1">
+          <label for="expire" class="etiquette">Date limite (incluse)</label>
+          <input
+            id="expire"
+            name="expire"
+            type="date"
+            required
+            class="champ"
+            [min]="aujourdhui"
+            [value]="expire()"
+            (input)="expire.set($any($event.target).value)"
+          />
+        </div>
+        <button type="submit" class="bouton bouton-jeu self-start" [disabled]="occupe()">
+          Créer le code
+        </button>
+      </form>
+    </section>
+
+    <section aria-labelledby="titre-codes" class="flex flex-col gap-3">
+      <h2 id="titre-codes" class="text-xl font-extrabold">Codes</h2>
+      @if (codes(); as liste) {
+        @if (liste.length === 0) {
+          <p class="text-texte-doux">Aucun code pour l’instant.</p>
+        } @else {
+          <ul class="flex flex-col gap-3">
+            @for (c of liste; track c.id) {
+              <li
+                [id]="'code-' + c.id"
+                tabindex="-1"
+                class="panneau flex flex-col gap-2 p-3 focus:outline-2 focus:outline-accent"
+              >
+                <p class="flex flex-wrap items-baseline justify-between gap-2">
+                  <span class="font-titre font-bold break-words">{{ c.libelle }}</span>
+                  <span
+                    class="statut"
+                    [class.statut-victoire]="c.statut === 'actif'"
+                    [class.statut-attente]="c.statut !== 'actif'"
+                    >{{ statut[c.statut] }}</span
+                  >
+                </p>
+                <p class="text-sm text-texte-doux">{{ usage(c) }} · {{ echeance(c) }}</p>
+                @if (beneficiaires().get(c.id); as liste) {
+                  @if (liste.length === 0) {
+                    <p class="text-sm">Personne n’a encore utilisé ce code.</p>
+                  } @else {
+                    <ul
+                      class="flex flex-col gap-1 text-sm"
+                      [attr.aria-label]="'Bénéficiaires de « ' + c.libelle + ' »'"
+                    >
+                      @for (b of liste; track b.joueurId) {
+                        <li>
+                          <span class="font-semibold break-words">{{ b.pseudo }}</span>
+                          <span class="text-texte-doux"> · {{ dateHeure(b.recuLe) }}</span>
+                        </li>
+                      }
+                    </ul>
+                  }
+                }
+                <p class="flex flex-wrap gap-2">
+                  @if (c.utilisations > 0) {
+                    <button
+                      type="button"
+                      class="bouton bouton-contour bouton-petit"
+                      [attr.aria-expanded]="beneficiaires().has(c.id)"
+                      [attr.aria-label]="'Qui l’a utilisé ? « ' + c.libelle + ' »'"
+                      [disabled]="occupe()"
+                      (click)="basculerBeneficiaires(c)"
+                    >
+                      Qui l’a utilisé ?
+                    </button>
+                  }
+                  @if ((c.statut === 'actif' || c.statut === 'epuise') && aRevoquer() !== c.id) {
+                    <button
+                      type="button"
+                      [id]="'revoquer-' + c.id"
+                      class="bouton bouton-contour bouton-petit"
+                      [attr.aria-label]="'Révoquer « ' + c.libelle + ' »'"
+                      (click)="demanderRevocation(c.id)"
+                    >
+                      Révoquer
+                    </button>
+                  }
+                </p>
+                @if (aRevoquer() === c.id) {
+                  <div
+                    class="flex flex-col gap-2"
+                    role="group"
+                    [attr.aria-label]="'Confirmer la révocation de « ' + c.libelle + ' »'"
+                  >
+                    <p class="text-sm font-semibold">
+                      Révoquer « {{ c.libelle }} » ? Il n’offrira plus de booster ; les boosters
+                      déjà reçus restent.
+                    </p>
+                    <p class="flex flex-wrap gap-2">
+                      <button
+                        type="button"
+                        class="bouton bouton-plein"
+                        [disabled]="occupe()"
+                        (click)="revoquer(c)"
+                      >
+                        Oui, révoquer
+                      </button>
+                      <button
+                        type="button"
+                        [id]="'garder-' + c.id"
+                        class="bouton bouton-contour"
+                        (click)="annulerRevocation(c.id)"
+                      >
+                        Non, le garder
+                      </button>
+                    </p>
+                  </div>
+                }
+              </li>
+            }
+          </ul>
+        }
+      } @else if (panne()) {
+        <hip-erreur-chargement
+          quoi="Les codes n’ont pas pu être chargés."
+          [erreur]="panne()"
+          [enCours]="enLecture()"
+          (reessayer)="charger()"
+        />
+      } @else {
+        <p>Chargement des codes…</p>
+      }
+    </section>
+  } @else if (!compte.pret()) {
+    <hip-etat-session />
+  }
+</main>
