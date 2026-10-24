@@ -2,14 +2,14 @@
 
 /** Cartes du set 1 qui ont une illustration : numéro → texte alternatif. */
 export const ILLUSTRATIONS_SET_1: Readonly<Record<number, string>> = {
-  1: "Un robot ambré de salle serveur, entouré de dossiers, de bandes perforées et d'horloges, dans un halo de lumière",
-  2: 'Illustration provisoire : une pile de documents sur fond bleu nuit, avec un anneau bleu',
-  3: 'Illustration provisoire : une pile de documents sur fond bleu nuit, avec un anneau bleu',
-  4: 'Illustration provisoire : une pile de documents sur fond bleu nuit',
-  5: 'Illustration provisoire : une pile de documents sur fond bleu nuit',
-  6: 'Illustration provisoire : une pile de documents sur fond bleu nuit',
-  7: 'Illustration provisoire : une pile de documents sur fond bleu nuit',
-  8: 'Illustration provisoire : une pile de documents sur fond bleu nuit',
+  1: 'Un vieux pélican mécanique en vol plané au-dessus de piles de cartons, la poche du bec grande ouverte et pleine de dossiers, un cadenas ouvert qui pend',
+  2: 'Un coursier mécanique blindé, à carapace de cadenas et queue en forme de clé, qui file dans un tunnel en portant des dossiers scellés',
+  3: "Une grande tortue dont la carapace est un classeur tend un document scellé à une petite tortue, sur un pont de pierre au-dessus d'un ravin",
+  4: 'Une chenille mécanique aux anneaux en forme de cases rampe sur une grande feuille, dans un jardin la nuit',
+  5: 'Un crabe mécanique aux pinces en règles graduées découpe une bande de papier en colonnes sur une table de découpe',
+  6: "Une araignée mécanique portant un cadran d'horloge sur le dos tisse sa toile contre une tour d'horloge, sous la pleine lune",
+  7: "Un gros hamster mécanique couché sur des dossiers au fond d'un bac de tri, dans une salle de tri postal à casiers",
+  8: "Une luciole mécanique à l'abdomen allumé, perchée au sommet d'une pile de dossiers ficelée qui sort d'un marais brumeux",
   9: 'Illustration provisoire : un moyeu relié à des connecteurs en étoile sur fond bleu nuit, avec un halo violet',
   10: 'Illustration provisoire : un moyeu relié à des connecteurs en étoile sur fond bleu nuit, avec un anneau bleu',
   11: 'Illustration provisoire : un moyeu relié à des connecteurs en étoile sur fond bleu nuit, avec un anneau bleu',

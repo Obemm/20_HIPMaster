@@ -38,3 +38,8 @@ En tant que **joueur de l'équipe d'intégration**, je veux **que chaque carte d
   avec un halo ; seule la couleur changeait). Nouvelle consigne : l'image de référence ne transmet que le rendu, chaque
   carte reçoit une créature à elle. SFTP refait ainsi (coursier blindé à carapace de cadenas), devenu la référence de
   rendu. Liste des 71 créatures, prompts et direction artistique réécrits, soumis au porteur avant la génération.
+- 2026-10-24 — famille Fichiers & Batch (1 à 8) : FTP refait (pélican facteur), 3 à 8 générées avec SFTP comme
+  référence de rendu. Le premier paquet reprenait le décor de SFTP (sol de câbles, bandes perforées) : à la demande du
+  porteur, les prompts imposent un décor propre à chaque carte et 3 à 8 ont été refaites ; quatre ont reçu une phrase
+  corrective (texte sur le document, décor trop proche d'une autre carte), consignée dans `set-1.json`. Les
+  originaux remplacés sont gardés hors du dépôt (`*-essai-*.jpeg`).
