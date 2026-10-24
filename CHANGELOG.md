@@ -7,6 +7,11 @@ Toutes les évolutions notables du projet sont consignées ici
 
 ### Ajouté
 
+- Le jeu s'installe sur l'écran d'accueil d'un téléphone (PWA) : manifeste web (nom, couleurs de nuit, icônes 192 et
+  512 px et masquable, affichage autonome) et service worker d'Angular en production, qui garde l'interface et les
+  illustrations en cache mais jamais l'API ; un bandeau propose « Recharger » quand une nouvelle version est prête,
+  un autre dit, hors ligne, que le jeu se joue en ligne. Un parcours e2e vérifie l'installabilité selon Chrome et
+  l'ouverture hors ligne sur le build de production (US-063, ADR 0038).
 - Socle de développement : TypeScript strict, ESLint, Prettier, Vitest, Playwright + axe-core, Husky, commitlint,
   CI GitHub Actions, Dependabot (US-001).
 - Next.js 16 + Tailwind CSS 4, page d'accueil provisoire en français (US-002, ADR 0001).

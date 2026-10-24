@@ -1,7 +1,7 @@
 # 0037 — Identité visuelle « nuit électrique » : jetons de marque, police auto-hébergée, coquille de nuit
 
 - **Date** : 2026-10-24
-- **Statut** : Proposée (choix pris de nuit, sans le porteur du projet : à valider à la relecture de la PR d'US-061)
+- **Statut** : Acceptée (validée par le porteur du projet le 2026-10-24)
 - **Référence Elis** : ADR-019 (Figma pour le design d'interface et le design system) — adapté, comme pour
   l'ADR 0012 : pas de maquette Figma, la charte vit dans le code (jetons et classes communes) et dans
   [la charte graphique](../produit/charte-graphique.md) ; « Design System Usage » (à l'état de brouillon au
