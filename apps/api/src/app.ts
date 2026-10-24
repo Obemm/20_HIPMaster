@@ -15,6 +15,7 @@ import { SITE_DEVELOPPEMENT } from './comptes/invitations.ts';
 import type { Base } from './db/index.ts';
 import type { OptionsDuels } from './duels/duels.ts';
 import type { OptionsParties } from './parties/parties.ts';
+import type { OptionsScores } from './scores/scores.ts';
 import { champsTrace, messageErreur } from './journaux.ts';
 import type { LimitesDebit } from './limites.ts';
 import { routesAdministration } from './routes/administration.ts';
@@ -23,6 +24,7 @@ import { routesCollection } from './routes/collection.ts';
 import { routesDuels } from './routes/duels.ts';
 import { routesErreurs } from './routes/erreurs.ts';
 import { routesCartes } from './routes/cartes.ts';
+import { routesClassement } from './routes/classement.ts';
 import { routesComptes } from './routes/comptes.ts';
 import { routesParties } from './routes/parties.ts';
 import { routesRaretes } from './routes/raretes.ts';
@@ -57,6 +59,8 @@ export function construireApp(
     parties?: OptionsParties;
     base?: Base;
     boosters?: OptionsBoosters;
+    /** Règles et horloge du score (US-069). */
+    scores?: OptionsScores;
     duels?: OptionsDuels;
     /** Expiration des sessions inutilisées (US-054) : durée, horloge. 90 jours par défaut. */
     sessions?: OptionsSessions;
@@ -194,7 +198,11 @@ export function construireApp(
       prefix: '/api/v1',
       base: options.base,
       // Les boosters gagnés en duel suivent les mêmes règles que contre le bot (US-038).
-      duels: { ...options.duels, ...(options.boosters && { boosters: options.boosters }) },
+      duels: {
+        ...options.duels,
+        ...(options.boosters && { boosters: options.boosters }),
+        ...(options.scores && { scores: options.scores }),
+      },
       ...(limites && { limites }),
     });
     // Parties contre le bot, gardées en base (ADR 0030).
@@ -203,8 +211,11 @@ export function construireApp(
       base: options.base,
       ...(options.parties && { parties: options.parties }),
       ...(options.boosters && { boosters: options.boosters }),
+      ...(options.scores && { scores: options.scores }),
       ...(limites && { limites }),
     });
+    // Score et classement (US-069).
+    app.register(routesClassement, { prefix: '/api/v1', base: options.base });
   }
 
   return app;

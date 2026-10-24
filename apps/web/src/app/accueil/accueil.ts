@@ -1,9 +1,10 @@
 import { httpResource } from '@angular/common/http';
-import { Component, computed, inject, input } from '@angular/core';
+import { Component, computed, effect, inject, input, untracked } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { StockBoostersService } from '../boosters/stock-boosters.service';
 import { type Carte, type Famille, ILLUSTRATIONS_FAMILLE, LIBELLES_FAMILLE } from '../cartes/carte';
 import { cartesVedettes, EventailCartes } from '../cartes/eventail-cartes';
+import { ClassementService, ordinal } from '../classement/classement.service';
 import { CollectionService } from '../collection/collection.service';
 import { CompteService } from '../compte/compte.service';
 import { MesDuelsService } from '../duels/mes-duels.service';
@@ -13,7 +14,7 @@ import { Icone } from '../icone';
 /**
  * L'accueil (US-061) : on comprend en un coup d'œil que c'est un jeu de cartes (trois cartes en éventail, la promesse
  * en une phrase) et on a envie d'y jouer (un appel à jouer, en or). Un visiteur voit comment on joue ; un joueur
- * connecté retrouve ses duels, ses boosters et sa collection. Avec un lien d'invitation (`?invitation=`), l'action
+ * connecté retrouve ses duels, ses boosters, sa collection et son score (US-069). Avec un lien d'invitation (`?invitation=`), l'action
  * principale devient « Créer mon compte ».
  */
 @Component({
@@ -27,6 +28,16 @@ export class Accueil {
   protected readonly duels = inject(MesDuelsService);
   protected readonly preferences = inject(PreferencesService);
   private readonly collection = inject(CollectionService);
+  private readonly classement = inject(ClassementService);
+  protected readonly ordinal = ordinal;
+  /** Le score du joueur connecté, et son rang (US-069). */
+  protected readonly score = computed(() => this.classement.classement()?.moi ?? null);
+
+  constructor() {
+    effect(() => {
+      if (this.compte.joueur()) untracked(() => void this.classement.charger());
+    });
+  }
 
   /** Paramètre `?invitation=` : le code d'un lien d'invitation, transmis à « Mon compte ». */
   readonly invitation = input<string>();

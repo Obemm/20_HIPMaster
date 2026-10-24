@@ -34,3 +34,10 @@ export {
   type LangueLien,
   type LienExterne,
 } from './fiches/index.ts';
+export {
+  cotesApresDuel,
+  pointsVictoireBot,
+  REGLES_SCORE,
+  type ReglesScore,
+  type ResultatDuel,
+} from './score.ts';

@@ -2,6 +2,7 @@ import { chargerEnv, lireConfig } from './config.ts';
 import { ouvrirBase } from './db/index.ts';
 import { creerJournal, messageErreur } from './journaux.ts';
 import { purger } from './purge/purge.ts';
+import { rattraperScores } from './scores/scores.ts';
 
 // Commande de purge (US-054, ADR 0035) : `node apps/api/src/purger.ts`, ou `npm run purge -w apps/api`. En production,
 // le job Cloud Run hipmaster-purge l'exécute avec l'image de l'API, chaque nuit, lancé par Cloud Scheduler ; l'API
@@ -28,6 +29,12 @@ try {
     journal.info(
       { ...bilan, dureeMs: Math.round(performance.now() - debut) },
       `Purge faite : ${bilan.sessions} session(s) expirée(s), ${bilan.defis} défi(s) jamais accepté(s), ${bilan.parties} partie(s) abandonnée(s) supprimés`,
+    );
+    // Les duels terminés que personne n'a relus comptent aussi dans les scores (US-069, ADR 0044).
+    const scores = await rattraperScores(base);
+    journal.info(
+      scores,
+      `Scores rattrapés : ${scores.duels} duel(s), ${scores.victoiresBot} victoire(s) contre le bot`,
     );
   } finally {
     await fermer();

@@ -8,13 +8,13 @@ export interface Conservation {
 }
 
 /**
- * Durées de conservation (US-053, ADR 0031). Décision du porteur du projet : les comptes, collections, récompenses et
- * résultats sont gardés sans limite, sauf suppression par le joueur ; seules des données techniques expirent, effacées
+ * Durées de conservation (US-053, ADR 0031). Décision du porteur du projet : les comptes, collections, récompenses,
+ * résultats et scores (US-069) sont gardés sans limite, sauf suppression par le joueur ; seules des données techniques expirent, effacées
  * chaque nuit par la purge (US-054, ADR 0035). Changer une durée ici, c'est changer la purge, et inversement.
  */
 export const CONSERVATIONS: readonly Conservation[] = [
   {
-    donnees: 'Votre compte, votre collection, vos récompenses et vos résultats',
+    donnees: 'Votre compte, votre collection, vos récompenses, vos résultats et votre score',
     duree: 'sans limite, jusqu’à ce que vous supprimiez votre compte',
   },
   {

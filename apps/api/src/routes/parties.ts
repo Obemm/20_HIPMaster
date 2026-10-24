@@ -4,6 +4,7 @@ import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
 import { z } from 'zod';
 import { empreinteJeton, joueurDuJeton } from '../comptes/comptes.ts';
 import { type OptionsBoosters, type Recompense, recompenserVictoire } from '../comptes/boosters.ts';
+import { compterVictoireBot, type OptionsScores } from '../scores/scores.ts';
 import { cacheCatalogue } from '../cache-catalogue.ts';
 import type { Base } from '../db/index.ts';
 import { limiter, type LimitesDebit } from '../limites.ts';
@@ -91,9 +92,10 @@ export const routesParties: FastifyPluginAsyncZod<{
   base: Base;
   parties?: OptionsParties;
   boosters?: OptionsBoosters;
+  scores?: OptionsScores;
   limites?: LimitesDebit;
 }> = async (app, options) => {
-  const { base, parties = {}, boosters, limites } = options;
+  const { base, parties = {}, boosters, scores, limites } = options;
 
   /** Une partie gagnée par un joueur connecté rapporte un booster, une seule fois (US-025). */
   async function avecRecompense({
@@ -104,10 +106,10 @@ export const routesParties: FastifyPluginAsyncZod<{
     if (!joueurId || estGuidee(partie.deck) || partie.vue.issue?.gagnant !== partie.vue.joueur) {
       return partie;
     }
-    return {
-      ...partie,
-      recompense: await recompenserVictoire(base, partie.id, joueurId, boosters),
-    };
+    const recompense = await recompenserVictoire(base, partie.id, joueurId, boosters);
+    // Le score (US-069) : les points de la victoire, selon le niveau du bot.
+    await compterVictoireBot(base, partie.id, joueurId, partie.niveau, scores);
+    return { ...partie, recompense };
   }
 
   async function envoyer(reponse: FastifyReply, lue: PartieLue) {

@@ -4,6 +4,7 @@ import { chargerEnv, type ConfigApi, lireConfigApi } from './config.ts';
 import { ouvrirBase } from './db/index.ts';
 import { creerJournal, messageErreur } from './journaux.ts';
 import { limitesMultipliees } from './limites.ts';
+import { rattraperScores } from './scores/scores.ts';
 
 chargerEnv();
 let config: ConfigApi;
@@ -25,6 +26,9 @@ const { base, fermer } = await ouvrirBase({
   pool: config.pool,
   surFermeture: (connexion) => journal.info({ connexion }, 'Connexion PostgreSQL fermée'),
 });
+// En développement, les scores se rattrapent au démarrage (US-069) ; en production, la commande de migration et la
+// purge de la nuit s'en chargent.
+if (!config.production) await rattraperScores(base);
 const app = construireApp({
   journal,
   projet: config.projetGcp,

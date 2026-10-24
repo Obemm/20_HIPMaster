@@ -29,6 +29,8 @@ const TRACES = {
   boosters: 'M12 3l8 4.5v9L12 21l-8-4.5v-9z M4 7.5l8 4.5 8-4.5 M12 12v9',
   collection: 'M4 4h7v7H4z M13 4h7v7h-7z M4 13h7v7H4z M13 13h7v7h-7z',
   compte: 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8z M4 21a8 8 0 0 1 16 0',
+  // Score et classement (US-069) : un podium.
+  classement: 'M3 20h18 M4 20v-6h5v6 M9 20V8h6v12 M15 20v-9h5v9',
 } as const;
 
 export type NomIcone = keyof typeof TRACES;

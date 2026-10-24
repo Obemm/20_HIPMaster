@@ -55,7 +55,7 @@
   @if (compte.joueur()) {
     <section aria-labelledby="titre-jeu" class="flex flex-col gap-4">
       <h2 id="titre-jeu" class="text-2xl font-extrabold">Votre jeu</h2>
-      <ul class="grid grid-cols-2 gap-3 md:grid-cols-4">
+      <ul class="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-5">
         <li class="col-span-2 md:col-span-1">
           <a routerLink="/duels" class="tuile">
             <span class="tuile-icone bg-linear-to-br from-rose-500 to-red-800"
@@ -114,6 +114,24 @@
             /></span>
             <span class="tuile-titre">Adversaire au hasard</span>
             <span class="text-sm text-texte-doux">Un duel avec le premier venu</span>
+          </a>
+        </li>
+        <li class="col-span-2 md:col-span-1">
+          <a routerLink="/classement" class="tuile">
+            <span class="tuile-icone bg-linear-to-br from-lime-400 to-emerald-700"
+              ><hip-icone nom="classement" class="size-6"
+            /></span>
+            <span class="tuile-titre">Classement</span>
+            <span class="text-sm text-texte-doux">
+              @if (score(); as s) {
+                {{ s.points }} {{ s.points > 1 ? 'points' : 'point' }}
+                @if (s.rang) {
+                  · {{ ordinal(s.rang) }}
+                }
+              } @else {
+                Votre score
+              }
+            </span>
           </a>
         </li>
       </ul>

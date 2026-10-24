@@ -1,6 +1,6 @@
 # EPIC-07 — Vie sociale
 
-- **Statut** : À affiner
+- **Statut** : En cours
 - **Priorité** : Could
 
 ## Objectif
@@ -13,7 +13,7 @@ Donner envie de revenir : échanger ses doubles, se comparer, jouer en groupe.
 
 ## Stories
 
-- [ ] US-069 — Un score et un classement
+- [x] US-069 — Un score et un classement
 
 À découper ensuite : échanges de cartes, guildes, enchères (sans argent réel).
 

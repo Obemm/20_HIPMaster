@@ -13,7 +13,7 @@ _Dernière mise à jour : 2026-10-24_
 | [EPIC-04 — Combat contre le bot](epics/EPIC-04-combat-bot.md)                                     | Must     | Terminé   | 15/15      |
 | [EPIC-05 — Illustrations des cartes](epics/EPIC-05-illustrations.md)                              | Should   | En cours  | 3/6        |
 | [EPIC-06 — Duels entre joueurs](epics/EPIC-06-duels-joueurs.md)                                   | Should   | Terminé   | 8/8        |
-| [EPIC-07 — Vie sociale](epics/EPIC-07-vie-sociale.md)                                             | Could    | À affiner | 0/1        |
+| [EPIC-07 — Vie sociale](epics/EPIC-07-vie-sociale.md)                                             | Could    | En cours  | 1/1        |
 | [EPIC-08 — Cartes proposées par la communauté IT](epics/EPIC-08-cartes-communaute.md)             | Should   | À affiner | 0/5        |
 | [EPIC-09 — Mise en ligne sur Google Cloud](epics/EPIC-09-mise-en-ligne-gcp.md)                    | Must     | Terminé   | 14/14      |
 | [EPIC-10 — Identité visuelle et confort sur téléphone](epics/EPIC-10-identite-visuelle-mobile.md) | Should   | Terminé   | 6/6        |
@@ -170,7 +170,7 @@ Demandes du porteur du projet, à affiner le moment venu.
 | Story                                                                                                           | Epic    | Priorité | Taille | Statut    |
 | --------------------------------------------------------------------------------------------------------------- | ------- | -------- | ------ | --------- |
 | [US-068 — Une revue visuelle de tout le site](stories/US-068-revue-visuelle.md)                                 | EPIC-10 | Should   | M      | Faite     |
-| [US-069 — Un score et un classement](stories/US-069-score-classement.md)                                        | EPIC-07 | Could    | L      | À affiner |
+| [US-069 — Un score et un classement](stories/US-069-score-classement.md)                                        | EPIC-07 | Could    | L      | Faite     |
 | [US-070 — Des boosters offerts par code, pour récompenser le travail réel](stories/US-070-boosters-par-code.md) | EPIC-03 | Should   | M      | À affiner |
 
 ## Plus tard — cartes de la communauté IT

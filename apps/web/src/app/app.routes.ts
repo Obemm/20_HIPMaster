@@ -65,6 +65,11 @@ export const routes: Routes = [
     title: 'Duel — HIPMaster',
   },
   {
+    path: 'classement',
+    loadComponent: () => import('./classement/classement').then((m) => m.ClassementEcran),
+    title: 'Classement — HIPMaster',
+  },
+  {
     path: 'compte',
     loadComponent: () => import('./compte/compte').then((m) => m.CompteEcran),
     title: 'Mon compte — HIPMaster',

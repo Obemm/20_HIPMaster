@@ -30,6 +30,13 @@ describe('À propos et confidentialité', () => {
     expect(page.querySelector('a[href="/compte"]')?.textContent).toContain('Mon compte');
   });
 
+  it('dit ce que les autres joueurs voient, et comment se retirer du classement (US-069)', async () => {
+    const page = await afficher();
+    expect(page.textContent).toContain('Ce que les autres joueurs voient');
+    expect(page.textContent).toContain('votre cote de duel');
+    expect(page.querySelector('a[href="/classement"]')).not.toBeNull();
+  });
+
   it('donne chaque durée de conservation, toutes appliquées (US-054)', async () => {
     const page = await afficher();
     const lignes = [...page.querySelectorAll('dl > div')].map((l) => l.textContent ?? '');

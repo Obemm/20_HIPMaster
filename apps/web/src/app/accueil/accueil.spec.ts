@@ -88,7 +88,7 @@ describe('Accueil', () => {
     expect(page.textContent).toContain('Vous êtes invité·e');
   });
 
-  it('un joueur connecté retrouve ses duels, ses boosters et sa collection', async () => {
+  it('un joueur connecté retrouve ses duels, ses boosters, sa collection et son score', async () => {
     const { fixture, http, page } = await afficher({ connecte: true });
     http.expectOne('/api/v1/cartes').flush(CATALOGUE);
     http.expectOne('/api/v1/moi/collection').flush({
@@ -97,12 +97,17 @@ describe('Accueil', () => {
         { numero: 18, exemplaires: 1 },
       ],
     });
+    http.expectOne('/api/v1/classement').flush({
+      moi: { pseudo: 'Ada', points: 12, cote: null, rang: 3, classe: true },
+      joueurs: [],
+    });
     await fixture.whenStable();
     fixture.detectChanges();
     expect(page.textContent).toContain('Bon retour, Ada !');
     expect(page.textContent).toContain('Votre jeu');
     expect(page.querySelector('a[href="/collection"]')?.textContent).toContain('2 / 4 cartes');
     expect(page.querySelector('a[href="/duels"]')?.textContent).toContain('Défiez un collègue');
+    expect(page.querySelector('a[href="/classement"]')?.textContent).toMatch(/12 points\s+· 3e/);
     expect(page.textContent).not.toContain('Comment on joue');
     expect(page.textContent).not.toContain('Créez votre compte');
   });

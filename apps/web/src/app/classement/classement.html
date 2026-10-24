@@ -1,0 +1,125 @@
+<main class="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 py-8 sm:px-6">
+  <div class="flex flex-col gap-2">
+    <p class="surtitre">Entre collègues</p>
+    <h1 class="titre-page">Classement</h1>
+  </div>
+
+  @if (!compte.joueur()) {
+    @if (compte.pret()) {
+      <p>
+        Le score et le classement sont réservés aux comptes :
+        <a routerLink="/compte" class="lien">créer un compte</a>
+        en un clic (un pseudo suffit).
+      </p>
+    } @else {
+      <hip-etat-session />
+    }
+  } @else if (classement(); as c) {
+    <section aria-labelledby="titre-score" class="panneau flex flex-col gap-3 p-4">
+      <h2 id="titre-score" class="text-xl font-extrabold">Mon score</h2>
+      <dl class="grid grid-cols-3 gap-3 text-center">
+        <div class="flex flex-col">
+          <dt class="text-sm text-texte-doux">Points</dt>
+          <dd class="font-titre text-3xl font-extrabold">{{ c.moi.points }}</dd>
+        </div>
+        <div class="flex flex-col">
+          <dt class="text-sm text-texte-doux">Rang</dt>
+          <dd class="font-titre text-3xl font-extrabold">
+            {{ c.moi.rang ? ordinal(c.moi.rang) : '—' }}
+          </dd>
+        </div>
+        <div class="flex flex-col">
+          <dt class="text-sm text-texte-doux">Cote de duel</dt>
+          <dd class="font-titre text-3xl font-extrabold">{{ c.moi.cote ?? '—' }}</dd>
+        </div>
+      </dl>
+      @if (!c.moi.classe) {
+        <p class="text-sm">
+          Vous êtes retiré·e du classement : les autres joueurs ne vous y voient pas.
+        </p>
+      } @else if (!c.moi.rang) {
+        <p class="text-sm">Vous entrez au classement avec votre premier point.</p>
+      }
+      <label class="flex items-start gap-3 rounded-lg border border-bordure p-3 text-sm">
+        <input
+          type="checkbox"
+          class="mt-0.5 size-5 shrink-0 accent-current"
+          [checked]="c.moi.classe"
+          [disabled]="enregistrement()"
+          (change)="basculer($event)"
+        />
+        <span>
+          <strong>Apparaître dans le classement</strong> : votre pseudo, vos points et votre cote
+          sont visibles des autres joueurs connectés. Retiré·e, votre score continue de compter, et
+          vous seul·e le voyez.
+        </span>
+      </label>
+      @if (erreurChoix(); as erreur) {
+        <p role="alert" class="text-alerte">{{ erreur }}</p>
+      }
+    </section>
+
+    <section aria-labelledby="titre-joueurs" class="flex flex-col gap-2">
+      <h2 id="titre-joueurs" class="text-xl font-extrabold">Les joueurs</h2>
+      @if (c.joueurs.length === 0) {
+        <p class="text-sm text-texte-doux">Personne n’a encore marqué de point.</p>
+      } @else {
+        <table class="w-full table-fixed text-left">
+          <caption class="sr-only">
+            Joueurs classés, du meilleur score au plus petit
+          </caption>
+          <thead class="text-sm text-texte-doux">
+            <tr>
+              <th scope="col" class="w-16 py-2 pr-2">Rang</th>
+              <th scope="col" class="py-2 pr-2">Joueur</th>
+              <th scope="col" class="w-20 py-2 pr-2 text-right">Points</th>
+              <th scope="col" class="w-16 py-2 text-right">Cote</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-bordure">
+            @for (j of c.joueurs; track $index) {
+              <tr [class.font-bold]="j.moi">
+                <td class="py-2 pr-2">{{ ordinal(j.rang) }}</td>
+                <td class="truncate py-2 pr-2">
+                  {{ j.pseudo }}
+                  @if (j.moi) {
+                    <span class="text-sm font-normal text-texte-doux">(vous)</span>
+                  }
+                </td>
+                <td class="py-2 pr-2 text-right">{{ j.points }}</td>
+                <td class="py-2 text-right">{{ j.cote ?? '—' }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+    </section>
+
+    <section aria-labelledby="titre-regle" class="panneau flex flex-col gap-2 p-4 text-sm">
+      <h2 id="titre-regle" class="text-xl font-extrabold">Comment on marque</h2>
+      <ul class="list-disc space-y-1 pl-5">
+        <li>
+          Victoire contre le bot : 1 point contre le Stagiaire, 2 contre le Batch de nuit, 3 contre
+          l’Architecte ESB, 5 contre l’Agent autonome.
+        </li>
+        <li>Duel : 5 points pour une victoire, 2 chacun pour un nul.</li>
+        <li>
+          Au plus 10 victoires comptées par jour ; la partie guidée ne compte pas. Les points ne
+          sont jamais remis à zéro.
+        </li>
+        <li>
+          La cote de duel part de 1000 : battre un joueur mieux coté que soi rapporte davantage.
+        </li>
+      </ul>
+    </section>
+  } @else if (echec(); as erreur) {
+    <hip-erreur-chargement
+      quoi="Le classement n’a pas pu être chargé."
+      [erreur]="erreur"
+      [enCours]="service.enCours()"
+      (reessayer)="service.charger()"
+    />
+  } @else {
+    <p aria-live="polite">Chargement du classement…</p>
+  }
+</main>

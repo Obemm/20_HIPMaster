@@ -170,3 +170,32 @@ ses 7 PV pleins et peut attaquer tout de suite, puisque webMethods IS le pouvait
 Quatre niveaux, du plus simple au plus fort : **Stagiaire** (facile : il joue comme un débutant), **Batch de nuit**
 (moyen), **Architecte ESB** (difficile) et le boss **Agent autonome** (expert). Un niveau **Architecte EDA** reste
 possible. Mode « bot contre bot » à regarder, qui sert aussi à équilibrer les cartes ([cartes-set-1.md](cartes-set-1.md)).
+
+## Score et classement (US-069)
+
+Décision : [ADR 0044](../decisions/0044-score-et-cote-de-duel.md). Le serveur seul compte les points ; rien n'est
+jamais remis à zéro.
+
+- **Points** (le score, qui ordonne le classement) :
+
+  | Partie gagnée                | Points |
+  | ---------------------------- | ------ |
+  | Contre le bot Stagiaire      | 1      |
+  | Contre le bot Batch de nuit  | 2      |
+  | Contre le bot Architecte ESB | 3      |
+  | Contre le bot Agent autonome | 5      |
+  | Duel gagné                   | 5      |
+  | Duel nul (pour chacun)       | 2      |
+
+  Une défaite, ou un nul contre le bot, ne rapporte rien ; la partie guidée non plus. Au plus **10 victoires
+  comptées par jour** (jour UTC, bot et duels confondus) : au-delà, une victoire ne rapporte plus de points jusqu'au
+  lendemain. Un duel gagné par abandon ou par forfait compte comme une victoire.
+
+- **Cote de duel**, à la manière d'Elo : chacun part de **1000** ; après chaque duel, le gagnant prend au perdant
+  entre 0 et 32 points de cote, d'autant plus que sa victoire était inattendue (16 entre deux cotes égales) ; un nul
+  rapproche les deux cotes. Un duel contre un compte supprimé ne change pas la cote.
+- **Classement** : les joueurs classés qui ont au moins un point, par points décroissants ; deux scores égaux
+  partagent le même rang. Chacun y figure par défaut, sous son pseudo, et peut s'en retirer : son score continue de
+  compter, et lui seul le voit.
+- **Historique** : à la mise en ligne du score, les duels déjà terminés ont été recomptés (points et cote), et les
+  victoires passées contre le bot comptées 1 point chacune (leur niveau n'était plus connu), plafond compris.

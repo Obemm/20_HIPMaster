@@ -1,0 +1,106 @@
+openapi: 3.1.0
+info:
+  title: HIPMaster — score et classement
+  version: 1.0.0
+  description: >
+    Score et classement entre collègues (US-069, ADR 0044). Le serveur seul compte les points : victoire contre le
+    bot 1, 2, 3 ou 5 points selon le niveau (Stagiaire, Batch de nuit, Architecte ESB, Agent autonome), victoire en
+    duel 5 points, duel nul 2 points chacun, au plus 10 victoires comptées par jour (UTC), sans remise à zéro. La cote
+    de duel suit chaque duel terminé, à la manière d'Elo (départ 1000). Le classement n'est visible que des joueurs
+    connectés ; chacun peut s'en retirer. Compte requis (`Authorization: Bearer <jeton>`, voir comptes.yaml).
+servers:
+  - url: /api/v1
+security: [{ jeton: [] }]
+paths:
+  /classement:
+    get:
+      operationId: lireClassement
+      summary: Mon score et mon rang, et les 100 meilleurs joueurs classés
+      responses:
+        '200':
+          description: Le classement vu par le joueur connecté.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [moi, joueurs]
+                properties:
+                  moi:
+                    allOf:
+                      - { $ref: '#/components/schemas/Score' }
+                      - type: object
+                        required: [rang, classe]
+                        properties:
+                          rang:
+                            type: [integer, 'null']
+                            minimum: 1
+                            description: >
+                              Rang parmi les joueurs classés ; `null` sans aucun point, ou une fois retiré du
+                              classement.
+                          classe:
+                            type: boolean
+                            description: Faux si le joueur s'est retiré du classement.
+                  joueurs:
+                    type: array
+                    maxItems: 100
+                    description: >
+                      Joueurs classés qui ont au moins un point, du meilleur score au plus petit (à égalité, par
+                      pseudo) ; deux scores égaux partagent le même rang.
+                    items:
+                      allOf:
+                        - { $ref: '#/components/schemas/Score' }
+                        - type: object
+                          required: [rang, moi]
+                          properties:
+                            rang: { type: integer, minimum: 1 }
+                            moi:
+                              { type: boolean, description: Vrai sur la ligne du joueur connecté. }
+        '401': { $ref: '#/components/responses/Probleme' }
+  /moi/classement:
+    put:
+      operationId: changerClassement
+      summary: Se retirer du classement, ou y revenir
+      description: >
+        Retiré, le joueur n'apparaît plus dans le classement des autres ; son score continue de compter et il le voit
+        toujours.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [classe]
+              additionalProperties: false
+              properties:
+                classe: { type: boolean, description: Faux pour se retirer du classement. }
+      responses:
+        '204': { description: Choix enregistré. }
+        '400': { $ref: '#/components/responses/Probleme' }
+        '401': { $ref: '#/components/responses/Probleme' }
+components:
+  securitySchemes:
+    jeton:
+      type: http
+      scheme: bearer
+  schemas:
+    Score:
+      type: object
+      required: [pseudo, points, cote]
+      properties:
+        pseudo: { type: string }
+        points: { type: integer, minimum: 0, description: Score, jamais remis à zéro. }
+        cote:
+          type: [integer, 'null']
+          description: Cote de duel ; `null` tant qu'aucun duel n'est compté.
+  responses:
+    Probleme:
+      description: Erreur (Problem Details).
+      content:
+        application/problem+json:
+          schema:
+            type: object
+            required: [type, title, status]
+            properties:
+              type: { type: string }
+              title: { type: string }
+              status: { type: integer }

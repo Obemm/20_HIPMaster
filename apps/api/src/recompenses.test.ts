@@ -25,6 +25,10 @@ const stock = async (id: string) =>
       .where(eq(joueurs.id, id))
   )[0]?.boosters;
 
+const score = async (id: string) =>
+  (await ouverte.base.select({ points: joueurs.points }).from(joueurs).where(eq(joueurs.id, id)))[0]
+    ?.points;
+
 describe('récompense de victoire', () => {
   const options = () => ({ maintenant: () => maintenant });
 
@@ -124,6 +128,8 @@ describe('parties récompensées', () => {
     }
     expect(partie).toMatchObject({ recompense: { booster: true, plafondAtteint: false } });
     expect(await stock(joueur.id)).toBe(6);
+    // Et 2 points de score, contre le Batch de nuit (US-069).
+    expect(await score(joueur.id)).toBe(2);
 
     // Relire la partie terminée ne rapporte rien de plus.
     const relue = await app.inject({
@@ -146,6 +152,7 @@ describe('parties récompensées', () => {
       await ouverte.base.select().from(recompenses).where(eq(recompenses.partieId, partie.id)),
     ).toHaveLength(1);
     expect(await stock(joueur.id)).toBe(6);
+    expect(await score(joueur.id)).toBe(2);
   });
 
   it('une partie jouée sans compte ne rapporte rien', async () => {

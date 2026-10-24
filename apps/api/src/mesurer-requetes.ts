@@ -12,7 +12,7 @@ import { ouvrirBase } from './db/index.ts';
 
 // Mesure des requêtes de l'API (US-057) : `DATABASE_URL=… node apps/api/src/mesurer-requetes.ts`. Crée une base
 // jetable sur le serveur de DATABASE_URL, la remplit d'un volume réaliste (un joueur assidu et ses 400 duels parmi
-// 6 000, 1 000 parties contre le bot, 20 000 récompenses), passe chaque requête au crible d'`EXPLAIN ANALYZE`
+// 6 000, 1 000 parties contre le bot, 20 000 récompenses et autant de points), passe chaque requête au crible d'`EXPLAIN ANALYZE`
 // puis supprime la base. Les requêtes reprennent le SQL de l'API ; elles sont à tenir à jour avec lui.
 
 const url = process.env['DATABASE_URL'];
@@ -74,6 +74,12 @@ try {
   await sql`insert into parties (deck, deck_bot, niveau, etat)
     select 'reseau', 'donnees', 'stagiaire', ${sql.json(etat as never)} from generate_series(1, 100)`;
   await sql`insert into collection (joueur_id, numero, exemplaires) select id, n, 1 from joueurs, generate_series(1, 60) n`;
+  // Score (US-069) : chaque récompense a ses points, les duels terminés sont comptés.
+  await sql`insert into points (partie_id, joueur_id, points, victoire, gagne_le)
+    select partie_id, joueur_id, 2, true, accordee_le from recompenses`;
+  await sql`update joueurs j set points = s.total, classe = (j.pseudo <> 'J7')
+    from (select joueur_id, sum(points) total from points group by joueur_id) s where s.joueur_id = j.id`;
+  await sql`update duels set score_compte = true where statut = 'termine'`;
   await sql`vacuum analyze`;
   const [{ taille } = { taille: '' }] =
     await sql`select pg_size_pretty(pg_total_relation_size('duels')) taille`;
@@ -161,6 +167,37 @@ try {
         nom: 'récompense : victoires du jour',
         texte: `select count(*) from recompenses where joueur_id = $1 and booster and accordee_le >= current_date`,
         parametres: [P],
+      },
+      {
+        nom: 'score : victoires comptées du jour (US-069)',
+        texte: `select count(*) from points where joueur_id = $1 and victoire and points > 0
+          and gagne_le >= current_date and gagne_le < current_date + 1`,
+        parametres: [P],
+      },
+      {
+        nom: 'classement : mon rang (US-069)',
+        texte: `select count(*) from joueurs where classe and points > (select points from joueurs where id = $1)`,
+        parametres: [P],
+      },
+      {
+        nom: 'classement : 100 premiers (US-069)',
+        texte: `select id, pseudo, points, cote, duels_cotes, rank() over (order by points desc) from joueurs
+          where classe and points > 0 order by points desc, pseudo limit 100`,
+        parametres: [],
+      },
+      {
+        nom: 'rattrapage : duels à compter (US-069)',
+        texte: `select id from duels where statut = 'termine' and not score_compte order by maj_le`,
+        parametres: [],
+      },
+      {
+        nom: 'rattrapage : victoires sans points (US-069)',
+        texte: `select r.partie_id, r.joueur_id, r.accordee_le from recompenses r
+          left join duels d on d.id = r.partie_id
+          left join points p on p.partie_id = r.partie_id and p.joueur_id = r.joueur_id
+          where d.id is null and p.partie_id is null and r.accordee_le < now() - interval '1 hour'
+          order by r.accordee_le`,
+        parametres: [],
       },
       {
         nom: 'collection du joueur',

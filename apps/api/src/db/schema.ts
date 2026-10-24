@@ -44,22 +44,39 @@ export const invitations = pgTable(
 );
 
 /** Comptes invités (US-022, ADR 0017) : un pseudo, et l'empreinte du code de récupération. */
-export const joueurs = pgTable('joueurs', {
-  id: uuid().primaryKey().defaultRandom(),
-  pseudo: text().notNull(),
-  /** Empreinte HMAC-SHA-256 du code de récupération (ADR 0025) : le code lui-même n'est jamais stocké. */
-  empreinteCode: text().notNull().unique(),
-  creeLe: timestamp({ withTimezone: true }).notNull().defaultNow(),
-  /** Boosters en stock (US-023, ADR 0019) : 5 offerts à la création du compte. */
-  boosters: integer().notNull().default(5),
-  /** Instant d'où court la prochaine recharge gratuite ; le stock se recalcule à la lecture. */
-  rechargeDepuis: timestamp({ withTimezone: true }).notNull().defaultNow(),
-  /**
-   * L'invitation qui a permis la création du compte (US-048) : suivre une campagne, retrouver les comptes d'une
-   * invitation qui aurait fuité. Vide pour un compte créé sans invitation (développement, comptes plus anciens).
-   */
-  invitationId: uuid().references(() => invitations.id, { onDelete: 'set null' }),
-});
+export const joueurs = pgTable(
+  'joueurs',
+  {
+    id: uuid().primaryKey().defaultRandom(),
+    pseudo: text().notNull(),
+    /** Empreinte HMAC-SHA-256 du code de récupération (ADR 0025) : le code lui-même n'est jamais stocké. */
+    empreinteCode: text().notNull().unique(),
+    creeLe: timestamp({ withTimezone: true }).notNull().defaultNow(),
+    /** Boosters en stock (US-023, ADR 0019) : 5 offerts à la création du compte. */
+    boosters: integer().notNull().default(5),
+    /** Instant d'où court la prochaine recharge gratuite ; le stock se recalcule à la lecture. */
+    rechargeDepuis: timestamp({ withTimezone: true }).notNull().defaultNow(),
+    /**
+     * L'invitation qui a permis la création du compte (US-048) : suivre une campagne, retrouver les comptes d'une
+     * invitation qui aurait fuité. Vide pour un compte créé sans invitation (développement, comptes plus anciens).
+     */
+    invitationId: uuid().references(() => invitations.id, { onDelete: 'set null' }),
+    /** Score (US-069, ADR 0044) : la somme des points de la table `points`, tenue à jour à chaque gain. */
+    points: integer().notNull().default(0),
+    /** Cote de duel, à la manière d'Elo (ADR 0044). */
+    cote: integer().notNull().default(1000),
+    /** Duels comptés dans la cote : sans duel, la cote n'est pas montrée. */
+    duelsCotes: integer().notNull().default(0),
+    /** Faux : le joueur s'est retiré du classement ; il voit toujours son score. */
+    classe: boolean().notNull().default(true),
+  },
+  // Le classement (US-069) : les joueurs classés, par score décroissant.
+  (table) => [
+    index('joueurs_classement')
+      .on(table.points.desc())
+      .where(sql`${table.classe}`),
+  ],
+);
 
 /** Sessions ouvertes (une par appareil) : l'empreinte SHA-256 du jeton, jamais le jeton. */
 export const sessions = pgTable(
@@ -143,6 +160,8 @@ export const duels = pgTable(
     etat: jsonb().$type<EtatPartie>(),
     creeLe: timestamp({ withTimezone: true }).notNull().defaultNow(),
     majLe: timestamp({ withTimezone: true }).notNull().defaultNow(),
+    /** Vrai une fois le duel terminé compté dans les scores et les cotes (US-069) : il ne l'est qu'une fois. */
+    scoreCompte: boolean().notNull().default(false),
   },
   // Index d'US-057 : les duels d'un joueur, les plus récents d'abord (« Mes duels », dernier adversaire), et les défis
   // en attente (file des duels ouverts, purge des défis expirés).
@@ -152,6 +171,10 @@ export const duels = pgTable(
     index('duels_attente')
       .on(table.creeLe)
       .where(sql`${table.statut} = 'attente'`),
+    // Les duels terminés pas encore comptés, que le rattrapage des scores reprend dans l'ordre (US-069).
+    index('duels_a_compter')
+      .on(table.majLe)
+      .where(sql`${table.statut} = 'termine' and not ${table.scoreCompte}`),
   ],
 );
 
@@ -185,5 +208,29 @@ export const parties = pgTable(
     index('parties_joueur').on(table.joueurId),
     index('parties_session').on(table.session),
     check('parties_proprietaire', sql`(${table.joueurId} is null) = (${table.session} is null)`),
+  ],
+);
+
+/**
+ * Registre des points (US-069, ADR 0044) : une ligne par partie et par joueur qui y a gagné quelque chose (victoire
+ * contre le bot, victoire ou nul en duel), ce qui garantit qu'une partie ne compte qu'une fois. `points` vaut 0 pour
+ * une victoire au-delà du plafond quotidien. Conservé avec le compte, supprimé avec lui.
+ */
+export const points = pgTable(
+  'points',
+  {
+    partieId: uuid().notNull(),
+    joueurId: uuid()
+      .notNull()
+      .references(() => joueurs.id, { onDelete: 'cascade' }),
+    points: integer().notNull(),
+    /** Une victoire (comptée dans le plafond quotidien), ou un nul. */
+    victoire: boolean().notNull(),
+    gagneLe: timestamp({ withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    primaryKey({ columns: [table.partieId, table.joueurId] }),
+    // Les victoires du jour d'un joueur (plafond quotidien).
+    index('points_joueur').on(table.joueurId, table.gagneLe),
   ],
 );

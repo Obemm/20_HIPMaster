@@ -34,6 +34,7 @@ import { type OptionsBoosters, type Recompense, recompenserVictoire } from '../c
 import type { Base } from '../db/index.ts';
 import { duels, joueurs } from '../db/schema.ts';
 import { tirerGraine } from '../hasard.ts';
+import { compterDuel, type OptionsScores } from '../scores/scores.ts';
 
 /** Duels entre joueurs (US-032, ADR 0020) : l'état vit en base, chacun ne reçoit que sa vue. */
 
@@ -91,6 +92,8 @@ export interface OptionsDuels {
   delaiTourMs?: number;
   /** Règles et horloge des boosters gagnés (US-038). */
   boosters?: OptionsBoosters;
+  /** Règles du score (US-069). */
+  scores?: OptionsScores;
 }
 
 /** Le pseudo affiché à la place d'un joueur qui a supprimé son compte (US-053, ADR 0031). */
@@ -222,6 +225,10 @@ async function visible(
 ): Promise<DuelVisible> {
   const noms = await pseudos(base, ligne);
   const moi = campDe(ligne, joueurId);
+  // Le duel terminé compte dans les scores à sa première lecture (US-069) ; la purge de la nuit rattrape les autres.
+  if (ligne.statut === 'termine' && !ligne.scoreCompte) {
+    await compterDuel(base, ligne.id, options.scores);
+  }
   const recompense = await recompenseDuel(base, ligne, joueurId, options);
   const etat = ligne.etat;
   let vue: DuelVisible['vue'] = null;

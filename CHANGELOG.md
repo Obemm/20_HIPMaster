@@ -7,6 +7,13 @@ Toutes les évolutions notables du projet sont consignées ici
 
 ### Ajouté
 
+- Un score et un classement entre collègues : une victoire contre le bot rapporte 1, 2, 3 ou 5 points selon le
+  niveau, un duel gagné 5 points, un duel nul 2 points chacun, au plus 10 victoires comptées par jour, sans remise à
+  zéro ; une cote de duel à la manière d'Elo (départ 1000) suit chaque duel. Page « Classement » (mon score, mon rang,
+  ma cote, les joueurs classés) et tuile sur l'accueil ; chacun peut se retirer du classement, et la page de
+  confidentialité dit ce que les autres voient. Comptés par le serveur (`GET /api/v1/classement`,
+  `PUT /api/v1/moi/classement`) ; les victoires et duels d'avant le score sont rattrapés au déploiement
+  (US-069, ADR 0044).
 - Une première partie guidée : « Apprendre à jouer (5 min) », proposé sur l'accueil et l'écran « Jouer » tant qu'on
   ne l'a pas fait, rejoue toujours la même partie (decks d'initiation et graine fixes, contre Stagiaire). Une bulle
   par étape (poser, finir son tour, attaquer le SI, décommissionner, la Garde, la riposte) met en évidence le geste
