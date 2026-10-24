@@ -7,6 +7,11 @@ Toutes les évolutions notables du projet sont consignées ici
 
 ### Ajouté
 
+- Le jeu s'installe sur l'écran d'accueil d'un téléphone (PWA) : manifeste web (nom, couleurs de nuit, icônes 192 et
+  512 px et masquable, affichage autonome) et service worker d'Angular en production, qui garde l'interface et les
+  illustrations en cache mais jamais l'API ; un bandeau propose « Recharger » quand une nouvelle version est prête,
+  un autre dit, hors ligne, que le jeu se joue en ligne. Un parcours e2e vérifie l'installabilité selon Chrome et
+  l'ouverture hors ligne sur le build de production (US-063, ADR 0038).
 - Socle de développement : TypeScript strict, ESLint, Prettier, Vitest, Playwright + axe-core, Husky, commitlint,
   CI GitHub Actions, Dependabot (US-001).
 - Next.js 16 + Tailwind CSS 4, page d'accueil provisoire en français (US-002, ADR 0001).
@@ -189,6 +194,28 @@ Toutes les évolutions notables du projet sont consignées ici
 
 ### Modifié
 
+- Ouvrir un booster devient un moment : les paquets en stock sont dessinés (feuille métallisée, logo) ; les cartes
+  arrivent face cachée, distribuées une à une, la rareté lisible sur leur dos (liseré, halo, nom) ; on les retourne
+  d'un appui, ou toutes avec « Tout révéler » ; une épique ou une légendaire jaillit d'un éclat de lumière. Chaque
+  retournement est annoncé aux lecteurs d'écran et le focus passe à la carte suivante. Aucune animation si le système
+  demande de les réduire ; le tirage reste fait par le serveur (US-062).
+- Revue visuelle de tout le site avec la nouvelle identité : sur « Jouer », la difficulté en tuiles et les decks en
+  boîtes de jeu (trois cartes phares en éventail, « Jouer avec… » en or), la règle en bref repliée ; « Mes duels »
+  en cartes avec l'initiale de l'adversaire et une pastille d'état (À vous, Son tour, Victoire…) ; « Finir mon tour »,
+  « Ouvrir un booster », « Relever le défi », « Créer mon compte » et « Créer l'invitation » en or ; collection avec
+  jauge dorée et raretés en cadres de carte ; filtres, champs, compte, confidentialité et invitations en panneaux ;
+  pied de page signé. Les liens « ← Accueil » qui restaient disparaissent. Charte graphique complétée des composants
+  d'écran et des gabarits (US-068).
+- Une identité de jeu : ambiance « nuit électrique » reprise des illustrations (fond bleu nuit, halos, trame de
+  points, thème clair conservé), bandeau et barre d'onglets de nuit dans les deux thèmes, indigo électrique pour les
+  liens et la sélection, boutons en relief et en or pour l'action principale de chaque écran, police de titres Exo 2
+  servie par le site, logo (deux cartes en éventail), favicon, icône d'écran d'accueil et aperçu des liens partagés
+  (Open Graph). Cartes avec gemme de Débit et chiffres en relief. L'accueil montre trois cartes en éventail dès le
+  premier écran du téléphone, la promesse du jeu et « Jouer contre le bot » ; un visiteur y lit comment on joue, un
+  joueur connecté retrouve ses duels, boosters et collection ; un lien d'invitation fait de « Créer mon compte »
+  l'action principale, et « Mon compte » accueille l'invité avec les cartes. Les chances par booster passent sur
+  l'écran des boosters ; « Projet en cours de construction » disparaît. Contrastes AA des jetons vérifiés par un test,
+  animations coupées si le système le demande ; charte graphique dans `docs/produit` (US-061, ADR 0037).
 - Les parties contre le bot sont gardées en base au lieu de la mémoire de l'API : elles survivent aux déploiements,
   aux arrêts à zéro et aux redémarrages, et expirent après 24 heures sans coup joué (une lecture ne compte pas), ce
   que dit désormais l'écran de partie. Chaque action, tour du bot compris, s'écrit en une seule fois à condition que
@@ -234,6 +261,8 @@ Toutes les évolutions notables du projet sont consignées ici
 
 ### Corrigé
 
+- Téléphone : les cartes de la main montrent toujours leur attaque et leurs PV ; sur une petite carte, l'illustration
+  rétrécit et la ligne type · famille s'efface, le nom tient sur deux lignes (US-068).
 - Partie : choisir une carte ou un composant pendant le message « Avant de finir votre tour » le referme ; la fiche
   de détail se posait par-dessus et cachait ses boutons (US-065).
 - Scripts d'exploitation sous Windows : les corps JSON envoyés aux API Google passent par un fichier, car un argument

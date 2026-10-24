@@ -1,6 +1,6 @@
 # EPIC-10 — Identité visuelle et confort sur téléphone
 
-- **Statut** : En cours
+- **Statut** : Terminé
 - **Priorité** : Should
 
 ## Objectif
@@ -20,10 +20,10 @@ la [revue avant mise en ligne](../../revues/2026-10-22-revue-mise-en-ligne.md)).
 
 - [x] US-059 — Un plateau de partie qui tient dans un écran de téléphone
 - [x] US-060 — Une navigation pensée pour le téléphone
-- [ ] US-061 — Une identité visuelle et un accueil qui donnent envie
-- [ ] US-062 — Ouvrir un booster, un vrai moment
-- [ ] US-063 — Installer le jeu sur son téléphone (PWA)
-- [ ] US-068 — Une revue visuelle de tout le site
+- [x] US-061 — Une identité visuelle et un accueil qui donnent envie
+- [x] US-062 — Ouvrir un booster, un vrai moment
+- [x] US-063 — Installer le jeu sur son téléphone (PWA)
+- [x] US-068 — Une revue visuelle de tout le site
 
 Ordre suggéré : US-059 et US-060 avant d'envoyer les invitations (EPIC-09, lot 2), puis US-061, US-063 et US-062.
 

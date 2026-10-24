@@ -1,7 +1,7 @@
 @if (visible()) {
   <button
     type="button"
-    class="flex items-center gap-2 self-start rounded-lg border-2 border-accent px-3 py-2 font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+    class="bouton bouton-contour self-start"
     [attr.aria-expanded]="ouverte()"
     [attr.aria-controls]="id"
     (click)="basculer()"
@@ -49,7 +49,7 @@
                     target="_blank"
                     rel="noopener noreferrer"
                     [attr.hreflang]="lien.langue"
-                    class="inline-flex items-baseline gap-1 font-semibold underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                    class="lien inline-flex items-baseline gap-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
                     >{{ lien.titre }}<hip-icone nom="externe" class="size-4 self-center" /><span
                       class="sr-only"
                     >

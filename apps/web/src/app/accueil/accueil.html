@@ -1,47 +1,164 @@
-<main class="mx-auto flex w-full max-w-3xl flex-1 flex-col justify-center gap-6 px-6 py-24">
-  <h1 class="text-4xl font-bold tracking-tight">HIPMaster</h1>
-  <p class="text-lg text-texte-doux">
-    Le jeu de cartes de la plateforme d’intégration : du FTP aux agents d’IA, collectionne les
-    technologies et défie tes collègues.
-  </p>
-
-  <p class="flex flex-wrap gap-3">
-    <a
-      routerLink="/jouer"
-      class="inline-block rounded-lg bg-accent px-4 py-3 font-semibold text-sur-accent underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-    >
-      Jouer contre le bot
-    </a>
-    <a
-      routerLink="/cartes"
-      class="inline-block rounded-lg border-2 border-accent px-4 py-3 font-semibold underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-    >
-      Voir le catalogue des cartes
-    </a>
-  </p>
-
-  <section aria-labelledby="titre-raretes" class="rounded-lg border border-bordure p-4">
-    <h2 id="titre-raretes" class="mb-2 text-lg font-semibold">Chances par booster</h2>
-    @if (raretes.hasValue()) {
-      <ul class="grid grid-cols-2 gap-2 sm:grid-cols-4">
-        @for (r of raretes.value(); track r.rarete) {
-          <li class="rounded bg-surface px-3 py-2">
-            <span class="block text-sm text-texte-doux">{{ libelles[r.rarete] }}</span>
-            <span class="text-xl font-semibold">{{ enPourcentage(r.chance) }} %</span>
-          </li>
+<main
+  class="mx-auto flex w-full max-w-6xl flex-col gap-12 px-4 pt-6 pb-12 sm:px-6 md:gap-16 md:pt-14"
+>
+  <section
+    aria-labelledby="titre-accueil"
+    class="grid items-center gap-6 md:grid-cols-[minmax(0,1fr)_minmax(0,30rem)] md:gap-10"
+  >
+    <div class="flex flex-col items-start gap-4">
+      <p class="surtitre">Jeu de cartes à collectionner</p>
+      <h1 id="titre-accueil" class="titre-hero"><span class="text-or">HIP</span>Master</h1>
+      <p class="max-w-xl text-lg text-texte-doux sm:text-xl">
+        Le jeu de cartes de l’intégration : du FTP aux agents d’IA, collectionne les briques de la
+        plateforme et défie tes collègues.
+      </p>
+      @if (compte.joueur(); as joueur) {
+        <p class="font-titre text-lg font-bold">Bon retour, {{ joueur.pseudo }} !</p>
+      }
+      <p class="flex w-full flex-col gap-3 pt-2 sm:w-auto sm:flex-row sm:flex-wrap">
+        @if (codeInvitation() && !compte.joueur()) {
+          <a
+            routerLink="/compte"
+            [queryParams]="{ invitation: codeInvitation() }"
+            class="bouton bouton-jeu bouton-large"
+            >Créer mon compte</a
+          >
+        } @else {
+          <a routerLink="/jouer" class="bouton bouton-jeu bouton-large"
+            ><hip-icone nom="jouer" class="size-5" />Jouer contre le bot</a
+          >
         }
-      </ul>
-    } @else if (raretes.error()) {
-      <hip-erreur-chargement
-        quoi="Les chances par booster n’ont pas pu être chargées."
-        [erreur]="raretes.error()"
-        [enCours]="raretes.isLoading()"
-        (reessayer)="raretes.reload()"
-      />
-    } @else {
-      <p>Chargement…</p>
-    }
+        <a routerLink="/cartes" class="bouton bouton-contour bouton-large">Découvrir les cartes</a>
+      </p>
+      @if (compte.pret() && !compte.joueur()) {
+        <p class="text-sm text-texte-doux">
+          @if (codeInvitation()) {
+            Vous êtes invité·e : un pseudo suffit, et 5 boosters vous attendent.
+          } @else {
+            Invité·e ? <a routerLink="/compte" class="lien">Créez votre compte</a> : un pseudo
+            suffit, et 5 boosters vous attendent.
+          }
+        </p>
+      }
+    </div>
+    <!-- Sur téléphone, les cartes d'abord : on voit le jeu avant de lire. -->
+    <hip-eventail-cartes [cartes]="vedettes()" class="-order-1 md:order-none" />
   </section>
 
-  <p class="text-sm text-texte-doux">Projet en cours de construction.</p>
+  @if (compte.joueur()) {
+    <section aria-labelledby="titre-jeu" class="flex flex-col gap-4">
+      <h2 id="titre-jeu" class="text-2xl font-extrabold">Votre jeu</h2>
+      <ul class="grid grid-cols-2 gap-3 md:grid-cols-4">
+        <li class="col-span-2 md:col-span-1">
+          <a routerLink="/duels" class="tuile">
+            <span class="tuile-icone bg-linear-to-br from-rose-500 to-red-800"
+              ><hip-icone nom="duels" class="size-6"
+            /></span>
+            <span class="tuile-titre">Duels</span>
+            <span class="text-sm text-texte-doux">
+              @switch (duels.aMonTour()) {
+                @case (0) {
+                  Défiez un collègue
+                }
+                @case (1) {
+                  1 duel où c’est à vous
+                }
+                @default {
+                  {{ duels.aMonTour() }} duels où c’est à vous
+                }
+              }
+            </span>
+          </a>
+        </li>
+        <li>
+          <a routerLink="/boosters" class="tuile">
+            <span class="tuile-icone bg-linear-to-br from-amber-400 to-orange-700"
+              ><hip-icone nom="boosters" class="size-6"
+            /></span>
+            <span class="tuile-titre">Boosters</span>
+            <span class="text-sm text-texte-doux">
+              @if (stock.stock(); as enStock) {
+                {{ enStock }} en stock
+              } @else {
+                Le prochain arrive
+              }
+            </span>
+          </a>
+        </li>
+        <li>
+          <a routerLink="/collection" class="tuile">
+            <span class="tuile-icone bg-linear-to-br from-indigo-400 to-violet-700"
+              ><hip-icone nom="collection" class="size-6"
+            /></span>
+            <span class="tuile-titre">Collection</span>
+            <span class="text-sm text-texte-doux">
+              @if (progression(); as p) {
+                {{ p.obtenues }} / {{ p.total }} cartes
+              } @else {
+                Vos cartes
+              }
+            </span>
+          </a>
+        </li>
+        <li class="col-span-2 md:col-span-1">
+          <a routerLink="/duels/hasard" class="tuile">
+            <span class="tuile-icone bg-linear-to-br from-cyan-400 to-sky-700"
+              ><hip-icone nom="jouer" class="size-6"
+            /></span>
+            <span class="tuile-titre">Adversaire au hasard</span>
+            <span class="text-sm text-texte-doux">Un duel avec le premier venu</span>
+          </a>
+        </li>
+      </ul>
+    </section>
+  } @else {
+    <section aria-labelledby="titre-comment" class="flex flex-col gap-4">
+      <h2 id="titre-comment" class="text-2xl font-extrabold">Comment on joue</h2>
+      <ol class="grid gap-3 md:grid-cols-3">
+        <li class="panneau flex gap-4 p-4">
+          <span class="etape" aria-hidden="true">1</span>
+          <div class="flex flex-col gap-1">
+            <h3 class="text-lg font-bold">Des boosters à ouvrir</h3>
+            <p class="text-texte-doux">
+              Cinq cartes par booster, et un booster gratuit qui revient régulièrement.
+            </p>
+          </div>
+        </li>
+        <li class="panneau flex gap-4 p-4">
+          <span class="etape" aria-hidden="true">2</span>
+          <div class="flex flex-col gap-1">
+            <h3 class="text-lg font-bold">Une collection à compléter</h3>
+            <p class="text-texte-doux">
+              Chaque carte est une brique de l’intégration, avec sa fiche « En savoir plus ».
+            </p>
+          </div>
+        </li>
+        <li class="panneau flex gap-4 p-4">
+          <span class="etape" aria-hidden="true">3</span>
+          <div class="flex flex-col gap-1">
+            <h3 class="text-lg font-bold">Des duels à gagner</h3>
+            <p class="text-texte-doux">
+              Contre le bot, à quatre niveaux, ou contre un collègue, au tour par tour.
+            </p>
+          </div>
+        </li>
+      </ol>
+    </section>
+  }
+
+  <section aria-labelledby="titre-familles" class="flex flex-col gap-4">
+    <h2 id="titre-familles" class="text-2xl font-extrabold">Huit familles, toute l’intégration</h2>
+    <ul class="flex flex-wrap gap-2">
+      @for (f of familles; track f.famille) {
+        <li class="puce gap-2 bg-surface py-1 pr-3 pl-1 text-sm shadow-sm">
+          <span
+            class="flex size-7 items-center justify-center rounded-full bg-linear-to-br text-white"
+            [class]="f.fond"
+            ><hip-icone [nom]="f.famille" class="size-4"
+          /></span>
+          {{ f.libelle }}
+        </li>
+      }
+    </ul>
+  </section>
 </main>

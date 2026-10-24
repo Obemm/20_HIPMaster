@@ -31,6 +31,9 @@ export default defineConfig({
     trace: 'retain-on-failure',
     // Animations réduites, comme pour un joueur qui l'a demandé : le journal de partie s'affiche d'un coup (US-042).
     reducedMotion: 'reduce',
+    // Sans service worker (US-063) : ses requêtes échapperaient aux pannes simulées par `page.route`. Le parcours de
+    // la PWA (pwa.spec.ts) le réactive.
+    serviceWorkers: 'block',
   },
   projects: [
     {

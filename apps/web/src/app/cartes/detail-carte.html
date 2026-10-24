@@ -23,7 +23,9 @@
 
       <div class="flex min-w-0 flex-1 flex-col gap-5">
         <div>
-          <h2 id="titre-detail" class="pr-10 text-2xl font-bold tracking-tight">{{ c.nom }}</h2>
+          <h2 id="titre-detail" class="pr-10 text-3xl font-extrabold tracking-tight">
+            {{ c.nom }}
+          </h2>
           <p class="mt-2 flex flex-wrap items-center gap-2">
             <span
               class="rounded-md border-2 border-cadre bg-fond-carte px-2 py-0.5 text-sm font-semibold"
@@ -37,24 +39,24 @@
         </div>
 
         <dl class="grid grid-cols-3 gap-2">
-          <div class="flex flex-col items-center rounded-xl border border-bordure p-2">
+          <div class="flex flex-col items-center rounded-xl bg-surface-haute p-2">
             <dt class="flex items-center gap-1 text-sm text-texte-doux">
               <hip-icone nom="debit" class="size-4 text-amber-600 dark:text-amber-400" />Débit
             </dt>
-            <dd class="text-2xl font-bold">{{ c.cout }}</dd>
+            <dd class="font-titre text-3xl font-extrabold">{{ c.cout }}</dd>
           </div>
           @if (c.attaque !== undefined) {
-            <div class="flex flex-col items-center rounded-xl border border-bordure p-2">
+            <div class="flex flex-col items-center rounded-xl bg-surface-haute p-2">
               <dt class="flex items-center gap-1 text-sm text-texte-doux">
                 <hip-icone nom="attaque" class="size-4 text-red-600 dark:text-red-400" />Attaque
               </dt>
-              <dd class="text-2xl font-bold">{{ c.attaque }}</dd>
+              <dd class="font-titre text-3xl font-extrabold">{{ c.attaque }}</dd>
             </div>
-            <div class="flex flex-col items-center rounded-xl border border-bordure p-2">
+            <div class="flex flex-col items-center rounded-xl bg-surface-haute p-2">
               <dt class="flex items-center gap-1 text-sm text-texte-doux">
                 <hip-icone nom="pv" class="size-4 text-blue-600 dark:text-blue-400" />PV
               </dt>
-              <dd class="text-2xl font-bold">{{ c.pv }}</dd>
+              <dd class="font-titre text-3xl font-extrabold">{{ c.pv }}</dd>
             </div>
           }
         </dl>
@@ -78,11 +80,9 @@
         @if (c.origine !== undefined) {
           <p>
             Évolution de
-            <a
-              [routerLink]="[retour(), c.origine]"
-              class="font-semibold underline underline-offset-4"
-              >{{ origine.hasValue() ? origine.value().nom : 'la carte n° ' + c.origine }}</a
-            >
+            <a [routerLink]="[retour(), c.origine]" class="lien">{{
+              origine.hasValue() ? origine.value().nom : 'la carte n° ' + c.origine
+            }}</a>
             : elle se pose à sa place.
           </p>
         }
@@ -110,8 +110,8 @@
           </section>
         }
 
-        <section aria-labelledby="titre-en-vrai" class="rounded-xl bg-surface p-3">
-          <h3 id="titre-en-vrai" class="mb-1 font-semibold">En vrai</h3>
+        <section aria-labelledby="titre-en-vrai" class="panneau border-l-4 border-l-accent p-3">
+          <h3 id="titre-en-vrai" class="mb-1 font-bold">En vrai</h3>
           <p>{{ c.enVrai }}</p>
         </section>
 

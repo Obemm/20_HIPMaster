@@ -16,9 +16,10 @@ _Dernière mise à jour : 2026-10-24_
 | [EPIC-07 — Vie sociale](epics/EPIC-07-vie-sociale.md)                                             | Could    | À affiner | 0/1        |
 | [EPIC-08 — Cartes proposées par la communauté IT](epics/EPIC-08-cartes-communaute.md)             | Should   | À affiner | 0/5        |
 | [EPIC-09 — Mise en ligne sur Google Cloud](epics/EPIC-09-mise-en-ligne-gcp.md)                    | Must     | En cours  | 13/14      |
-| [EPIC-10 — Identité visuelle et confort sur téléphone](epics/EPIC-10-identite-visuelle-mobile.md) | Should   | En cours  | 2/6        |
+| [EPIC-10 — Identité visuelle et confort sur téléphone](epics/EPIC-10-identite-visuelle-mobile.md) | Should   | Terminé   | 6/6        |
 | [EPIC-11 — Apprendre à jouer](epics/EPIC-11-apprendre-a-jouer.md)                                 | Should   | En cours  | 1/3        |
 | [EPIC-12 — Des cartes qui enseignent](epics/EPIC-12-cartes-qui-enseignent.md)                     | Must     | En cours  | 1/2        |
+| [EPIC-13 — Un set 2 : architecture et pratiques](epics/EPIC-13-set-2-architecture-pratiques.md)   | Could    | À affiner | 0/1        |
 
 ## Itération 0 (en cours) — fondations
 
@@ -145,9 +146,9 @@ Google Cloud, Firebase Hosting et une base Neon gratuite (ADR 0021, accepté le 
 | [US-054 — Des sessions qui expirent et des données qui ne s'accumulent pas](stories/US-054-sessions-purge.md)                         | EPIC-09 | Should   | M      | 3   | Faite     |
 | [US-057 — Des requêtes légères : index, lectures bornées, cache et chargement à la demande](stories/US-057-requetes-legeres-cache.md) | EPIC-09 | Should   | M      | 3   | À affiner |
 | [US-058 — Des duels équitables : hasard imprévisible et appariement sûr](stories/US-058-duels-equitables.md)                          | EPIC-09 | Should   | S      | 3   | Faite     |
-| [US-061 — Une identité visuelle et un accueil qui donnent envie](stories/US-061-accueil-identite-visuelle.md)                         | EPIC-10 | Should   | M      | 3   | À affiner |
-| [US-063 — Installer le jeu sur son téléphone (PWA)](stories/US-063-pwa-installable.md)                                                | EPIC-10 | Could    | S      | 3   | À affiner |
-| [US-062 — Ouvrir un booster, un vrai moment](stories/US-062-ouverture-booster-mise-en-scene.md)                                       | EPIC-10 | Could    | M      | 3   | À affiner |
+| [US-061 — Une identité visuelle et un accueil qui donnent envie](stories/US-061-accueil-identite-visuelle.md)                         | EPIC-10 | Should   | M      | 3   | Faite     |
+| [US-063 — Installer le jeu sur son téléphone (PWA)](stories/US-063-pwa-installable.md)                                                | EPIC-10 | Could    | S      | 3   | Faite     |
+| [US-062 — Ouvrir un booster, un vrai moment](stories/US-062-ouverture-booster-mise-en-scene.md)                                       | EPIC-10 | Could    | M      | 3   | Faite     |
 | [US-067 — Une première partie guidée](stories/US-067-premiere-partie-guidee.md)                                                       | EPIC-11 | Should   | L      | 3   | À affiner |
 
 ## Acculturation — des cartes qui enseignent
@@ -166,7 +167,7 @@ Demandes du porteur du projet, à affiner le moment venu.
 
 | Story                                                                                                           | Epic    | Priorité | Taille | Statut    |
 | --------------------------------------------------------------------------------------------------------------- | ------- | -------- | ------ | --------- |
-| [US-068 — Une revue visuelle de tout le site](stories/US-068-revue-visuelle.md)                                 | EPIC-10 | Should   | M      | À affiner |
+| [US-068 — Une revue visuelle de tout le site](stories/US-068-revue-visuelle.md)                                 | EPIC-10 | Should   | M      | Faite     |
 | [US-069 — Un score et un classement](stories/US-069-score-classement.md)                                        | EPIC-07 | Could    | L      | À affiner |
 | [US-070 — Des boosters offerts par code, pour récompenser le travail réel](stories/US-070-boosters-par-code.md) | EPIC-03 | Should   | M      | À affiner |
 
@@ -183,3 +184,4 @@ catalogue, set d'accueil).
 | [US-029 — Relire et instruire les propositions](stories/US-029-relire-propositions.md)         | EPIC-08 | Should   | M      | À affiner |
 | [US-030 — Intégrer une carte acceptée au catalogue](stories/US-030-integrer-carte-acceptee.md) | EPIC-08 | Should   | M      | À affiner |
 | [US-031 — Créditer les contributeurs](stories/US-031-crediter-contributeurs.md)                | EPIC-08 | Could    | S      | À affiner |
+| [US-076 — Concevoir le set 2 : DDD, microservices, DevOps](stories/US-076-concevoir-set-2.md)  | EPIC-13 | Could    | L      | À affiner |

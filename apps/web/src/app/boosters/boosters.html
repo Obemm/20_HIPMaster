@@ -1,31 +1,47 @@
 <main class="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 py-8 sm:px-6">
-  <h1 class="text-3xl font-bold tracking-tight">Mes boosters</h1>
+  <div class="flex flex-col gap-2">
+    <p class="surtitre">5 cartes par booster</p>
+    <h1 class="titre-page">Mes boosters</h1>
+  </div>
 
   @if (compte.joueur()) {
-    <section aria-labelledby="titre-stock" class="flex flex-col gap-3">
+    <section aria-labelledby="titre-stock" class="panneau flex flex-col gap-4 p-4 sm:p-6">
       <h2 id="titre-stock" class="sr-only">Stock</h2>
       @if (boosters(); as b) {
-        <p class="text-lg">
-          <strong>{{ b.stock }}</strong> booster{{ b.stock > 1 ? 's' : '' }} en stock
-          <span class="text-texte-doux">(au plus {{ b.plafond }})</span>
-        </p>
-        <p class="text-texte-doux">
-          @if (attente(); as attente) {
-            Prochain booster gratuit dans {{ attente }}.
-          } @else if (b.prochainDans === null) {
-            Stock plein : ouvrez un booster pour relancer la recharge.
-          }
-        </p>
-        <p>
-          <button
-            type="button"
-            class="rounded-lg bg-accent px-4 py-3 font-semibold text-sur-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:opacity-60"
-            [disabled]="occupe() || b.stock === 0 || !catalogue.hasValue()"
-            (click)="ouvrir()"
-          >
-            Ouvrir un booster
-          </button>
-        </p>
+        <div class="flex flex-col items-center gap-4 sm:flex-row sm:gap-8">
+          <!-- Les paquets en stock, en éventail ; le nombre exact est dit à côté. -->
+          <div class="pile-paquets min-h-36 shrink-0">
+            @for (i of paquets(); track i) {
+              <hip-paquet-booster [class.secoue]="occupe() && i === 0" />
+            } @empty {
+              <hip-paquet-booster class="opacity-40 grayscale" />
+            }
+          </div>
+          <div class="flex flex-col items-center gap-3 text-center sm:items-start sm:text-left">
+            <p class="text-lg">
+              <strong class="font-titre text-3xl font-black">{{ b.stock }}</strong>
+              booster{{ b.stock > 1 ? 's' : '' }} en stock
+              <span class="text-texte-doux">(au plus {{ b.plafond }})</span>
+            </p>
+            <p class="text-texte-doux">
+              @if (attente(); as attente) {
+                Prochain booster gratuit dans {{ attente }}.
+              } @else if (b.prochainDans === null) {
+                Stock plein : ouvrez un booster pour relancer la recharge.
+              }
+            </p>
+            <p>
+              <button
+                type="button"
+                class="bouton bouton-jeu bouton-large"
+                [disabled]="occupe() || b.stock === 0 || !catalogue.hasValue()"
+                (click)="ouvrir()"
+              >
+                {{ occupe() ? 'Ouverture…' : 'Ouvrir un booster' }}
+              </button>
+            </p>
+          </div>
+        </div>
         @if (catalogue.error()) {
           <hip-erreur-chargement
             quoi="Les cartes n’ont pas pu être chargées : sans elles, un booster ouvert ne pourrait pas vous les montrer."
@@ -52,40 +68,84 @@
       }
     </section>
 
-    <section aria-labelledby="titre-tirage" aria-live="polite" class="flex flex-col gap-3">
+    <section aria-labelledby="titre-tirage" class="flex flex-col gap-3">
       @if (revelees().length > 0) {
-        <h2 id="titre-tirage" class="text-lg font-semibold">
-          Votre booster : {{ revelees().length }} cartes,
-          {{
-            nouvelles() === 0
-              ? 'aucune nouvelle'
-              : nouvelles() + ' nouvelle' + (nouvelles() > 1 ? 's' : '')
-          }}
-        </h2>
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <h2 id="titre-tirage" tabindex="-1" class="text-xl font-extrabold focus:outline-none">
+            @if (toutesRetournees()) {
+              Votre booster : {{ revelees().length }} cartes,
+              {{
+                nouvelles() === 0
+                  ? 'aucune nouvelle'
+                  : nouvelles() + ' nouvelle' + (nouvelles() > 1 ? 's' : '')
+              }}
+            } @else {
+              Votre booster : {{ revelees().length }} cartes à retourner
+            }
+          </h2>
+          @if (!toutesRetournees()) {
+            <button
+              type="button"
+              class="bouton bouton-contour bouton-petit"
+              (click)="toutRetourner()"
+            >
+              Tout révéler
+            </button>
+          }
+        </div>
+        @if (!toutesRetournees()) {
+          <p class="text-texte-doux">
+            Touchez une carte pour la retourner : sa rareté se lit déjà sur son dos.
+          </p>
+        }
         <ul class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
           @for (r of revelees(); track r.rang) {
-            <li class="revelation flex flex-col gap-2" [style.animation-delay.ms]="r.rang * 100">
-              <p class="h-6 text-sm font-semibold">
-                @if (r.nouvelle) {
-                  <span class="rounded bg-accent px-2 py-0.5 text-sur-accent">Nouvelle !</span>
+            <li class="flex flex-col gap-2">
+              <p class="h-7 text-sm font-semibold">
+                @if (r.retournee && r.nouvelle) {
+                  <span class="statut statut-a-jouer">Nouvelle !</span>
                 }
               </p>
-              <hip-vignette-carte
-                [carte]="r.carte"
-                [lien]="['/cartes', r.carte.numero.toString()]"
-              />
+              @if (r.retournee) {
+                <div class="retournement" [class]="'eclat-' + r.carte.rarete">
+                  <hip-vignette-carte
+                    [carte]="r.carte"
+                    [lien]="['/cartes', r.carte.numero.toString()]"
+                  />
+                </div>
+              } @else {
+                <button
+                  type="button"
+                  class="carte-cachee"
+                  [class]="'cadre-' + r.carte.rarete"
+                  [id]="'carte-cachee-' + r.rang"
+                  [style.animation-delay.ms]="r.rang * 90"
+                  (click)="retourner(r.rang)"
+                >
+                  <hip-dos-carte />
+                  <span class="font-titre font-bold"
+                    ><span class="sr-only">Retourner la carte {{ r.rang + 1 }} : </span
+                    ><span aria-hidden="true">{{ symbolesRarete[r.carte.rarete] }} </span
+                    >{{ libellesRarete[r.carte.rarete] }}</span
+                  >
+                </button>
+              }
             </li>
           }
         </ul>
       }
+      <p role="status" class="sr-only">{{ annonce() }}</p>
     </section>
   } @else if (compte.pret()) {
     <p>
       Les boosters remplissent votre collection : il faut un compte pour la garder.
-      <a routerLink="/compte" class="font-semibold underline underline-offset-4">Créer un compte</a>
+      <a routerLink="/compte" class="lien">Créer un compte</a>
       en un clic (un pseudo suffit) : 5 boosters vous sont offerts.
     </p>
   } @else {
     <hip-etat-session />
   }
+
+  <!-- Les chances de chaque rareté, avec un compte ou sans (déplacées de l'accueil, US-061). -->
+  <hip-chances-booster />
 </main>

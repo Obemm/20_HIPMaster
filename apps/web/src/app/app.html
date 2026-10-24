@@ -1,9 +1,14 @@
-<header class="border-b border-bordure">
+<!-- Hors ligne, ou nouvelle version prête : un bandeau en haut de l'écran (US-063). -->
+<hip-etat-application />
+<!-- La coquille (bandeau et barre d'onglets) reste de nuit dans les deux thèmes (ADR 0037). -->
+<header class="coquille border-b border-bordure bg-fond text-texte">
   <div class="mx-auto flex w-full max-w-6xl items-center justify-between gap-3 px-4 sm:px-6">
     <a
       routerLink="/"
-      class="flex min-h-11 items-center font-bold tracking-tight focus-visible:outline-2 focus-visible:outline-accent"
-      >HIPMaster</a
+      class="flex min-h-11 items-center gap-2 font-titre text-xl font-extrabold tracking-tight focus-visible:outline-2 focus-visible:outline-accent"
+      ><img src="logo.svg" alt="" width="32" height="32" class="size-8" /><span
+        ><span class="text-action">HIP</span>Master</span
+      ></a
     >
     <!--
       Une seule navigation (US-060) : barre d'onglets fixée en bas sous 768 px, dans le bandeau au-delà. En partie, elle
@@ -63,11 +68,15 @@
 <router-outlet />
 @if (!enPartie()) {
   <footer class="mt-auto border-t border-bordure">
-    <p class="mx-auto w-full max-w-6xl px-4 py-3 text-sm sm:px-6">
-      <a routerLink="/confidentialite" class="underline underline-offset-4"
-        >À propos et confidentialité</a
-      >
-    </p>
+    <div
+      class="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-x-4 gap-y-2 px-4 py-4 text-sm sm:px-6"
+    >
+      <p class="flex items-center gap-2 text-texte-doux">
+        <img src="logo.svg" alt="" width="20" height="20" class="size-5" />
+        HIPMaster, le jeu de cartes de l’intégration
+      </p>
+      <p><a routerLink="/confidentialite" class="lien">À propos et confidentialité</a></p>
+    </div>
   </footer>
   <!-- Cale sous la page : la barre d'onglets ne masque jamais le bas d'un écran. -->
   <div class="h-[calc(3.5rem+env(safe-area-inset-bottom))] shrink-0 md:hidden"></div>

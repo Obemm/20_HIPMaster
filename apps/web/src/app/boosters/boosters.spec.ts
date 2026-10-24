@@ -33,6 +33,9 @@ describe('Boosters', () => {
     });
   });
 
+  const bouton = (page: HTMLElement, texte: string) =>
+    [...page.querySelectorAll('button')].find((b) => b.textContent?.includes(texte));
+
   async function afficher(connecte: boolean) {
     const compte = TestBed.inject(CompteService);
     if (connecte) compte.joueur.set({ id: 'x', pseudo: 'Ada' });
@@ -41,6 +44,8 @@ describe('Boosters', () => {
     fixture.detectChanges();
     const http = TestBed.inject(HttpTestingController);
     http.expectOne('/api/v1/cartes').flush(CATALOGUE);
+    // Les chances par booster, en bas de l'écran (US-061) : testées dans chances-booster.spec.ts.
+    http.expectOne('/api/v1/raretes').flush([]);
     return { fixture, http, page: fixture.nativeElement as HTMLElement };
   }
 
@@ -75,14 +80,59 @@ describe('Boosters', () => {
     });
     await fixture.whenStable();
     fixture.detectChanges();
+    // Les cartes arrivent face cachée (US-062) : rien n'est dit des nouvelles avant de les retourner.
+    expect(page.textContent).toContain('Votre booster : 5 cartes à retourner');
+    expect(page.querySelectorAll('hip-vignette-carte')).toHaveLength(0);
+    expect(page.querySelectorAll('button.carte-cachee')).toHaveLength(5);
+    expect(page.textContent).not.toContain('Nouvelle !');
+    expect(page.textContent).toContain('4 boosters en stock');
+
+    bouton(page, 'Tout révéler')?.click();
+    fixture.detectChanges();
     expect(page.textContent).toContain('Votre booster : 5 cartes, 2 nouvelles');
     expect(page.querySelectorAll('hip-vignette-carte')).toHaveLength(5);
     expect(page.textContent?.match(/Nouvelle !/g)).toHaveLength(2);
-    expect(page.textContent).toContain('4 boosters en stock');
+    expect(bouton(page, 'Tout révéler')).toBeUndefined();
   });
 
-  const bouton = (page: HTMLElement, texte: string) =>
-    [...page.querySelectorAll('button')].find((b) => b.textContent?.includes(texte));
+  it('retourne les cartes une à une : rareté au dos, carte annoncée, focus sur la suivante (US-062)', async () => {
+    const { fixture, http, page } = await afficher(true);
+    fixture.detectChanges();
+    http.expectOne('/api/v1/moi/boosters').flush({ stock: 1, plafond: 10, prochainDans: 125 });
+    await fixture.whenStable();
+    fixture.detectChanges();
+    bouton(page, 'Ouvrir un booster')?.click();
+    http.expectOne('/api/v1/moi/boosters/ouvertures').flush({
+      cartes: [
+        { numero: 1, nouvelle: true },
+        { numero: 2, nouvelle: false },
+      ],
+      boosters: { stock: 0, plafond: 10, prochainDans: 125 },
+    });
+    await fixture.whenStable();
+    fixture.detectChanges();
+    const cachees = page.querySelectorAll<HTMLButtonElement>('button.carte-cachee');
+    expect(cachees[0]?.textContent?.replaceAll(/\s+/g, ' ').trim()).toBe(
+      'Retourner la carte 1 : ● Commune',
+    );
+    expect(cachees[0]?.classList).toContain('cadre-commune');
+
+    cachees[0]?.click();
+    fixture.detectChanges();
+    await fixture.whenStable();
+    expect(page.querySelectorAll('hip-vignette-carte')).toHaveLength(1);
+    expect(page.querySelector('[role="status"]')?.textContent).toBe(
+      'Carte 1 : Carte 1, commune, nouvelle !',
+    );
+    expect(document.activeElement?.id).toBe('carte-cachee-1');
+    expect(page.textContent).toContain('à retourner');
+
+    page.querySelector<HTMLButtonElement>('#carte-cachee-1')?.click();
+    fixture.detectChanges();
+    await fixture.whenStable();
+    expect(page.textContent).toContain('Votre booster : 2 cartes, 1 nouvelle');
+    expect(document.activeElement?.id).toBe('titre-tirage');
+  });
 
   it('sans le catalogue, n’ouvre rien : bouton désactivé, raison et « Réessayer » (US-055)', async () => {
     TestBed.inject(CompteService).joueur.set({ id: 'x', pseudo: 'Ada' });
@@ -92,6 +142,7 @@ describe('Boosters', () => {
     http
       .expectOne('/api/v1/cartes')
       .flush(null, { status: 503, statusText: 'Service Unavailable' });
+    http.expectOne('/api/v1/raretes').flush([]);
     fixture.detectChanges();
     http.expectOne('/api/v1/moi/boosters').flush({ stock: 5, plafond: 10, prochainDans: 125 });
     await fixture.whenStable();
