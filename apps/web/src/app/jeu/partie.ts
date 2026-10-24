@@ -33,6 +33,7 @@ import { RegleCourte } from './regle-courte';
 import {
   type Action,
   type Composant,
+  type Conseil,
   type Evenement,
   type IdJoueur,
   type Issue,
@@ -161,6 +162,28 @@ export class PartieEcran implements OnInit, OnDestroy {
   protected readonly composantChoisi = signal<string | null>(null);
   /** L'attaquant désigné parmi mes composants ; l'attaque se confirme sous le détail de la cible (US-041). */
   protected readonly attaquant = signal<string | null>(null);
+
+  /**
+   * Le conseil reçu (US-066, ADR 0040), contre le bot seulement : affiché tant que la partie n'a pas changé depuis.
+   * Il ne joue jamais : il met en évidence l'action et dit pourquoi.
+   */
+  private readonly conseilRecu = signal<Conseil | null>(null);
+  protected readonly conseilEnCours = signal(false);
+  protected readonly conseil = computed(() => {
+    const conseil = this.conseilRecu();
+    return conseil && this.monTour() && conseil.version === this.partie()?.version ? conseil : null;
+  });
+  /** Ce que le conseil désigne : cartes de la main, composants, `si`, ou `finir` pour le bouton de fin de tour. */
+  protected readonly conseilles = computed(() => {
+    const action = this.conseil()?.action;
+    if (!action) return new Set<string>();
+    if (action.type === 'finirTour') return new Set(['finir']);
+    const ids = Object.entries(action)
+      .filter(([cle]) => cle !== 'type')
+      .flatMap(([, valeur]) => (Array.isArray(valeur) ? valeur : [valeur]))
+      .filter((id): id is string => typeof id === 'string');
+    return new Set(ids);
+  });
 
   /** L'adresse de la partie, ou du duel, dans l'API : l'identifiant tiré de l'URL y est encodé (US-055). */
   private readonly cheminApi = computed(
@@ -484,6 +507,34 @@ export class PartieEcran implements OnInit, OnDestroy {
     this.preferences.activerCoupsDePouce((evenement.target as HTMLInputElement).checked);
   }
 
+  protected basculerConseilAChaqueCoup(evenement: Event): void {
+    const actif = (evenement.target as HTMLInputElement).checked;
+    this.preferences.activerConseilAChaqueCoup(actif);
+    if (actif && !this.conseil()) void this.demanderConseil();
+  }
+
+  /** « Un conseil ? » (US-066) : contre le bot, pendant son tour ; le serveur le calcule depuis la seule vue du joueur. */
+  protected async demanderConseil(): Promise<void> {
+    if (this.mode() !== 'bot' || !this.monTour() || this.conseilEnCours()) return;
+    this.conseilEnCours.set(true);
+    try {
+      this.conseilRecu.set(
+        await firstValueFrom(this.http.get<Conseil>(`${this.cheminApi()}/conseil`)),
+      );
+    } catch (erreur) {
+      // 409 : la partie a changé entre-temps (tour du bot, fin de partie), le conseil n'a plus d'objet.
+      if (!(erreur instanceof HttpErrorResponse && erreur.status === 409)) {
+        this.erreur.set(expliquer(erreur));
+      }
+    } finally {
+      this.conseilEnCours.set(false);
+    }
+  }
+
+  protected masquerConseil(): void {
+    this.conseilRecu.set(null);
+  }
+
   protected basculerJournal(): void {
     this.journalOuvert.update((ouvert) => !ouvert);
   }
@@ -720,6 +771,8 @@ export class PartieEcran implements OnInit, OnDestroy {
     // Une victoire qui rapporte un booster change le stock affiché dans la navigation (US-060).
     if (partie.recompense?.booster && !this.partie()?.recompense) void this.stockBoosters.charger();
     this.partie.set(partie);
+    // Un conseil à chaque coup (US-066) : redemandé dès que c'est de nouveau au joueur de jouer.
+    if (this.preferences.conseilAChaqueCoup()) void this.demanderConseil();
     if (this.minuterie) clearTimeout(this.minuterie);
     this.minuterie = null;
     const enRetard = this.enAttente.splice(0);

@@ -126,3 +126,10 @@ export const schemaDeck = z.object({
 });
 
 export const schemaNiveau = z.object({ id: z.string(), nom: z.string(), description: z.string() });
+
+// Le conseil du moment (US-066) : une des actions de la vue, et pourquoi.
+export const schemaConseil = z.object({
+  version: z.number().int(),
+  action: schemaAction,
+  explication: z.string(),
+});

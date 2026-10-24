@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: HIPMaster — parties contre le bot
-  version: 1.3.0
+  version: 1.4.0
   description: >
     Parties contre le bot (US-012), à quatre niveaux (US-021, US-064). Le serveur fait foi : il applique les règles (moteur du domaine,
     ADR 0013), fait jouer le bot et ne renvoie que la vue du joueur. Les parties en cours sont gardées en base
@@ -15,7 +15,10 @@ info:
     même jeton, et reste introuvable (404) pour toute autre requête (US-047). Une partie sans compte appartient à qui
     connaît son identifiant.
 
-    Protections (ADR 0025) : création et actions limitées par adresse IP (valeurs de production ci-dessous,
+    Un conseil (US-066, ADR 0040) dit au joueur le meilleur coup du moment, et pourquoi. Il n'existe que contre le
+    bot : aucune route de conseil pour les duels entre joueurs.
+
+    Protections (ADR 0025) : création, actions et conseils limités par adresse IP (valeurs de production ci-dessous,
     multipliées par le réglage `LIMITES_DEBIT` de l'API), 429 avec `Retry-After` au-delà ; réponses en
     `Cache-Control: no-store` ; corps de 16 Ko au plus (413).
 servers:
@@ -166,6 +169,35 @@ paths:
         '413': { $ref: '#/components/responses/Probleme' }
         '422':
           description: Action refusée par les règles (`code` en donne la raison).
+          content:
+            application/problem+json:
+              schema: { $ref: '#/components/schemas/Probleme' }
+        '429': { $ref: '#/components/responses/TropDeRequetes' }
+  /parties/{id}/conseil:
+    get:
+      operationId: lireConseil
+      summary: Le meilleur coup du moment, et pourquoi (US-066)
+      description: >
+        Calculé par le serveur à partir de la seule vue du joueur (ADR 0004, 0040) : il ne révèle ni la main ni la
+        pioche du bot. L'action conseillée est toujours une des `vue.actions` ; le conseil ne joue rien, et ne change
+        pas la récompense de victoire. Les duels n'ont pas de conseil. Même propriété que la partie (US-047). Limite :
+        300 conseils par minute et par adresse.
+      parameters: [{ $ref: '#/components/parameters/IdPartie' }]
+      responses:
+        '200':
+          description: Le conseil, pour la version de la partie donnée en `ETag`.
+          headers:
+            ETag: { $ref: '#/components/headers/ETag' }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Conseil' }
+        '404':
+          description: Partie inconnue, expirée, ou appartenant à une autre session (Problem Details).
+          content:
+            application/problem+json:
+              schema: { $ref: '#/components/schemas/Probleme' }
+        '409':
+          description: Ce n'est pas au joueur de jouer, ou la partie est terminée (Problem Details).
           content:
             application/problem+json:
               schema: { $ref: '#/components/schemas/Probleme' }
@@ -429,6 +461,19 @@ components:
           required: [type]
           properties:
             type: { const: finirTour }
+    Conseil:
+      type: object
+      required: [version, action, explication]
+      properties:
+        version:
+          type: integer
+          description: La version de la partie pour laquelle le conseil vaut.
+        action: { $ref: '#/components/schemas/Action' }
+        explication:
+          type: string
+          description: Pourquoi ce coup, en une phrase de joueur.
+          examples:
+            - 'Attaquez Adaptateur SAP avec LLM : il a Garde et protège le SI ; votre LLM le détruit et survit à sa riposte.'
     Evenement:
       type: object
       required: [type]

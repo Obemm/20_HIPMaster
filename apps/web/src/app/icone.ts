@@ -16,6 +16,9 @@ const TRACES = {
   attaque: 'M20 4L9 15 M20 4h-5 M20 4v5 M7 13l4 4 M8 16l-4 4',
   pv: 'M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z',
   fermer: 'M6 6l12 12 M18 6L6 18',
+  // Conseil (US-066) : une ampoule.
+  conseil:
+    'M9 18h6 M10 21h4 M12 3a6 6 0 0 0-4 10.5c.7.7 1 1.5 1 2.5h6c0-1 .3-1.8 1-2.5A6 6 0 0 0 12 3z',
   // Fiche « En savoir plus » (US-073)
   deplier: 'M6 9l6 6 6-6',
   externe: 'M14 4h6v6 M20 4l-9 9 M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5',

@@ -762,6 +762,15 @@
  * camp, ma main) ; au bureau, le plateau au centre et, sur le côté, l'objectif, les capacités en jeu et le journal.
  */
 @layer components {
+  /*
+   * Ce que le conseil recommande (US-066) : un pointillé doré autour de la carte, du composant, du SI ou du bouton,
+   * distinct de l'anneau plein de la sélection.
+   */
+  .conseille {
+    outline: 3px dashed var(--hip-or);
+    outline-offset: 3px;
+  }
+
   .plateau-partie {
     display: grid;
     grid-template-columns: minmax(0, 1fr);

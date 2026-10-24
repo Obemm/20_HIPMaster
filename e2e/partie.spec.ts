@@ -340,3 +340,35 @@ test('avant de finir son tour, un coup de pouce dit ce qui reste possible ; il s
   // Le tour est fini sans détour : le bot a joué le sien, c'est de nouveau au joueur, deux tours plus loin.
   await expect(page.getByText(`Tour ${tour + 2} / 20`)).toBeVisible();
 });
+
+test('contre le bot, un conseil à la demande met en évidence le coup et dit pourquoi, sur téléphone (US-066)', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 375, height: 667 });
+  await commencer(page);
+  await page.getByRole('button', { name: 'Un conseil ?' }).click();
+  const conseil = page.locator('#conseil');
+  await expect(conseil).toContainText(
+    /Conseil : (Posez|Faites|Jouez|Attaquez|Décommissionnez|Finissez|Migrez|Utilisez) .+ : /,
+  );
+  // Le coup conseillé est mis en évidence, et le conseil reste lisible dans l'écran du téléphone.
+  await expect(page.locator('.conseille').first()).toBeVisible();
+  const boite = await conseil.boundingBox();
+  expect((boite?.y ?? 0) + (boite?.height ?? 0)).toBeLessThanOrEqual(667);
+  const audit = await new AxeBuilder({ page }).withTags(REGLES_WCAG).analyze();
+  expect(audit.violations).toEqual([]);
+  // Le conseil ne joue rien : c'est toujours au joueur.
+  await expect(page.getByRole('button', { name: 'Finir mon tour' })).toBeEnabled();
+
+  // « Un conseil à chaque coup » : réglé dans l'aide, le conseil revient de lui-même au tour suivant.
+  await page.getByRole('button', { name: 'Masquer le conseil' }).click();
+  await expect(conseil).toBeHidden();
+  await page.getByRole('button', { name: 'Comment jouer ?' }).click();
+  const aide = page.getByRole('dialog', { name: 'Comment jouer ?' });
+  await aide.getByRole('checkbox', { name: /Un conseil à chaque coup/ }).check();
+  await aide.getByRole('button', { name: 'C’est parti' }).click();
+  await expect(conseil).toBeVisible();
+  await page.getByRole('button', { name: 'Finir mon tour' }).click();
+  await expect(page.getByRole('log')).toContainText('le bot joue');
+  await expect(conseil).toContainText('Conseil : ');
+});

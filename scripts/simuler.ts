@@ -5,12 +5,14 @@
  * 2. Niveaux du bot deux à deux, même deck des deux côtés pour isoler le jeu (US-021).
  * 3. Avantage du premier joueur : chaque niveau, et le profil débutant, contre lui-même (US-064).
  * 4. Chaque niveau contre un joueur débutant et contre un joueur du niveau de Batch de nuit (US-064).
- * Les mesures 3 et 4 croisent les decks prêtés : `parties` parties pour chacune des 9 paires de decks.
+ * 5. Un joueur qui suit toujours le conseil (US-066) contre Stagiaire et Batch de nuit.
+ * Les mesures 3 à 5 croisent les decks prêtés : `parties` parties pour chacune des 9 paires de decks.
  * Affiche des tableaux Markdown, à reporter dans docs/produit/cartes-set-1.md. Compter de dix à vingt minutes à 200.
  */
 import {
   choisirActionBatchDeNuit,
   choisirActionDebutant,
+  conseiller,
   DECKS_PRETES,
   NIVEAUX_BOT,
   type ResultatSimulation,
@@ -128,4 +130,14 @@ for (const niveau of NIVEAUX_BOT) {
     ...victoiresDeA(croiser(choisirActionDebutant, niveau.strategie)),
     ...victoiresDeA(croiser(choisirActionBatchDeNuit, niveau.strategie)),
   ]);
+}
+
+// Le conseil (US-066) : un joueur qui le suit toujours doit battre Stagiaire 85 % du temps, Batch de nuit 45 %.
+console.log(`
+Joueur qui suit toujours le conseil : ${parMesure} parties par mesure, decks prêtés croisés.
+`);
+entete(['Niveau du bot', 'Victoires', 'en commençant', 'en second']);
+const suivreLeConseil: Strategie = (vue) => conseiller(vue)?.action ?? { type: 'finirTour' };
+for (const niveau of NIVEAUX_BOT.slice(0, 2)) {
+  ligne([niveau.nom, ...victoiresDeA(croiser(suivreLeConseil, niveau.strategie))]);
 }
