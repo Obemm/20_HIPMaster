@@ -8,18 +8,50 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <!-- Thème clair ou sombre dès le premier affichage, avant même la feuille de style (ADR 0012). -->
     <meta name="color-scheme" content="light dark" />
+    <!-- La barre du navigateur prend la couleur de la coquille du jeu, de nuit dans les deux thèmes (ADR 0037). -->
+    <meta name="theme-color" content="#0b1029" />
     <meta
       name="description"
-      content="Jeu de cartes à collectionner : ouvre des boosters, complète ta collection, défie tes amis."
+      content="Le jeu de cartes de l’intégration : du FTP aux agents d’IA, ouvre des boosters, complète ta collection et défie tes collègues."
     />
     <!-- Site réservé aux invités : aucun moteur de recherche ne l'indexe (US-050, avec robots.txt). -->
     <meta name="robots" content="noindex" />
-    <link rel="icon" type="image/x-icon" href="favicon.ico" />
+    <!--
+      Aperçu d'un lien partagé dans une messagerie (US-061) : titre, description et image. Les adresses sont absolues,
+      celles du site en ligne.
+    -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="HIPMaster" />
+    <meta property="og:locale" content="fr_FR" />
+    <meta property="og:url" content="https://hipmaster.web.app/" />
+    <meta property="og:title" content="HIPMaster — le jeu de cartes de l’intégration" />
+    <meta
+      property="og:description"
+      content="Du FTP aux agents d’IA : ouvre des boosters, collectionne les briques de l’intégration et défie tes collègues."
+    />
+    <meta property="og:image" content="https://hipmaster.web.app/apercu-lien.jpg" />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="Le logo HIPMaster et trois cartes du jeu en éventail sur un fond bleu nuit"
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <!-- Icônes : le logo en SVG, et en images pour les navigateurs et les écrans d'accueil qui l'exigent. -->
+    <link rel="icon" href="favicon.ico" sizes="32x32" />
+    <link rel="icon" href="logo.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+    <!-- La police des titres, servie par le site, chargée dès le départ : les titres ne changent pas de forme. -->
+    <link rel="preload" href="polices/exo-2-latin.woff2" as="font" type="font/woff2" crossorigin />
   </head>
   <body class="flex min-h-screen flex-col bg-fond text-texte">
     <!-- Remplacé par le jeu dès qu'il démarre (US-055). Ni style ni script en ligne : la CSP les interdit (US-050). -->
     <hip-root>
-      <p class="mx-auto w-full max-w-3xl px-6 py-24 text-lg noscript:hidden">
+      <p
+        class="mx-auto flex w-full max-w-3xl items-center gap-3 px-6 py-24 text-lg noscript:hidden"
+      >
+        <img src="logo.svg" alt="" width="48" height="48" />
         Chargement de HIPMaster…
       </p>
     </hip-root>

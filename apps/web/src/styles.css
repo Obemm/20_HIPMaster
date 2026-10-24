@@ -1,52 +1,409 @@
 @import 'tailwindcss';
 
 /*
- * Jetons de couleur (ADR 0012) : thème clair par défaut, sombre si le système le préfère.
- * Les composants utilisent les classes Tailwind générées (bg-fond, text-texte…), jamais de gris en dur.
+ * Police des titres (US-061, ADR 0037) : Exo 2, sous licence OFL, servie par le site lui-même (public/polices) :
+ * aucun appel à un service tiers, et la CSP n'autorise que 'self'. Un seul fichier, variable (graisses 100 à 900),
+ * réduit aux caractères latins, français compris (Œ, œ, guillemets, espaces fines). Le texte courant garde la police
+ * du système, qui s'affiche sans attendre.
+ */
+@font-face {
+  font-family: 'Exo 2';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/polices/exo-2-latin.woff2') format('woff2');
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/*
+ * Jetons de couleur (ADR 0012, identité « nuit électrique » d'ADR 0037) : thème clair par défaut, sombre si le
+ * système le préfère. Les composants utilisent les classes Tailwind générées (bg-fond, text-texte…), jamais de
+ * couleur d'interface en dur. Les contrastes de ces paires sont vérifiés par apps/web/contrastes.test.ts.
+ *
+ * - accent : l'indigo électrique de la marque, pour les liens, la sélection et le focus ;
+ * - action : l'or de l'énergie (le Débit), réservé à l'action principale d'un écran (« Jouer », « Ouvrir ») ;
+ * - halos et trame : le décor du fond, comme les halos des illustrations.
  */
 :root {
   color-scheme: light dark;
-  --hip-fond: #ffffff;
-  --hip-surface: #f4f4f5;
-  --hip-texte: #18181b;
-  --hip-texte-doux: #3f3f46;
-  --hip-bordure: #d4d4d8;
-  --hip-accent: #18181b;
+  --hip-fond: #f3f4fb;
+  --hip-surface: #ffffff;
+  --hip-surface-haute: #e9ebf8;
+  --hip-texte: #151a36;
+  --hip-texte-doux: #474f72;
+  --hip-bordure: #d6daee;
+  --hip-bordure-forte: #7a82aa;
+  --hip-accent: #4f46e5;
+  --hip-accent-bord: #3730a3;
   --hip-sur-accent: #ffffff;
-  --hip-alerte: #991b1b;
+  --hip-action: #fbbf24;
+  --hip-action-survol: #fcd34d;
+  --hip-action-bord: #b45309;
+  --hip-sur-action: #1f1400;
+  --hip-alerte: #b91c1c;
+  --hip-succes: #15803d;
+  --hip-or: #b45309;
+  --hip-halo-1: rgb(139 92 246 / 0.1);
+  --hip-halo-2: rgb(34 211 238 / 0.1);
+  --hip-trame: rgb(21 26 54 / 0.07);
+  --hip-ombre: 0 1px 2px rgb(21 26 54 / 0.06), 0 10px 28px -14px rgb(21 26 54 / 0.25);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --hip-fond: #09090b;
-    --hip-surface: #27272a;
-    --hip-texte: #f4f4f5;
-    --hip-texte-doux: #d4d4d8;
-    --hip-bordure: #52525b;
-    --hip-accent: #f4f4f5;
-    --hip-sur-accent: #09090b;
+    --hip-fond: #0b1029;
+    --hip-surface: #151c3d;
+    --hip-surface-haute: #1f2852;
+    --hip-texte: #eef1ff;
+    --hip-texte-doux: #b8c0e0;
+    --hip-bordure: #2c3768;
+    --hip-bordure-forte: #6b76ad;
+    --hip-accent: #a5b4fc;
+    --hip-accent-bord: #6366f1;
+    --hip-sur-accent: #0b1029;
     --hip-alerte: #fca5a5;
+    --hip-succes: #86efac;
+    --hip-or: #fbbf24;
+    --hip-halo-1: rgb(124 58 237 / 0.22);
+    --hip-halo-2: rgb(8 145 178 / 0.22);
+    --hip-trame: rgb(238 241 255 / 0.05);
+    --hip-ombre: inset 0 1px 0 rgb(255 255 255 / 0.05), 0 12px 32px -14px rgb(0 0 0 / 0.7);
   }
+}
+
+/*
+ * La coquille du jeu (bandeau et barre d'onglets) reste de nuit dans les deux thèmes, comme le dos des cartes : ses
+ * jetons sont ceux du thème sombre, quelle que soit la préférence du système.
+ */
+.coquille {
+  color-scheme: dark;
+  --hip-fond: #0b1029;
+  --hip-surface: #151c3d;
+  --hip-surface-haute: #1f2852;
+  --hip-texte: #eef1ff;
+  --hip-texte-doux: #b8c0e0;
+  --hip-bordure: #2c3768;
+  --hip-accent: #a5b4fc;
+  --hip-sur-accent: #0b1029;
+  --hip-or: #fbbf24;
 }
 
 @theme inline {
   --color-fond: var(--hip-fond);
   --color-surface: var(--hip-surface);
+  --color-surface-haute: var(--hip-surface-haute);
   --color-texte: var(--hip-texte);
   --color-texte-doux: var(--hip-texte-doux);
   --color-bordure: var(--hip-bordure);
+  --color-bordure-forte: var(--hip-bordure-forte);
   --color-accent: var(--hip-accent);
   --color-sur-accent: var(--hip-sur-accent);
+  --color-action: var(--hip-action);
+  --color-sur-action: var(--hip-sur-action);
   --color-alerte: var(--hip-alerte);
+  --color-succes: var(--hip-succes);
+  --color-or: var(--hip-or);
   --color-cadre: var(--hip-cadre);
   --color-fond-carte: var(--hip-fond-carte);
 }
 
-/* Cadres de rareté des cartes : bordure, fond et halo, dans chaque thème. */
+@theme {
+  --font-titre: 'Exo 2', ui-sans-serif, system-ui, sans-serif;
+}
+
+/*
+ * Le fond : la couleur du thème, deux halos (violet en haut de la page, cyan en bas) et une trame de points, posés sur
+ * un calque derrière la page. Le décor reste discret : les contrastes du texte posé dessus sont vérifiés au pire endroit.
+ */
+@layer base {
+  body {
+    position: relative;
+    background-color: var(--hip-fond);
+  }
+  body::before {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background-image:
+      radial-gradient(ellipse 60rem 34rem at 0% 0%, var(--hip-halo-1), transparent 70%),
+      radial-gradient(ellipse 50rem 30rem at 100% 100%, var(--hip-halo-2), transparent 70%),
+      radial-gradient(circle at 1px 1px, var(--hip-trame) 1px, transparent 0);
+    background-size:
+      100% 100%,
+      100% 100%,
+      1.375rem 1.375rem;
+    content: '';
+    pointer-events: none;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-titre);
+  }
+
+  /* Un seul anneau de focus, épais et décollé, de la couleur de la marque. */
+  :focus-visible {
+    outline-color: var(--hip-accent);
+  }
+}
+
+/*
+ * Composants communs (ADR 0037, charte : docs/produit/charte-graphique.md) : boutons, panneaux, titres, puces. Une
+ * classe par rôle plutôt qu'une longue liste d'utilitaires recopiée d'un écran à l'autre.
+ */
+@layer components {
+  .titre-page {
+    font-family: var(--font-titre);
+    font-size: clamp(1.875rem, 1.45rem + 1.8vw, 2.625rem);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+  }
+  .surtitre {
+    font-family: var(--font-titre);
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--hip-accent);
+  }
+
+  .panneau {
+    border: 1px solid var(--hip-bordure);
+    border-radius: 1.25rem;
+    background-color: var(--hip-surface);
+    box-shadow: var(--hip-ombre);
+  }
+
+  .puce {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    border-radius: 9999px;
+    background-color: var(--hip-surface-haute);
+    padding: 0.125rem 0.625rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    line-height: 1.25rem;
+  }
+
+  /* Boutons : en relief, comme dans un jeu. L'or pour l'action principale, l'indigo ou le contour pour le reste. */
+  .bouton {
+    display: inline-flex;
+    min-height: 2.75rem;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 0.875rem;
+    padding: 0.625rem 1.125rem;
+    font-family: var(--font-titre);
+    font-weight: 700;
+    line-height: 1.25;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    transition:
+      background-color 120ms,
+      box-shadow 120ms,
+      transform 120ms;
+  }
+  .bouton:focus-visible {
+    outline: 3px solid var(--hip-accent);
+    outline-offset: 3px;
+  }
+  .bouton:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
+  .bouton-jeu {
+    background-color: var(--hip-action);
+    color: var(--hip-sur-action);
+    box-shadow:
+      inset 0 2px 0 rgb(255 255 255 / 0.45),
+      0 4px 0 var(--hip-action-bord),
+      0 10px 20px -8px rgb(245 158 11 / 0.6);
+  }
+  .bouton-jeu:hover:not(:disabled) {
+    background-color: var(--hip-action-survol);
+  }
+  .bouton-plein {
+    background-color: var(--hip-accent);
+    color: var(--hip-sur-accent);
+    box-shadow: 0 4px 0 var(--hip-accent-bord);
+  }
+  .bouton-contour {
+    background-color: var(--hip-surface);
+    color: var(--hip-texte);
+    box-shadow: inset 0 0 0 2px var(--hip-accent);
+  }
+  .bouton-contour:hover:not(:disabled) {
+    background-color: var(--hip-surface-haute);
+  }
+  .bouton-jeu:disabled,
+  .bouton-plein:disabled {
+    box-shadow: none;
+  }
+  .bouton-large {
+    min-height: 3.25rem;
+    padding: 0.75rem 1.5rem;
+    font-size: 1.125rem;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .bouton-jeu:active:not(:disabled),
+    .bouton-plein:active:not(:disabled) {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 var(--hip-action-bord);
+    }
+    .bouton-plein:active:not(:disabled) {
+      box-shadow: 0 1px 0 var(--hip-accent-bord);
+    }
+  }
+
+  .lien {
+    font-weight: 600;
+    color: var(--hip-accent);
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  /* Tuiles de l'accueil : un raccourci vers un écran du jeu, avec son état (« 3 en stock »). */
+  .tuile {
+    display: flex;
+    height: 100%;
+    flex-direction: column;
+    gap: 0.25rem;
+    border: 1px solid var(--hip-bordure);
+    border-radius: 1.25rem;
+    background-color: var(--hip-surface);
+    padding: 1rem;
+    box-shadow: var(--hip-ombre);
+    transition:
+      border-color 150ms,
+      transform 150ms;
+  }
+  .tuile:hover {
+    border-color: var(--hip-accent);
+  }
+  .tuile:focus-visible {
+    outline: 3px solid var(--hip-accent);
+    outline-offset: 3px;
+  }
+  .tuile-icone {
+    display: flex;
+    width: 2.75rem;
+    height: 2.75rem;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.375rem;
+    border-radius: 0.875rem;
+    color: #ffffff;
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.35);
+  }
+  .tuile-titre {
+    font-family: var(--font-titre);
+    font-size: 1.125rem;
+    font-weight: 800;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .tuile:hover {
+      transform: translateY(-2px);
+    }
+  }
+
+  /* Numéro d'une étape (« Comment on joue »). */
+  .etape {
+    display: flex;
+    width: 2.5rem;
+    height: 2.5rem;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9999px;
+    background-color: var(--hip-accent);
+    color: var(--hip-sur-accent);
+    font-family: var(--font-titre);
+    font-size: 1.25rem;
+    font-weight: 800;
+  }
+}
+
+/*
+ * L'accueil (US-061) : le nom du jeu en très grand, et trois cartes en éventail sur un halo doré. L'éventail se
+ * déploie une fois, si le mouvement est permis.
+ */
+@layer components {
+  .titre-hero {
+    font-family: var(--font-titre);
+    font-size: clamp(3.25rem, 2.25rem + 5vw, 5.5rem);
+    font-weight: 900;
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+  }
+
+  .eventail {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    padding: 1rem 0 1.75rem;
+  }
+  .eventail::before {
+    position: absolute;
+    inset: 5% 10%;
+    border-radius: 9999px;
+    background: radial-gradient(closest-side, rgb(251 191 36 / 0.35), transparent);
+    content: '';
+  }
+  .eventail > * {
+    position: relative;
+    width: min(8.75rem, 32vw);
+    flex-shrink: 0;
+  }
+  .eventail > * + * {
+    margin-left: -1.75rem;
+  }
+  .eventail > :nth-child(1) {
+    transform: rotate(-10deg) translateY(1rem);
+  }
+  .eventail > :nth-child(2) {
+    z-index: 1;
+    transform: translateY(-0.25rem) scale(1.06);
+  }
+  .eventail > :nth-child(3) {
+    transform: rotate(10deg) translateY(1rem);
+  }
+  @media (min-width: 48rem) {
+    .eventail > * {
+      width: 11.5rem;
+    }
+    .eventail > * + * {
+      margin-left: -2.75rem;
+    }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .eventail > * {
+      animation: eventail 700ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+    }
+    .eventail > :nth-child(2) {
+      animation-delay: 90ms;
+    }
+    .eventail > :nth-child(3) {
+      animation-delay: 180ms;
+    }
+  }
+}
+
+/*
+ * Cadres de rareté des cartes : bordure, fond et halo, dans chaque thème. Un filet clair à l'intérieur du cadre
+ * donne le relief d'une carte imprimée ; le halo signale les épiques et les légendaires.
+ */
 @layer components {
   .cadre-commune {
-    --hip-cadre: #a1a1aa;
-    --hip-fond-carte: #fafafa;
+    --hip-cadre: #a1a8c4;
+    --hip-fond-carte: #f8f9fe;
     --hip-halo: transparent;
   }
   .cadre-rare {
@@ -57,37 +414,76 @@
   .cadre-epique {
     --hip-cadre: #7c3aed;
     --hip-fond-carte: #f5f3ff;
-    --hip-halo: rgb(124 58 237 / 0.35);
+    --hip-halo: rgb(124 58 237 / 0.4);
   }
   .cadre-legendaire {
     --hip-cadre: #d97706;
     --hip-fond-carte: #fffbeb;
-    --hip-halo: rgb(217 119 6 / 0.45);
+    --hip-halo: rgb(217 119 6 / 0.5);
   }
 
   @media (prefers-color-scheme: dark) {
     .cadre-commune {
-      --hip-cadre: #71717a;
-      --hip-fond-carte: #27272a;
+      --hip-cadre: #6b76ad;
+      --hip-fond-carte: #1a2147;
     }
     .cadre-rare {
       --hip-cadre: #38bdf8;
-      --hip-fond-carte: #0c2a3e;
+      --hip-fond-carte: #0c2a45;
     }
     .cadre-epique {
       --hip-cadre: #a78bfa;
       --hip-fond-carte: #261447;
-      --hip-halo: rgb(167 139 250 / 0.35);
+      --hip-halo: rgb(167 139 250 / 0.45);
     }
     .cadre-legendaire {
       --hip-cadre: #fbbf24;
       --hip-fond-carte: #3a1d06;
-      --hip-halo: rgb(251 191 36 / 0.4);
+      --hip-halo: rgb(251 191 36 / 0.5);
     }
   }
 
   .halo-carte {
-    box-shadow: 0 0 0.9rem var(--hip-halo);
+    box-shadow:
+      inset 0 0 0 0.5cqw rgb(255 255 255 / 0.3),
+      0 0.4rem 1rem -0.4rem rgb(11 16 41 / 0.45),
+      0 0 1rem var(--hip-halo);
+  }
+
+  /* Le coût en Débit, en gemme dorée au coin de la carte. */
+  .gemme-debit {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5cqw;
+    border-radius: 9999px;
+    background-color: #fbbf24;
+    padding: 0.5cqw 2.5cqw 0.5cqw 1.5cqw;
+    color: #1f1400;
+    box-shadow:
+      inset 0 0.6cqw 0 rgb(255 255 255 / 0.5),
+      0 0.6cqw 0 #b45309;
+  }
+}
+
+/* Dos de carte : la nuit, la trame et le logo au centre (chargement, paquets de boosters). */
+@layer components {
+  .dos-carte {
+    position: relative;
+    display: flex;
+    aspect-ratio: 5 / 7;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border: 0.375rem solid #2c3768;
+    border-radius: 1rem;
+    background-color: #0b1029;
+    background-image:
+      radial-gradient(circle at 50% 45%, rgb(124 58 237 / 0.55), transparent 60%),
+      repeating-linear-gradient(45deg, rgb(165 180 252 / 0.08) 0 2px, transparent 2px 12px),
+      repeating-linear-gradient(-45deg, rgb(165 180 252 / 0.08) 0 2px, transparent 2px 12px);
+    box-shadow:
+      inset 0 0 0 2px rgb(251 191 36 / 0.7),
+      0 0.5rem 1.25rem -0.5rem rgb(11 16 41 / 0.6);
   }
 }
 
@@ -129,7 +525,7 @@
 
 /*
  * Navigation (US-060) : onglets d'au moins 44 px, icône et libellé empilés dans la barre du bas sur téléphone, en
- * ligne dans le bandeau au bureau. L'onglet courant (aria-current) est signalé par un trait et du gras.
+ * ligne dans le bandeau au bureau. L'onglet courant (aria-current) est signalé par un trait doré et du gras.
  */
 @layer components {
   .onglet {
@@ -145,6 +541,9 @@
     line-height: 1rem;
     color: var(--hip-texte-doux);
   }
+  .onglet:hover {
+    color: var(--hip-texte);
+  }
   .onglet:focus-visible {
     outline: 2px solid var(--hip-accent);
     outline-offset: -2px;
@@ -153,6 +552,9 @@
     color: var(--hip-texte);
     font-weight: 700;
   }
+  .onglet[aria-current='page'] hip-icone {
+    color: #fbbf24;
+  }
   .onglet[aria-current='page']::before {
     position: absolute;
     top: 0;
@@ -160,7 +562,8 @@
     left: 25%;
     height: 0.1875rem;
     border-radius: 0 0 0.25rem 0.25rem;
-    background: var(--hip-accent);
+    background: #fbbf24;
+    box-shadow: 0 0 0.75rem rgb(251 191 36 / 0.7);
     content: '';
   }
   .pastille {
@@ -169,9 +572,9 @@
     left: calc(50% + 0.375rem);
     min-width: 1.25rem;
     border-radius: 9999px;
-    background: var(--hip-accent);
+    background: #e11d48;
     padding: 0 0.3rem;
-    color: var(--hip-sur-accent);
+    color: #ffffff;
     font-size: 0.75rem;
     font-weight: 700;
     line-height: 1.25rem;
@@ -184,11 +587,13 @@
       flex-direction: row;
       gap: 0.375rem;
       padding: 0 0.75rem;
-      font-size: 0.875rem;
+      font-family: var(--font-titre);
+      font-size: 0.9375rem;
+      font-weight: 600;
     }
     .onglet[aria-current='page']::before {
       top: auto;
-      bottom: 0;
+      bottom: -0.5rem;
       right: 0.75rem;
       left: 0.75rem;
       border-radius: 0.25rem 0.25rem 0 0;
@@ -210,7 +615,23 @@ html:has(dialog[open]) {
   overflow: hidden;
 }
 
-/* Révélation des cartes d'un booster (US-023) : en moins d'une seconde, et seulement si le mouvement est permis. */
+/*
+ * Micro-animations (ADR 0037) : courtes, et seulement si le système ne demande pas de réduire les animations. Une page
+ * qui s'ouvre apparaît en fondu (sans transformation : un `transform` sur `<main>` décalerait ses éléments fixes,
+ * comme le coup de pouce de la partie) ; l'éventail de l'accueil se déploie une fois.
+ */
+@keyframes apparition {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes eventail {
+  from {
+    opacity: 0;
+    transform: translateY(1.5rem) rotate(0deg);
+  }
+}
+/* Révélation des cartes d'un booster (US-023) : en moins d'une seconde. */
 @keyframes revelation {
   from {
     opacity: 0;
@@ -218,6 +639,9 @@ html:has(dialog[open]) {
   }
 }
 @media (prefers-reduced-motion: no-preference) {
+  main {
+    animation: apparition 200ms ease-out;
+  }
   .revelation {
     animation: revelation 400ms ease-out both;
   }

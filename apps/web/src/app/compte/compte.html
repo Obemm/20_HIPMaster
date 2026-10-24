@@ -4,6 +4,21 @@
   </p>
   <h1 class="text-3xl font-bold tracking-tight">Mon compte</h1>
 
+  @if (invitation()?.trim() && compte.pret() && !compte.joueur() && !codeAffiche()) {
+    <!-- L'arrivée d'un invité (US-061) : on voit le jeu avant le formulaire. -->
+    <section
+      aria-labelledby="titre-bienvenue"
+      class="panneau flex flex-col items-center gap-2 overflow-hidden px-4 pt-2 pb-5 text-center"
+    >
+      <hip-eventail-cartes [cartes]="vedettes()" />
+      <h2 id="titre-bienvenue" class="text-2xl font-extrabold">Bienvenue dans HIPMaster !</h2>
+      <p class="text-texte-doux">
+        Vous êtes invité·e au jeu de cartes de l’intégration : choisissez un pseudo, et 5 boosters
+        vous attendent.
+      </p>
+    </section>
+  }
+
   @if (compte.expiree()) {
     <p role="alert" class="rounded-lg border-2 border-accent p-3">
       <strong>Session expirée</strong> : ce navigateur n’est plus connecté à votre compte.
