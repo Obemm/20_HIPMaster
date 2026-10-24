@@ -185,6 +185,11 @@ Toutes les évolutions notables du projet sont consignées ici
 
 ### Modifié
 
+- Ouvrir un booster devient un moment : les paquets en stock sont dessinés (feuille métallisée, logo) ; les cartes
+  arrivent face cachée, distribuées une à une, la rareté lisible sur leur dos (liseré, halo, nom) ; on les retourne
+  d'un appui, ou toutes avec « Tout révéler » ; une épique ou une légendaire jaillit d'un éclat de lumière. Chaque
+  retournement est annoncé aux lecteurs d'écran et le focus passe à la carte suivante. Aucune animation si le système
+  demande de les réduire ; le tirage reste fait par le serveur (US-062).
 - Revue visuelle de tout le site avec la nouvelle identité : sur « Jouer », la difficulté en tuiles et les decks en
   boîtes de jeu (trois cartes phares en éventail, « Jouer avec… » en or), la règle en bref repliée ; « Mes duels »
   en cartes avec l'initiale de l'adversaire et une pastille d'état (À vous, Son tour, Victoire…) ; « Finir mon tour »,

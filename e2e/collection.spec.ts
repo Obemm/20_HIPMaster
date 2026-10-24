@@ -18,6 +18,7 @@ test('la collection montre la progression, les cartes possédées et leur détai
 
   await page.getByRole('link', { name: 'ouvrez un booster' }).click();
   await page.getByRole('button', { name: 'Ouvrir un booster' }).click();
+  await page.getByRole('button', { name: 'Tout révéler' }).click();
   await expect(page.locator('hip-vignette-carte')).toHaveCount(5);
 
   await page.getByRole('link', { name: 'Collection', exact: true }).click();
@@ -41,6 +42,7 @@ for (const theme of ['light', 'dark'] as const) {
     await creerCompte(page, `Collection ${theme}`);
     await page.goto('/boosters');
     await page.getByRole('button', { name: 'Ouvrir un booster' }).click();
+    await page.getByRole('button', { name: 'Tout révéler' }).click();
     await expect(page.locator('hip-vignette-carte')).toHaveCount(5);
     await page.goto('/collection');
     await expect(page.getByRole('heading', { name: /Set 1 : / })).toBeVisible();
