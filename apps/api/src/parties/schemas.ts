@@ -116,6 +116,16 @@ export const schemaPartie = z.object({
   niveau: z.string(),
   vue: schemaVue,
   evenements: z.array(schemaEvenement),
+  // Partie guidée (US-067) : l'étape du moment.
+  guide: z
+    .object({
+      etape: z.int(),
+      total: z.int(),
+      titre: z.string(),
+      texte: z.string(),
+      attendu: schemaAction.nullable(),
+    })
+    .optional(),
 });
 
 export const schemaDeck = z.object({

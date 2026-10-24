@@ -7,6 +7,14 @@
     </p>
   </div>
 
+  <!--
+    Partie guidée (US-067) : mise en avant tant que le joueur ne l'a ni finie ni passée (préférence du navigateur,
+    ADR 0032), puis plus discrète, au bas de la page.
+  -->
+  @if (!preferences.guideFini()) {
+    <ng-container *ngTemplateOutlet="guide" />
+  }
+
   @if (niveaux.hasValue()) {
     <fieldset class="flex flex-col gap-3">
       <legend class="mb-3 font-titre text-xl font-extrabold">1. Difficulté du bot</legend>
@@ -85,6 +93,37 @@
       >
     </p>
   </section>
+
+  @if (preferences.guideFini()) {
+    <ng-container *ngTemplateOutlet="guide" />
+  }
+
+  <ng-template #guide>
+    <section
+      aria-labelledby="titre-guide"
+      class="panneau flex flex-col gap-3 p-4"
+      [class.border-2]="!preferences.guideFini()"
+      [class.border-or]="!preferences.guideFini()"
+    >
+      <h2 id="titre-guide" class="text-xl font-extrabold">
+        {{ preferences.guideFini() ? 'Revoir les règles en jouant' : 'Première partie ?' }}
+      </h2>
+      <p class="text-texte-doux">
+        Une partie guidée pas à pas contre Stagiaire : poser, attaquer, la Garde, la riposte… sans
+        rien lire avant. Elle ne rapporte pas de booster.
+      </p>
+      <button
+        type="button"
+        class="bouton self-stretch sm:self-start"
+        [class.bouton-jeu]="!preferences.guideFini()"
+        [class.bouton-contour]="preferences.guideFini()"
+        [disabled]="enCours() !== null"
+        (click)="jouerGuidee()"
+      >
+        {{ enCours() === 'guidee' ? 'Création…' : 'Apprendre à jouer (5 min)' }}
+      </button>
+    </section>
+  </ng-template>
 
   <details class="panneau group p-4">
     <summary class="cursor-pointer font-titre text-lg font-bold">La règle en bref</summary>

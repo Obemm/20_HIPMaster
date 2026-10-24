@@ -68,3 +68,11 @@ export { chercher, POIDS_PAR_DEFAUT, type Poids, type Recherche } from './bots-f
 export { NIVEAU_PAR_DEFAUT, NIVEAUX_BOT, trouverNiveau, type NiveauBot } from './niveaux.ts';
 export { reconstituer } from './reconstitution.ts';
 export { conseiller, type Conseil } from './conseil.ts';
+export {
+  DECK_INITIATION,
+  DECK_INITIATION_BOT,
+  ETAPES_PARTIE_GUIDEE,
+  GRAINE_PARTIE_GUIDEE,
+  NIVEAU_PARTIE_GUIDEE,
+  type EtapeGuidee,
+} from './partie-guidee.ts';

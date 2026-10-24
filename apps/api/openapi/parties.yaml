@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: HIPMaster — parties contre le bot
-  version: 1.4.0
+  version: 1.5.0
   description: >
     Parties contre le bot (US-012), à quatre niveaux (US-021, US-064). Le serveur fait foi : il applique les règles (moteur du domaine,
     ADR 0013), fait jouer le bot et ne renvoie que la vue du joueur. Les parties en cours sont gardées en base
@@ -76,16 +76,23 @@ paths:
         création supprime la partie sans compte la moins récemment jouée, et seulement à défaut celle d'un compte
         (ADR 0025, 0030). Avec l'en-tête `Authorization: Bearer`
         d'un compte (facultatif), une victoire rapportera un booster (US-025, voir `recompense`), et la partie
-        n'appartient qu'à cette session. Limite : 20 créations par minute et par adresse.
+        n'appartient qu'à cette session. Avec `guidee: true`, la partie guidée (US-067, ADR 0041) : decks
+        d'initiation et graine fixes contre Stagiaire, `deck` et `niveau` ignorés, aucune récompense ; chaque réponse
+        porte alors l'étape `guide` du moment. Limite : 20 créations par minute et par adresse.
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
-              required: [deck]
               properties:
-                deck: { type: string, examples: [moderne] }
+                deck:
+                  type: string
+                  description: Deck prêté (voir /decks) ; obligatoire, sauf pour la partie guidée.
+                  examples: [moderne]
+                guidee:
+                  type: boolean
+                  description: La première partie guidée (US-067) ; `false` par défaut.
                 niveau:
                   type: string
                   description: Niveau du bot (voir /niveaux) ; `stagiaire`, le plus facile, par défaut (US-064).
@@ -259,6 +266,22 @@ components:
               type: [string, 'null']
               enum: [plafond, adversaire-deja-affronte, null]
               description: Sans booster, pourquoi (« adversaire-deja-affronte » ne concerne que les duels, US-038).
+        guide:
+          type: object
+          description: >
+            Partie guidée seulement (US-067) : l'étape du moment. L'étape `etape` attend la `etape`-ième action du
+            joueur (la version de la partie) ; la dernière, sans `attendu`, le laisse jouer jusqu'à la fin.
+          required: [etape, total, titre, texte, attendu]
+          properties:
+            etape: { type: integer, description: "Numéro de l'étape, à partir de 0." }
+            total: { type: integer, description: Nombre d'étapes, la dernière comprise. }
+            titre: { type: string }
+            texte: { type: string }
+            attendu:
+              description: L'action attendue du joueur ; `null` quand il joue librement.
+              oneOf:
+                - { $ref: '#/components/schemas/Action' }
+                - { type: 'null' }
     Vue:
       type: object
       required: [joueur, moi, adversaire, actif, tour, issue, actions]
