@@ -13,12 +13,15 @@ Chaîne d'import et d'optimisation des illustrations des cartes (US-015,
    {
      "numero": 1,
      "alt": "Un vieux serveur de fichiers couvert de post-it, dans un local technique sombre",
+     "altEn": "An old file server covered in sticky notes, in a dark server room",
      "consigne": "La consigne donnée au générateur, pour pouvoir refaire l'image",
      "provenance": { "outil": "Recraft", "date": "2026-10-18" }
    }
    ```
 
    Le texte alternatif dit **ce que montre l'image**, en une phrase, sans répéter le nom de la carte (il est déjà lu).
+   Il s'écrit dans les deux langues du site (US-081) : `alt` en français, `altEn` en anglais (britannique, comme le
+   reste de la version `/en/`) ; les deux sont obligatoires.
 
 3. Lancer, à la racine du dépôt :
 
@@ -27,7 +30,8 @@ Chaîne d'import et d'optimisation des illustrations des cartes (US-015,
    ```
 
    Le script produit `apps/web/public/cartes/set-1/<numero>-{320,640}.{avif,webp}` et régénère le manifeste
-   `apps/web/src/app/cartes/illustrations.generated.ts`. Il **n'écrit rien** si une erreur subsiste (original absent
+   `apps/web/src/app/cartes/illustrations.generated.ts` (langue → numéro → texte alternatif : chaque version du site lit
+   les textes de sa langue). Il **n'écrit rien** si une erreur subsiste (original absent
    ou trop petit, texte alternatif manquant, numéro de carte inconnu, fichier de 100 Ko ou plus).
 
 4. Commiter `set-1.json`, les images produites et le manifeste. **Pas les originaux** : `sources/` est ignoré par Git ;

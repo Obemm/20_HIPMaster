@@ -23,6 +23,7 @@ async function original(largeur: number): Promise<Buffer> {
 const entree = (numero: number) => ({
   numero,
   alt: 'Un serveur de fichiers poussiéreux sous une lampe de bureau',
+  altEn: 'A dusty file server under a desk lamp',
   provenance: { outil: 'test', date: '2026-10-18' },
 });
 
@@ -61,7 +62,7 @@ describe('produireIllustrations', () => {
     }
   });
 
-  it('écrit le manifeste du front, trié par numéro de carte', async () => {
+  it('écrit le manifeste du front, une langue après l’autre, trié par numéro de carte', async () => {
     await writeFile(join(dossier, '3.png'), await original(800));
     await writeFile(join(dossier, '1.png'), await original(800));
     await ecrireMetadonnees([entree(3), entree(1)]);
@@ -71,7 +72,10 @@ describe('produireIllustrations', () => {
     const manifeste = await readFile(chemins.manifeste, 'utf8');
     expect(manifeste).toContain('ILLUSTRATIONS_SET_1');
     expect(manifeste.indexOf('1:')).toBeLessThan(manifeste.indexOf('3:'));
-    expect(manifeste).toContain("'Un serveur de fichiers poussiéreux sous une lampe de bureau'");
+    const [francais = '', anglais = ''] = manifeste.split('\n  en: ');
+    expect(francais).toContain("'Un serveur de fichiers poussiéreux sous une lampe de bureau'");
+    expect(anglais).toContain("'A dusty file server under a desk lamp'");
+    expect(anglais.indexOf('1:')).toBeLessThan(anglais.indexOf('3:'));
   });
 
   it('retire les images d’une carte qui n’est plus décrite', async () => {
@@ -106,12 +110,21 @@ describe('produireIllustrations', () => {
   });
 
   it('refuse une carte inconnue, un doublon et un texte alternatif manquant', async () => {
-    await ecrireMetadonnees([entree(9), entree(1), entree(1), { ...entree(2), alt: '' }]);
+    const sansAnglais: Partial<ReturnType<typeof entree>> = entree(3);
+    delete sansAnglais.altEn;
+    await ecrireMetadonnees([
+      entree(9),
+      entree(1),
+      entree(1),
+      { ...entree(2), alt: '' },
+      sansAnglais,
+    ]);
 
     const { erreurs } = await produireIllustrations(chemins, cartes);
 
     expect(erreurs).toEqual([
       'illustrations.3.alt : texte alternatif trop court (10 caractères au moins)',
+      expect.stringMatching(/^illustrations\.4\.altEn : /),
     ]);
 
     await ecrireMetadonnees([entree(9), entree(1), entree(1)]);

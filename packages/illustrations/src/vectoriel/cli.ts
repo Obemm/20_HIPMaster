@@ -23,6 +23,7 @@ for (const carte of SET_1) {
 const illustrations = SET_1.map((carte) => ({
   numero: carte.numero,
   alt: texteAlternatif(carte),
+  altEn: texteAlternatif(carte, 'en'),
   consigne: 'Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)',
   provenance: { outil: 'Générateur vectoriel HIPMaster', date: aujourdhui },
 }));

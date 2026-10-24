@@ -27,9 +27,12 @@ anglais** afin d'**apprendre en jouant, comme les francophones**.
       quand elle existe.
       → noms de produits gardés (test) ; tous les liens des fiches anglaises sont anglais, sauf la page de la CNIL
       sur les mots de passe, qui n'a pas de version anglaise.
-- [ ] Les textes alternatifs des illustrations existent dans les deux langues.
-      → **reporté** : ils sont produits par la chaîne des illustrations (`packages/illustrations`,
-      `illustrations.generated.ts`), qu'une autre session régénère en ce moment ; à faire quand elle aura fini.
+- [x] Les textes alternatifs des illustrations existent dans les deux langues.
+      → reporté le temps qu'US-017 régénère les 71 images, puis livré : chaque entrée de `set-1.json` porte `alt`
+      (français) et `altEn` (anglais, obligatoire, mêmes bornes de 10 à 200 caractères) ; le manifeste généré
+      `illustrations.generated.ts` range les textes par langue et `ILLUSTRATIONS_CARTES` prend ceux de la langue du
+      site (`LANGUE`). Le générateur des illustrations provisoires (US-018) écrit lui aussi les deux langues.
+      Tests : `chaine.test.ts`, `dessin.test.ts`, `versionnees.test.ts` (manifeste à jour), `illustrations.spec.ts`.
 
 ## Glossaire et choix à relire
 
@@ -39,7 +42,9 @@ Glossaire commun avec US-080 (voir cette story). Choix propres au contenu, à va
   outil `search_api`) ; le champ source `dateCommande` est gardé pour montrer deux systèmes qui ne parlent pas pareil ;
 - fiche 51 : le prompt système d'exemple dit « Answer in English » (adaptation au lecteur) ;
 - fiche 60 : le mot de passe d'exemple devient `Summer2012` ;
-- decks : Héritage → Legacy, Moderne → Modern, Hybride → Hybrid, Initiation → Starter.
+- decks : Héritage → Legacy, Moderne → Modern, Hybride → Hybrid, Initiation → Starter ;
+- textes alternatifs : anglais britannique comme le reste du site (`en-GB` : armoured, colour, organisation),
+  « lumineux » rendu par _glowing_, « mécanique » par _mechanical_, sans nom de carte ni de produit.
 
 ## Journal
 
@@ -47,3 +52,5 @@ Glossaire commun avec US-080 (voir cette story). Choix propres au contenu, à va
 - 2026-10-24 — ADR 0043 ; textes anglais du catalogue dans le domaine, API selon `langue`, ETag par langue,
   conseil et partie guidée bilingues ; textes alternatifs reportés (illustrations en cours).
 - 2026-10-24 — livrée : Contenu du jeu en anglais dans le domaine (cartes, capacités, fiches, decks, niveaux, partie guidée, conseil), API selon ?langue= avec un ETag par langue, validé par le porteur le 2026-10-24 ; textes alternatifs des illustrations reportés
+- 2026-10-24 — critère reporté livré : textes alternatifs des 71 illustrations en anglais (`altEn` dans
+  `set-1.json`, manifeste par langue, le front lit celui de la langue du site).

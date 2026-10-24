@@ -47,10 +47,19 @@ describe('texteAlternatif', () => {
     expect(texteAlternatif(ftp)).not.toContain(ftp.nom);
   });
 
+  it('se dit aussi en anglais (US-081)', () => {
+    expect(texteAlternatif(carte(1), 'en')).toBe(
+      'Placeholder illustration: a stack of documents on a midnight-blue background, with a golden halo scattered with sparks',
+    );
+  });
+
   it('reste entre 10 et 200 caractères pour toutes les cartes', () => {
     for (const c of SET_1) {
-      expect(texteAlternatif(c).length, `carte ${c.numero}`).toBeGreaterThanOrEqual(10);
-      expect(texteAlternatif(c).length, `carte ${c.numero}`).toBeLessThanOrEqual(200);
+      for (const langue of ['fr', 'en'] as const) {
+        const longueur = texteAlternatif(c, langue).length;
+        expect(longueur, `carte ${c.numero} (${langue})`).toBeGreaterThanOrEqual(10);
+        expect(longueur, `carte ${c.numero} (${langue})`).toBeLessThanOrEqual(200);
+      }
     }
   });
 });

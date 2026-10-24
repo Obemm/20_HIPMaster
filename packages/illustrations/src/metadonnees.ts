@@ -1,10 +1,18 @@
 import { z } from 'zod';
 
 /** Description d'une illustration dans `set-1.json` (ADR 0015). */
+const texteAlternatif = z
+  .string()
+  .trim()
+  .min(10, 'texte alternatif trop court (10 caractères au moins)')
+  .max(200);
+
 const schemaIllustration = z.object({
   numero: z.int().positive(),
   /** Ce que montre l'image, pour les lecteurs d'écran : une phrase, sans répéter le nom de la carte. */
-  alt: z.string().trim().min(10, 'texte alternatif trop court (10 caractères au moins)').max(200),
+  alt: texteAlternatif,
+  /** Le même texte alternatif en anglais, lu par la version `/en/` du site (US-081, ADR 0042). */
+  altEn: texteAlternatif,
   /** Consigne donnée au générateur, pour pouvoir refaire l'image. */
   consigne: z.string().optional(),
   provenance: z.object({ outil: z.string().min(1), date: z.iso.date() }),

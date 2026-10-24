@@ -7,6 +7,9 @@ Toutes les évolutions notables du projet sont consignées ici
 
 ### Ajouté
 
+- Les textes alternatifs des 71 illustrations en anglais : la version `/en/` décrit chaque image aux lecteurs d'écran
+  dans sa langue ; `set-1.json` porte un `altEn` obligatoire à côté de l'`alt` français et le manifeste généré range
+  les textes par langue (US-081).
 - De vraies illustrations pour les 71 cartes du set 1, générées avec Gemini : chaque carte a une créature à elle
   (pélican facteur pour FTP, griffon gardien pour Apigee, méduse-maillage pour Solace Event Mesh…), dans son propre
   décor, avec le même rendu, la palette de sa famille et l'intensité de sa rareté ; les évolutions reprennent la

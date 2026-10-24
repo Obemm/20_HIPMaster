@@ -1,5 +1,11 @@
 import type { Carte, Rarete } from '@hipmaster/domain';
-import { DESCRIPTIONS_EMBLEME, DETAILS, PALETTES, SILHOUETTES } from './emblemes.ts';
+import {
+  DESCRIPTIONS_EMBLEME,
+  DESCRIPTIONS_EMBLEME_EN,
+  DETAILS,
+  PALETTES,
+  SILHOUETTES,
+} from './emblemes.ts';
 import { creerHasard, entre } from './hasard.ts';
 
 /** Surface de dessin en 4:3 (ADR 0015) ; le rendu PNG se fait à une taille supérieure. */
@@ -163,24 +169,60 @@ ${devant}
 </svg>`;
 }
 
-const RARETES_ALT: Record<Rarete, string | undefined> = {
-  commune: undefined,
-  rare: 'un anneau bleu',
-  epique: 'un halo violet',
-  legendaire: 'un halo doré semé d’étincelles',
-};
-
-const TYPES_ALT: Record<Carte['type'], string | undefined> = {
-  composant: undefined,
-  evolution: 'des chevrons montants',
-  sort: 'un cercle de runes',
-  incident: 'des fissures',
-};
+/** Ce que l'illustration provisoire montre, mot à mot, dans chaque langue du site (US-081). */
+const ALT = {
+  fr: {
+    embleme: DESCRIPTIONS_EMBLEME,
+    raretes: {
+      commune: undefined,
+      rare: 'un anneau bleu',
+      epique: 'un halo violet',
+      legendaire: 'un halo doré semé d’étincelles',
+    },
+    types: {
+      composant: undefined,
+      evolution: 'des chevrons montants',
+      sort: 'un cercle de runes',
+      incident: 'des fissures',
+    },
+    et: ' et ',
+    phrase: (embleme: string, ornements: string) =>
+      `Illustration provisoire : ${embleme} sur fond bleu nuit${ornements ? ', avec ' + ornements : ''}`,
+  },
+  en: {
+    embleme: DESCRIPTIONS_EMBLEME_EN,
+    raretes: {
+      commune: undefined,
+      rare: 'a blue ring',
+      epique: 'a purple halo',
+      legendaire: 'a golden halo scattered with sparks',
+    },
+    types: {
+      composant: undefined,
+      evolution: 'rising chevrons',
+      sort: 'a circle of runes',
+      incident: 'cracks',
+    },
+    et: ' and ',
+    phrase: (embleme: string, ornements: string) =>
+      `Placeholder illustration: ${embleme} on a midnight-blue background${ornements ? ', with ' + ornements : ''}`,
+  },
+} satisfies Record<
+  'fr' | 'en',
+  {
+    embleme: Record<Carte['famille'], string>;
+    raretes: Record<Rarete, string | undefined>;
+    types: Record<Carte['type'], string | undefined>;
+    et: string;
+    phrase: (embleme: string, ornements: string) => string;
+  }
+>;
 
 /** Texte alternatif de l'illustration provisoire : ce qu'elle montre, sans le nom de la carte. */
-export function texteAlternatif(carte: Carte): string {
-  const embleme = DESCRIPTIONS_EMBLEME[carte.famille];
-  const ornements = [TYPES_ALT[carte.type], RARETES_ALT[carte.rarete]].filter(Boolean).join(' et ');
-  const suite = ornements ? ', avec ' + ornements : '';
-  return `Illustration provisoire : ${embleme} sur fond bleu nuit${suite}`;
+export function texteAlternatif(carte: Carte, langue: 'fr' | 'en' = 'fr'): string {
+  const mots = ALT[langue];
+  const ornements = [mots.types[carte.type], mots.raretes[carte.rarete]]
+    .filter(Boolean)
+    .join(mots.et);
+  return mots.phrase(mots.embleme[carte.famille], ornements);
 }

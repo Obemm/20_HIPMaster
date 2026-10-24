@@ -30,6 +30,18 @@ export const DESCRIPTIONS_EMBLEME: Record<Famille, string> = {
   bestiaire: 'une créature menaçante',
 };
 
+/** Les mêmes descriptions en anglais (US-081). */
+export const DESCRIPTIONS_EMBLEME_EN: Record<Famille, string> = {
+  fichiers: 'a stack of documents',
+  esb: 'a hub linked to connectors in a star',
+  api: 'a fortified gate',
+  ipaas: 'a cloud fitted with a connector',
+  eda: 'a source sending out waves',
+  ia: 'a glowing eye linked to a network of nodes',
+  patterns: 'a gear',
+  bestiaire: 'a menacing creature',
+};
+
 const engrenage = (dents: number, rayonExt: number, rayonInt: number) => {
   const points: string[] = [];
   for (let i = 0; i < dents * 4; i++) {
