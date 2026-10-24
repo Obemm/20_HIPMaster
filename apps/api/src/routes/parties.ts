@@ -160,7 +160,7 @@ export const routesParties: FastifyPluginAsyncZod<{
     },
   );
 
-  // Conseil (US-066, ADR 0039) : contre le bot seulement, les duels n'ont pas de route de conseil.
+  // Conseil (US-066, ADR 0040) : contre le bot seulement, les duels n'ont pas de route de conseil.
   app.get(
     '/parties/:id/conseil',
     {

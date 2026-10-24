@@ -109,7 +109,7 @@ export interface Partie {
   recompense?: Recompense;
 }
 
-/** Le meilleur coup du moment, et pourquoi, calculé par le serveur contre le bot (US-066, ADR 0039). */
+/** Le meilleur coup du moment, et pourquoi, calculé par le serveur contre le bot (US-066, ADR 0040). */
 export interface Conseil {
   /** La version de la partie pour laquelle il vaut. */
   version: number;

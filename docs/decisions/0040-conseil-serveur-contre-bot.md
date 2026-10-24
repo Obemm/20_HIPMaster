@@ -1,4 +1,4 @@
-# 0039 — Conseil calculé par le serveur, contre le bot seulement
+# 0040 — Conseil calculé par le serveur, contre le bot seulement
 
 - **Date** : 2026-10-24
 - **Statut** : Acceptée

@@ -297,7 +297,7 @@ Après :
 
 ## Un joueur qui suit le conseil (US-066, 2026-10-24)
 
-Le conseil suit les règles de Batch de nuit (ADR 0039). Victoires d'un joueur qui le suit toujours, decks prêtés
+Le conseil suit les règles de Batch de nuit (ADR 0040). Victoires d'un joueur qui le suit toujours, decks prêtés
 croisés, 450 parties par mesure (graine 1, et graine 2 entre parenthèses) :
 
 | Niveau du bot | Victoires   | en commençant | en second   |

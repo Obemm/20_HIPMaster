@@ -15,7 +15,7 @@ info:
     même jeton, et reste introuvable (404) pour toute autre requête (US-047). Une partie sans compte appartient à qui
     connaît son identifiant.
 
-    Un conseil (US-066, ADR 0039) dit au joueur le meilleur coup du moment, et pourquoi. Il n'existe que contre le
+    Un conseil (US-066, ADR 0040) dit au joueur le meilleur coup du moment, et pourquoi. Il n'existe que contre le
     bot : aucune route de conseil pour les duels entre joueurs.
 
     Protections (ADR 0025) : création, actions et conseils limités par adresse IP (valeurs de production ci-dessous,
@@ -165,7 +165,7 @@ paths:
       operationId: lireConseil
       summary: Le meilleur coup du moment, et pourquoi (US-066)
       description: >
-        Calculé par le serveur à partir de la seule vue du joueur (ADR 0004, 0039) : il ne révèle ni la main ni la
+        Calculé par le serveur à partir de la seule vue du joueur (ADR 0004, 0040) : il ne révèle ni la main ni la
         pioche du bot. L'action conseillée est toujours une des `vue.actions` ; le conseil ne joue rien, et ne change
         pas la récompense de victoire. Les duels n'ont pas de conseil. Même propriété que la partie (US-047). Limite :
         300 conseils par minute et par adresse.

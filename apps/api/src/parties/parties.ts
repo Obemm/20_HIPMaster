@@ -229,7 +229,7 @@ export async function lirePartie(
   return { ok: true, valeur: { partie: visible(ligne, 0), joueurId: ligne.joueurId } };
 }
 
-/** Le conseil du moment (US-066, ADR 0039), pour la version de la partie où il vaut. */
+/** Le conseil du moment (US-066, ADR 0040), pour la version de la partie où il vaut. */
 export interface ConseilPartie extends Conseil {
   version: number;
 }

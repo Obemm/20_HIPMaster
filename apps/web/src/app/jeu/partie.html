@@ -12,7 +12,7 @@
           <span class="me-1 font-semibold">Tour {{ v.tour }} / {{ TOURS_MAX }}</span>
         }
         @if (pret() && mode() === 'bot' && monTour()) {
-          <!-- Conseil à la demande (US-066) : contre le bot seulement, jamais en duel (ADR 0039). -->
+          <!-- Conseil à la demande (US-066) : contre le bot seulement, jamais en duel (ADR 0040). -->
           <button
             type="button"
             id="demander-conseil"
@@ -598,7 +598,7 @@
           </span>
         </label>
         @if (mode() === 'bot') {
-          <!-- Contre le bot seulement (US-066, ADR 0039), gardé par le navigateur (ADR 0032). -->
+          <!-- Contre le bot seulement (US-066, ADR 0040), gardé par le navigateur (ADR 0032). -->
           <label class="flex items-start gap-3 rounded-lg border border-bordure p-3 text-sm">
             <input
               type="checkbox"
