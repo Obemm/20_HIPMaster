@@ -1,7 +1,7 @@
 # US-017 — Illustrations des 71 cartes du set 1
 
 - **Epic** : EPIC-05
-- **Statut** : En cours
+- **Statut** : Faite
 - **Priorité** : Should
 - **Taille** : L
 - **Branche** : `us-017-illustrations-set-1`
@@ -13,12 +13,12 @@ En tant que **joueur de l'équipe d'intégration**, je veux **que chaque carte d
 
 ## Critères d'acceptation
 
-- [ ] Les 71 cartes ont une illustration conforme à la direction artistique (US-016), relue par le porteur du projet.
-- [ ] Chacune a un texte alternatif et sa provenance (outil, date, consigne) dans `packages/illustrations/set-1.json`.
-- [ ] Un test vérifie que **toutes** les cartes du set 1 ont une illustration de moins de 100 Ko (indicateur de
+- [x] Les 71 cartes ont une illustration conforme à la direction artistique (US-016), relue par le porteur du projet.
+- [x] Chacune a un texte alternatif et sa provenance (outil, date, consigne) dans `packages/illustrations/set-1.json`.
+- [x] Un test vérifie que **toutes** les cartes du set 1 ont une illustration de moins de 100 Ko (indicateur de
       réussite d'EPIC-05).
-- [ ] Les originaux sont archivés hors du dépôt (ADR 0015).
-- [ ] Les captures du catalogue, sur mobile et sur bureau, en thème clair et sombre, sont jointes à la PR.
+- [x] Les originaux sont archivés hors du dépôt (ADR 0015).
+- [x] Les captures du catalogue, sur mobile et sur bureau, en thème clair et sombre, sont jointes à la PR.
 
 ## Notes
 
@@ -56,3 +56,9 @@ En tant que **joueur de l'équipe d'intégration**, je veux **que chaque carte d
   AI Gateway générées avec l'image de leur carte d'origine (31, 18) en seconde référence, les essais « robot » écartés.
   Gemini répond parfois par du texte au lieu d'une image : une relance suffit. Les deux familles partagent une PR (leurs
   lignes du manifeste se touchent).
+- 2026-10-24 — familles Patterns (53 à 58) et Bestiaire (59 à 71), dans une nouvelle conversation Gemini (l'ancienne,
+  trop longue, figeait Chrome). Trois Patterns (53, 57, 58), d'abord en tons chauds qui se confondaient avec Fichiers
+  & Batch et le Bestiaire, ont été refaites en palette ardoise (anciens originaux gardés). Un test vérifie désormais
+  que chacune des 71 cartes a son illustration. Captures du catalogue (mobile et bureau, clair et sombre) jointes à la
+  PR. Textes alternatifs anglais : restent à faire au titre d'US-081.
+- 2026-10-24 — livrée : Les 71 cartes du set 1 ont une créature à elle, générée avec Gemini, chacune dans son décor

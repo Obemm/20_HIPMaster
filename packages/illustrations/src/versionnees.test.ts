@@ -24,6 +24,12 @@ describe('illustrations versionnées du set 1', () => {
     expect((await illustrationsDecrites()).erreurs).toEqual([]);
   });
 
+  it('chaque carte du set 1 a son illustration (US-017)', async () => {
+    const { illustrations } = await illustrationsDecrites();
+    const illustrees = new Set(illustrations.map(({ numero }) => numero));
+    expect(SET_1.filter((carte) => !illustrees.has(carte.numero)).map((c) => c.numero)).toEqual([]);
+  });
+
   it('chaque fichier servi pèse moins de 100 Ko', async () => {
     for (const nom of await servis()) {
       expect((await stat(dossierServi + nom)).size, nom).toBeLessThan(POIDS_MAX);

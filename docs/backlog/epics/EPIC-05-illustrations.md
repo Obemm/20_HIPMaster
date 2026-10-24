@@ -16,7 +16,7 @@ Toutes les cartes du premier set ont une illustration optimisée (WebP/AVIF, moi
 - [x] US-009 — Design des cartes façon carte à jouer
 - [x] US-015 — Chaîne d'import et d'optimisation des illustrations
 - [ ] US-016 — Direction artistique et choix du générateur d'images
-- [ ] US-017 — Illustrations des 71 cartes du set 1
+- [x] US-017 — Illustrations des 71 cartes du set 1
 - [x] US-018 — Illustrations provisoires générées par le code
 - [ ] US-078 — Des illustrations à empreinte, gardées un an en cache
 

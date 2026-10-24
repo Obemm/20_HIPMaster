@@ -7,6 +7,11 @@ Toutes les évolutions notables du projet sont consignées ici
 
 ### Ajouté
 
+- De vraies illustrations pour les 71 cartes du set 1, générées avec Gemini : chaque carte a une créature à elle
+  (pélican facteur pour FTP, griffon gardien pour Apigee, méduse-maillage pour Solace Event Mesh…), dans son propre
+  décor, avec le même rendu, la palette de sa famille et l'intensité de sa rareté ; les évolutions reprennent la
+  créature de leur carte d'origine. Chaque image a son texte alternatif et sa consigne de génération, les originaux
+  sont archivés hors du dépôt, et un test vérifie que les 71 cartes sont illustrées en moins de 100 Ko (US-017).
 - Des erreurs comprises dans les deux langues : chaque erreur de l'API porte un `code` stable, que le front traduit
   (le texte français reste en repli) ; les parcours principaux sont vérifiés en anglais, audit d'accessibilité compris,
   et le guide d'exploitation dit comment ajouter une langue (US-082).
