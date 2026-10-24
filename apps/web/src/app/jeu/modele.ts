@@ -97,6 +97,8 @@ export interface Recompense {
 
 export interface Partie {
   id: string;
+  /** Change à chaque action (ADR 0030) ; absente pour un duel vu comme une partie. */
+  version?: number;
   deck: string;
   deckAdversaire: string;
   /** Niveau du bot adverse (US-021). */
@@ -105,6 +107,14 @@ export interface Partie {
   evenements: Evenement[];
   /** Présente après une victoire dans une partie lancée en étant connecté (US-025). */
   recompense?: Recompense;
+}
+
+/** Le meilleur coup du moment, et pourquoi, calculé par le serveur contre le bot (US-066, ADR 0039). */
+export interface Conseil {
+  /** La version de la partie pour laquelle il vaut. */
+  version: number;
+  action: Action;
+  explication: string;
 }
 
 /** Un niveau du bot, du plus simple au plus fort (US-021). */

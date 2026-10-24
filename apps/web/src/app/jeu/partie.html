@@ -11,6 +11,19 @@
         @if (vue(); as v) {
           <span class="me-1 font-semibold">Tour {{ v.tour }} / {{ TOURS_MAX }}</span>
         }
+        @if (pret() && mode() === 'bot' && monTour()) {
+          <!-- Conseil à la demande (US-066) : contre le bot seulement, jamais en duel (ADR 0039). -->
+          <button
+            type="button"
+            id="demander-conseil"
+            class="flex h-9 min-w-9 items-center justify-center gap-1 rounded-full border-2 border-bordure px-2 font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:opacity-60"
+            [disabled]="conseilEnCours() || occupe()"
+            (click)="demanderConseil()"
+          >
+            <hip-icone nom="conseil" class="size-4 text-or" />
+            <span class="sr-only sm:not-sr-only">Un conseil ?</span>
+          </button>
+        }
         @if (pret()) {
           <button
             type="button"
@@ -116,6 +129,7 @@
             [class.ring-offset-2]="composantChoisi() === 'si'"
             [class.ring-offset-fond]="composantChoisi() === 'si'"
             [disabled]="occupe()"
+            [class.conseille]="conseilles().has('si')"
             [attr.aria-pressed]="composantChoisi() === 'si'"
             [attr.aria-controls]="composantChoisi() === 'si' ? 'detail-plateau' : null"
             (click)="choisirComposant('si', 'adversaire')"
@@ -132,6 +146,9 @@
             </span>
             @if (ciblesPossibles().has('si')) {
               <span class="sr-only">: cible possible</span>
+            }
+            @if (conseilles().has('si')) {
+              <span class="sr-only">: conseillé</span>
             }
           </button>
           <p class="flex gap-2 text-xs text-texte-doux">
@@ -167,9 +184,11 @@
                 [disabled]="occupe()"
                 [attr.aria-pressed]="choisi"
                 [attr.aria-controls]="choisi ? 'detail-plateau' : null"
+                [class.conseille]="conseilles().has(c.id)"
                 [attr.aria-label]="
                   decrireComposant(c, carte) +
-                  (ciblesPossibles().has(c.id) ? ' : cible possible' : '')
+                  (ciblesPossibles().has(c.id) ? ' : cible possible' : '') +
+                  (conseilles().has(c.id) ? ' : conseillé' : '')
                 "
                 (click)="choisirComposant(c.id, 'adversaire')"
               ></button>
@@ -258,9 +277,11 @@
                 [disabled]="occupe()"
                 [attr.aria-pressed]="choisi"
                 [attr.aria-controls]="choisi ? 'detail-plateau' : null"
+                [class.conseille]="conseilles().has(c.id)"
                 [attr.aria-label]="
                   decrireComposant(c, carte) +
-                  (attaquantsPossibles().has(c.id) ? ' : peut attaquer' : '')
+                  (attaquantsPossibles().has(c.id) ? ' : peut attaquer' : '') +
+                  (conseilles().has(c.id) ? ' : conseillé' : '')
                 "
                 (click)="choisirComposant(c.id, 'moi')"
               ></button>
@@ -376,6 +397,7 @@
                       class="absolute inset-0 rounded-[1rem] focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-default"
                       [class.ring-3]="carteChoisie() === instance.id"
                       [class.ring-accent]="carteChoisie() === instance.id"
+                      [class.conseille]="conseilles().has(instance.id)"
                       [id]="'main-' + instance.id"
                       [attr.aria-pressed]="carteChoisie() === instance.id"
                       [attr.aria-controls]="carteChoisie() === instance.id ? 'detail-main' : null"
@@ -385,7 +407,10 @@
                       [disabled]="occupe()"
                       (click)="choisirCarte(instance.id)"
                     >
-                      <span class="sr-only">{{ carteDe(instance.numero)?.nom }}</span>
+                      <span class="sr-only"
+                        >{{ carteDe(instance.numero)?.nom
+                        }}{{ conseilles().has(instance.id) ? ' : conseillée' : '' }}</span
+                      >
                     </button>
                   </div>
                   <!-- Carte injouable (US-071) : une mention visible, pas un grisé ; la raison complète pour les lecteurs d'écran. -->
@@ -424,6 +449,30 @@
                 }
               </div>
             }
+            @if (mode() === 'bot') {
+              <!-- Le conseil (US-066), annoncé aux lecteurs d'écran : la zone existe avant lui pour être lue. -->
+              <div aria-live="polite" aria-atomic="true">
+                @if (conseil(); as c) {
+                  <p
+                    id="conseil"
+                    class="flex items-start gap-2 rounded-lg border-2 border-dashed border-or px-2 py-1 text-xs sm:text-sm"
+                  >
+                    <hip-icone nom="conseil" class="mt-0.5 size-4 shrink-0 text-or" />
+                    <span class="min-w-0 flex-1"
+                      ><strong>Conseil :</strong> {{ c.explication }}</span
+                    >
+                    <button
+                      type="button"
+                      class="-my-1 -me-1 shrink-0 rounded-full p-2 text-texte-doux hover:bg-surface focus-visible:outline-2 focus-visible:outline-accent"
+                      (click)="masquerConseil()"
+                    >
+                      <hip-icone nom="fermer" class="size-4" />
+                      <span class="sr-only">Masquer le conseil</span>
+                    </button>
+                  </p>
+                }
+              </div>
+            }
             <div class="flex items-center justify-between gap-3">
               @if (attaquesOubliees() && !attaquant()) {
                 <p
@@ -453,6 +502,7 @@
                 type="button"
                 id="finir-tour"
                 class="bouton bouton-jeu shrink-0"
+                [class.conseille]="conseilles().has('finir')"
                 [disabled]="!monTour() || occupe()"
                 [attr.aria-describedby]="
                   attaquesOubliees() && !attaquant() ? 'attaques-oubliees' : null
@@ -547,6 +597,21 @@
             attaque ou une carte encore possible, et le SI protégé par Garde est signalé.
           </span>
         </label>
+        @if (mode() === 'bot') {
+          <!-- Contre le bot seulement (US-066, ADR 0039), gardé par le navigateur (ADR 0032). -->
+          <label class="flex items-start gap-3 rounded-lg border border-bordure p-3 text-sm">
+            <input
+              type="checkbox"
+              class="mt-0.5 size-5 shrink-0 accent-current"
+              [checked]="preferences.conseilAChaqueCoup()"
+              (change)="basculerConseilAChaqueCoup($event)"
+            />
+            <span>
+              <strong>Un conseil à chaque coup</strong> : le meilleur coup du moment s’affiche, avec
+              sa raison, sans le demander. Sinon, touchez l’ampoule en haut de l’écran.
+            </span>
+          </label>
+        }
         @if (capacitesEnJeu().length) {
           <section aria-labelledby="titre-glossaire" class="flex flex-col gap-2">
             <h3 id="titre-glossaire" class="font-semibold">

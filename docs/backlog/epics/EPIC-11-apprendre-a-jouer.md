@@ -22,7 +22,7 @@ documentation. Les règles sont riches (Débit, Garde, riposte, capacités), et 
 ## Stories
 
 - [x] US-065 — Des coups de pouce au bon moment
-- [ ] US-066 — Un conseil à la demande, contre le bot
+- [x] US-066 — Un conseil à la demande, contre le bot
 - [ ] US-067 — Une première partie guidée
 
 Ordre suggéré : US-065 et US-066 avant d'envoyer les invitations (lot 2), une fois le lot 1 d'EPIC-09 terminé. Puis

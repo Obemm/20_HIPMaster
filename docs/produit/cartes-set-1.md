@@ -294,3 +294,16 @@ Après :
 - L'échelle des niveaux tient : chaque niveau bat le précédent, de 53 à 91 % du temps. Agent autonome ne bat plus
   Architecte ESB que 53 à 57 % du temps, contre 57 à 60 % quand ESB n'étudiait que 3 actions candidates.
 - Les decks restent équilibrés : tous les duels entre 45 et 55 %, aux deux graines.
+
+## Un joueur qui suit le conseil (US-066, 2026-10-24)
+
+Le conseil suit les règles de Batch de nuit (ADR 0039). Victoires d'un joueur qui le suit toujours, decks prêtés
+croisés, 450 parties par mesure (graine 1, et graine 2 entre parenthèses) :
+
+| Niveau du bot | Victoires   | en commençant | en second   |
+| ------------- | ----------- | ------------- | ----------- |
+| Stagiaire     | 89 % (90 %) | 91 % (90 %)   | 88 % (90 %) |
+| Batch de nuit | 47 % (51 %) | 51 % (50 %)   | 44 % (52 %) |
+
+Les cibles d'EPIC-11 sont tenues : au moins 85 % contre Stagiaire et 45 % contre Batch de nuit. Le conseil se calcule
+en moins d'une milliseconde.
