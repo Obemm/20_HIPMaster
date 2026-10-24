@@ -43,3 +43,6 @@ En tant que **joueur de l'équipe d'intégration**, je veux **que chaque carte d
   porteur, les prompts imposent un décor propre à chaque carte et 3 à 8 ont été refaites ; quatre ont reçu une phrase
   corrective (texte sur le document, décor trop proche d'une autre carte), consignée dans `set-1.json`. Les
   originaux remplacés sont gardés hors du dépôt (`*-essai-*.jpeg`).
+- 2026-10-24 — famille Messagerie & ESB (9 à 17) : neuf créatures, neuf décors ; six images ont reçu une phrase de
+  décor ou de lisibilité (pieuvre de la 9), consignée dans `set-1.json`. Gemini a refusé une fois la 17 sans raison,
+  la relance avec un décor a fonctionné.
