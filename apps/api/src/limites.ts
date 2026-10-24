@@ -26,6 +26,8 @@ export const LIMITES_DEBIT = {
   creationPartie: { max: 20, fenetreMs: MINUTE },
   /** `POST /parties/{id}/actions` : chaque fin de tour fait jouer le bot. */
   actionPartie: { max: 300, fenetreMs: MINUTE },
+  /** `GET /parties/{id}/conseil` : au plus un par action, quand le conseil s'affiche à chaque coup (US-066). */
+  conseilPartie: { max: 300, fenetreMs: MINUTE },
   /** `POST /duels` et `POST /duels/hasard` : chaque défi est une ligne en base. */
   creationDuel: { max: 60, fenetreMs: HEURE },
   /** Coups d'un duel : actions, rejoindre, abandonner, annuler. */

@@ -156,8 +156,8 @@
     },
     {
       "numero": 18,
-      "alt": "Un robot-forteresse émeraude gardant une porte, entouré de remparts et de badges d'accès lumineux",
-      "consigne": "Subject: a friendly \"machine-creature of the server room\" that embodies \"Apigee API Gateway\" (enterprise integration, API). What it means (French, for context only): « La passerelle API d’Elis : point d’entrée unique, sécurité, quotas et statistiques. ». Visual motifs: gates, ramparts, access badges. Rarity: glowing halo and sparkling particles, epic. Digital illustration for a collectible card game, landscape 4:3, light isometric view, one single central subject readable at small size, clean bold shapes, soft cel shading, dark navy blue background with a subtle emerald glow, limited palette dominated by emerald and dark green. Strictly no text, no letters, no numbers, no logos, no brand marks, no watermark, no real people.",
+      "alt": "Un griffon gardien aux ailes déployées, perché sur la tour crénelée d'un rempart dans un col de montagne, au-dessus d'un chemin où montent de petits colis",
+      "consigne": "Generate a new image. From the reference image, keep ONLY the rendering style: line quality, soft cel shading, lighting and dark navy background treatment. Do NOT reuse its character, pose or composition: no robot standing in a doorway, no circular halo behind it, no frontal symmetric framing. Invent a creature with a clearly different body shape, size and pose, built from its own motifs, in a dynamic three-quarter view, in its own small scene. Do NOT reuse its setting either: no cable-covered floor, no punched tapes hanging on the sides, no server racks framing the picture; give the scene its own place and camera angle, drawn from the subject. Subject: a noble guardian griffin with half-spread wings, perched on top of a large fortified gate, inspecting a queue of tiny parcels and letting through only those showing an access badge, quota counter beads on its collar. It embodies \"Apigee API Gateway\" (enterprise integration, API). What it means (French, for context only): « La passerelle API d’Elis : point d’entrée unique, sécurité, quotas et statistiques. ». Rarity: epic card: a bright aura around the creature and sparkling particles. Digital illustration for a collectible card game, landscape 4:3, one single main creature readable at small size, clean bold shapes, soft cel shading, dark navy blue background with a subtle emerald glow, limited palette dominated by emerald and dark green, motifs: gates, ramparts, access badges. Strictly no text, no letters, no numbers, no logos, no brand marks, no watermark, no real people. Setting: a high mountain pass at dusk, the fortified gate is a stone tower in a long rampart wall seen from the side; show the griffin in side three-quarter view, clearly a griffin with an eagle head, hooked beak and feathered eagle wings and a lion body with paws and tufted tail; no arch framing it, not facing the viewer.",
       "provenance": {
         "outil": "Gemini (Google), application web",
         "date": "2026-10-24"
@@ -165,65 +165,65 @@
     },
     {
       "numero": 19,
-      "alt": "Illustration provisoire : une porte fortifiée sur fond bleu nuit, avec un anneau bleu",
-      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "alt": "Un grand escargot dont la coquille est une bibliothèque en spirale, avec de petits visiteurs sur des échelles, dans une grotte aux champignons lumineux",
+      "consigne": "Generate a new image. From the reference image, keep ONLY the rendering style: line quality, soft cel shading, lighting and dark navy background treatment. Do NOT reuse its character, pose or composition: no robot standing in a doorway, no circular halo behind it, no frontal symmetric framing. Invent a creature with a clearly different body shape, size and pose, built from its own motifs, in a dynamic three-quarter view, in its own small scene. Do NOT reuse its setting either: no cable-covered floor, no punched tapes hanging on the sides, no server racks framing the picture; give the scene its own place and camera angle, drawn from the subject. Subject: a large snail whose shell is a spiral library of catalog books, with tiny visitors browsing its shelves. It embodies \"Apigee API Hub\" (enterprise integration, API). What it means (French, for context only): « Le catalogue des API. ». Rarity: rare card: a few subtle glints and light effects. Digital illustration for a collectible card game, landscape 4:3, one single main creature readable at small size, clean bold shapes, soft cel shading, dark navy blue background with a subtle emerald glow, limited palette dominated by emerald and dark green, motifs: gates, ramparts, access badges. Strictly no text, no letters, no numbers, no logos, no brand marks, no watermark, no real people. Setting: a mossy underground grotto with stalactites and glowing mushrooms, seen from a low side angle; no moon, no buildings.",
       "provenance": {
-        "outil": "Générateur vectoriel HIPMaster",
-        "date": "2026-10-18"
+        "outil": "Gemini (Google), application web",
+        "date": "2026-10-24"
       }
     },
     {
       "numero": 20,
-      "alt": "Illustration provisoire : une porte fortifiée sur fond bleu nuit, avec un anneau bleu",
-      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "alt": "Un lynx mi-mécanique qui tend des clés lumineuses en train de s'effacer, sur le porche d'un chalet sous la neige",
+      "consigne": "Generate a new image. From the reference image, keep ONLY the rendering style: line quality, soft cel shading, lighting and dark navy background treatment. Do NOT reuse its character, pose or composition: no robot standing in a doorway, no circular halo behind it, no frontal symmetric framing. Invent a creature with a clearly different body shape, size and pose, built from its own motifs, in a dynamic three-quarter view, in its own small scene. Do NOT reuse its setting either: no cable-covered floor, no punched tapes hanging on the sides, no server racks framing the picture; give the scene its own place and camera angle, drawn from the subject. Subject: a sharp-eyed lynx doorman handing out glowing temporary keys that slowly fade away. It embodies \"OAuth2\" (enterprise integration, API). What it means (French, for context only): « La délégation d’autorisation par jeton. ». Rarity: rare card: a few subtle glints and light effects. Digital illustration for a collectible card game, landscape 4:3, one single main creature readable at small size, clean bold shapes, soft cel shading, dark navy blue background with a subtle emerald glow, limited palette dominated by emerald and dark green, motifs: gates, ramparts, access badges. Strictly no text, no letters, no numbers, no logos, no brand marks, no watermark, no real people. Setting: the wooden porch of a mountain chalet in a snowy pine forest, gentle falling snow; no moon, no arch framing the creature.",
       "provenance": {
-        "outil": "Générateur vectoriel HIPMaster",
-        "date": "2026-10-18"
+        "outil": "Gemini (Google), application web",
+        "date": "2026-10-24"
       }
     },
     {
       "numero": 21,
-      "alt": "Illustration provisoire : une porte fortifiée sur fond bleu nuit, avec un cercle de runes et un anneau bleu",
-      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "alt": "Un paresseux suspendu à la barre d'un tourniquet en bambou, qui laisse passer une goutte lumineuse pendant que les autres attendent, sous la pluie",
+      "consigne": "Generate a new image. From the reference image, keep ONLY the rendering style: line quality, soft cel shading, lighting and dark navy background treatment. Do NOT reuse its character, pose or composition: no robot standing in a doorway, no circular halo behind it, no frontal symmetric framing. Invent a creature with a clearly different body shape, size and pose, built from its own motifs, in a dynamic three-quarter view, in its own small scene. Do NOT reuse its setting either: no cable-covered floor, no punched tapes hanging on the sides, no server racks framing the picture; give the scene its own place and camera angle, drawn from the subject. Subject: a sloth hanging from a gate bar, letting glowing droplets through only one at a time, a crowd of droplets waiting behind it. It embodies \"Rate limiting\" (enterprise integration, API). What it means (French, for context only): « Limiter le nombre d’appels d’un consommateur. ». Rarity: rare card: a few subtle glints and light effects. Digital illustration for a collectible card game, landscape 4:3, one single main creature readable at small size, clean bold shapes, soft cel shading, dark navy blue background with a subtle emerald glow, limited palette dominated by emerald and dark green, motifs: gates, ramparts, access badges. Strictly no text, no letters, no numbers, no logos, no brand marks, no watermark, no real people. Setting: a dense rainy bamboo grove with tall stalks and drizzle, the gate is a simple bamboo turnstile; no moon, no buildings. The sloth hangs upside down by its long claws from the top bar, seen in three-quarter side view, furry with a few mossy armor plates; no emblems, symbols or glyphs on its body.",
       "provenance": {
-        "outil": "Générateur vectoriel HIPMaster",
-        "date": "2026-10-18"
+        "outil": "Gemini (Google), application web",
+        "date": "2026-10-24"
       }
     },
     {
       "numero": 22,
-      "alt": "Illustration provisoire : une porte fortifiée sur fond bleu nuit",
-      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "alt": "Un chien de rapport joyeux, mi-mécanique, qui trotte dans une ruelle de village un cube lumineux dans la gueule",
+      "consigne": "Generate a new image. From the reference image, keep ONLY the rendering style: line quality, soft cel shading, lighting and dark navy background treatment. Do NOT reuse its character, pose or composition: no robot standing in a doorway, no circular halo behind it, no frontal symmetric framing. Invent a creature with a clearly different body shape, size and pose, built from its own motifs, in a dynamic three-quarter view, in its own small scene. Do NOT reuse its setting either: no cable-covered floor, no punched tapes hanging on the sides, no server racks framing the picture; give the scene its own place and camera angle, drawn from the subject. Subject: a cheerful half-mechanical retriever dog fetching glowing cubes from door to door and bringing them back in its mouth. It embodies \"API REST\" (enterprise integration, API). What it means (French, for context only): « Des ressources, des verbes HTTP et du JSON. ». Rarity: common card: sober, minimal light effects. Digital illustration for a collectible card game, landscape 4:3, one single main creature readable at small size, clean bold shapes, soft cel shading, dark navy blue background with a subtle emerald glow, limited palette dominated by emerald and dark green, motifs: gates, ramparts, access badges. Strictly no text, no letters, no numbers, no logos, no brand marks, no watermark, no real people. Setting: a steep cobblestone alley of a hillside village lined with small front doors, potted plants and steps, the dog trotting down it seen from a low side angle; no moon, no emblems or symbols on its body.",
       "provenance": {
-        "outil": "Générateur vectoriel HIPMaster",
-        "date": "2026-10-18"
+        "outil": "Gemini (Google), application web",
+        "date": "2026-10-24"
       }
     },
     {
       "numero": 23,
-      "alt": "Illustration provisoire : une porte fortifiée sur fond bleu nuit",
-      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "alt": "Un axolotl scribe qui déroule un parchemin lumineux dessiné de portes et de flèches, au fond d'un lagon parmi les algues et les coraux",
+      "consigne": "Generate a new image. From the reference image, keep ONLY the rendering style: line quality, soft cel shading, lighting and dark navy background treatment. Do NOT reuse its character, pose or composition: no robot standing in a doorway, no circular halo behind it, no frontal symmetric framing. Invent a creature with a clearly different body shape, size and pose, built from its own motifs, in a dynamic three-quarter view, in its own small scene. Do NOT reuse its setting either: no cable-covered floor, no punched tapes hanging on the sides, no server racks framing the picture; give the scene its own place and camera angle, drawn from the subject. Subject: an axolotl scribe unrolling a long glowing blueprint scroll on which doors and arrows are drawn. It embodies \"OpenAPI\" (enterprise integration, API). What it means (French, for context only): « Le contrat d’une API REST. ». Rarity: common card: sober, minimal light effects. Digital illustration for a collectible card game, landscape 4:3, one single main creature readable at small size, clean bold shapes, soft cel shading, dark navy blue background with a subtle emerald glow, limited palette dominated by emerald and dark green, motifs: gates, ramparts, access badges. Strictly no text, no letters, no numbers, no logos, no brand marks, no watermark, no real people. Setting: the sandy floor of a shallow underwater lagoon with swaying seaweed, coral and rising bubbles; the scroll shows only simple door shapes and arrows, no writing.",
       "provenance": {
-        "outil": "Générateur vectoriel HIPMaster",
-        "date": "2026-10-18"
+        "outil": "Gemini (Google), application web",
+        "date": "2026-10-24"
       }
     },
     {
       "numero": 24,
-      "alt": "Illustration provisoire : une porte fortifiée sur fond bleu nuit",
-      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "alt": "Un phare au visage souriant qui guide de petits voiliers vers un quai chargé de livres, dans une crique rocheuse la nuit",
+      "consigne": "Generate a new image. From the reference image, keep ONLY the rendering style: line quality, soft cel shading, lighting and dark navy background treatment. Do NOT reuse its character, pose or composition: no robot standing in a doorway, no circular halo behind it, no frontal symmetric framing. Invent a creature with a clearly different body shape, size and pose, built from its own motifs, in a dynamic three-quarter view, in its own small scene. Do NOT reuse its setting either: no cable-covered floor, no punched tapes hanging on the sides, no server racks framing the picture; give the scene its own place and camera angle, drawn from the subject. Subject: a lighthouse creature with a welcoming face, guiding small boats toward a dock stacked with documentation. It embodies \"Portail développeur\" (enterprise integration, API). What it means (French, for context only): « Là où les consommateurs découvrent les API et s’y abonnent. ». Rarity: common card: sober, minimal light effects. Digital illustration for a collectible card game, landscape 4:3, one single main creature readable at small size, clean bold shapes, soft cel shading, dark navy blue background with a subtle emerald glow, limited palette dominated by emerald and dark green, motifs: gates, ramparts, access badges. Strictly no text, no letters, no numbers, no logos, no brand marks, no watermark, no real people. Setting: a rocky sea cove at night with rolling waves and a starry sky, seen from the water at an angle; no moon, no city, the documentation is plain bundled books and scrolls with no writing.",
       "provenance": {
-        "outil": "Générateur vectoriel HIPMaster",
-        "date": "2026-10-18"
+        "outil": "Gemini (Google), application web",
+        "date": "2026-10-24"
       }
     },
     {
       "numero": 25,
-      "alt": "Illustration provisoire : une porte fortifiée sur fond bleu nuit",
-      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "alt": "Un martin-pêcheur métallique qui plonge, un billet lumineux au bec, vers une boîte aux lettres au moment où sonne une cloche, dans un verger d'automne",
+      "consigne": "Generate a new image. From the reference image, keep ONLY the rendering style: line quality, soft cel shading, lighting and dark navy background treatment. Do NOT reuse its character, pose or composition: no robot standing in a doorway, no circular halo behind it, no frontal symmetric framing. Invent a creature with a clearly different body shape, size and pose, built from its own motifs, in a dynamic three-quarter view, in its own small scene. Do NOT reuse its setting either: no cable-covered floor, no punched tapes hanging on the sides, no server racks framing the picture; give the scene its own place and camera angle, drawn from the subject. Subject: a kingfisher diving like a fishing hook to deliver a glowing note the very instant a bell rings. It embodies \"Webhook\" (enterprise integration, API). What it means (French, for context only): « L’API qui rappelle quand quelque chose se passe. ». Rarity: common card: sober, minimal light effects. Digital illustration for a collectible card game, landscape 4:3, one single main creature readable at small size, clean bold shapes, soft cel shading, dark navy blue background with a subtle emerald glow, limited palette dominated by emerald and dark green, motifs: gates, ramparts, access badges. Strictly no text, no letters, no numbers, no logos, no brand marks, no watermark, no real people. Setting: an autumn apple orchard at night with gnarled trees and fallen leaves, a small bronze bell ringing on a wooden post, the kingfisher diving from a branch toward a little wooden mailbox; no moon, no water, no buildings.",
       "provenance": {
-        "outil": "Générateur vectoriel HIPMaster",
-        "date": "2026-10-18"
+        "outil": "Gemini (Google), application web",
+        "date": "2026-10-24"
       }
     },
     {

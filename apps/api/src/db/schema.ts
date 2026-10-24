@@ -76,7 +76,11 @@ export const sessions = pgTable(
      */
     utiliseeLe: timestamp({ withTimezone: true }).notNull().defaultNow(),
   },
-  (table) => [index('sessions_utilisee_le').on(table.utiliseeLe)],
+  (table) => [
+    index('sessions_utilisee_le').on(table.utiliseeLe),
+    // Fermer ses autres sessions, supprimer son compte (cascade) : sans index, tout la table (US-057).
+    index('sessions_joueur').on(table.joueurId),
+  ],
 );
 
 /** Collection d'un joueur (US-023) : les cartes, désignées par leur numéro dans le catalogue (ADR 0011). */
@@ -98,41 +102,58 @@ export const collection = pgTable(
  * l'un ou l'autre identifiant), ce qui garantit une seule récompense par partie.
  * `booster` est faux quand le plafond quotidien était atteint.
  */
-export const recompenses = pgTable('recompenses', {
-  partieId: uuid().primaryKey(),
-  joueurId: uuid()
-    .notNull()
-    .references(() => joueurs.id, { onDelete: 'cascade' }),
-  booster: boolean().notNull(),
-  /** Sans booster : pourquoi (plafond quotidien, ou adversaire déjà affronté le jour même, US-038). */
-  motif: text({ enum: ['plafond', 'adversaire-deja-affronte'] }),
-  accordeeLe: timestamp({ withTimezone: true }).notNull().defaultNow(),
-});
+export const recompenses = pgTable(
+  'recompenses',
+  {
+    partieId: uuid().primaryKey(),
+    joueurId: uuid()
+      .notNull()
+      .references(() => joueurs.id, { onDelete: 'cascade' }),
+    booster: boolean().notNull(),
+    /** Sans booster : pourquoi (plafond quotidien, ou adversaire déjà affronté le jour même, US-038). */
+    motif: text({ enum: ['plafond', 'adversaire-deja-affronte'] }),
+    accordeeLe: timestamp({ withTimezone: true }).notNull().defaultNow(),
+  },
+  // Les victoires du jour d'un joueur (plafond quotidien), à chaque victoire (US-057).
+  (table) => [index('recompenses_joueur').on(table.joueurId, table.accordeeLe)],
+);
 
 /**
  * Duels entre joueurs (US-032, ADR 0020) : le créateur joue le camp j1, l'adversaire qui rejoint le camp j2 ; le
  * tirage du moteur désigne qui commence. `version` change à chaque action et à chaque changement de statut.
  * Un joueur qui supprime son compte disparaît de ses duels terminés (`NULL`), qui restent à son adversaire (ADR 0031).
  */
-export const duels = pgTable('duels', {
-  id: uuid().primaryKey().defaultRandom(),
-  statut: text({ enum: ['attente', 'en-cours', 'termine'] })
-    .notNull()
-    .default('attente'),
-  version: integer().notNull().default(0),
-  /** Vide une fois son compte supprimé (US-053). */
-  createurId: uuid().references(() => joueurs.id, { onDelete: 'set null' }),
-  deckCreateur: text().notNull(),
-  /** Duel ouvert à tous (adversaire au hasard, US-037) ; sinon défi privé, rejoint par son lien (US-033). */
-  ouvert: boolean().notNull().default(false),
-  /** Vide tant que personne n'a rejoint le duel, ou une fois son compte supprimé (US-053). */
-  adversaireId: uuid().references(() => joueurs.id, { onDelete: 'set null' }),
-  deckAdversaire: text(),
-  /** État complet du moteur, jamais renvoyé tel quel (seulement la vue de chaque joueur). */
-  etat: jsonb().$type<EtatPartie>(),
-  creeLe: timestamp({ withTimezone: true }).notNull().defaultNow(),
-  majLe: timestamp({ withTimezone: true }).notNull().defaultNow(),
-});
+export const duels = pgTable(
+  'duels',
+  {
+    id: uuid().primaryKey().defaultRandom(),
+    statut: text({ enum: ['attente', 'en-cours', 'termine'] })
+      .notNull()
+      .default('attente'),
+    version: integer().notNull().default(0),
+    /** Vide une fois son compte supprimé (US-053). */
+    createurId: uuid().references(() => joueurs.id, { onDelete: 'set null' }),
+    deckCreateur: text().notNull(),
+    /** Duel ouvert à tous (adversaire au hasard, US-037) ; sinon défi privé, rejoint par son lien (US-033). */
+    ouvert: boolean().notNull().default(false),
+    /** Vide tant que personne n'a rejoint le duel, ou une fois son compte supprimé (US-053). */
+    adversaireId: uuid().references(() => joueurs.id, { onDelete: 'set null' }),
+    deckAdversaire: text(),
+    /** État complet du moteur, jamais renvoyé tel quel (seulement la vue de chaque joueur). */
+    etat: jsonb().$type<EtatPartie>(),
+    creeLe: timestamp({ withTimezone: true }).notNull().defaultNow(),
+    majLe: timestamp({ withTimezone: true }).notNull().defaultNow(),
+  },
+  // Index d'US-057 : les duels d'un joueur, les plus récents d'abord (« Mes duels », dernier adversaire), et les défis
+  // en attente (file des duels ouverts, purge des défis expirés).
+  (table) => [
+    index('duels_createur').on(table.createurId, table.majLe),
+    index('duels_adversaire').on(table.adversaireId, table.majLe),
+    index('duels_attente')
+      .on(table.creeLe)
+      .where(sql`${table.statut} = 'attente'`),
+  ],
+);
 
 /**
  * Parties contre le bot (US-052, ADR 0030) : le joueur joue le camp j1, le bot j2. `version` change à chaque action,
@@ -160,6 +181,9 @@ export const parties = pgTable(
   },
   (table) => [
     index('parties_maj_le').on(table.majLe),
+    // Fermer une session ou supprimer un compte supprime ses parties (cascade) : sans balayer la table (US-057).
+    index('parties_joueur').on(table.joueurId),
+    index('parties_session').on(table.session),
     check('parties_proprietaire', sql`(${table.joueurId} is null) = (${table.session} is null)`),
   ],
 );

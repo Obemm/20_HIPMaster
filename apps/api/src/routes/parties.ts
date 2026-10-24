@@ -4,9 +4,11 @@ import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
 import { z } from 'zod';
 import { empreinteJeton, joueurDuJeton } from '../comptes/comptes.ts';
 import { type OptionsBoosters, type Recompense, recompenserVictoire } from '../comptes/boosters.ts';
+import { cacheCatalogue } from '../cache-catalogue.ts';
 import type { Base } from '../db/index.ts';
 import { limiter, type LimitesDebit } from '../limites.ts';
 import {
+  conseillerPartie,
   jouerPartie,
   lancerPartie,
   lirePartie,
@@ -16,7 +18,13 @@ import {
   type ResultatPartie,
 } from '../parties/parties.ts';
 import { jetonDe, sessionDe } from './comptes.ts';
-import { schemaAction, schemaDeck, schemaNiveau, schemaPartie } from '../parties/schemas.ts';
+import {
+  schemaAction,
+  schemaConseil,
+  schemaDeck,
+  schemaNiveau,
+  schemaPartie,
+} from '../parties/schemas.ts';
 
 const schemaPartieRecompensee = schemaPartie.extend({
   recompense: z
@@ -58,6 +66,8 @@ function refuser(reponse: FastifyReply, resultat: Exclude<ResultatPartie<unknown
       return corps(422, 'Niveau de bot inconnu');
     case 'version-perimee':
       return corps(409, 'La partie a changé : rechargez-la avant de jouer');
+    case 'pas-votre-tour':
+      return corps(409, 'Aucun conseil : ce n’est pas à vous de jouer');
     case 'action-refusee':
       return corps(422, 'Action refusée', {
         detail: resultat.erreur.message,
@@ -101,12 +111,17 @@ export const routesParties: FastifyPluginAsyncZod<{
     return reponse.header('etag', etiquette(partie.version)).send(partie);
   }
 
-  app.get('/decks', { schema: { response: { 200: z.array(schemaDeck) } } }, async () =>
-    DECKS_PRETES.map((deck) => ({ ...deck, cartes: [...deck.cartes] })),
+  // Decks et niveaux font partie du catalogue : en cache HTTP (US-057).
+  app.get(
+    '/decks',
+    { ...cacheCatalogue, schema: { response: { 200: z.array(schemaDeck) } } },
+    async () => DECKS_PRETES.map((deck) => ({ ...deck, cartes: [...deck.cartes] })),
   );
 
-  app.get('/niveaux', { schema: { response: { 200: z.array(schemaNiveau) } } }, async () =>
-    NIVEAUX_BOT.map(({ id, nom, description }) => ({ id, nom, description })),
+  app.get(
+    '/niveaux',
+    { ...cacheCatalogue, schema: { response: { 200: z.array(schemaNiveau) } } },
+    async () => NIVEAUX_BOT.map(({ id, nom, description }) => ({ id, nom, description })),
   );
 
   app.post(
@@ -148,6 +163,20 @@ export const routesParties: FastifyPluginAsyncZod<{
     async (requete, reponse) => {
       const resultat = await lirePartie(base, requete.params.id, sessionDe(requete), parties);
       return resultat.ok ? envoyer(reponse, resultat.valeur) : refuser(reponse, resultat);
+    },
+  );
+
+  // Conseil (US-066, ADR 0040) : contre le bot seulement, les duels n'ont pas de route de conseil.
+  app.get(
+    '/parties/:id/conseil',
+    {
+      config: limiter(limites, 'conseilPartie'),
+      schema: { params: parametres, response: { 200: schemaConseil } },
+    },
+    async (requete, reponse) => {
+      const resultat = await conseillerPartie(base, requete.params.id, sessionDe(requete), parties);
+      if (!resultat.ok) return refuser(reponse, resultat);
+      return reponse.header('etag', etiquette(resultat.valeur.version)).send(resultat.valeur);
     },
   );
 

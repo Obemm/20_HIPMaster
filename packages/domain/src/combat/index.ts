@@ -67,3 +67,4 @@ export { choisirActionAgentAutonome, choisirActionArchitecteEsb, evaluer } from 
 export { chercher, POIDS_PAR_DEFAUT, type Poids, type Recherche } from './bots-forts.ts';
 export { NIVEAU_PAR_DEFAUT, NIVEAUX_BOT, trouverNiveau, type NiveauBot } from './niveaux.ts';
 export { reconstituer } from './reconstitution.ts';
+export { conseiller, type Conseil } from './conseil.ts';

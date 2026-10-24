@@ -11,13 +11,13 @@ _Dernière mise à jour : 2026-10-24_
 | [EPIC-02 — Comptes joueurs](epics/EPIC-02-comptes-joueurs.md)                                     | Must     | Terminé   | 1/1        |
 | [EPIC-03 — Boosters et collection](epics/EPIC-03-boosters-collection.md)                          | Must     | En cours  | 2/3        |
 | [EPIC-04 — Combat contre le bot](epics/EPIC-04-combat-bot.md)                                     | Must     | Terminé   | 15/15      |
-| [EPIC-05 — Illustrations des cartes](epics/EPIC-05-illustrations.md)                              | Should   | En cours  | 3/5        |
+| [EPIC-05 — Illustrations des cartes](epics/EPIC-05-illustrations.md)                              | Should   | En cours  | 3/6        |
 | [EPIC-06 — Duels entre joueurs](epics/EPIC-06-duels-joueurs.md)                                   | Should   | Terminé   | 8/8        |
 | [EPIC-07 — Vie sociale](epics/EPIC-07-vie-sociale.md)                                             | Could    | À affiner | 0/1        |
 | [EPIC-08 — Cartes proposées par la communauté IT](epics/EPIC-08-cartes-communaute.md)             | Should   | À affiner | 0/5        |
-| [EPIC-09 — Mise en ligne sur Google Cloud](epics/EPIC-09-mise-en-ligne-gcp.md)                    | Must     | En cours  | 13/14      |
+| [EPIC-09 — Mise en ligne sur Google Cloud](epics/EPIC-09-mise-en-ligne-gcp.md)                    | Must     | Terminé   | 14/14      |
 | [EPIC-10 — Identité visuelle et confort sur téléphone](epics/EPIC-10-identite-visuelle-mobile.md) | Should   | Terminé   | 6/6        |
-| [EPIC-11 — Apprendre à jouer](epics/EPIC-11-apprendre-a-jouer.md)                                 | Should   | En cours  | 1/3        |
+| [EPIC-11 — Apprendre à jouer](epics/EPIC-11-apprendre-a-jouer.md)                                 | Should   | En cours  | 2/3        |
 | [EPIC-12 — Des cartes qui enseignent](epics/EPIC-12-cartes-qui-enseignent.md)                     | Must     | Terminé   | 2/2        |
 | [EPIC-13 — Un set 2 : architecture et pratiques](epics/EPIC-13-set-2-architecture-pratiques.md)   | Could    | À affiner | 0/2        |
 
@@ -47,13 +47,14 @@ Objectif : un socle outillé, vérifié automatiquement, et une méthode de trav
 
 ## Itération 2 (à venir) — donner envie de jouer
 
-| Story                                                                                                   | Epic    | Priorité | Taille | Statut   |
-| ------------------------------------------------------------------------------------------------------- | ------- | -------- | ------ | -------- |
-| [US-009 — Design des cartes façon carte à jouer](stories/US-009-design-cartes.md)                       | EPIC-05 | Should   | L      | Faite    |
-| [US-015 — Chaîne d'import et d'optimisation des illustrations](stories/US-015-chaine-illustrations.md)  | EPIC-05 | Should   | M      | Faite    |
-| [US-016 — Direction artistique et choix du générateur d'images](stories/US-016-direction-artistique.md) | EPIC-05 | Should   | M      | En cours |
-| [US-017 — Illustrations des 71 cartes du set 1](stories/US-017-illustrations-set-1.md)                  | EPIC-05 | Should   | L      | En cours |
-| [US-018 — Illustrations provisoires générées par le code](stories/US-018-illustrations-provisoires.md)  | EPIC-05 | Should   | M      | Faite    |
+| Story                                                                                                             | Epic    | Priorité | Taille | Statut    |
+| ----------------------------------------------------------------------------------------------------------------- | ------- | -------- | ------ | --------- |
+| [US-009 — Design des cartes façon carte à jouer](stories/US-009-design-cartes.md)                                 | EPIC-05 | Should   | L      | Faite     |
+| [US-015 — Chaîne d'import et d'optimisation des illustrations](stories/US-015-chaine-illustrations.md)            | EPIC-05 | Should   | M      | Faite     |
+| [US-016 — Direction artistique et choix du générateur d'images](stories/US-016-direction-artistique.md)           | EPIC-05 | Should   | M      | En cours  |
+| [US-017 — Illustrations des 71 cartes du set 1](stories/US-017-illustrations-set-1.md)                            | EPIC-05 | Should   | L      | En cours  |
+| [US-018 — Illustrations provisoires générées par le code](stories/US-018-illustrations-provisoires.md)            | EPIC-05 | Should   | M      | Faite     |
+| [US-078 — Des illustrations à empreinte, gardées un an en cache](stories/US-078-illustrations-empreinte-cache.md) | EPIC-05 | Should   | S      | À affiner |
 
 ## Itération 3 (à venir) — jouer contre le bot
 
@@ -142,9 +143,9 @@ Google Cloud, Firebase Hosting et une base Neon gratuite (ADR 0021, accepté le 
 | [US-059 — Un plateau de partie qui tient dans un écran de téléphone](stories/US-059-plateau-mobile-un-ecran.md)                       | EPIC-10 | Should   | M      | 2   | Faite     |
 | [US-060 — Une navigation pensée pour le téléphone](stories/US-060-navigation-mobile.md)                                               | EPIC-10 | Should   | S      | 2   | Faite     |
 | [US-065 — Des coups de pouce au bon moment](stories/US-065-coups-de-pouce.md)                                                         | EPIC-11 | Should   | S      | 2   | Faite     |
-| [US-066 — Un conseil à la demande, contre le bot](stories/US-066-conseil-en-partie.md)                                                | EPIC-11 | Should   | M      | 2   | À affiner |
+| [US-066 — Un conseil à la demande, contre le bot](stories/US-066-conseil-en-partie.md)                                                | EPIC-11 | Should   | M      | 2   | Faite     |
 | [US-054 — Des sessions qui expirent et des données qui ne s'accumulent pas](stories/US-054-sessions-purge.md)                         | EPIC-09 | Should   | M      | 3   | Faite     |
-| [US-057 — Des requêtes légères : index, lectures bornées, cache et chargement à la demande](stories/US-057-requetes-legeres-cache.md) | EPIC-09 | Should   | M      | 3   | À affiner |
+| [US-057 — Des requêtes légères : index, lectures bornées, cache et chargement à la demande](stories/US-057-requetes-legeres-cache.md) | EPIC-09 | Should   | M      | 3   | Faite     |
 | [US-058 — Des duels équitables : hasard imprévisible et appariement sûr](stories/US-058-duels-equitables.md)                          | EPIC-09 | Should   | S      | 3   | Faite     |
 | [US-061 — Une identité visuelle et un accueil qui donnent envie](stories/US-061-accueil-identite-visuelle.md)                         | EPIC-10 | Should   | M      | 3   | Faite     |
 | [US-063 — Installer le jeu sur son téléphone (PWA)](stories/US-063-pwa-installable.md)                                                | EPIC-10 | Could    | S      | 3   | Faite     |

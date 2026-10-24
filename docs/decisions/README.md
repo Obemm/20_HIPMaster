@@ -47,5 +47,7 @@ référence Elis.
 | [0036](0036-fiches-pedagogiques-cartes.md)             | Fiches « En savoir plus » versionnées avec le catalogue, dans le détail    | ADR-001, 026 écartés           | Acceptée                      |
 | [0037](0037-identite-visuelle-nuit-electrique.md)      | Identité « nuit électrique » : jetons de marque, police Exo 2, coquille    | ADR-019 (adapté)               | Acceptée                      |
 | [0038](0038-pwa-service-worker-angular.md)             | Jeu installable : manifeste, service worker d'Angular, API jamais en cache | ADR-016 v1 retenu              | Acceptée                      |
+| [0039](0039-requetes-legeres-cache-compression.md)     | Requêtes légères : index mesurés, catalogue en cache public, compression   | ADR-020 retenu                 | Acceptée                      |
+| [0040](0040-conseil-serveur-contre-bot.md)             | Conseil calculé par le serveur, contre le bot seulement                    | ADR-020 retenu                 | Acceptée                      |
 
 Modèle : [template.md](template.md).
