@@ -83,16 +83,18 @@ Les composants Angular n'ont pas de styles propres : la CSP refuse les feuilles 
 
 ### Composants d'écran (US-068)
 
-| Classe ou composant                                              | Usage                                                                          |
-| ---------------------------------------------------------------- | ------------------------------------------------------------------------------ |
-| `bouton-petit`                                                   | Bouton secondaire dans une liste ou une barre serrée (36 px de haut au moins)  |
-| `bouton-danger`                                                  | Action qui détruit ou attaque : contour et texte rouge d'alerte                |
-| `etiquette`, `champ`                                             | Libellé et champ de formulaire (texte, liste déroulante, date)                 |
-| `choix`                                                          | Bouton radio présenté en tuile ; la tuile choisie prend l'anneau de l'accent   |
-| `hip-boite-deck` (`.mini-eventail`)                              | Un deck en boîte de jeu : trois cartes phares, nom, description, bouton fourni |
-| `statut` + `statut-a-jouer`, `-attente`, `-victoire`, `-defaite` | État en pastille, toujours un mot (« À vous », « Victoire »)                   |
-| `avatar`                                                         | Initiale d'un joueur dans un rond (décorative)                                 |
-| `jauge`                                                          | Progression (collection) : piste et remplissage doré                           |
+| Classe ou composant                                              | Usage                                                                                     |
+| ---------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| `bouton-petit`                                                   | Bouton secondaire dans une liste ou une barre serrée (36 px de haut au moins)             |
+| `bouton-danger`                                                  | Action qui détruit ou attaque : contour et texte rouge d'alerte                           |
+| `etiquette`, `champ`                                             | Libellé et champ de formulaire (texte, liste déroulante, date)                            |
+| `choix`                                                          | Bouton radio présenté en tuile ; la tuile choisie prend l'anneau de l'accent              |
+| `hip-boite-deck` (`.mini-eventail`)                              | Un deck en boîte de jeu : trois cartes phares, nom, description, bouton fourni            |
+| `statut` + `statut-a-jouer`, `-attente`, `-victoire`, `-defaite` | État en pastille, toujours un mot (« À vous », « Victoire »)                              |
+| `avatar`                                                         | Initiale d'un joueur dans un rond (décorative)                                            |
+| `jauge`                                                          | Progression (collection) : piste et remplissage doré                                      |
+| `hip-paquet-booster` (`.paquet`), `.pile-paquets`                | Paquet de booster scellé ; les paquets en stock en éventail (US-062)                      |
+| `.carte-cachee`                                                  | Carte face cachée : un bouton, la rareté au liseré, au halo et en toutes lettres (US-062) |
 
 ## Gabarits d'écran
 
@@ -120,7 +122,9 @@ Toutes les animations sont sous `@media (prefers-reduced-motion: no-preference)`
 - page qui s'ouvre : fondu de 200 ms (opacité seule : un `transform` sur `<main>` décalerait les éléments fixes) ;
 - éventail de l'accueil : les cartes se déploient une fois (700 ms, décalées de 90 ms) ;
 - bouton en relief : il s'enfonce de 3 px à l'appui ; tuile et carte cliquable : elles se soulèvent au survol ;
-- révélation des cartes d'un booster (US-023).
+- ouverture d'un booster (US-062) : le paquet tremble pendant l'ouverture, les cartes sont distribuées face cachée
+  (350 ms, décalées de 90 ms), une carte retournée pivote (450 ms), une épique ou une légendaire jaillit d'un éclat
+  (0,9 s, 1,3 s pour une légendaire).
 
 ## Accessibilité
 
