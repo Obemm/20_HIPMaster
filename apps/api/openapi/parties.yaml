@@ -25,21 +25,34 @@ paths:
     get:
       operationId: listerDecks
       summary: Liste les decks prêtés
+      description: Donnée du catalogue, en cache HTTP de 5 minutes (US-057, voir cartes.yaml).
+      parameters:
+        - $ref: 'cartes.yaml#/components/parameters/IfNoneMatch'
       responses:
         '200':
           description: Les decks prêtés, jouables contre le bot.
+          headers:
+            Cache-Control: { $ref: 'cartes.yaml#/components/headers/CacheCatalogue' }
+            ETag: { $ref: 'cartes.yaml#/components/headers/EtagCatalogue' }
           content:
             application/json:
               schema:
                 type: array
                 items: { $ref: '#/components/schemas/Deck' }
+        '304': { $ref: 'cartes.yaml#/components/responses/NonModifie' }
   /niveaux:
     get:
       operationId: listerNiveaux
       summary: Liste les niveaux du bot, du plus simple au plus fort (US-021)
+      description: Donnée du catalogue, en cache HTTP de 5 minutes (US-057, voir cartes.yaml).
+      parameters:
+        - $ref: 'cartes.yaml#/components/parameters/IfNoneMatch'
       responses:
         '200':
           description: Les niveaux du bot.
+          headers:
+            Cache-Control: { $ref: 'cartes.yaml#/components/headers/CacheCatalogue' }
+            ETag: { $ref: 'cartes.yaml#/components/headers/EtagCatalogue' }
           content:
             application/json:
               schema:

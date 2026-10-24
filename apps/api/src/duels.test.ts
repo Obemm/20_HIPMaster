@@ -148,6 +148,10 @@ describe('duels entre joueurs', () => {
     const inchange = await requete('GET', `/duels/${id}`, { ...ada, 'if-none-match': '"1"' });
     expect(inchange.statusCode).toBe(304);
     expect(inchange.body).toBe('');
+    // La lecture légère de la version (US-057) ne révèle pas un duel commencé à un tiers.
+    const eve = await joueur('Eve');
+    const tiers = await requete('GET', `/duels/${id}`, { ...eve, 'if-none-match': '"1"' });
+    expect(tiers.statusCode).toBe(404);
 
     const perimee = await requete(
       'POST',
@@ -305,6 +309,38 @@ describe('mes duels (US-035)', () => {
     expect(liste.duels[1]).toMatchObject({ monTour: false });
   });
 
+  it('ne renvoie que les 20 derniers duels terminés, après ceux en cours (US-057)', async () => {
+    const { ada, id } = await duelLance();
+    const carl = await creerJoueur(ouverte.base, 'Carl', CLE_CODES_DEVELOPPEMENT);
+    const { joueur: dan } = await creerJoueur(ouverte.base, 'Dan', CLE_CODES_DEVELOPPEMENT);
+    const debut = Date.now() - 60 * 60 * 1000;
+    const lignes = await ouverte.base
+      .insert(duels)
+      .values(
+        Array.from({ length: 25 }, (_, i) => ({
+          statut: 'termine' as const,
+          createurId: i % 2 ? carl.joueur.id : dan.id,
+          deckCreateur: 'moderne',
+          adversaireId: i % 2 ? dan.id : carl.joueur.id,
+          deckAdversaire: 'heritage',
+          majLe: new Date(debut + i * 1000),
+        })),
+      )
+      .returning({ id: duels.id });
+    const deCarl = (
+      await requete('GET', '/moi/duels', { authorization: `Bearer ${carl.jeton}` })
+    ).json<MesDuels>();
+    // Les plus récents d'abord, qu'il les ait créés ou rejoints.
+    expect(deCarl.duels.map((d) => d.id)).toEqual(
+      lignes
+        .map((l) => l.id)
+        .toReversed()
+        .slice(0, 20),
+    );
+    // Les duels en cours restent en tête, quel que soit le nombre de duels terminés.
+    expect((await requete('GET', '/moi/duels', ada)).json<MesDuels>().duels[0]?.id).toBe(id);
+  });
+
   it('exige un compte', async () => {
     expect((await requete('GET', '/moi/duels', {})).statusCode).toBe(401);
   });
@@ -364,6 +400,13 @@ describe('abandon et forfait (US-036)', () => {
     );
 
     maintenant += 2 * HEURE;
+    // Même à version connue, l'échéance passée fait lire le duel en entier : le forfait s'applique (pas de 304).
+    const relu = await appeler('GET', `/duels/${cree.id}`, {
+      ...bob,
+      'if-none-match': `"${lance.version}"`,
+    });
+    expect(relu.statusCode).toBe(200);
+    expect(relu.json<DuelVisible>().statut).toBe('termine');
     const perdant = lance.vue?.actif ?? 'j1';
     const apres = (await appeler('GET', '/moi/duels', ada)).json<{
       duels: { statut: string; resultat: string; raison: string }[];
