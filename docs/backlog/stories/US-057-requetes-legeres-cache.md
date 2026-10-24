@@ -110,11 +110,16 @@ Tests : `cache-catalogue.test.ts` (en-têtes, 304, `no-store` des réponses d'un
 version connue), `reseau/catalogue.spec.ts` (une lecture par session, partagée, retentée après un échec, jamais pour
 les données d'un joueur). E2e sur le build de production : 139 parcours verts, sans violation de la CSP.
 
-## Reste à décider
+## Décision : surveiller avant d'allonger l'intervalle
 
-- Un écran visible interroge l'API toutes les 60 s (« Mes duels ») et chaque requête d'un joueur lit sa session en
-  base : tant qu'un écran est ouvert, Neon ne s'endort pas. Allonger l'intervalle, ou ne plus interroger hors de
-  l'accueil et de « Mes duels », est une décision de produit.
+Un écran visible interroge l'API toutes les 60 s (« Mes duels ») et chaque requête d'un joueur lit sa session en
+base : tant qu'un écran est ouvert, Neon ne s'endort pas (veille après 5 minutes sans requête).
+
+Décision du porteur du projet (2026-10-24) : **ne rien changer pour l'instant et surveiller la consommation** avec le
+job `hipmaster-consommation` (US-051), qui alerte par e-mail dès 70 % du quota. Si l'alerte tombe à cause des
+interrogations, la réponse prévue est d'allonger l'intervalle à 10 minutes (`RAFRAICHISSEMENT_MS` de
+`mes-duels.service.ts`) : au-delà de 5 minutes, la base s'endort entre deux interrogations ; en dessous, allonger ne
+sert à rien. Écartées pour l'instant : n'interroger que sur l'accueil et « Mes duels », ou combiner les deux.
 
 ## Journal
 
@@ -123,3 +128,4 @@ les données d'un joueur). E2e sur le build de production : 139 parcours verts, 
 - 2026-10-24 — livrée : index mesurés, « Mes duels » borné (40 → 2,6 ms), 304 léger des duels, catalogue compressé
   et en cache public avec ETag, gardé en mémoire par le front, pages à la demande (bundle initial 457 → 380 Ko)
   (ADR 0039).
+- 2026-10-24 — décision : surveiller la consommation de Neon avant d'allonger l'intervalle des interrogations.
