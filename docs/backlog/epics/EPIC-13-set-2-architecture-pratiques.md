@@ -19,6 +19,7 @@ de date.
 ## Stories
 
 - [ ] US-076 — Concevoir le set 2 : DDD, microservices, DevOps
+- [ ] US-077 — Trois nouvelles cartes : API First, EDA et API GraphQL
 
 ## Pistes de contenu (à trier)
 
