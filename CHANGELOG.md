@@ -185,6 +185,16 @@ Toutes les évolutions notables du projet sont consignées ici
 
 ### Modifié
 
+- Une identité de jeu : ambiance « nuit électrique » reprise des illustrations (fond bleu nuit, halos, trame de
+  points, thème clair conservé), bandeau et barre d'onglets de nuit dans les deux thèmes, indigo électrique pour les
+  liens et la sélection, boutons en relief et en or pour l'action principale de chaque écran, police de titres Exo 2
+  servie par le site, logo (deux cartes en éventail), favicon, icône d'écran d'accueil et aperçu des liens partagés
+  (Open Graph). Cartes avec gemme de Débit et chiffres en relief. L'accueil montre trois cartes en éventail dès le
+  premier écran du téléphone, la promesse du jeu et « Jouer contre le bot » ; un visiteur y lit comment on joue, un
+  joueur connecté retrouve ses duels, boosters et collection ; un lien d'invitation fait de « Créer mon compte »
+  l'action principale, et « Mon compte » accueille l'invité avec les cartes. Les chances par booster passent sur
+  l'écran des boosters ; « Projet en cours de construction » disparaît. Contrastes AA des jetons vérifiés par un test,
+  animations coupées si le système le demande ; charte graphique dans `docs/produit` (US-061, ADR 0037).
 - Les parties contre le bot sont gardées en base au lieu de la mémoire de l'API : elles survivent aux déploiements,
   aux arrêts à zéro et aux redémarrages, et expirent après 24 heures sans coup joué (une lecture ne compte pas), ce
   que dit désormais l'écran de partie. Chaque action, tour du bot compris, s'écrit en une seule fois à condition que

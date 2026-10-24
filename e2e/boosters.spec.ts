@@ -9,10 +9,17 @@ async function creerCompte(page: Page, pseudo: string) {
   await expect(page.getByRole('heading', { name: `Connecté en tant que ${pseudo}` })).toBeVisible();
 }
 
-test('sans compte, la page des boosters invite à en créer un', async ({ page }) => {
+test('sans compte, la page des boosters invite à en créer un et montre les chances par booster', async ({
+  page,
+}) => {
   await page.goto('/boosters');
   await expect(page.getByText('il faut un compte pour la garder')).toBeVisible();
   await expect(page.getByRole('main').getByRole('link', { name: 'Créer un compte' })).toBeVisible();
+  // Les chances calculées par l'API, près de ce qu'elles décrivent (sur l'accueil avant US-061).
+  const raretes = page.getByRole('region', { name: 'Chances par booster' });
+  await expect(raretes.getByRole('listitem')).toHaveCount(4);
+  await expect(raretes).toContainText('Légendaire');
+  await expect(raretes).toContainText('1 %');
 });
 
 test('un nouveau compte reçoit 5 boosters et en ouvre un : 5 cartes révélées', async ({ page }) => {

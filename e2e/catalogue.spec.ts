@@ -16,7 +16,7 @@ const sansDefilementHorizontal = async (page: Page) => {
 
 test('depuis l’accueil, le catalogue liste les 71 cartes et se filtre', async ({ page }) => {
   await page.goto('/');
-  await page.getByRole('link', { name: 'Voir le catalogue des cartes' }).click();
+  await page.getByRole('link', { name: 'Découvrir les cartes' }).click();
   await expect(page).toHaveURL(/\/cartes$/);
   await expect(page.getByRole('heading', { level: 1, name: 'Catalogue du set 1' })).toBeVisible();
 

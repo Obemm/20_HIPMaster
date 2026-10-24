@@ -4,6 +4,7 @@ import { RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import type { Carte } from '../cartes/carte';
 import { VignetteCarte } from '../cartes/vignette-carte';
+import { ChancesBooster } from './chances-booster';
 import { CollectionService } from '../collection/collection.service';
 import { CompteService } from '../compte/compte.service';
 import { EtatSession } from '../compte/etat-session';
@@ -31,7 +32,7 @@ interface Ouverture {
  */
 @Component({
   selector: 'hip-boosters',
-  imports: [RouterLink, VignetteCarte, ErreurChargement, EtatSession],
+  imports: [RouterLink, VignetteCarte, ErreurChargement, EtatSession, ChancesBooster],
   templateUrl: './boosters.html',
 })
 export class BoostersEcran {

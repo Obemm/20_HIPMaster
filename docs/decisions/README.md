@@ -45,5 +45,6 @@ référence the company.
 | [0034](0034-hasard-et-appariement.md)                  | Hasard ChaCha20 à clé tirée par le serveur ; appariement sous verrou    | aucune ; [ref] retenu        | Acceptée                      |
 | [0035](0035-purge-donnees-techniques.md)               | Sessions qui expirent, purge nocturne des seules données techniques     | aucune ; [ref] (adapté)      | Acceptée                      |
 | [0036](0036-fiches-pedagogiques-cartes.md)             | Fiches « En savoir plus » versionnées avec le catalogue, dans le détail | [ref], 026 écartés           | Acceptée                      |
+| [0037](0037-identite-visuelle-nuit-electrique.md)      | Identité « nuit électrique » : jetons de marque, police Exo 2, coquille | [ref] (adapté)               | Proposée                      |
 
 Modèle : [template.md](template.md).
