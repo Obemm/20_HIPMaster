@@ -51,3 +51,8 @@ En tant que **joueur de l'équipe d'intégration**, je veux **que chaque carte d
 - 2026-10-24 — famille iPaaS (26 à 30) : webMethods.io générée avec deux références (le rendu de SFTP et la pieuvre
   de la 9, dont elle est l'évolution) ; matières variées (plumes, pierre, ailes d'insecte) et non plus toutes
   mécaniques. La limite quotidienne d'images de Gemini est tombée sur la 38 (AsyncAPI).
+- 2026-10-24 — familles Événementiel (31 à 38) et IA agentique (39 à 52) : AsyncAPI générée après la remise à zéro
+  de la limite (Gemini était repassé seul de « Pro » à « Flash Lite », remis sur « Pro ») ; Solace Agent Mesh et Apigee
+  AI Gateway générées avec l'image de leur carte d'origine (31, 18) en seconde référence, les essais « robot » écartés.
+  Gemini répond parfois par du texte au lieu d'une image : une relance suffit. Les deux familles partagent une PR (leurs
+  lignes du manifeste se touchent).
