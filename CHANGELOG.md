@@ -7,6 +7,7 @@ Toutes les évolutions notables du projet sont consignées ici
 
 ### Ajouté
 
+- Premières vraies illustrations, générées avec Gemini : FTP, Apigee API Gateway et Solace Agent Mesh (essai d'US-017).
 - Le jeu s'installe sur l'écran d'accueil d'un téléphone (PWA) : manifeste web (nom, couleurs de nuit, icônes 192 et
   512 px et masquable, affichage autonome) et service worker d'Angular en production, qui garde l'interface et les
   illustrations en cache mais jamais l'API ; un bandeau propose « Recharger » quand une nouvelle version est prête,

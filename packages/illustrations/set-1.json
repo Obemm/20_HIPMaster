@@ -3,11 +3,11 @@
   "illustrations": [
     {
       "numero": 1,
-      "alt": "Illustration provisoire : une pile de documents sur fond bleu nuit, avec un halo doré semé d’étincelles",
-      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "alt": "Un robot ambré de salle serveur, entouré de dossiers, de bandes perforées et d'horloges, dans un halo de lumière",
+      "consigne": "Subject: a friendly \"machine-creature of the server room\" that embodies \"FTP\" (enterprise integration, Fichiers & Batch). What it means (French, for context only): « Transfert de fichiers en clair. Officiellement interdit chez Elis. Officieusement… ». Visual motifs: folders, punched tapes, clocks. Rarity: strong glowing halo, sparkling particles and light rays, legendary. Digital illustration for a collectible card game, landscape 4:3, light isometric view, one single central subject readable at small size, clean bold shapes, soft cel shading, dark navy blue background with a subtle amber glow, limited palette dominated by amber and burnt orange. Strictly no text, no letters, no numbers, no logos, no brand marks, no watermark, no real people.",
       "provenance": {
-        "outil": "Générateur vectoriel HIPMaster",
-        "date": "2026-10-18"
+        "outil": "Gemini (Google), application web",
+        "date": "2026-10-24"
       }
     },
     {
@@ -156,11 +156,11 @@
     },
     {
       "numero": 18,
-      "alt": "Illustration provisoire : une porte fortifiée sur fond bleu nuit, avec un halo violet",
-      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "alt": "Un robot-forteresse émeraude gardant une porte, entouré de remparts et de badges d'accès lumineux",
+      "consigne": "Subject: a friendly \"machine-creature of the server room\" that embodies \"Apigee API Gateway\" (enterprise integration, API). What it means (French, for context only): « La passerelle API d’Elis : point d’entrée unique, sécurité, quotas et statistiques. ». Visual motifs: gates, ramparts, access badges. Rarity: glowing halo and sparkling particles, epic. Digital illustration for a collectible card game, landscape 4:3, light isometric view, one single central subject readable at small size, clean bold shapes, soft cel shading, dark navy blue background with a subtle emerald glow, limited palette dominated by emerald and dark green. Strictly no text, no letters, no numbers, no logos, no brand marks, no watermark, no real people.",
       "provenance": {
-        "outil": "Générateur vectoriel HIPMaster",
-        "date": "2026-10-18"
+        "outil": "Gemini (Google), application web",
+        "date": "2026-10-24"
       }
     },
     {
@@ -345,11 +345,11 @@
     },
     {
       "numero": 39,
-      "alt": "Illustration provisoire : un œil lumineux relié à un réseau de nœuds sur fond bleu nuit, avec des chevrons montants et un halo doré semé d’étincelles",
-      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "alt": "Un robot magenta relié à une constellation de points lumineux, comme des synapses, dans un halo éclatant",
+      "consigne": "Subject: an upgraded, more spectacular \"machine-creature of the server room\" that embodies \"Solace Agent Mesh\" (enterprise integration, IA agentique). It is the evolution of \"Solace Event Mesh\": keep its silhouette, upgraded. What it means (French, for context only): « Les agents d’IA branchés sur l’event mesh, qui dialoguent en A2A et utilisent MCP. ». Visual motifs: constellations, glowing eyes, synapses. Rarity: strong glowing halo, sparkling particles and light rays, legendary. Digital illustration for a collectible card game, landscape 4:3, light isometric view, one single central subject readable at small size, clean bold shapes, soft cel shading, dark navy blue background with a subtle magenta glow, limited palette dominated by magenta and purple. Strictly no text, no letters, no numbers, no logos, no brand marks, no watermark, no real people.",
       "provenance": {
-        "outil": "Générateur vectoriel HIPMaster",
-        "date": "2026-10-18"
+        "outil": "Gemini (Google), application web",
+        "date": "2026-10-24"
       }
     },
     {
