@@ -75,83 +75,83 @@
     },
     {
       "numero": 9,
-      "alt": "Illustration provisoire : un moyeu relié à des connecteurs en étoile sur fond bleu nuit, avec un halo violet",
-      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "alt": "Une grosse pieuvre mécanique rapiécée, aux tentacules-tuyaux enroulés, dans le bassin inondé d'une station de pompage",
+      "consigne": "Generate a new image. From the reference image, keep ONLY the rendering style: line quality, soft cel shading, lighting and dark navy background treatment. Do NOT reuse its character, pose or composition: no robot standing in a doorway, no circular halo behind it, no frontal symmetric framing. Invent a creature with a clearly different body shape, size and pose, built from its own motifs, in a dynamic three-quarter view, in its own small scene. Do NOT reuse its setting either: no cable-covered floor, no punched tapes hanging on the sides, no server racks framing the picture; give the scene its own place and camera angle, drawn from the subject. Subject: a huge mechanical octopus hub in the middle of a room, dozens of pipe tentacles radiating outward like a star, a bit dated, patched with bandages and bolts. It embodies \"webMethods Integration Server 10.15\" (enterprise integration, Messagerie & ESB). What it means (French, for context only): « L’ESB historique d’Elis, hébergé sur site. ». Rarity: epic card: a bright aura around the creature and sparkling particles. Digital illustration for a collectible card game, landscape 4:3, one single main creature readable at small size, clean bold shapes, soft cel shading, dark navy blue background with a subtle sky blue glow, limited palette dominated by sky blue and deep blue, motifs: pipes, hubs, star-shaped cables. Strictly no text, no letters, no numbers, no logos, no brand marks, no watermark, no real people. The creature must read instantly as an octopus: a big bulbous mechanical mantle head tilted back, two large expressive eyes on the sides of the head, thick curling tentacles with rivet suckers ending in pipe couplings, seen from a three-quarter side angle, not frontal. Setting: a flooded circular pumping-station basin with shallow rippling water and valve wheels on the walls; no arches, no tunnel.",
       "provenance": {
-        "outil": "Générateur vectoriel HIPMaster",
-        "date": "2026-10-18"
+        "outil": "Gemini (Google), application web",
+        "date": "2026-10-24"
       }
     },
     {
       "numero": 10,
-      "alt": "Illustration provisoire : un moyeu relié à des connecteurs en étoile sur fond bleu nuit, avec un anneau bleu",
-      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "alt": "Un serpent-tuyau transparent, parcouru de messages lumineux, enroulé autour d'un pylône sur un toit industriel la nuit",
+      "consigne": "Generate a new image. From the reference image, keep ONLY the rendering style: line quality, soft cel shading, lighting and dark navy background treatment. Do NOT reuse its character, pose or composition: no robot standing in a doorway, no circular halo behind it, no frontal symmetric framing. Invent a creature with a clearly different body shape, size and pose, built from its own motifs, in a dynamic three-quarter view, in its own small scene. Do NOT reuse its setting either: no cable-covered floor, no punched tapes hanging on the sides, no server racks framing the picture; give the scene its own place and camera angle, drawn from the subject. Subject: a long transparent pipe-serpent coiled around a pylon, glowing messages travelling inside its see-through body. It embodies \"Universal Messaging\" (enterprise integration, Messagerie & ESB). What it means (French, for context only): « La messagerie de webMethods. ». Rarity: rare card: a few subtle glints and light effects. Digital illustration for a collectible card game, landscape 4:3, one single main creature readable at small size, clean bold shapes, soft cel shading, dark navy blue background with a subtle sky blue glow, limited palette dominated by sky blue and deep blue, motifs: pipes, hubs, star-shaped cables. Strictly no text, no letters, no numbers, no logos, no brand marks, no watermark, no real people.",
       "provenance": {
-        "outil": "Générateur vectoriel HIPMaster",
-        "date": "2026-10-18"
+        "outil": "Gemini (Google), application web",
+        "date": "2026-10-24"
       }
     },
     {
       "numero": 11,
-      "alt": "Illustration provisoire : un moyeu relié à des connecteurs en étoile sur fond bleu nuit, avec un anneau bleu",
-      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "alt": "Une chouette mécanique à moitié endormie, perchée sur une console de supervision, une roue de chargement au-dessus de la tête",
+      "consigne": "Generate a new image. From the reference image, keep ONLY the rendering style: line quality, soft cel shading, lighting and dark navy background treatment. Do NOT reuse its character, pose or composition: no robot standing in a doorway, no circular halo behind it, no frontal symmetric framing. Invent a creature with a clearly different body shape, size and pose, built from its own motifs, in a dynamic three-quarter view, in its own small scene. Do NOT reuse its setting either: no cable-covered floor, no punched tapes hanging on the sides, no server racks framing the picture; give the scene its own place and camera angle, drawn from the subject. Subject: a half-asleep watchful owl perched on a control console, its eyes are monitoring screens, a loading spinner wheel turning above its head. It embodies \"MWS – My webMethods Server\" (enterprise integration, Messagerie & ESB). What it means (French, for context only): « L’administration et la supervision de webMethods. « La page charge… » ». Rarity: rare card: a few subtle glints and light effects. Digital illustration for a collectible card game, landscape 4:3, one single main creature readable at small size, clean bold shapes, soft cel shading, dark navy blue background with a subtle sky blue glow, limited palette dominated by sky blue and deep blue, motifs: pipes, hubs, star-shaped cables. Strictly no text, no letters, no numbers, no logos, no brand marks, no watermark, no real people.",
       "provenance": {
-        "outil": "Générateur vectoriel HIPMaster",
-        "date": "2026-10-18"
+        "outil": "Gemini (Google), application web",
+        "date": "2026-10-24"
       }
     },
     {
       "numero": 12,
-      "alt": "Illustration provisoire : un moyeu relié à des connecteurs en étoile sur fond bleu nuit, avec un anneau bleu",
-      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "alt": "Un vieil éléphant mécanique qui porte une longue file de caisses sur une piste de caravane entre les dunes, la trompe tenant la suivante",
+      "consigne": "Generate a new image. From the reference image, keep ONLY the rendering style: line quality, soft cel shading, lighting and dark navy background treatment. Do NOT reuse its character, pose or composition: no robot standing in a doorway, no circular halo behind it, no frontal symmetric framing. Invent a creature with a clearly different body shape, size and pose, built from its own motifs, in a dynamic three-quarter view, in its own small scene. Do NOT reuse its setting either: no cable-covered floor, no punched tapes hanging on the sides, no server racks framing the picture; give the scene its own place and camera angle, drawn from the subject. Subject: a patient old elephant carrying a long orderly queue of crates on its back, its trunk carefully holding the next crate. It embodies \"MQSeries\" (enterprise integration, Messagerie & ESB). What it means (French, for context only): « L’ancêtre des files de messages. ». Rarity: rare card: a few subtle glints and light effects. Digital illustration for a collectible card game, landscape 4:3, one single main creature readable at small size, clean bold shapes, soft cel shading, dark navy blue background with a subtle sky blue glow, limited palette dominated by sky blue and deep blue, motifs: pipes, hubs, star-shaped cables. Strictly no text, no letters, no numbers, no logos, no brand marks, no watermark, no real people. Setting: a moonlit caravan trail winding between sand dunes in a desert at night; no cranes, no harbor, no industrial skyline, no buildings.",
       "provenance": {
-        "outil": "Générateur vectoriel HIPMaster",
-        "date": "2026-10-18"
+        "outil": "Gemini (Google), application web",
+        "date": "2026-10-24"
       }
     },
     {
       "numero": 13,
-      "alt": "Illustration provisoire : un moyeu relié à des connecteurs en étoile sur fond bleu nuit, avec un anneau bleu",
-      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "alt": "Un castor ingénieur mécanique, outils à la ceinture, qui branche une grosse prise cubique dans un barrage de pierre au fond d'un canyon",
+      "consigne": "Generate a new image. From the reference image, keep ONLY the rendering style: line quality, soft cel shading, lighting and dark navy background treatment. Do NOT reuse its character, pose or composition: no robot standing in a doorway, no circular halo behind it, no frontal symmetric framing. Invent a creature with a clearly different body shape, size and pose, built from its own motifs, in a dynamic three-quarter view, in its own small scene. Do NOT reuse its setting either: no cable-covered floor, no punched tapes hanging on the sides, no server racks framing the picture; give the scene its own place and camera angle, drawn from the subject. Subject: a beaver engineer with tools on its belt, plugging a giant cube-shaped adapter plug into a massive stone dam. It embodies \"Adaptateur SAP\" (enterprise integration, Messagerie & ESB). What it means (French, for context only): « Le passage obligé vers l’ERP. ». Rarity: rare card: a few subtle glints and light effects. Digital illustration for a collectible card game, landscape 4:3, one single main creature readable at small size, clean bold shapes, soft cel shading, dark navy blue background with a subtle sky blue glow, limited palette dominated by sky blue and deep blue, motifs: pipes, hubs, star-shaped cables. Strictly no text, no letters, no numbers, no logos, no brand marks, no watermark, no real people.",
       "provenance": {
-        "outil": "Générateur vectoriel HIPMaster",
-        "date": "2026-10-18"
+        "outil": "Gemini (Google), application web",
+        "date": "2026-10-24"
       }
     },
     {
       "numero": 14,
-      "alt": "Illustration provisoire : un moyeu relié à des connecteurs en étoile sur fond bleu nuit",
-      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "alt": "Un caméléon mécanique qui trace avec sa langue un schéma de flux lumineux au-dessus d'une table à dessin, dans un atelier d'architecte",
+      "consigne": "Generate a new image. From the reference image, keep ONLY the rendering style: line quality, soft cel shading, lighting and dark navy background treatment. Do NOT reuse its character, pose or composition: no robot standing in a doorway, no circular halo behind it, no frontal symmetric framing. Invent a creature with a clearly different body shape, size and pose, built from its own motifs, in a dynamic three-quarter view, in its own small scene. Do NOT reuse its setting either: no cable-covered floor, no punched tapes hanging on the sides, no server racks framing the picture; give the scene its own place and camera angle, drawn from the subject. Subject: a chameleon architect with a compass tucked behind its ear, drawing glowing flow diagrams in the air with its stylus-like tongue. It embodies \"webMethods Designer\" (enterprise integration, Messagerie & ESB). What it means (French, for context only): « L’atelier de développement des flows webMethods. ». Rarity: common card: sober, minimal light effects. Digital illustration for a collectible card game, landscape 4:3, one single main creature readable at small size, clean bold shapes, soft cel shading, dark navy blue background with a subtle sky blue glow, limited palette dominated by sky blue and deep blue, motifs: pipes, hubs, star-shaped cables. Strictly no text, no letters, no numbers, no logos, no brand marks, no watermark, no real people. Setting: inside a cozy architect's drafting studio with a large slanted drawing table and rolled blueprints, seen from a low angle; no city skyline, no scaffolding, no lanterns.",
       "provenance": {
-        "outil": "Générateur vectoriel HIPMaster",
-        "date": "2026-10-18"
+        "outil": "Gemini (Google), application web",
+        "date": "2026-10-24"
       }
     },
     {
       "numero": 15,
-      "alt": "Illustration provisoire : un moyeu relié à des connecteurs en étoile sur fond bleu nuit",
-      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "alt": "Une loutre mécanique qui serre un colis en descendant des toboggans-tuyaux le long d'une cascade, dans une forêt la nuit",
+      "consigne": "Generate a new image. From the reference image, keep ONLY the rendering style: line quality, soft cel shading, lighting and dark navy background treatment. Do NOT reuse its character, pose or composition: no robot standing in a doorway, no circular halo behind it, no frontal symmetric framing. Invent a creature with a clearly different body shape, size and pose, built from its own motifs, in a dynamic three-quarter view, in its own small scene. Do NOT reuse its setting either: no cable-covered floor, no punched tapes hanging on the sides, no server racks framing the picture; give the scene its own place and camera angle, drawn from the subject. Subject: an otter sliding down a chain of pipes and water slides, hugging a parcel as it goes from step to step. It embodies \"Flow service\" (enterprise integration, Messagerie & ESB). What it means (French, for context only): « L’unité de traitement de webMethods. ». Rarity: common card: sober, minimal light effects. Digital illustration for a collectible card game, landscape 4:3, one single main creature readable at small size, clean bold shapes, soft cel shading, dark navy blue background with a subtle sky blue glow, limited palette dominated by sky blue and deep blue, motifs: pipes, hubs, star-shaped cables. Strictly no text, no letters, no numbers, no logos, no brand marks, no watermark, no real people. Setting: a moonlit waterfall cliff in a forest, the pipes and slides cascading down mossy rocks from pool to pool; no factory, no industrial buildings, no skyline.",
       "provenance": {
-        "outil": "Générateur vectoriel HIPMaster",
-        "date": "2026-10-18"
+        "outil": "Gemini (Google), application web",
+        "date": "2026-10-24"
       }
     },
     {
       "numero": 16,
-      "alt": "Illustration provisoire : un moyeu relié à des connecteurs en étoile sur fond bleu nuit",
-      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "alt": "Une taupe mineuse mécanique, lampe frontale allumée, qui pousse des wagonnets de lignes hors d'un grand silo cylindrique dans une carrière",
+      "consigne": "Generate a new image. From the reference image, keep ONLY the rendering style: line quality, soft cel shading, lighting and dark navy background treatment. Do NOT reuse its character, pose or composition: no robot standing in a doorway, no circular halo behind it, no frontal symmetric framing. Invent a creature with a clearly different body shape, size and pose, built from its own motifs, in a dynamic three-quarter view, in its own small scene. Do NOT reuse its setting either: no cable-covered floor, no punched tapes hanging on the sides, no server racks framing the picture; give the scene its own place and camera angle, drawn from the subject. Subject: a mole miner with a glowing headlamp, pushing mine carts loaded with table rows out of a cylinder-shaped database mine. It embodies \"Adaptateur JDBC\" (enterprise integration, Messagerie & ESB). What it means (French, for context only): « Lire et écrire en base de données. ». Rarity: common card: sober, minimal light effects. Digital illustration for a collectible card game, landscape 4:3, one single main creature readable at small size, clean bold shapes, soft cel shading, dark navy blue background with a subtle sky blue glow, limited palette dominated by sky blue and deep blue, motifs: pipes, hubs, star-shaped cables. Strictly no text, no letters, no numbers, no logos, no brand marks, no watermark, no real people. Setting: outdoors at night on a rocky hillside quarry, the mole emerging from the open top of a giant cylinder-shaped database silo dug into the ground, rails running down the slope toward the viewer; no tunnel, no vaulted arch, no round portal.",
       "provenance": {
-        "outil": "Générateur vectoriel HIPMaster",
-        "date": "2026-10-18"
+        "outil": "Gemini (Google), application web",
+        "date": "2026-10-24"
       }
     },
     {
       "numero": 17,
-      "alt": "Illustration provisoire : un moyeu relié à des connecteurs en étoile sur fond bleu nuit",
-      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "alt": "Une créature en bulles de savon, en queue-de-pie et monocle, qui descend l'escalier de marbre d'un hall d'ambassade, des enveloppes à la main",
+      "consigne": "Generate a new image. From the reference image, keep ONLY the rendering style: line quality, soft cel shading, lighting and dark navy background treatment. Do NOT reuse its character, pose or composition: no robot standing in a doorway, no circular halo behind it, no frontal symmetric framing. Invent a creature with a clearly different body shape, size and pose, built from its own motifs, in a dynamic three-quarter view, in its own small scene. Do NOT reuse its setting either: no cable-covered floor, no punched tapes hanging on the sides, no server racks framing the picture; give the scene its own place and camera angle, drawn from the subject. Subject: a pompous creature made of soap bubbles wearing a formal tailcoat, carrying an envelope inside an envelope inside an envelope. It embodies \"SOAP / WSDL\" (enterprise integration, Messagerie & ESB). What it means (French, for context only): « Le service web d’avant REST, décrit en XML. ». Rarity: common card: sober, minimal light effects. Digital illustration for a collectible card game, landscape 4:3, one single main creature readable at small size, clean bold shapes, soft cel shading, dark navy blue background with a subtle sky blue glow, limited palette dominated by sky blue and deep blue, motifs: pipes, hubs, star-shaped cables. Strictly no text, no letters, no numbers, no logos, no brand marks, no watermark, no real people. Setting: the marble steps of an old-fashioned grand embassy hall at night with tall heavy curtains; no city skyline, no industrial buildings.",
       "provenance": {
-        "outil": "Générateur vectoriel HIPMaster",
-        "date": "2026-10-18"
+        "outil": "Gemini (Google), application web",
+        "date": "2026-10-24"
       }
     },
     {
