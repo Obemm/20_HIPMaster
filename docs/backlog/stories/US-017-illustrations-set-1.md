@@ -1,7 +1,7 @@
 # US-017 — Illustrations des 71 cartes du set 1
 
 - **Epic** : EPIC-05
-- **Statut** : À affiner
+- **Statut** : En cours
 - **Priorité** : Should
 - **Taille** : L
 - **Branche** : `us-017-illustrations-set-1`
@@ -29,3 +29,8 @@ En tant que **joueur de l'équipe d'intégration**, je veux **que chaque carte d
 ## Journal
 
 - 2026-10-18 — création, au découpage d'EPIC-05.
+- 2026-10-24 — essai sur 3 cartes (FTP, Apigee API Gateway, Solace Agent Mesh) : images générées par Gemini (application
+  web, compte du porteur du projet) pilotée depuis Chrome, avec les prompts de `docs/produit/prompts-illustrations-gemini.md` ;
+  Apigee sert de référence de style aux deux autres, dans la même conversation. Originaux JPEG 2400 × 1792 archivés hors
+  du dépôt (ADR 0015), convertis en PNG puis déclinés par `npm run illustrations` (49 à 62 Ko en 640 px). Les 68 autres
+  cartes gardent leur illustration provisoire en attendant l'avis du porteur sur l'essai.

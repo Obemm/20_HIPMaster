@@ -2,7 +2,7 @@
 
 /** Cartes du set 1 qui ont une illustration : numéro → texte alternatif. */
 export const ILLUSTRATIONS_SET_1: Readonly<Record<number, string>> = {
-  1: 'Illustration provisoire : une pile de documents sur fond bleu nuit, avec un halo doré semé d’étincelles',
+  1: "Un robot ambré de salle serveur, entouré de dossiers, de bandes perforées et d'horloges, dans un halo de lumière",
   2: 'Illustration provisoire : une pile de documents sur fond bleu nuit, avec un anneau bleu',
   3: 'Illustration provisoire : une pile de documents sur fond bleu nuit, avec un anneau bleu',
   4: 'Illustration provisoire : une pile de documents sur fond bleu nuit',
@@ -19,7 +19,7 @@ export const ILLUSTRATIONS_SET_1: Readonly<Record<number, string>> = {
   15: 'Illustration provisoire : un moyeu relié à des connecteurs en étoile sur fond bleu nuit',
   16: 'Illustration provisoire : un moyeu relié à des connecteurs en étoile sur fond bleu nuit',
   17: 'Illustration provisoire : un moyeu relié à des connecteurs en étoile sur fond bleu nuit',
-  18: 'Illustration provisoire : une porte fortifiée sur fond bleu nuit, avec un halo violet',
+  18: "Un robot-forteresse émeraude gardant une porte, entouré de remparts et de badges d'accès lumineux",
   19: 'Illustration provisoire : une porte fortifiée sur fond bleu nuit, avec un anneau bleu',
   20: 'Illustration provisoire : une porte fortifiée sur fond bleu nuit, avec un anneau bleu',
   21: 'Illustration provisoire : une porte fortifiée sur fond bleu nuit, avec un cercle de runes et un anneau bleu',
@@ -40,7 +40,7 @@ export const ILLUSTRATIONS_SET_1: Readonly<Record<number, string>> = {
   36: 'Illustration provisoire : une source qui émet des ondes sur fond bleu nuit',
   37: 'Illustration provisoire : une source qui émet des ondes sur fond bleu nuit',
   38: 'Illustration provisoire : une source qui émet des ondes sur fond bleu nuit',
-  39: 'Illustration provisoire : un œil lumineux relié à un réseau de nœuds sur fond bleu nuit, avec des chevrons montants et un halo doré semé d’étincelles',
+  39: 'Un robot magenta relié à une constellation de points lumineux, comme des synapses, dans un halo éclatant',
   40: 'Illustration provisoire : un œil lumineux relié à un réseau de nœuds sur fond bleu nuit, avec des chevrons montants et un halo doré semé d’étincelles',
   41: 'Illustration provisoire : un œil lumineux relié à un réseau de nœuds sur fond bleu nuit, avec un halo violet',
   42: 'Illustration provisoire : un œil lumineux relié à un réseau de nœuds sur fond bleu nuit, avec un anneau bleu',
