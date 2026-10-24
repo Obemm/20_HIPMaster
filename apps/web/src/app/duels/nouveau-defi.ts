@@ -2,8 +2,10 @@ import { HttpClient, httpResource } from '@angular/common/http';
 import { Component, inject, input, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
+import type { Carte } from '../cartes/carte';
 import { CompteService } from '../compte/compte.service';
 import { EtatSession } from '../compte/etat-session';
+import { BoiteDeck } from '../jeu/boite-deck';
 import type { Deck } from '../jeu/modele';
 import { ErreurChargement } from '../reseau/erreur-chargement';
 import { expliquer } from '../reseau/reseau';
@@ -15,15 +17,15 @@ import type { Duel } from './modele';
  */
 @Component({
   selector: 'hip-nouveau-defi',
-  imports: [RouterLink, ErreurChargement, EtatSession],
+  imports: [RouterLink, ErreurChargement, EtatSession, BoiteDeck],
   template: `
     <main class="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 py-8 sm:px-6">
-      <p>
-        <a routerLink="/jouer" class="text-texte-doux underline underline-offset-4">← Jouer</a>
-      </p>
-      <h1 class="text-3xl font-bold tracking-tight">
-        {{ hasard() ? 'Adversaire au hasard' : 'Défier un collègue' }}
-      </h1>
+      <div class="flex flex-col gap-2">
+        <p class="surtitre">Duel entre joueurs</p>
+        <h1 class="titre-page">
+          {{ hasard() ? 'Adversaire au hasard' : 'Défier un collègue' }}
+        </h1>
+      </div>
       @if (compte.joueur()) {
         <p class="text-texte-doux">
           @if (hasard()) {
@@ -40,25 +42,21 @@ import type { Duel } from './modele';
         @if (decks.hasValue()) {
           <ul class="flex flex-col gap-3">
             @for (deck of decks.value(); track deck.id) {
-              <li
-                class="flex flex-col gap-3 rounded-xl border border-bordure p-4 sm:flex-row sm:items-center"
-              >
-                <div class="flex-1">
-                  <h2 class="text-xl font-semibold">{{ deck.nom }}</h2>
-                  <p class="text-texte-doux">{{ deck.description }}</p>
-                </div>
-                <button
-                  type="button"
-                  class="rounded-lg bg-accent px-4 py-3 font-semibold text-sur-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:opacity-60"
-                  [disabled]="enCours() !== null"
-                  (click)="defier(deck)"
-                >
-                  {{
-                    enCours() === deck.id
-                      ? 'Recherche…'
-                      : (hasard() ? 'Jouer avec ' : 'Défier avec ') + deck.nom
-                  }}
-                </button>
+              <li>
+                <hip-boite-deck [deck]="deck" [catalogue]="catalogue.value()">
+                  <button
+                    type="button"
+                    class="bouton bouton-jeu self-stretch sm:self-end"
+                    [disabled]="enCours() !== null"
+                    (click)="defier(deck)"
+                  >
+                    {{
+                      enCours() === deck.id
+                        ? 'Recherche…'
+                        : (hasard() ? 'Jouer avec ' : 'Défier avec ') + deck.nom
+                    }}
+                  </button>
+                </hip-boite-deck>
               </li>
             }
           </ul>
@@ -78,7 +76,7 @@ import type { Duel } from './modele';
           <a
             routerLink="/compte"
             [queryParams]="{ retour: hasard() ? '/duels/hasard' : '/duels/nouveau' }"
-            class="font-semibold underline underline-offset-4"
+            class="lien"
             >Créer un compte</a
           >
           en un clic (un pseudo suffit).
@@ -100,6 +98,7 @@ export class NouveauDefi {
   });
 
   protected readonly decks = httpResource<Deck[]>(() => '/api/v1/decks');
+  protected readonly catalogue = httpResource<Carte[]>(() => '/api/v1/cartes');
   protected readonly enCours = signal<string | null>(null);
   protected readonly erreur = signal<string | null>(null);
 

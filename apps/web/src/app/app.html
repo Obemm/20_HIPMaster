@@ -66,11 +66,15 @@
 <router-outlet />
 @if (!enPartie()) {
   <footer class="mt-auto border-t border-bordure">
-    <p class="mx-auto w-full max-w-6xl px-4 py-3 text-sm sm:px-6">
-      <a routerLink="/confidentialite" class="underline underline-offset-4"
-        >À propos et confidentialité</a
-      >
-    </p>
+    <div
+      class="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-x-4 gap-y-2 px-4 py-4 text-sm sm:px-6"
+    >
+      <p class="flex items-center gap-2 text-texte-doux">
+        <img src="logo.svg" alt="" width="20" height="20" class="size-5" />
+        HIPMaster, le jeu de cartes de l’intégration
+      </p>
+      <p><a routerLink="/confidentialite" class="lien">À propos et confidentialité</a></p>
+    </div>
   </footer>
   <!-- Cale sous la page : la barre d'onglets ne masque jamais le bas d'un écran. -->
   <div class="h-[calc(3.5rem+env(safe-area-inset-bottom))] shrink-0 md:hidden"></div>

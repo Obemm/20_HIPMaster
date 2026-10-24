@@ -1,5 +1,8 @@
 <main class="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 py-8 sm:px-6">
-  <h1 class="text-3xl font-bold tracking-tight">Mes boosters</h1>
+  <div class="flex flex-col gap-2">
+    <p class="surtitre">5 cartes par booster</p>
+    <h1 class="titre-page">Mes boosters</h1>
+  </div>
 
   @if (compte.joueur()) {
     <section aria-labelledby="titre-stock" class="flex flex-col gap-3">
@@ -19,7 +22,7 @@
         <p>
           <button
             type="button"
-            class="rounded-lg bg-accent px-4 py-3 font-semibold text-sur-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:opacity-60"
+            class="bouton bouton-jeu bouton-large"
             [disabled]="occupe() || b.stock === 0 || !catalogue.hasValue()"
             (click)="ouvrir()"
           >
@@ -67,7 +70,7 @@
             <li class="revelation flex flex-col gap-2" [style.animation-delay.ms]="r.rang * 100">
               <p class="h-6 text-sm font-semibold">
                 @if (r.nouvelle) {
-                  <span class="rounded bg-accent px-2 py-0.5 text-sur-accent">Nouvelle !</span>
+                  <span class="statut statut-a-jouer">Nouvelle !</span>
                 }
               </p>
               <hip-vignette-carte
@@ -82,7 +85,7 @@
   } @else if (compte.pret()) {
     <p>
       Les boosters remplissent votre collection : il faut un compte pour la garder.
-      <a routerLink="/compte" class="font-semibold underline underline-offset-4">Créer un compte</a>
+      <a routerLink="/compte" class="lien">Créer un compte</a>
       en un clic (un pseudo suffit) : 5 boosters vous sont offerts.
     </p>
   } @else {
