@@ -57,6 +57,7 @@ describe('limitation de débit par adresse', () => {
       type: 'about:blank',
       title: expect.stringMatching(/^Trop de requêtes : réessayez dans \d+ s$/),
       status: 429,
+      code: 'trop-de-requetes',
     });
     const attente = Number(refus.headers['retry-after']);
     expect(attente).toBeGreaterThan(3500);
@@ -294,6 +295,7 @@ describe('en-têtes et taille des requêtes', () => {
       type: 'about:blank',
       title: 'Corps de requête trop volumineux : 16 Ko au plus',
       status: 413,
+      code: 'corps-trop-volumineux',
     });
     // Juste sous la limite, le corps est lu, puis refusé pour son pseudo trop long.
     expect((await envoyer(16 * 1024 - 20)).statusCode).toBe(400);

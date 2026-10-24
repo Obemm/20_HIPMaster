@@ -29,6 +29,7 @@ import { routesComptes } from './routes/comptes.ts';
 import { routesParties } from './routes/parties.ts';
 import { routesRaretes } from './routes/raretes.ts';
 import { routesSante } from './routes/sante.ts';
+import { codeErreur, envoyerProbleme } from './problemes.ts';
 
 declare module 'fastify' {
   interface FastifyInstance {
@@ -36,9 +37,6 @@ declare module 'fastify' {
     optionsSessions: OptionsSessions;
   }
 }
-
-const PROBLEME = 'application/problem+json';
-const probleme = (status: number, title: string) => ({ type: 'about:blank', title, status });
 
 /** Taille maximale d'un corps de requête (ADR 0025) : une action de partie, le plus gros corps légitime, pèse 1 Ko. */
 export const CORPS_MAX_OCTETS = 16 * 1024;
@@ -159,10 +157,10 @@ export function construireApp(
       requete.log.warn({ route: requete.routeOptions.url }, 'Limite de débit atteinte');
     else requete.log.info({ code: erreur.code, statut }, 'Requête refusée');
     const titre = statut >= 500 ? 'Erreur interne' : (TITRES[erreur.code] ?? erreur.message);
-    return reponse.status(statut).type(PROBLEME).send(probleme(statut, titre));
+    return envoyerProbleme(reponse, statut, codeErreur(erreur), titre);
   });
   app.setNotFoundHandler((_requete, reponse) =>
-    reponse.status(404).type(PROBLEME).send(probleme(404, 'Ressource introuvable')),
+    envoyerProbleme(reponse, 404, 'ressource-introuvable', 'Ressource introuvable'),
   );
 
   app.register(routesSante, { prefix: '/api/v1' });

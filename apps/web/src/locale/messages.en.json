@@ -676,6 +676,18 @@
     "2815549543159969660": "“{$libelle}”: {$nombre} boosters given! They are waiting in your stock.",
     "6549311921649994414": "“{$libelle}”: {$nombre} booster given! It is waiting in your stock.",
     "3931322804571729748": "This code doesn’t give any boosters: check it. It may have expired or been used up, or you have already used it.",
-    "4744184964919430250": "The code couldn’t be used. {$raison}"
+    "4744184964919430250": "The code couldn’t be used. {$raison}",
+    "8346348045344964941": "The game is over.",
+    "2862778191392877527": "This card is no longer where you picked it.",
+    "6680139608505108883": "This card can’t be played yet.",
+    "3279097136027498456": "This card isn’t played that way.",
+    "3168935160715984031": "Not enough Throughput to play this card.",
+    "4829219740649579557": "Your board is full (5 components).",
+    "3885880624919108978": "This evolution can’t be deployed on this component.",
+    "907324787672382039": "You have already decommissioned a card this turn.",
+    "6653911672983614109": "This component can’t attack right now.",
+    "2491799924246880790": "This target isn’t valid.",
+    "6039823435201698141": "You must first attack a component with Guard.",
+    "6580323397478465887": "Quotas: this component has already been attacked twice this turn."
   }
 }

@@ -218,11 +218,16 @@ components:
   schemas:
     Probleme:
       type: object
-      required: [type, title, status]
+      required: [type, title, status, code]
       properties:
         type: { type: string }
         title: { type: string }
         status: { type: integer }
+        code:
+          type: string
+          description: >
+            Code stable de l'erreur (US-082), que le client traduit ; `title` (en français) sert de repli. Pour une action
+            refusée, le code du moteur (`debit-insuffisant`, `garde`…).
     Joueur:
       type: object
       required: [id, pseudo]

@@ -39,6 +39,7 @@ const REFUS = {
   type: 'about:blank',
   title: 'Ce code ne donne pas de booster : inconnu, expiré, épuisé ou déjà utilisé',
   status: 403,
+  code: 'code-boosters-refuse',
 };
 const auth = (jeton: string) => ({ authorization: `Bearer ${jeton}` });
 /** Une date limite `AAAA-MM-JJ`, dans `jours` jours. */
@@ -341,7 +342,12 @@ describe('page « Offrir des boosters » (routes d’administration)', () => {
   it('répond 404, comme une route inexistante, à qui n’est pas administrateur', async () => {
     const { app, ordinaire } = await preparer();
     const { id } = await offrir();
-    const introuvable = { type: 'about:blank', title: 'Ressource introuvable', status: 404 };
+    const introuvable = {
+      type: 'about:blank',
+      title: 'Ressource introuvable',
+      status: 404,
+      code: 'ressource-introuvable',
+    };
     for (const requete of [
       { method: 'GET' as const, url: '/api/v1/admin/codes-boosters' },
       { method: 'POST' as const, url: '/api/v1/admin/codes-boosters', payload: {} },

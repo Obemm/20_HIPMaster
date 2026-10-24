@@ -16,6 +16,7 @@ import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
 import { z } from 'zod';
 import { cacheCatalogue } from '../cache-catalogue.ts';
 import { langueDe } from '../langue.ts';
+import { erreurProbleme } from '../problemes.ts';
 
 // Contrat : apps/api/openapi/cartes.yaml.
 const schemaCapacite = z.object({
@@ -86,7 +87,7 @@ export const routesCartes: FastifyPluginAsyncZod = async (app) => {
     },
     async (requete) => {
       const carte = trouverCarte(requete.params.numero);
-      if (!carte) throw Object.assign(new Error('Carte introuvable'), { statusCode: 404 });
+      if (!carte) throw erreurProbleme(404, 'carte-inconnue', 'Carte introuvable');
       const langue = langueDe(requete);
       const fiche = ficheDe(carte.numero, langue);
       return {

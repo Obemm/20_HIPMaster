@@ -35,6 +35,7 @@ import {
   schemaNiveau,
   schemaPartie,
 } from '../parties/schemas.ts';
+import { envoyerProbleme } from '../problemes.ts';
 
 const schemaPartieRecompensee = schemaPartie.extend({
   recompense: z
@@ -48,8 +49,6 @@ const schemaPartieRecompensee = schemaPartie.extend({
 
 // Contrat : apps/api/openapi/parties.yaml.
 
-const PROBLEME = 'application/problem+json';
-
 /** L'ETag d'une version de partie ou de duel. */
 export const etiquette = (version: number) => `"${version}"`;
 
@@ -62,11 +61,9 @@ export function versionDe(entete: string | string[] | undefined): number | undef
 
 /** Traduit un échec en Problem Details (RFC 9457). */
 function refuser(reponse: FastifyReply, resultat: Exclude<ResultatPartie<unknown>, { ok: true }>) {
-  const corps = (status: number, title: string, extra: object = {}) =>
-    reponse
-      .status(status)
-      .type(PROBLEME)
-      .send({ type: 'about:blank', title, status, ...extra });
+  // Le code stable est la raison de l'échec ; pour une action refusée, celui du moteur (US-082).
+  const corps = (status: number, title: string) =>
+    envoyerProbleme(reponse, status, resultat.raison, title);
   switch (resultat.raison) {
     case 'partie-inconnue':
       return corps(404, 'Partie introuvable ou expirée');
@@ -79,10 +76,13 @@ function refuser(reponse: FastifyReply, resultat: Exclude<ResultatPartie<unknown
     case 'pas-votre-tour':
       return corps(409, 'Aucun conseil : ce n’est pas à vous de jouer');
     case 'action-refusee':
-      return corps(422, 'Action refusée', {
-        detail: resultat.erreur.message,
-        code: resultat.erreur.code,
-      });
+      return envoyerProbleme(
+        reponse,
+        422,
+        resultat.erreur.code,
+        'Action refusée',
+        resultat.erreur.message,
+      );
   }
 }
 

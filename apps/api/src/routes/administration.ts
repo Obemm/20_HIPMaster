@@ -158,7 +158,8 @@ export const routesAdministration: FastifyPluginAsyncZod<{
     async (requete, reponse) => {
       const { libelle, utilisations, expire } = requete.body;
       const expireLe = finDuJour(expire);
-      if (expireLe <= new Date()) return refuser(reponse, 400, 'La date limite est déjà passée');
+      if (expireLe <= new Date())
+        return refuser(reponse, 400, 'date-limite-passee', 'La date limite est déjà passée');
       const { id, code } = await creerInvitation(
         base,
         { libelle, utilisations, expireLe },
@@ -189,6 +190,7 @@ export const routesAdministration: FastifyPluginAsyncZod<{
         return refuser(
           reponse,
           404,
+          'invitation-inconnue',
           'Aucune invitation en cours ne porte cet identifiant : inconnue, déjà expirée ou révoquée',
         );
       }
@@ -233,7 +235,9 @@ export const routesAdministration: FastifyPluginAsyncZod<{
     async (requete, reponse) => {
       const { libelle, boosters, utilisations, expire } = requete.body;
       const expireLe = finDuJour(expire);
-      if (expireLe <= new Date()) return refuser(reponse, 400, 'La date limite est déjà passée');
+      if (expireLe <= new Date()) {
+        return refuser(reponse, 400, 'date-limite-passee', 'La date limite est déjà passée');
+      }
       const { id, code } = await creerCodeBoosters(
         base,
         { libelle, boosters, utilisations, expireLe },
@@ -274,7 +278,7 @@ export const routesAdministration: FastifyPluginAsyncZod<{
     },
     async (requete, reponse) => {
       const beneficiaires = await beneficiairesCodeBoosters(base, requete.params.id);
-      if (!beneficiaires) return refuser(reponse, 404, CODE_INCONNU);
+      if (!beneficiaires) return refuser(reponse, 404, 'code-boosters-inconnu', CODE_INCONNU);
       return {
         beneficiaires: beneficiaires.map((b) => ({ ...b, recuLe: b.recuLe.toISOString() })),
       };
@@ -291,6 +295,7 @@ export const routesAdministration: FastifyPluginAsyncZod<{
         return refuser(
           reponse,
           404,
+          'code-boosters-inconnu',
           'Aucun code de boosters en cours ne porte cet identifiant : inconnu, déjà expiré ou révoqué',
         );
       }

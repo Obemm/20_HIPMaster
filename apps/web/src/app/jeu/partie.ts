@@ -45,6 +45,7 @@ import {
 import { CompteService } from '../compte/compte.service';
 import { PreferencesService } from '../preferences';
 import { StockBoostersService } from '../boosters/stock-boosters.service';
+import { messageActionRefusee } from '../reseau/probleme';
 
 type ActionCarte = Extract<Action, { carte: string }>;
 
@@ -858,9 +859,7 @@ export class PartieEcran implements OnInit, OnDestroy {
     } else if (erreur instanceof HttpErrorResponse && erreur.status === 404) {
       this.introuvable.set(true);
     } else if (erreur instanceof HttpErrorResponse && erreur.status === 422) {
-      this.erreur.set(
-        (erreur.error as { detail?: string } | null)?.detail ?? $localize`Action refusée.`,
-      );
+      this.erreur.set(messageActionRefusee(erreur));
     } else {
       this.erreur.set(expliquer(erreur));
     }

@@ -62,6 +62,7 @@ describe('API v1', () => {
       type: 'about:blank',
       title: 'Carte introuvable',
       status: 404,
+      code: 'carte-inconnue',
     });
   });
 
@@ -79,6 +80,7 @@ describe('API v1', () => {
       type: 'about:blank',
       title: 'Ressource introuvable',
       status: 404,
+      code: 'ressource-introuvable',
     });
   });
 });

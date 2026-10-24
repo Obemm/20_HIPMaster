@@ -7,6 +7,9 @@ Toutes les évolutions notables du projet sont consignées ici
 
 ### Ajouté
 
+- Des erreurs comprises dans les deux langues : chaque erreur de l'API porte un `code` stable, que le front traduit
+  (le texte français reste en repli) ; les parcours principaux sont vérifiés en anglais, audit d'accessibilité compris,
+  et le guide d'exploitation dit comment ajouter une langue (US-082).
 - Le contenu du jeu en anglais : noms, effets et « En vrai » des 71 cartes, capacités, fiches « En savoir plus » (liens
   vers des ressources anglaises), decks prêtés, niveaux du bot, bulles de la partie guidée et phrases du conseil.
   L'API sert la langue demandée (`?langue=en`), le français par défaut, avec un `ETag` par langue ; un test vérifie

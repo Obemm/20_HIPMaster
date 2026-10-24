@@ -274,7 +274,7 @@ components:
     Introuvable:
       description: >
         Appelant qui n'est pas administrateur : la réponse exacte d'une route qui n'existe pas
-        (`{ "type": "about:blank", "title": "Ressource introuvable", "status": 404 }`).
+        (`{ "type": "about:blank", "title": "Ressource introuvable", "status": 404, "code": "ressource-introuvable" }`).
       content:
         application/problem+json:
           schema: { $ref: '#/components/schemas/Probleme' }
@@ -291,11 +291,16 @@ components:
   schemas:
     Probleme:
       type: object
-      required: [type, title, status]
+      required: [type, title, status, code]
       properties:
         type: { type: string }
         title: { type: string }
         status: { type: integer }
+        code:
+          type: string
+          description: >
+            Code stable de l'erreur (US-082), que le client traduit ; `title` (en français) sert de repli. Pour une action
+            refusée, le code du moteur (`debit-insuffisant`, `garde`…).
     Invitation:
       type: object
       required:

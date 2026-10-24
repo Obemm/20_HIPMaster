@@ -15,13 +15,14 @@ import { type Administrateurs, AUCUN, estAdministrateur } from '../comptes/admin
 import { inscrire } from '../comptes/invitations.ts';
 import type { Base } from '../db/index.ts';
 import { limiter, type LimitesDebit } from '../limites.ts';
+import { envoyerProbleme } from '../problemes.ts';
 
 // Contrat : apps/api/openapi/comptes.yaml (US-022, ADR 0017 ; protections : US-047, ADR 0025 ; invitations : US-048,
 // ADR 0027 ; administrateurs : US-072, ADR 0029).
 
-const PROBLEME = 'application/problem+json';
-export const refuser = (reponse: FastifyReply, status: number, title: string) =>
-  reponse.status(status).type(PROBLEME).send({ type: 'about:blank', title, status });
+/** Refuse une requête : Problem Details avec son code stable (US-082). */
+export const refuser = (reponse: FastifyReply, status: number, code: string, title: string) =>
+  envoyerProbleme(reponse, status, code, title);
 
 /** Le joueur renvoyé ; `administrateur` n'apparaît que pour un administrateur (ADR 0029). */
 const schemaJoueur = z.object({
@@ -63,7 +64,7 @@ export async function exigerJoueur(
   const jeton = jetonDe(requete);
   const joueur = jeton ? await joueurDuJeton(base, jeton, requete.server.optionsSessions) : null;
   if (!jeton || !joueur) {
-    await refuser(reponse, 401, 'Compte requis : session absente ou expirée');
+    await refuser(reponse, 401, 'compte-requis', 'Compte requis : session absente ou expirée');
     return null;
   }
   return { joueur, jeton };
@@ -105,7 +106,12 @@ export const routesComptes: FastifyPluginAsyncZod<{
       });
       // Un seul message pour un code absent, inconnu, expiré ou épuisé : il ne dit pas lequel (ADR 0027).
       if (!creation) {
-        return refuser(reponse, 403, 'Invitation refusée : code absent, inconnu, expiré ou épuisé');
+        return refuser(
+          reponse,
+          403,
+          'invitation-refusee',
+          'Invitation refusée : code absent, inconnu, expiré ou épuisé',
+        );
       }
       return reponse.status(201).send({ ...creation, joueur: vu(creation.joueur) });
     },
@@ -122,7 +128,8 @@ export const routesComptes: FastifyPluginAsyncZod<{
     },
     async (requete, reponse) => {
       const session = await connecterParCode(base, requete.body.code, cleCodes);
-      if (!session) return refuser(reponse, 401, 'Code de récupération inconnu');
+      if (!session)
+        return refuser(reponse, 401, 'code-recuperation-inconnu', 'Code de récupération inconnu');
       return reponse.status(201).send({ ...session, joueur: vu(session.joueur) });
     },
   );

@@ -29,6 +29,7 @@ const REFUS = {
   type: 'about:blank',
   title: 'Invitation refusée : code absent, inconnu, expiré ou épuisé',
   status: 403,
+  code: 'invitation-refusee',
 };
 
 function inviter(utilisations = 5, expireLe = new Date(Date.now() + JOUR_MS)) {

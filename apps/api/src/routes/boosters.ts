@@ -50,7 +50,7 @@ export const routesBoosters: FastifyPluginAsyncZod<{
       const connecte = await exigerJoueur(base, requete, reponse);
       if (!connecte) return reponse;
       const ouverture = await ouvrirUnBooster(base, connecte.joueur.id, options);
-      if (!ouverture) return refuser(reponse, 409, 'Aucun booster en stock');
+      if (!ouverture) return refuser(reponse, 409, 'aucun-booster', 'Aucun booster en stock');
       return reponse.status(201).send(ouverture);
     },
   );
@@ -75,7 +75,7 @@ export const routesBoosters: FastifyPluginAsyncZod<{
       if (!connecte) return reponse;
       const joueur = connecte.joueur.id;
       const recus = await utiliserCodeBoosters(base, joueur, requete.body.code, cleCodes, options);
-      if (!recus) return refuser(reponse, 403, CODE_REFUSE);
+      if (!recus) return refuser(reponse, 403, 'code-boosters-refuse', CODE_REFUSE);
       // Jamais le code dans le journal : seulement qui a utilisé quel code.
       requete.log.info(
         { joueur, codeBoosters: recus.codeId, offerts: recus.offerts },

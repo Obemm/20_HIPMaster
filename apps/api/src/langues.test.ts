@@ -101,3 +101,20 @@ describe('textes du jeu dans la langue demandée (US-081)', () => {
     await app.close();
   });
 });
+
+describe('codes d’erreur stables (US-082)', () => {
+  it('chaque erreur porte un code que le front traduit, le titre français en repli', async () => {
+    const app = construireApp({ base: ouverte.base });
+    const invalide = await app.inject({ method: 'GET', url: '/api/v1/cartes/abc' });
+    expect(invalide.json()).toMatchObject({ status: 400, code: 'requete-invalide' });
+    const partie = await app.inject({ method: 'GET', url: '/api/v1/parties/inconnue' });
+    expect(partie.json()).toMatchObject({
+      status: 404,
+      code: 'partie-inconnue',
+      title: 'Partie introuvable ou expirée',
+    });
+    const sansCompte = await app.inject({ method: 'GET', url: '/api/v1/moi' });
+    expect(sansCompte.json()).toMatchObject({ status: 401, code: 'compte-requis' });
+    await app.close();
+  });
+});

@@ -18,12 +18,11 @@ import {
   type ResultatDuel,
 } from '../duels/duels.ts';
 import { schemaAction, schemaEvenement, schemaVue } from '../parties/schemas.ts';
+import { envoyerProbleme } from '../problemes.ts';
 import { exigerJoueur } from './comptes.ts';
 import { etiquette, versAction, versionDe } from './parties.ts';
 
 // Contrat : apps/api/openapi/duels.yaml (US-032, ADR 0020 ; limites de débit : US-047, ADR 0025).
-
-const PROBLEME = 'application/problem+json';
 
 const schemaDuel = z.object({
   id: z.uuid(),
@@ -52,11 +51,9 @@ const corpsDeck = z.object({ deck: z.string().max(64) });
 
 /** Traduit un échec en Problem Details (RFC 9457). */
 function refuser(reponse: FastifyReply, resultat: Exclude<ResultatDuel<unknown>, { ok: true }>) {
-  const corps = (status: number, title: string, extra: object = {}) =>
-    reponse
-      .status(status)
-      .type(PROBLEME)
-      .send({ type: 'about:blank', title, status, ...extra });
+  // Le code stable est la raison de l'échec ; pour une action refusée, celui du moteur (US-082).
+  const corps = (status: number, title: string) =>
+    envoyerProbleme(reponse, status, resultat.raison, title);
   switch (resultat.raison) {
     case 'introuvable':
       return corps(404, 'Duel introuvable');
@@ -77,10 +74,13 @@ function refuser(reponse: FastifyReply, resultat: Exclude<ResultatDuel<unknown>,
     case 'deja-termine':
       return corps(409, 'Ce duel est déjà terminé');
     case 'action-refusee':
-      return corps(422, 'Action refusée', {
-        detail: resultat.erreur.message,
-        code: resultat.erreur.code,
-      });
+      return envoyerProbleme(
+        reponse,
+        422,
+        resultat.erreur.code,
+        'Action refusée',
+        resultat.erreur.message,
+      );
   }
 }
 

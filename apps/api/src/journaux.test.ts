@@ -149,7 +149,12 @@ describe('journaux des requêtes', () => {
       payload: { code: CODE },
     });
     expect(reponse.statusCode).toBe(500);
-    expect(reponse.json()).toEqual({ type: 'about:blank', title: 'Erreur interne', status: 500 });
+    expect(reponse.json()).toEqual({
+      type: 'about:blank',
+      title: 'Erreur interne',
+      status: 500,
+      code: 'erreur-interne',
+    });
 
     const erreur = lignes.find((l) => l['severity'] === 'ERROR');
     expect(erreur).toMatchObject({

@@ -278,7 +278,7 @@ components:
   schemas:
     Probleme:
       type: object
-      required: [type, title, status]
+      required: [type, title, status, code]
       properties:
         type: { type: string }
         title: { type: string }
