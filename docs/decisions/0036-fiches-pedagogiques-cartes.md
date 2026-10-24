@@ -49,6 +49,6 @@ souvent sur téléphone. Le dépôt est public (ADR 0022) et le site est soumis 
 
 - Corriger une fiche demande une PR, comme une carte ; c'est aussi ce qui garantit sa relecture.
 - La validation des liens dans les tests est hors ligne (forme `https`) : vérifier qu'un lien répond et parle du bon
-  sujet reste une étape de rédaction (script de vérification prévu par US-074).
+  sujet reste une étape de rédaction (`npm run fiches:liens`, US-074).
 - En partie, ouvrir une fiche coûte une requête ; hors ligne, la fiche affiche une erreur avec « Réessayer ».
 - Les futures cartes de la communauté (EPIC-08) suivront le même modèle de fiche.

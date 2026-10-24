@@ -28,7 +28,8 @@ export const SET_1: readonly Carte[] = [
     attaque: 3,
     pv: 4,
     capacites: ['migration'],
-    enVrai: 'Le FTP chiffré, progressivement remplacé par les API et les événements.',
+    enVrai:
+      'Le transfert de fichiers chiffré par SSH, peu à peu remplacé par les API et les événements.',
   },
   {
     numero: 3,
