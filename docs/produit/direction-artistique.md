@@ -23,7 +23,8 @@ distinguaient pas. D'où la règle : on partage le **rendu**, jamais le personna
 - **Propre à la famille** : la palette, la couleur de la lueur et les motifs du décor (tableau ci-dessous).
 - **Propre à la rareté** : l'intensité de la lumière (voir les règles de composition).
 - **Propre à la carte** : la créature (espèce et silhouette jamais reprises ailleurs dans le set), sa posture, sa
-  scène. La liste des 71 créatures est dans [prompts-illustrations-gemini.md](prompts-illustrations-gemini.md).
+  scène et son **décor** : le premier paquet, qui reprenait le décor de SFTP (sol de câbles, bandes perforées
+  pendues sur les côtés), se ressemblait trop. La liste des 71 créatures est dans [prompts-illustrations-gemini.md](prompts-illustrations-gemini.md).
 - **Les évolutions** (webMethods.io, Solace Agent Mesh, Apigee AI Gateway) reprennent l'espèce et la silhouette de
   leur carte d'origine (Integration Server, Solace Event Mesh, Apigee API Gateway), en plus grand et plus
   spectaculaire : on les reconnaît d'un coup d'œil.
