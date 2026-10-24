@@ -67,12 +67,13 @@ describe('limitation de débit par adresse', () => {
     expect((await creer('203.0.113.2')).statusCode).toBe(201);
   });
 
-  it('limite la connexion par code, la création de partie et ses actions', async () => {
+  it('limite la connexion par code, la création de partie, ses actions et ses conseils', async () => {
     const app = appli({
       limites: limites({
         connexion: UNE_PAR_MINUTE,
         creationPartie: UNE_PAR_MINUTE,
         actionPartie: UNE_PAR_MINUTE,
+        conseilPartie: UNE_PAR_MINUTE,
       }),
     });
     const connexion = () =>
@@ -93,6 +94,10 @@ describe('limitation de débit par adresse', () => {
       });
     expect((await finir()).statusCode).toBe(200);
     expect((await finir()).statusCode).toBe(429);
+    const conseil = () =>
+      app.inject({ method: 'GET', url: `/api/v1/parties/${partie.id}/conseil` });
+    expect((await conseil()).statusCode).toBe(200);
+    expect((await conseil()).statusCode).toBe(429);
     // La lecture d'une partie n'est pas limitée.
     expect(
       (await app.inject({ method: 'GET', url: `/api/v1/parties/${partie.id}` })).statusCode,

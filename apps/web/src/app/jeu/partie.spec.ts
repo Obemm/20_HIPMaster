@@ -564,6 +564,90 @@ describe('PartieEcran', () => {
     await fixture.whenStable();
   });
 
+  describe('conseil (US-066)', () => {
+    const CONSEIL = '/api/v1/parties/' + ID + '/conseil';
+    const posez = {
+      version: 3,
+      action: { type: 'poser', carte: 'j1-01' },
+      explication: 'Posez API REST : votre Débit le permet.',
+    };
+
+    it('à la demande, met en évidence le coup conseillé et dit pourquoi, sans le jouer', async () => {
+      const { fixture, http, page } = await ouvrir(vue(), { version: 3 });
+      expect(page.querySelector('#conseil')).toBeNull();
+      bouton(page, 'Un conseil ?')?.click();
+      http.expectOne(CONSEIL).flush(posez);
+      await fixture.whenStable();
+      fixture.detectChanges();
+
+      const conseil = page.querySelector('#conseil');
+      expect(conseil?.textContent).toContain('Conseil : Posez API REST : votre Débit le permet.');
+      expect(conseil?.parentElement?.getAttribute('aria-live')).toBe('polite');
+      const carte = page.querySelector('#main-j1-01');
+      expect(carte?.classList).toContain('conseille');
+      expect(carte?.textContent).toContain('API REST : conseillée');
+      expect(page.querySelector('#finir-tour')?.classList).not.toContain('conseille');
+      http.expectNone(`/api/v1/parties/${ID}/actions`);
+
+      bouton(page, 'Masquer le conseil')?.click();
+      fixture.detectChanges();
+      expect(page.querySelector('#conseil')).toBeNull();
+      expect(carte?.classList).not.toContain('conseille');
+    });
+
+    it('met en évidence l’attaquant et sa cible, ou le bouton de fin de tour', async () => {
+      const v = vue();
+      v.moi.plateau = [
+        { id: 'j1-02', numero: 22, pv: 2, attaque: 3, poseAuTour: 1, aAttaqueCeTour: false },
+      ];
+      const { fixture, http, page } = await ouvrir(v, { version: 3 });
+      bouton(page, 'Un conseil ?')?.click();
+      http.expectOne(CONSEIL).flush({
+        version: 3,
+        action: { type: 'attaquer', attaquant: 'j1-02', cible: 'si' },
+        explication: 'Attaquez le SI adverse avec API REST.',
+      });
+      await fixture.whenStable();
+      fixture.detectChanges();
+      expect(page.querySelector('#plateau-j1-02')?.classList).toContain('conseille');
+      expect(page.querySelector('#plateau-j1-02')?.getAttribute('aria-label')).toContain(
+        ': conseillé',
+      );
+      expect(page.querySelector('#plateau-si')?.classList).toContain('conseille');
+      expect(page.querySelector('#plateau-j2-05')?.classList).not.toContain('conseille');
+    });
+
+    it('ne garde pas un conseil d’une version dépassée de la partie', async () => {
+      const { fixture, http, page } = await ouvrir(vue(), { version: 4 });
+      bouton(page, 'Un conseil ?')?.click();
+      http.expectOne(CONSEIL).flush(posez);
+      await fixture.whenStable();
+      fixture.detectChanges();
+      expect(page.querySelector('#conseil')).toBeNull();
+    });
+
+    it('avec « Un conseil à chaque coup », le demande dès que c’est au joueur, et l’option se règle dans l’aide', async () => {
+      localStorage.setItem('hipmaster.conseil-chaque-coup', 'oui');
+      const { fixture, http, page } = await ouvrir(vue(), { version: 3 });
+      http.expectOne(CONSEIL).flush(posez);
+      await fixture.whenStable();
+      fixture.detectChanges();
+      expect(page.querySelector('#conseil')?.textContent).toContain('Posez API REST');
+
+      const option = [...page.querySelectorAll<HTMLInputElement>('dialog input')].find((i) =>
+        i.closest('label')?.textContent?.includes('Un conseil à chaque coup'),
+      );
+      expect(option?.checked).toBe(true);
+      option?.click();
+      expect(localStorage.getItem('hipmaster.conseil-chaque-coup')).toBe('non');
+    });
+
+    it('n’est pas proposé pendant le tour du bot', async () => {
+      const { page } = await ouvrir(vue({ actif: 'j2', actions: [] }), { version: 3 });
+      expect(bouton(page, 'Un conseil ?')).toBeUndefined();
+    });
+  });
+
   describe('coups de pouce (US-065)', () => {
     const attaquant = {
       id: 'j1-02',
@@ -934,6 +1018,9 @@ describe('PartieEcran en duel (US-034)', () => {
     expect(page.querySelector('h1')?.textContent).toContain('Duel contre Bob');
     expect(page.querySelector('#titre-bot')?.textContent).toContain('Bob');
     expect(page.textContent).not.toContain('Niveau :');
+    // Pas de conseil en duel (US-066, ADR 0040), ni de réglage pour lui.
+    expect(bouton(page, 'Un conseil ?')).toBeUndefined();
+    expect(page.querySelector('dialog')?.textContent).not.toContain('Un conseil à chaque coup');
 
     // Les coups de pouce valent aussi en duel (US-065).
     bouton(page, 'Finir mon tour')?.click();

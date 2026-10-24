@@ -7,6 +7,11 @@ Toutes les évolutions notables du projet sont consignées ici
 
 ### Ajouté
 
+- Un conseil à la demande contre le bot : l'ampoule « Un conseil ? » met en évidence le meilleur coup du moment (la
+  carte, l'attaquant et sa cible, le SI ou « Finir mon tour ») et dit pourquoi en une phrase. Calculé par le serveur
+  depuis la seule vue du joueur (`GET /api/v1/parties/{id}/conseil`, limité en débit), sur les règles de Batch de
+  nuit : qui le suit bat Stagiaire 89 % du temps. Jamais en duel ; l'option « Un conseil à chaque coup » se règle
+  dans l'aide (US-066, ADR 0040).
 - Premières vraies illustrations, générées avec Gemini : FTP, Apigee API Gateway et Solace Agent Mesh (essai d'US-017).
 - Le jeu s'installe sur l'écran d'accueil d'un téléphone (PWA) : manifeste web (nom, couleurs de nuit, icônes 192 et
   512 px et masquable, affichage autonome) et service worker d'Angular en production, qui garde l'interface et les

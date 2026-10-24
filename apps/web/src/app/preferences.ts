@@ -2,6 +2,7 @@ import { Injectable, signal } from '@angular/core';
 
 const CLE_AIDE_VUE = 'hipmaster.aide-vue';
 const CLE_COUPS_DE_POUCE = 'hipmaster.coups-de-pouce';
+const CLE_CONSEIL_CHAQUE_COUP = 'hipmaster.conseil-chaque-coup';
 
 /** Lecture du stockage du navigateur ; un stockage refusé (navigation privée stricte) vaut « rien de retenu ». */
 function lire(cle: string): string | null {
@@ -40,5 +41,13 @@ export class PreferencesService {
   activerCoupsDePouce(actifs: boolean): void {
     this.coupsDePouce.set(actifs);
     ecrire(CLE_COUPS_DE_POUCE, actifs ? 'oui' : 'non');
+  }
+
+  /** Contre le bot, le conseil s'affiche à chaque coup sans le demander (US-066) : désactivé, sauf choix du joueur. */
+  readonly conseilAChaqueCoup = signal(lire(CLE_CONSEIL_CHAQUE_COUP) === 'oui');
+
+  activerConseilAChaqueCoup(actif: boolean): void {
+    this.conseilAChaqueCoup.set(actif);
+    ecrire(CLE_CONSEIL_CHAQUE_COUP, actif ? 'oui' : 'non');
   }
 }

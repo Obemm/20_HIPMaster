@@ -369,3 +369,48 @@ describe('parties contre le bot', () => {
     expect(apres.json()).toMatchObject({ status: 422, code: 'partie-terminee' });
   });
 });
+
+describe('conseil (US-066)', () => {
+  const conseil = (app: App, id: string) =>
+    app.inject({ method: 'GET', url: `/api/v1/parties/${id}/conseil` });
+
+  it('conseille une des actions possibles, l’explique, et donne la version où il vaut', async () => {
+    const { app } = appli();
+    const { partie } = await creer(app);
+    const reponse = await conseil(app, partie.id);
+    expect(reponse.statusCode).toBe(200);
+    const lu = reponse.json<{ version: number; action: object; explication: string }>();
+    // Rien d'autre que le coup et sa raison : ni la main ni la pioche du bot.
+    expect(Object.keys(lu).sort()).toEqual(['action', 'explication', 'version']);
+    expect(partie.vue.actions).toContainEqual(lu.action);
+    expect(lu.explication).toMatch(
+      /^(Posez|Faites|Jouez|Attaquez|Décommissionnez|Finissez|Migrez|Utilisez) /,
+    );
+    expect(lu.version).toBe(partie.version);
+    expect(reponse.headers.etag).toBe(`"${partie.version}"`);
+  });
+
+  it('se suit jusqu’à la fin de la partie, puis répond 409 : plus rien à conseiller', async () => {
+    const { app } = appli();
+    let { partie } = await creer(app, 'hybride');
+    let actions = 0;
+    while (!partie.vue.issue) {
+      actions += 1;
+      if (actions > 500) throw new Error('La partie ne se termine pas.');
+      const { action } = (await conseil(app, partie.id)).json<{ action: object }>();
+      const reponse = await jouer(app, partie.id, action);
+      expect(reponse.statusCode).toBe(200);
+      partie = reponse.json<PartieVisible>();
+    }
+    const apres = await conseil(app, partie.id);
+    expect(apres.statusCode).toBe(409);
+    expect(apres.json()).toMatchObject({ status: 409, title: expect.stringContaining('conseil') });
+  });
+
+  it('répond 404 pour une partie inconnue, et n’existe pas pour les duels', async () => {
+    const { app } = appli();
+    expect((await conseil(app, randomUUID())).statusCode).toBe(404);
+    const duel = await app.inject({ method: 'GET', url: `/api/v1/duels/${randomUUID()}/conseil` });
+    expect(duel.statusCode).toBe(404);
+  });
+});

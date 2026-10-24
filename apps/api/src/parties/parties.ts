@@ -1,6 +1,8 @@
 import {
   type Action,
   appliquer,
+  type Conseil,
+  conseiller,
   creerPartie,
   DECKS_PRETES,
   type EntreeJournal,
@@ -73,7 +75,15 @@ export interface PartieLue {
 
 export type ResultatPartie<T> =
   | { ok: true; valeur: T }
-  | { ok: false; raison: 'partie-inconnue' | 'deck-inconnu' | 'niveau-inconnu' | 'version-perimee' }
+  | {
+      ok: false;
+      raison:
+        | 'partie-inconnue'
+        | 'deck-inconnu'
+        | 'niveau-inconnu'
+        | 'version-perimee'
+        | 'pas-votre-tour';
+    }
   | { ok: false; raison: 'action-refusee'; erreur: ErreurAction };
 
 const horloge = (options: OptionsParties) => (options.maintenant ?? Date.now)();
@@ -217,6 +227,28 @@ export async function lirePartie(
   const ligne = await trouver(base, id, session, options);
   if (!ligne) return echec('partie-inconnue');
   return { ok: true, valeur: { partie: visible(ligne, 0), joueurId: ligne.joueurId } };
+}
+
+/** Le conseil du moment (US-066, ADR 0040), pour la version de la partie où il vaut. */
+export interface ConseilPartie extends Conseil {
+  version: number;
+}
+
+/**
+ * Conseille le joueur, à partir de sa seule vue (ADR 0004) : le meilleur coup du moment, et pourquoi. Rien n'est
+ * écrit ; une lecture ne prolonge pas la partie. `pas-votre-tour` pendant le tour du bot ou une fois la partie finie.
+ */
+export async function conseillerPartie(
+  base: Base,
+  id: string,
+  session: string | null,
+  options: OptionsParties = {},
+): Promise<ResultatPartie<ConseilPartie>> {
+  const ligne = await trouver(base, id, session, options);
+  if (!ligne) return echec('partie-inconnue');
+  const conseil = conseiller(vueDe(ligne.etat, HUMAIN));
+  if (!conseil) return echec('pas-votre-tour');
+  return { ok: true, valeur: { version: ligne.version, ...conseil } };
 }
 
 /**
