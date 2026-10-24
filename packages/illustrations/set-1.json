@@ -3,8 +3,8 @@
   "illustrations": [
     {
       "numero": 1,
-      "alt": "Un robot ambré de salle serveur, entouré de dossiers, de bandes perforées et d'horloges, dans un halo de lumière",
-      "consigne": "Subject: a friendly \"machine-creature of the server room\" that embodies \"FTP\" (enterprise integration, Fichiers & Batch). What it means (French, for context only): « Transfert de fichiers en clair. Officiellement interdit chez Elis. Officieusement… ». Visual motifs: folders, punched tapes, clocks. Rarity: strong glowing halo, sparkling particles and light rays, legendary. Digital illustration for a collectible card game, landscape 4:3, light isometric view, one single central subject readable at small size, clean bold shapes, soft cel shading, dark navy blue background with a subtle amber glow, limited palette dominated by amber and burnt orange. Strictly no text, no letters, no numbers, no logos, no brand marks, no watermark, no real people.",
+      "alt": "Un vieux pélican mécanique en vol plané au-dessus de piles de cartons, la poche du bec grande ouverte et pleine de dossiers, un cadenas ouvert qui pend",
+      "consigne": "Generate a new image. From the reference image, keep ONLY the rendering style: line quality, soft cel shading, lighting and dark navy background treatment. Do NOT reuse its character, pose or composition: no robot standing in a doorway, no circular halo behind it, no frontal symmetric framing. Invent a creature with a clearly different body shape, size and pose, built from its own motifs, in a dynamic three-quarter view, in its own small scene. Subject: a huge, venerable, dusty old pelican postman gliding over stacks of cardboard boxes; its wide-open beak pouch overflows with paper folders anyone can read, an open padlock dangles from its satchel. It embodies \"FTP\" (enterprise integration, Fichiers & Batch). What it means (French, for context only): « Transfert de fichiers en clair. Officiellement interdit chez Elis. Officieusement… ». Rarity: legendary card: a radiant aura, sparkling particles and light rays filling the scene. Digital illustration for a collectible card game, landscape 4:3, one single main creature readable at small size, clean bold shapes, soft cel shading, dark navy blue background with a subtle amber glow, limited palette dominated by amber and burnt orange, motifs: folders, punched tapes, clocks. Strictly no text, no letters, no numbers, no logos, no brand marks, no watermark, no real people.",
       "provenance": {
         "outil": "Gemini (Google), application web",
         "date": "2026-10-24"
@@ -12,65 +12,65 @@
     },
     {
       "numero": 2,
-      "alt": "Illustration provisoire : une pile de documents sur fond bleu nuit, avec un anneau bleu",
-      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "alt": "Un coursier mécanique blindé, à carapace de cadenas et queue en forme de clé, qui file dans un tunnel en portant des dossiers scellés",
+      "consigne": "Generate a new image. From the first image of this conversation, keep ONLY the rendering style: line quality, soft cel shading, lighting and dark navy background treatment. Do NOT reuse its character, pose or composition: no robot standing in a doorway, no circular halo behind it, no frontal symmetric framing. Invent a creature with a clearly different body shape, size and pose, built from its own motifs, in a dynamic three-quarter view, in its own small scene. Subject: a sturdy armored mechanical courier creature with a padlock-shaped shell and a key-shaped tail, carrying sealed folders through a glowing encrypted tunnel. It embodies \"SFTP\" (enterprise integration, Fichiers & Batch). What it means (French, for context only): « Le transfert de fichiers chiffré par SSH, peu à peu remplacé par les API et les événements. ». Rarity: rare card: a few subtle glints and light effects. Digital illustration for a collectible card game, landscape 4:3, one single main creature readable at small size, clean bold shapes, soft cel shading, dark navy blue background with a subtle amber glow, limited palette dominated by amber and burnt orange, motifs: folders, punched tapes, clocks. Strictly no text, no letters, no numbers, no logos, no brand marks, no watermark, no real people.",
       "provenance": {
-        "outil": "Générateur vectoriel HIPMaster",
-        "date": "2026-10-18"
+        "outil": "Gemini (Google), application web",
+        "date": "2026-10-24"
       }
     },
     {
       "numero": 3,
-      "alt": "Illustration provisoire : une pile de documents sur fond bleu nuit, avec un anneau bleu",
-      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "alt": "Une grande tortue dont la carapace est un classeur tend un document scellé à une petite tortue, sur un pont de pierre au-dessus d'un ravin",
+      "consigne": "Generate a new image. From the reference image, keep ONLY the rendering style: line quality, soft cel shading, lighting and dark navy background treatment. Do NOT reuse its character, pose or composition: no robot standing in a doorway, no circular halo behind it, no frontal symmetric framing. Invent a creature with a clearly different body shape, size and pose, built from its own motifs, in a dynamic three-quarter view, in its own small scene. Do NOT reuse its setting either: no cable-covered floor, no punched tapes hanging on the sides, no server racks framing the picture; give the scene its own place and camera angle, drawn from the subject. Subject: a wise old tortoise whose shell is a filing cabinet of standardized forms, handing a stamped document to a partner tortoise across a small bridge. It embodies \"EDI\" (enterprise integration, Fichiers & Batch). What it means (French, for context only): « Échanges de documents normés entre partenaires. ». Rarity: rare card: a few subtle glints and light effects. Digital illustration for a collectible card game, landscape 4:3, one single main creature readable at small size, clean bold shapes, soft cel shading, dark navy blue background with a subtle amber glow, limited palette dominated by amber and burnt orange, motifs: folders, punched tapes, clocks. Strictly no text, no letters, no numbers, no logos, no brand marks, no watermark, no real people. The stamped document must carry only a plain wax seal and blank lines: absolutely no letters on it, not even the word EDI.",
       "provenance": {
-        "outil": "Générateur vectoriel HIPMaster",
-        "date": "2026-10-18"
+        "outil": "Gemini (Google), application web",
+        "date": "2026-10-24"
       }
     },
     {
       "numero": 4,
-      "alt": "Illustration provisoire : une pile de documents sur fond bleu nuit",
-      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "alt": "Une chenille mécanique aux anneaux en forme de cases rampe sur une grande feuille, dans un jardin la nuit",
+      "consigne": "Generate a new image. From the reference image, keep ONLY the rendering style: line quality, soft cel shading, lighting and dark navy background treatment. Do NOT reuse its character, pose or composition: no robot standing in a doorway, no circular halo behind it, no frontal symmetric framing. Invent a creature with a clearly different body shape, size and pose, built from its own motifs, in a dynamic three-quarter view, in its own small scene. Do NOT reuse its setting either: no cable-covered floor, no punched tapes hanging on the sides, no server racks framing the picture; give the scene its own place and camera angle, drawn from the subject. Subject: a long caterpillar whose body segments are spreadsheet cells, joined by small comma-shaped hooks, two of the segments slightly misaligned. It embodies \"Fichier CSV\" (enterprise integration, Fichiers & Batch). What it means (French, for context only): « Le format universel, au séparateur variable. ». Rarity: common card: sober, minimal light effects. Digital illustration for a collectible card game, landscape 4:3, one single main creature readable at small size, clean bold shapes, soft cel shading, dark navy blue background with a subtle amber glow, limited palette dominated by amber and burnt orange, motifs: folders, punched tapes, clocks. Strictly no text, no letters, no numbers, no logos, no brand marks, no watermark, no real people. Setting: a moonlit garden at ground level, the caterpillar crawling along a big curled leaf among giant stems, seen from a low close-up angle; no bridge, no canyon, no tower, no stone walkway.",
       "provenance": {
-        "outil": "Générateur vectoriel HIPMaster",
-        "date": "2026-10-18"
+        "outil": "Gemini (Google), application web",
+        "date": "2026-10-24"
       }
     },
     {
       "numero": 5,
-      "alt": "Illustration provisoire : une pile de documents sur fond bleu nuit",
-      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "alt": "Un crabe mécanique aux pinces en règles graduées découpe une bande de papier en colonnes sur une table de découpe",
+      "consigne": "Generate a new image. From the reference image, keep ONLY the rendering style: line quality, soft cel shading, lighting and dark navy background treatment. Do NOT reuse its character, pose or composition: no robot standing in a doorway, no circular halo behind it, no frontal symmetric framing. Invent a creature with a clearly different body shape, size and pose, built from its own motifs, in a dynamic three-quarter view, in its own small scene. Do NOT reuse its setting either: no cable-covered floor, no punched tapes hanging on the sides, no server racks framing the picture; give the scene its own place and camera angle, drawn from the subject. Subject: a meticulous crab, unmistakably a crab: wide flat shell, sideways stance, two big pincer claws shaped like graduated rulers, standing on a cutting table and slicing a long paper strip into perfectly equal columns. It embodies \"Fichier à positions fixes\" (enterprise integration, Fichiers & Batch). What it means (French, for context only): « « Le montant est en colonnes 47 à 52. » ». Rarity: common card: sober, minimal light effects. Digital illustration for a collectible card game, landscape 4:3, one single main creature readable at small size, clean bold shapes, soft cel shading, dark navy blue background with a subtle amber glow, limited palette dominated by amber and burnt orange, motifs: folders, punched tapes, clocks. Strictly no text, no letters, no numbers, no logos, no brand marks, no watermark, no real people.",
       "provenance": {
-        "outil": "Générateur vectoriel HIPMaster",
-        "date": "2026-10-18"
+        "outil": "Gemini (Google), application web",
+        "date": "2026-10-24"
       }
     },
     {
       "numero": 6,
-      "alt": "Illustration provisoire : une pile de documents sur fond bleu nuit",
-      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "alt": "Une araignée mécanique portant un cadran d'horloge sur le dos tisse sa toile contre une tour d'horloge, sous la pleine lune",
+      "consigne": "Generate a new image. From the reference image, keep ONLY the rendering style: line quality, soft cel shading, lighting and dark navy background treatment. Do NOT reuse its character, pose or composition: no robot standing in a doorway, no circular halo behind it, no frontal symmetric framing. Invent a creature with a clearly different body shape, size and pose, built from its own motifs, in a dynamic three-quarter view, in its own small scene. Do NOT reuse its setting either: no cable-covered floor, no punched tapes hanging on the sides, no server racks framing the picture; give the scene its own place and camera angle, drawn from the subject. Subject: a clockwork spider with a clock face on its back, spinning a web of time threads under the moon, ringing a tiny bell. It embodies \"Cron\" (enterprise integration, Fichiers & Batch). What it means (French, for context only): « Le planificateur des traitements de nuit. ». Rarity: common card: sober, minimal light effects. Digital illustration for a collectible card game, landscape 4:3, one single main creature readable at small size, clean bold shapes, soft cel shading, dark navy blue background with a subtle amber glow, limited palette dominated by amber and burnt orange, motifs: folders, punched tapes, clocks. Strictly no text, no letters, no numbers, no logos, no brand marks, no watermark, no real people.",
       "provenance": {
-        "outil": "Générateur vectoriel HIPMaster",
-        "date": "2026-10-18"
+        "outil": "Gemini (Google), application web",
+        "date": "2026-10-24"
       }
     },
     {
       "numero": 7,
-      "alt": "Illustration provisoire : une pile de documents sur fond bleu nuit",
-      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "alt": "Un gros hamster mécanique couché sur des dossiers au fond d'un bac de tri, dans une salle de tri postal à casiers",
+      "consigne": "Generate a new image. From the reference image, keep ONLY the rendering style: line quality, soft cel shading, lighting and dark navy background treatment. Do NOT reuse its character, pose or composition: no robot standing in a doorway, no circular halo behind it, no frontal symmetric framing. Invent a creature with a clearly different body shape, size and pose, built from its own motifs, in a dynamic three-quarter view, in its own small scene. Do NOT reuse its setting either: no cable-covered floor, no punched tapes hanging on the sides, no server racks framing the picture; give the scene its own place and camera angle, drawn from the subject. Subject: a plump guardian hamster with puffed cheeks, sitting at the bottom of a sorting bin on a heap of folders waiting their turn. It embodies \"Répertoire de dépôt\" (enterprise integration, Fichiers & Batch). What it means (French, for context only): « Là où les fichiers attendent d’être traités. ». Rarity: common card: sober, minimal light effects. Digital illustration for a collectible card game, landscape 4:3, one single main creature readable at small size, clean bold shapes, soft cel shading, dark navy blue background with a subtle amber glow, limited palette dominated by amber and burnt orange, motifs: folders, punched tapes, clocks. Strictly no text, no letters, no numbers, no logos, no brand marks, no watermark, no real people. Setting: indoors, an old mail-sorting room with wooden pigeonhole shelves, seen from a high angle looking down into a deep wooden sorting tray; the hamster is turned sideways, curled on the folders; no starry sky, no stone pavement, no lantern post, no outdoor scene.",
       "provenance": {
-        "outil": "Générateur vectoriel HIPMaster",
-        "date": "2026-10-18"
+        "outil": "Gemini (Google), application web",
+        "date": "2026-10-24"
       }
     },
     {
       "numero": 8,
-      "alt": "Illustration provisoire : une pile de documents sur fond bleu nuit",
-      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "alt": "Une luciole mécanique à l'abdomen allumé, perchée au sommet d'une pile de dossiers ficelée qui sort d'un marais brumeux",
+      "consigne": "Generate a new image. From the reference image, keep ONLY the rendering style: line quality, soft cel shading, lighting and dark navy background treatment. Do NOT reuse its character, pose or composition: no robot standing in a doorway, no circular halo behind it, no frontal symmetric framing. Invent a creature with a clearly different body shape, size and pose, built from its own motifs, in a dynamic three-quarter view, in its own small scene. Do NOT reuse its setting either: no cable-covered floor, no punched tapes hanging on the sides, no server racks framing the picture; give the scene its own place and camera angle, drawn from the subject. Subject: a tiny firefly lantern creature lighting up proudly on top of a finished stack of files. It embodies \"Fichier .ok témoin\" (enterprise integration, Fichiers & Batch). What it means (French, for context only): « Un fichier vide déposé à la fin du transfert, qui prouve que le fichier est complet. ». Rarity: common card: sober, minimal light effects. Digital illustration for a collectible card game, landscape 4:3, one single main creature readable at small size, clean bold shapes, soft cel shading, dark navy blue background with a subtle amber glow, limited palette dominated by amber and burnt orange, motifs: folders, punched tapes, clocks. Strictly no text, no letters, no numbers, no logos, no brand marks, no watermark, no real people. Setting: the stack of files rises out of a misty marsh at dusk, among tall reeds and cattails, seen from low below looking up at the firefly; no table, no stone terrace, no paving, no gears, no buildings.",
       "provenance": {
-        "outil": "Générateur vectoriel HIPMaster",
-        "date": "2026-10-18"
+        "outil": "Gemini (Google), application web",
+        "date": "2026-10-24"
       }
     },
     {
