@@ -30,6 +30,13 @@
         }
         <a routerLink="/cartes" class="bouton bouton-contour bouton-large">Découvrir les cartes</a>
       </p>
+      @if (!preferences.guideFini()) {
+        <!-- Partie guidée (US-067) : proposée tant que le joueur ne l'a ni finie ni passée. -->
+        <p class="text-sm">
+          Jamais joué ? <a routerLink="/jouer" class="lien">Apprendre à jouer (5 min)</a> : une
+          partie guidée pas à pas.
+        </p>
+      }
       @if (compte.pret() && !compte.joueur()) {
         <p class="text-sm text-texte-doux">
           @if (codeInvitation()) {

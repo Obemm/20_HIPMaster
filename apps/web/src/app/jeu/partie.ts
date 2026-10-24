@@ -14,7 +14,7 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { type Carte, LIBELLES_FAMILLE, libelleType } from '../cartes/carte';
 import { EnSavoirPlus } from '../cartes/en-savoir-plus';
@@ -104,6 +104,7 @@ export class PartieEcran implements OnInit, OnDestroy {
   });
 
   private readonly http = inject(HttpClient);
+  private readonly router = inject(Router);
   protected readonly compte = inject(CompteService);
   protected readonly preferences = inject(PreferencesService);
   private readonly stockBoosters = inject(StockBoostersService);
@@ -174,8 +175,12 @@ export class PartieEcran implements OnInit, OnDestroy {
     return conseil && this.monTour() && conseil.version === this.partie()?.version ? conseil : null;
   });
   /** Ce que le conseil désigne : cartes de la main, composants, `si`, ou `finir` pour le bouton de fin de tour. */
+  /**
+   * Ce que l'étape guidée ou, à défaut, le conseil désigne : cartes de la main, composants, `si`, ou `finir` pour le
+   * bouton de fin de tour.
+   */
   protected readonly conseilles = computed(() => {
-    const action = this.conseil()?.action;
+    const action = this.attendu() ?? this.conseil()?.action;
     if (!action) return new Set<string>();
     if (action.type === 'finirTour') return new Set(['finir']);
     const ids = Object.entries(action)
@@ -184,6 +189,23 @@ export class PartieEcran implements OnInit, OnDestroy {
       .filter((id): id is string => typeof id === 'string');
     return new Set(ids);
   });
+
+  /**
+   * Partie guidée (US-067, ADR 0040) : l'étape du moment, servie par l'API, tant que le joueur ne l'a pas passée et
+   * que la partie dure. Les étapes ne calculent rien : elles disent quoi faire et attendent l'action prévue.
+   */
+  protected readonly guidee = computed(() => this.partie()?.guide !== undefined);
+  private readonly guidePasse = signal(false);
+  protected readonly etape = computed(() => {
+    const etape = this.partie()?.guide;
+    return etape && !this.guidePasse() && !this.vue()?.issue ? etape : null;
+  });
+  /** L'action que l'étape attend : toute autre est refusée poliment. */
+  protected readonly attendu = computed(
+    () => (this.monTour() ? this.etape()?.attendu : null) ?? null,
+  );
+  /** Le refus poli d'un geste qui n'est pas celui de l'étape. */
+  protected readonly refusGuide = signal<string | null>(null);
 
   /** L'adresse de la partie, ou du duel, dans l'API : l'identifiant tiré de l'URL y est encodé (US-055). */
   private readonly cheminApi = computed(
@@ -480,6 +502,7 @@ export class PartieEcran implements OnInit, OnDestroy {
    * bloquer : « Finir quand même » finit le tour.
    */
   protected finirTour(): void {
+    if (this.horsEtape({ type: 'finirTour' })) return;
     if (this.resteAFaire().length > 0) {
       this.fermerDetail();
       this.confirmerFin.set(true);
@@ -507,6 +530,32 @@ export class PartieEcran implements OnInit, OnDestroy {
     this.preferences.activerCoupsDePouce((evenement.target as HTMLInputElement).checked);
   }
 
+  /**
+   * Partie guidée : un geste qui n'est pas celui de l'étape est refusé poliment, sans rien envoyer. Le détail est
+   * refermé, pour que la bulle, au bas de l'écran, se lise.
+   */
+  private horsEtape(action: Action): boolean {
+    const attendu = this.attendu();
+    if (!attendu || memeAction(action, attendu)) return false;
+    this.confirmerFin.set(false);
+    this.fermerDetail();
+    this.refusGuide.set(`Pas tout de suite : suivez l’étape « ${this.etape()?.titre ?? ''} ».`);
+    return true;
+  }
+
+  /** « Passer le guide » : la partie continue librement, et le guide ne sera plus proposé en premier. */
+  protected passerGuide(): void {
+    this.guidePasse.set(true);
+    this.refusGuide.set(null);
+    this.preferences.marquerGuideFini();
+  }
+
+  /** Après la partie guidée : une partie contre Stagiaire, le conseil à chaque coup (US-067, US-066). */
+  protected async continuerAvecConseil(): Promise<void> {
+    this.preferences.activerConseilAChaqueCoup(true);
+    await this.router.navigate(['/jouer']);
+  }
+
   protected basculerConseilAChaqueCoup(evenement: Event): void {
     const actif = (evenement.target as HTMLInputElement).checked;
     this.preferences.activerConseilAChaqueCoup(actif);
@@ -515,7 +564,7 @@ export class PartieEcran implements OnInit, OnDestroy {
 
   /** « Un conseil ? » (US-066) : contre le bot, pendant son tour ; le serveur le calcule depuis la seule vue du joueur. */
   protected async demanderConseil(): Promise<void> {
-    if (this.mode() !== 'bot' || !this.monTour() || this.conseilEnCours()) return;
+    if (this.mode() !== 'bot' || !this.monTour() || this.conseilEnCours() || this.attendu()) return;
     this.conseilEnCours.set(true);
     try {
       this.conseilRecu.set(
@@ -617,7 +666,8 @@ export class PartieEcran implements OnInit, OnDestroy {
   }
 
   protected async jouer(action: Action): Promise<void> {
-    if (this.occupe()) return;
+    if (this.occupe() || this.horsEtape(action)) return;
+    this.refusGuide.set(null);
     this.occupe.set(true);
     this.erreur.set(null);
     try {
@@ -661,7 +711,8 @@ export class PartieEcran implements OnInit, OnDestroy {
           ? this.depuisDuel(await firstValueFrom(this.http.get<Duel>(this.cheminApi())))
           : await firstValueFrom(this.http.get<Partie>(this.cheminApi()));
       this.echecLecture.set(null);
-      if (!this.preferences.aideVue()) this.aideAOuvrir = true;
+      // La partie guidée explique elle-même le jeu : l'aide ne s'ouvre pas d'elle-même par-dessus (US-067).
+      if (!this.preferences.aideVue() && !partie.guide) this.aideAOuvrir = true;
       this.recevoir(partie, false);
     } catch (erreur) {
       if (erreur instanceof HttpErrorResponse && erreur.status === 404) this.introuvable.set(true);
@@ -771,6 +822,8 @@ export class PartieEcran implements OnInit, OnDestroy {
     // Une victoire qui rapporte un booster change le stock affiché dans la navigation (US-060).
     if (partie.recompense?.booster && !this.partie()?.recompense) void this.stockBoosters.charger();
     this.partie.set(partie);
+    // La dernière étape de la partie guidée est atteinte : le guide est fini, il ne sera plus proposé en premier.
+    if (partie.guide && partie.guide.attendu === null) this.preferences.marquerGuideFini();
     // Un conseil à chaque coup (US-066) : redemandé dès que c'est de nouveau au joueur de jouer.
     if (this.preferences.conseilAChaqueCoup()) void this.demanderConseil();
     if (this.minuterie) clearTimeout(this.minuterie);
@@ -818,6 +871,16 @@ export class PartieEcran implements OnInit, OnDestroy {
 function montrer(dialogue: HTMLDialogElement): void {
   if (typeof dialogue.showModal !== 'function') dialogue.setAttribute('open', '');
   else if (!dialogue.open) dialogue.showModal();
+}
+
+/** Deux actions identiques, champ par champ (l'ordre des champs reçus de l'API ne compte pas). */
+function memeAction(a: Action, b: Action): boolean {
+  const champsA = Object.entries(a);
+  const champsB = new Map(Object.entries(b));
+  return (
+    champsA.length === champsB.size &&
+    champsA.every(([cle, valeur]) => JSON.stringify(champsB.get(cle)) === JSON.stringify(valeur))
+  );
 }
 
 /** « Pub/Sub », « Pub/Sub et Webhook », « Pub/Sub, Topic et Webhook ». */

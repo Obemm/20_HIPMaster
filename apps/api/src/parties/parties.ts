@@ -4,13 +4,19 @@ import {
   type Conseil,
   conseiller,
   creerPartie,
+  DECK_INITIATION,
+  DECK_INITIATION_BOT,
   DECKS_PRETES,
   type EntreeJournal,
+  type EtapeGuidee,
+  ETAPES_PARTIE_GUIDEE,
   type ErreurAction,
   type EtatPartie,
+  GRAINE_PARTIE_GUIDEE,
   type Graine,
   journalDe,
   NIVEAU_PAR_DEFAUT,
+  NIVEAU_PARTIE_GUIDEE,
   type NiveauBot,
   trouverDeckPrete,
   trouverNiveau,
@@ -65,6 +71,26 @@ export interface PartieVisible {
   niveau: string;
   vue: Omit<VueJoueur, 'journal'>;
   evenements: EntreeJournal[];
+  /** Partie guidée (US-067) : l'étape du moment. */
+  guide?: EtapeEnCours;
+}
+
+/** Une étape de la partie guidée, avec sa place. */
+export type EtapeEnCours = EtapeGuidee & { etape: number; total: number };
+
+/** La partie guidée se reconnaît à son deck d'initiation (US-067, ADR 0040). */
+export const estGuidee = (deck: string) => deck === DECK_INITIATION.id;
+
+/** L'étape de la partie guidée pour cette version : la n-ième action du joueur, puis la dernière, libre. */
+function etapeGuidee(version: number): EtapeEnCours {
+  const total = ETAPES_PARTIE_GUIDEE.length;
+  const etape = Math.min(version, total - 1);
+  const { titre, texte, attendu } = ETAPES_PARTIE_GUIDEE[etape] ?? {
+    titre: '',
+    texte: '',
+    attendu: null,
+  };
+  return { etape, total, titre, texte, attendu };
 }
 
 /** Une partie, et le joueur connecté qui l'a lancée (`null` pour une partie anonyme). */
@@ -125,6 +151,7 @@ function visible(
     niveau: ligne.niveau,
     vue: { joueur, moi, adversaire, actif, tour, issue, actions },
     evenements: journalDe(ligne.etat.journal.slice(depuis), HUMAIN),
+    ...(estGuidee(ligne.deck) && { guide: etapeGuidee(ligne.version) }),
   };
 }
 
@@ -168,13 +195,17 @@ export async function lancerPartie(
   idNiveau: string = NIVEAU_PAR_DEFAUT,
   proprietaire: Proprietaire | null = null,
   options: OptionsParties = {},
+  guidee = false,
 ): Promise<ResultatPartie<PartieVisible>> {
-  const deck = trouverDeckPrete(idDeck);
+  const deck = guidee ? DECK_INITIATION : trouverDeckPrete(idDeck);
   if (!deck) return echec('deck-inconnu');
-  const niveau = trouverNiveau(idNiveau);
+  const niveau = trouverNiveau(guidee ? NIVEAU_PARTIE_GUIDEE : idNiveau);
   if (!niveau) return echec('niveau-inconnu');
-  const graine = (options.tirerGraine ?? tirerGraine)();
-  const deckBot = DECKS_PRETES[premierMot(graine) % DECKS_PRETES.length] ?? deck;
+  // La partie guidée rejoue toujours la même partie (ADR 0040) ; les autres reçoivent une clé tirée (ADR 0034).
+  const graine = guidee ? GRAINE_PARTIE_GUIDEE : (options.tirerGraine ?? tirerGraine)();
+  const deckBot = guidee
+    ? DECK_INITIATION_BOT
+    : (DECKS_PRETES[premierMot(graine) % DECKS_PRETES.length] ?? deck);
   const initial = creerPartie({ j1: deck.cartes, j2: deckBot.cartes }, graine);
   const etat = faireJouerLeBot(initial, niveau.strategie);
   await faireDeLaPlace(base, options);

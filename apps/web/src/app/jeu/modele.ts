@@ -107,6 +107,17 @@ export interface Partie {
   evenements: Evenement[];
   /** Présente après une victoire dans une partie lancée en étant connecté (US-025). */
   recompense?: Recompense;
+  /** Partie guidée seulement (US-067) : l'étape du moment, servie par l'API (ADR 0040). */
+  guide?: EtapeGuidee;
+}
+
+/** Une étape de la partie guidée : l'étape `etape` attend l'action `attendu` (`null` : jeu libre). */
+export interface EtapeGuidee {
+  etape: number;
+  total: number;
+  titre: string;
+  texte: string;
+  attendu: Action | null;
 }
 
 /** Le meilleur coup du moment, et pourquoi, calculé par le serveur contre le bot (US-066, ADR 0039). */

@@ -33,7 +33,7 @@ export function validerDeck(cartes: readonly number[]): string[] {
 }
 
 /** Écrit un deck sous la forme « numéro × nombre » pour rester lisible. */
-const deck = (...lignes: [numero: number, nombre: number][]): number[] =>
+export const deck = (...lignes: [numero: number, nombre: number][]): number[] =>
   lignes.flatMap(([numero, nombre]) => Array.from({ length: nombre }, () => numero));
 
 /**

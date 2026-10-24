@@ -11,7 +11,7 @@
         @if (vue(); as v) {
           <span class="me-1 font-semibold">Tour {{ v.tour }} / {{ TOURS_MAX }}</span>
         }
-        @if (pret() && mode() === 'bot' && monTour()) {
+        @if (pret() && mode() === 'bot' && monTour() && !attendu()) {
           <!-- Conseil à la demande (US-066) : contre le bot seulement, jamais en duel (ADR 0039). -->
           <button
             type="button"
@@ -333,7 +333,19 @@
               {{ raisonFin(issue, v.joueur) }}
               SLA final : vous {{ v.moi.sla }}, {{ autre().nom }} {{ v.adversaire.sla }}.
             </p>
-            @if (partie()?.recompense; as recompense) {
+            @if (guidee()) {
+              <!-- Fin de la partie guidée (US-067) : elle ne rapporte pas de booster. -->
+              <p class="font-semibold">
+                @if (issue.gagnant === v.joueur) {
+                  Bravo, vous savez jouer ! Prochaine étape : une vraie partie contre Stagiaire,
+                  avec un conseil à chaque coup.
+                } @else {
+                  Vous connaissez les règles : place à une vraie partie contre Stagiaire, avec un
+                  conseil à chaque coup.
+                }
+              </p>
+              <p class="text-sm text-texte-doux">La partie guidée ne rapporte pas de booster.</p>
+            } @else if (partie()?.recompense; as recompense) {
               <p class="font-semibold">
                 @if (recompense.booster) {
                   Un booster gagné ! Il vous attend dans vos boosters.
@@ -355,6 +367,11 @@
               </p>
             }
             <p class="flex flex-wrap justify-center gap-3">
+              @if (guidee()) {
+                <button type="button" class="bouton bouton-jeu" (click)="continuerAvecConseil()">
+                  Jouer contre Stagiaire avec le conseil
+                </button>
+              }
               @if (partie()?.recompense?.booster) {
                 <a routerLink="/boosters" class="bouton bouton-jeu">Ouvrir mon booster</a>
               }
@@ -448,6 +465,49 @@
                   </button>
                 }
               </div>
+            }
+            @if (etape(); as e) {
+              <!--
+                Partie guidée (US-067) : la bulle de l'étape, annoncée aux lecteurs d'écran. Ce qu'elle désigne porte le
+                pointillé doré du conseil ; un autre geste est refusé poliment, ici même.
+              -->
+              <section
+                id="bulle-guide"
+                aria-labelledby="titre-guide"
+                class="flex flex-col gap-1 rounded-lg border-2 border-or bg-surface px-3 py-2 text-sm"
+              >
+                <div aria-live="polite" aria-atomic="true">
+                  <h2 id="titre-guide" class="font-bold">
+                    <span class="font-normal text-texte-doux"
+                      >Étape {{ e.etape + 1 }} / {{ e.total }} :</span
+                    >
+                    {{ e.titre }}
+                  </h2>
+                  <p>{{ e.texte }}</p>
+                  @if (refusGuide(); as refus) {
+                    <p class="mt-1 font-semibold text-alerte">{{ refus }}</p>
+                  }
+                </div>
+                <p class="flex justify-end gap-2">
+                  @if (e.attendu) {
+                    <button
+                      type="button"
+                      class="min-h-11 px-2 text-xs font-semibold underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-accent"
+                      (click)="passerGuide()"
+                    >
+                      Passer le guide
+                    </button>
+                  } @else {
+                    <button
+                      type="button"
+                      class="bouton bouton-contour bouton-petit"
+                      (click)="passerGuide()"
+                    >
+                      Compris
+                    </button>
+                  }
+                </p>
+              </section>
             }
             @if (mode() === 'bot') {
               <!-- Le conseil (US-066), annoncé aux lecteurs d'écran : la zone existe avant lui pour être lue. -->
@@ -597,6 +657,12 @@
             attaque ou une carte encore possible, et le SI protégé par Garde est signalé.
           </span>
         </label>
+        @if (mode() === 'bot' && !guidee()) {
+          <p class="text-sm">
+            Tout découvrir pas à pas ?
+            <a routerLink="/jouer" class="lien" (click)="fermerAide()">Apprendre à jouer (5 min)</a>
+          </p>
+        }
         @if (mode() === 'bot') {
           <!-- Contre le bot seulement (US-066, ADR 0039), gardé par le navigateur (ADR 0032). -->
           <label class="flex items-start gap-3 rounded-lg border border-bordure p-3 text-sm">

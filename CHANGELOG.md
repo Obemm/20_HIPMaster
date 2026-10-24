@@ -7,6 +7,11 @@ Toutes les évolutions notables du projet sont consignées ici
 
 ### Ajouté
 
+- Une première partie guidée : « Apprendre à jouer (5 min) », proposé sur l'accueil et l'écran « Jouer » tant qu'on
+  ne l'a pas fait, rejoue toujours la même partie (decks d'initiation et graine fixes, contre Stagiaire). Une bulle
+  par étape (poser, finir son tour, attaquer le SI, décommissionner, la Garde, la riposte) met en évidence le geste
+  attendu et refuse poliment les autres ; on peut la passer à tout moment. Elle se gagne en quelques minutes, ne
+  rapporte pas de booster et propose ensuite Stagiaire avec le conseil (US-067, ADR 0040).
 - Un conseil à la demande contre le bot : l'ampoule « Un conseil ? » met en évidence le meilleur coup du moment (la
   carte, l'attaquant et sa cible, le SI ou « Finir mon tour ») et dit pourquoi en une phrase. Calculé par le serveur
   depuis la seule vue du joueur (`GET /api/v1/parties/{id}/conseil`, limité en débit), sur les règles de Batch de

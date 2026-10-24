@@ -3,6 +3,7 @@ import { Injectable, signal } from '@angular/core';
 const CLE_AIDE_VUE = 'hipmaster.aide-vue';
 const CLE_COUPS_DE_POUCE = 'hipmaster.coups-de-pouce';
 const CLE_CONSEIL_CHAQUE_COUP = 'hipmaster.conseil-chaque-coup';
+const CLE_GUIDE_FINI = 'hipmaster.partie-guidee-finie';
 
 /** Lecture du stockage du navigateur ; un stockage refusé (navigation privée stricte) vaut « rien de retenu ». */
 function lire(cle: string): string | null {
@@ -49,5 +50,13 @@ export class PreferencesService {
   activerConseilAChaqueCoup(actif: boolean): void {
     this.conseilAChaqueCoup.set(actif);
     ecrire(CLE_CONSEIL_CHAQUE_COUP, actif ? 'oui' : 'non');
+  }
+
+  /** La partie guidée a été suivie jusqu'au bout ou passée (US-067) : elle n'est plus proposée en premier. */
+  readonly guideFini = signal(lire(CLE_GUIDE_FINI) === 'oui');
+
+  marquerGuideFini(): void {
+    this.guideFini.set(true);
+    ecrire(CLE_GUIDE_FINI, 'oui');
   }
 }
