@@ -101,7 +101,10 @@ const SOIXANTE_DOUZE_HEURES = 72 * 60 * 60 * 1000;
 const horloge = (options: OptionsDuels) => (options.maintenant ?? Date.now)();
 
 /** Échéance du duel en cours : le délai de jeu, compté depuis le dernier coup (US-036). */
-function echeanceDe(ligne: LigneDuel, options: OptionsDuels): Date | null {
+function echeanceDe(
+  ligne: Pick<LigneDuel, 'statut' | 'majLe'>,
+  options: OptionsDuels,
+): Date | null {
   if (ligne.statut !== 'en-cours') return null;
   return new Date(ligne.majLe.getTime() + (options.delaiTourMs ?? SOIXANTE_DOUZE_HEURES));
 }
@@ -134,7 +137,7 @@ async function avecForfait(
 }
 
 /** Un défi non accepté expire (US-033) ; l'expiration est évaluée à la lecture, sans tâche de fond (ADR 0020). */
-function defiExpire(ligne: LigneDuel, options: OptionsDuels): boolean {
+function defiExpire(ligne: Pick<LigneDuel, 'statut' | 'creeLe'>, options: OptionsDuels): boolean {
   const maintenant = (options.maintenant ?? Date.now)();
   return (
     ligne.statut === 'attente' &&
@@ -146,7 +149,10 @@ const echec = <R extends Exclude<ResultatDuel<never>, { ok: true }>['raison']>(r
   ({ ok: false, raison }) as const;
 
 /** Le camp d'un joueur dans un duel : le créateur joue j1, l'adversaire j2. */
-function campDe(ligne: LigneDuel, joueurId: string): IdJoueur | null {
+function campDe(
+  ligne: Pick<LigneDuel, 'createurId' | 'adversaireId'>,
+  joueurId: string,
+): IdJoueur | null {
   if (ligne.createurId === joueurId) return 'j1';
   if (ligne.adversaireId === joueurId) return 'j2';
   return null;
@@ -272,6 +278,35 @@ export async function lireDuel(
   if (defiExpire(lue, options)) return echec('expire');
   const ligne = await avecForfait(base, lue, options);
   return { ok: true, valeur: await visible(base, ligne, joueurId, depuis, options) };
+}
+
+/**
+ * Le duel est-il toujours à la `version` que le joueur connaît ? Lecture légère (US-057), sans l'état du moteur : de
+ * quoi répondre 304 à l'écran de duel qui interroge toutes les quelques secondes. Un duel invisible pour ce joueur, un
+ * défi expiré ou un forfait à appliquer répondent `false` : la lecture complète s'en charge.
+ */
+export async function duelInchange(
+  base: Base,
+  id: string,
+  joueurId: string,
+  version: number,
+  options: OptionsDuels = {},
+): Promise<boolean> {
+  const [lue] = await base
+    .select({
+      statut: duels.statut,
+      version: duels.version,
+      createurId: duels.createurId,
+      adversaireId: duels.adversaireId,
+      creeLe: duels.creeLe,
+      majLe: duels.majLe,
+    })
+    .from(duels)
+    .where(eq(duels.id, id));
+  if (lue?.version !== version) return false;
+  if (!campDe(lue, joueurId) && lue.statut !== 'attente') return false;
+  const echeance = echeanceDe(lue, options);
+  return !defiExpire(lue, options) && !(echeance && horloge(options) > echeance.getTime());
 }
 
 /** Lance un duel en attente (ligne déjà verrouillée) : la partie est créée, le tirage désigne qui commence. */
@@ -515,6 +550,11 @@ export interface ResumeDuel {
 }
 
 const TERMINES_MAX = 20;
+/**
+ * Garde-fou : un joueur n'a jamais autant de duels en cours ou en attente (les défis expirent en 7 jours, les duels en
+ * cours en 72 heures sans coup). Borne la réponse quoi qu'il arrive (US-057).
+ */
+const EN_COURS_MAX = 200;
 const ORDRE_GROUPE = { 'mon-tour': 0, 'son-tour': 1, attente: 2, termine: 3 } as const;
 
 function groupeDe(statut: StatutDuel, monTour: boolean): keyof typeof ORDRE_GROUPE {
@@ -529,9 +569,68 @@ function resultatDe(gagnant: string | null, moi: IdJoueur): NonNullable<ResumeDu
   return gagnant === moi ? 'victoire' : 'defaite';
 }
 
+/** Les duels d'un joueur, du plus récent au plus ancien, tels que « Mes duels » les résume. */
+async function resumesDuels(
+  base: Base,
+  joueurId: string,
+  termines: boolean,
+  delai: number,
+): Promise<{ groupe: keyof typeof ORDRE_GROUPE; resume: ResumeDuel }[]> {
+  const siens = or(eq(duels.createurId, joueurId), eq(duels.adversaireId, joueurId));
+  // Les duels retenus sont choisis sans toucher à leur état ; seuls ceux-là voient leur état décompressé, pour en
+  // extraire quatre champs (US-057) : les terminés sont bornés en base, pas après coup.
+  const retenus = base
+    .select({ id: duels.id })
+    .from(duels)
+    .where(and(siens, termines ? eq(duels.statut, 'termine') : ne(duels.statut, 'termine')))
+    .orderBy(desc(duels.majLe))
+    .limit(termines ? TERMINES_MAX : EN_COURS_MAX);
+  const createur = alias(joueurs, 'createur');
+  const adversaire = alias(joueurs, 'adversaire');
+  const lignes = await base
+    .select({
+      id: duels.id,
+      statut: duels.statut,
+      createurId: duels.createurId,
+      pseudoCreateur: createur.pseudo,
+      pseudoAdversaire: adversaire.pseudo,
+      actif: sql<string | null>`${duels.etat}->>'actif'`,
+      tour: sql<string | null>`${duels.etat}->>'tour'`,
+      gagnant: sql<string | null>`${duels.etat}->'issue'->>'gagnant'`,
+      raison: sql<ResumeDuel['raison']>`${duels.etat}->'issue'->>'raison'`,
+      majLe: duels.majLe,
+    })
+    .from(duels)
+    .leftJoin(createur, eq(createur.id, duels.createurId))
+    .leftJoin(adversaire, eq(adversaire.id, duels.adversaireId))
+    .where(inArray(duels.id, retenus))
+    .orderBy(desc(duels.majLe));
+
+  return lignes.map((l) => {
+    const moi = l.createurId === joueurId ? 'j1' : 'j2';
+    const pseudo =
+      (moi === 'j1' ? l.pseudoAdversaire : l.pseudoCreateur) ??
+      (l.statut === 'attente' ? null : COMPTE_SUPPRIME);
+    const monTour = l.statut === 'en-cours' && l.actif === moi;
+    const resume: ResumeDuel = {
+      id: l.id,
+      statut: l.statut,
+      adversaire: pseudo ? { pseudo } : null,
+      monTour,
+      tour: l.tour === null ? null : Number(l.tour),
+      resultat: l.statut === 'termine' ? resultatDe(l.gagnant, moi) : null,
+      raison: l.statut === 'termine' ? l.raison : null,
+      majLe: l.majLe.toISOString(),
+      echeance: l.statut === 'en-cours' ? new Date(l.majLe.getTime() + delai).toISOString() : null,
+    };
+    return { groupe: groupeDe(l.statut, monTour), resume };
+  });
+}
+
 /**
- * Les duels d'un joueur (US-035), ceux qui l'attendent en premier. Seuls le joueur actif, le tour et le gagnant
- * sont lus dans l'état du moteur (extraction JSON en base), pas l'état complet.
+ * Les duels d'un joueur (US-035), ceux qui l'attendent en premier, puis ses 20 derniers duels terminés. Seuls le
+ * joueur actif, le tour et le gagnant sont lus dans l'état du moteur (extraction JSON en base), et seulement pour les
+ * duels renvoyés (US-057).
  */
 export async function lireMesDuels(
   base: Base,
@@ -552,54 +651,12 @@ export async function lireMesDuels(
     );
   for (const ligne of enRetard) await avecForfait(base, ligne, options);
 
-  const createur = alias(joueurs, 'createur');
-  const adversaire = alias(joueurs, 'adversaire');
-  const lignes = await base
-    .select({
-      id: duels.id,
-      statut: duels.statut,
-      createurId: duels.createurId,
-      pseudoCreateur: createur.pseudo,
-      pseudoAdversaire: adversaire.pseudo,
-      actif: sql<string | null>`${duels.etat}->>'actif'`,
-      tour: sql<string | null>`${duels.etat}->>'tour'`,
-      gagnant: sql<string | null>`${duels.etat}->'issue'->>'gagnant'`,
-      raison: sql<ResumeDuel['raison']>`${duels.etat}->'issue'->>'raison'`,
-      majLe: duels.majLe,
-    })
-    .from(duels)
-    .leftJoin(createur, eq(createur.id, duels.createurId))
-    .leftJoin(adversaire, eq(adversaire.id, duels.adversaireId))
-    .where(or(eq(duels.createurId, joueurId), eq(duels.adversaireId, joueurId)))
-    .orderBy(desc(duels.majLe));
-
-  const resumes = lignes.map((l) => {
-    const moi = l.createurId === joueurId ? 'j1' : 'j2';
-    const pseudo =
-      (moi === 'j1' ? l.pseudoAdversaire : l.pseudoCreateur) ??
-      (l.statut === 'attente' ? null : COMPTE_SUPPRIME);
-    const monTour = l.statut === 'en-cours' && l.actif === moi;
-    const groupe = groupeDe(l.statut, monTour);
-    const resultat = l.statut === 'termine' ? resultatDe(l.gagnant, moi) : null;
-    const resume: ResumeDuel = {
-      id: l.id,
-      statut: l.statut,
-      adversaire: pseudo ? { pseudo } : null,
-      monTour,
-      tour: l.tour === null ? null : Number(l.tour),
-      resultat,
-      raison: l.statut === 'termine' ? l.raison : null,
-      majLe: l.majLe.toISOString(),
-      echeance: l.statut === 'en-cours' ? new Date(l.majLe.getTime() + delai).toISOString() : null,
-    };
-    return { groupe, resume };
-  });
+  const enCours = await resumesDuels(base, joueurId, false, delai);
+  const termines = await resumesDuels(base, joueurId, true, delai);
   // Tri stable : l'ordre « plus récent d'abord » de la requête est gardé dans chaque groupe.
-  resumes.sort((a, b) => ORDRE_GROUPE[a.groupe] - ORDRE_GROUPE[b.groupe]);
-  const termines = resumes.filter((r) => r.groupe === 'termine').slice(0, TERMINES_MAX);
-  const enCours = resumes.filter((r) => r.groupe !== 'termine');
+  enCours.sort((a, b) => ORDRE_GROUPE[a.groupe] - ORDRE_GROUPE[b.groupe]);
   return {
-    aMonTour: resumes.filter((r) => r.groupe === 'mon-tour').length,
+    aMonTour: enCours.filter((r) => r.groupe === 'mon-tour').length,
     duels: [...enCours, ...termines].map((r) => r.resume),
   };
 }

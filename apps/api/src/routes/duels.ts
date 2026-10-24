@@ -8,6 +8,7 @@ import {
   annulerDuel,
   chercherAdversaire,
   creerDuel,
+  duelInchange,
   type DuelVisible,
   jouerDuel,
   lireDuel,
@@ -175,6 +176,14 @@ export const routesDuels: FastifyPluginAsyncZod<{
     async (requete, reponse) => {
       const session = await connecte(requete, reponse);
       if (!session) return reponse;
+      // Rien n'a changé : 304 après la seule lecture de la version, sans charger l'état du duel (US-057).
+      const connue = versionDe(requete.headers['if-none-match']);
+      if (
+        connue !== undefined &&
+        (await duelInchange(base, requete.params.id, session.joueur.id, connue, options))
+      ) {
+        return reponse.status(304).header('etag', etiquette(connue)).send();
+      }
       const resultat = await lireDuel(
         base,
         requete.params.id,

@@ -1,3 +1,5 @@
+import { constants } from 'node:zlib';
+import compress from '@fastify/compress';
 import rateLimit from '@fastify/rate-limit';
 import Fastify, { type FastifyBaseLogger, type FastifyError } from 'fastify';
 import {
@@ -108,12 +110,22 @@ export function construireApp(
   app.setValidatorCompiler(validatorCompiler);
   app.setSerializerCompiler(serializerCompiler);
 
-  // Aucune réponse de l'API ne reste dans un cache, sauf politique propre à une route (catalogue public, US-057) :
-  // jetons, codes et données des joueurs n'y ont pas leur place. Jamais d'interprétation du type par le navigateur.
+  // Aucune réponse de l'API ne reste dans un cache, sauf politique propre à une route (catalogue public, US-057,
+  // `cache-catalogue.ts`) : jetons, codes et données des joueurs n'y ont pas leur place. Jamais d'interprétation du
+  // type par le navigateur.
   app.addHook('onSend', async (_requete, reponse, corps) => {
     reponse.header('x-content-type-options', 'nosniff');
     if (!reponse.hasHeader('cache-control')) reponse.header('cache-control', 'no-store');
     return corps;
+  });
+
+  // Réponses compressées (US-057, ADR 0039) : ni Cloud Run ni Firebase Hosting ne compressent celles de l'API. Brotli à
+  // qualité 5 (catalogue : 21,5 Ko → 5 Ko en 0,7 ms ; la qualité 11 gagne 10 % pour 30 fois plus de calcul) ; rien en
+  // dessous de 1 Ko, où le gain est nul (les réponses qui portent un jeton ou un code en font partie).
+  app.register(compress, {
+    threshold: 1024,
+    encodings: ['br', 'gzip'],
+    brotliOptions: { params: { [constants.BROTLI_PARAM_QUALITY]: 5 } },
   });
 
   // Limitation de débit par adresse (ADR 0025) : chaque route limitée le déclare dans son option `config`.

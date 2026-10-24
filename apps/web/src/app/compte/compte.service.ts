@@ -258,7 +258,11 @@ export const intercepteurJeton: HttpInterceptorFn = (requete, suivant) => {
     catchError((erreur: unknown) => {
       const refusee = erreur instanceof HttpErrorResponse && erreur.status === 401;
       if (refusee && !SANS_EXPIRATION.has(requete.url) && compte.expirer(jeton)) {
-        const ici = router.url;
+        // La page visée par une navigation en cours (une page chargée à la demande, US-057), sinon la page affichée.
+        const enCours = router.currentNavigation();
+        const ici = enCours
+          ? router.serializeUrl(enCours.finalUrl ?? enCours.extractedUrl)
+          : router.url;
         if (!ici.startsWith('/compte')) {
           void router.navigate(['/compte'], { queryParams: { retour: ici } });
         }

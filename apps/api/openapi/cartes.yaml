@@ -1,11 +1,16 @@
 openapi: 3.1.0
 info:
   title: HIPMaster — catalogue des cartes
-  version: 1.1.0
+  version: 1.2.0
   description: >
     Catalogue en lecture seule des cartes du set 1 (US-008, ADR 0011). Les cartes sont des données versionnées du
     domaine : aucune écriture n'est exposée. Le détail d'une carte porte en plus sa fiche « En savoir plus »
     (US-073, ADR 0036), absente de la liste pour la garder légère.
+
+    Cache HTTP (US-057, ADR 0039) : toute réponse réussie du catalogue (ici, et `GET /decks`, `GET /niveaux` du
+    contrat des parties) part en `Cache-Control: public, max-age=300` avec un `ETag` commun, l'empreinte du catalogue
+    servi ; avec cet `ETag` en `If-None-Match`, la réponse est 304 sans corps. Les erreurs restent en `no-store`.
+    Une réponse de plus de 1 Ko est compressée (Brotli ou gzip) si le client l'accepte (`Accept-Encoding`).
 servers:
   - url: /api/v1
 paths:
@@ -13,14 +18,20 @@ paths:
     get:
       operationId: listerCartes
       summary: Liste toutes les cartes, triées par numéro, sans leur fiche
+      parameters:
+        - $ref: '#/components/parameters/IfNoneMatch'
       responses:
         '200':
           description: Les cartes du set 1.
+          headers:
+            Cache-Control: { $ref: '#/components/headers/CacheCatalogue' }
+            ETag: { $ref: '#/components/headers/EtagCatalogue' }
           content:
             application/json:
               schema:
                 type: array
                 items: { $ref: '#/components/schemas/Carte' }
+        '304': { $ref: '#/components/responses/NonModifie' }
   /cartes/{numero}:
     get:
       operationId: lireCarte
@@ -30,12 +41,17 @@ paths:
           in: path
           required: true
           schema: { type: integer, minimum: 1 }
+        - $ref: '#/components/parameters/IfNoneMatch'
       responses:
         '200':
           description: La carte demandée.
+          headers:
+            Cache-Control: { $ref: '#/components/headers/CacheCatalogue' }
+            ETag: { $ref: '#/components/headers/EtagCatalogue' }
           content:
             application/json:
               schema: { $ref: '#/components/schemas/CarteDetaillee' }
+        '304': { $ref: '#/components/responses/NonModifie' }
         '400':
           description: Numéro invalide.
           content:
@@ -46,7 +62,50 @@ paths:
           content:
             application/problem+json:
               schema: { $ref: '#/components/schemas/Probleme' }
+  /raretes:
+    get:
+      operationId: listerRaretes
+      summary: Chances de chaque rareté dans un booster, calculées par le domaine
+      parameters:
+        - $ref: '#/components/parameters/IfNoneMatch'
+      responses:
+        '200':
+          description: Une chance par rareté, de la plus commune à la plus rare.
+          headers:
+            Cache-Control: { $ref: '#/components/headers/CacheCatalogue' }
+            ETag: { $ref: '#/components/headers/EtagCatalogue' }
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  required: [rarete, chance]
+                  properties:
+                    rarete: { type: string, enum: [commune, rare, epique, legendaire] }
+                    chance: { type: number, minimum: 0, maximum: 1 }
+        '304': { $ref: '#/components/responses/NonModifie' }
 components:
+  parameters:
+    IfNoneMatch:
+      name: If-None-Match
+      in: header
+      required: false
+      description: L'`ETag` d'une réponse précédente du catalogue ; 304 sans corps s'il n'a pas changé.
+      schema: { type: string }
+  headers:
+    CacheCatalogue:
+      description: Le catalogue peut rester 5 minutes en cache, navigateur et relais compris.
+      schema: { type: string, const: 'public, max-age=300' }
+    EtagCatalogue:
+      description: Empreinte du catalogue servi, commune à toutes ses routes ; elle change avec le catalogue.
+      schema: { type: string, examples: ['"Xb3r1JqZ0aLm9QwE"'] }
+  responses:
+    NonModifie:
+      description: Le catalogue n'a pas changé depuis l'`ETag` fourni ; réponse sans corps.
+      headers:
+        Cache-Control: { $ref: '#/components/headers/CacheCatalogue' }
+        ETag: { $ref: '#/components/headers/EtagCatalogue' }
   schemas:
     Carte:
       type: object

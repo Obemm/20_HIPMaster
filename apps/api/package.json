@@ -12,9 +12,11 @@
     "db:migrate": "node src/migrer.ts",
     "db:studio": "drizzle-kit studio",
     "invitation": "node src/invitation.ts",
-    "purge": "node src/purger.ts"
+    "purge": "node src/purger.ts",
+    "mesurer": "node src/mesurer-requetes.ts"
   },
   "dependencies": {
+    "@fastify/compress": "^9.2.2",
     "@fastify/rate-limit": "^11.2.1",
     "@hipmaster/domain": "*",
     "drizzle-orm": "^0.45.4",

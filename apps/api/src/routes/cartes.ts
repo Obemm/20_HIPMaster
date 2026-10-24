@@ -12,6 +12,7 @@ import {
 } from '@hipmaster/domain';
 import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
 import { z } from 'zod';
+import { cacheCatalogue } from '../cache-catalogue.ts';
 
 // Contrat : apps/api/openapi/cartes.yaml.
 const schemaCapacite = z.object({
@@ -57,15 +58,18 @@ const schemaCarteDetaillee = schemaCarte.extend({ fiche: schemaFiche.optional() 
 
 const versApi = (carte: Carte) => ({ ...carte, capacites: detaillerCapacites(carte) });
 
-/** Catalogue des cartes, en lecture seule (ADR 0011). */
+/** Catalogue des cartes, en lecture seule (ADR 0011), en cache HTTP (US-057). */
 export const routesCartes: FastifyPluginAsyncZod = async (app) => {
-  app.get('/cartes', { schema: { response: { 200: z.array(schemaCarte) } } }, async () =>
-    SET_1.map(versApi),
+  app.get(
+    '/cartes',
+    { ...cacheCatalogue, schema: { response: { 200: z.array(schemaCarte) } } },
+    async () => SET_1.map(versApi),
   );
 
   app.get(
     '/cartes/:numero',
     {
+      ...cacheCatalogue,
       schema: {
         params: z.object({ numero: z.coerce.number().int().positive() }),
         response: { 200: schemaCarteDetaillee },

@@ -4,6 +4,7 @@ import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
 import { z } from 'zod';
 import { empreinteJeton, joueurDuJeton } from '../comptes/comptes.ts';
 import { type OptionsBoosters, type Recompense, recompenserVictoire } from '../comptes/boosters.ts';
+import { cacheCatalogue } from '../cache-catalogue.ts';
 import type { Base } from '../db/index.ts';
 import { limiter, type LimitesDebit } from '../limites.ts';
 import {
@@ -101,12 +102,17 @@ export const routesParties: FastifyPluginAsyncZod<{
     return reponse.header('etag', etiquette(partie.version)).send(partie);
   }
 
-  app.get('/decks', { schema: { response: { 200: z.array(schemaDeck) } } }, async () =>
-    DECKS_PRETES.map((deck) => ({ ...deck, cartes: [...deck.cartes] })),
+  // Decks et niveaux font partie du catalogue : en cache HTTP (US-057).
+  app.get(
+    '/decks',
+    { ...cacheCatalogue, schema: { response: { 200: z.array(schemaDeck) } } },
+    async () => DECKS_PRETES.map((deck) => ({ ...deck, cartes: [...deck.cartes] })),
   );
 
-  app.get('/niveaux', { schema: { response: { 200: z.array(schemaNiveau) } } }, async () =>
-    NIVEAUX_BOT.map(({ id, nom, description }) => ({ id, nom, description })),
+  app.get(
+    '/niveaux',
+    { ...cacheCatalogue, schema: { response: { 200: z.array(schemaNiveau) } } },
+    async () => NIVEAUX_BOT.map(({ id, nom, description }) => ({ id, nom, description })),
   );
 
   app.post(

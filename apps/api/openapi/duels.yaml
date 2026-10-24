@@ -93,7 +93,8 @@ paths:
       description: >
         Un participant reçoit sa vue et les événements visibles depuis l'index `depuis` du journal. Un autre joueur
         ne voit qu'un duel en attente (qui défie, avec quel deck), pour pouvoir le rejoindre ; un duel commencé lui
-        reste introuvable. Avec `If-None-Match` égal à l'ETag connu, la réponse est 304 si rien n'a changé. Limite :
+        reste introuvable. Avec `If-None-Match` égal à l'ETag connu, la réponse est 304 si rien n'a changé, après la
+        seule lecture de la version, sans charger l'état (US-057). Limite :
         600 lectures par minute et par adresse.
       parameters:
         - name: depuis
