@@ -414,3 +414,69 @@ describe('conseil (US-066)', () => {
     expect(duel.statusCode).toBe(404);
   });
 });
+
+describe('partie guidée (US-067)', () => {
+  const guidee = (app: App, headers: Record<string, string> = {}) =>
+    app.inject({ method: 'POST', url: '/api/v1/parties', headers, payload: { guidee: true } });
+
+  it('rejoue toujours la même partie d’initiation contre Stagiaire, avec l’étape du moment', async () => {
+    const { app } = appli();
+    const [a, b] = await Promise.all([guidee(app), guidee(app)]);
+    expect(a.statusCode).toBe(201);
+    const partie = a.json<PartieVisible>();
+    expect(partie).toMatchObject({
+      deck: 'initiation',
+      deckAdversaire: 'initiation-bot',
+      niveau: 'stagiaire',
+    });
+    expect(b.json<PartieVisible>().vue.moi.main).toEqual(partie.vue.moi.main);
+    expect(partie.guide).toMatchObject({
+      etape: 0,
+      titre: 'Le Débit paie vos cartes',
+      attendu: { type: 'poser', carte: 'j1-02' },
+    });
+
+    const apres = await jouer(app, partie.id, { type: 'poser', carte: 'j1-02' });
+    expect(apres.json<PartieVisible>().guide).toMatchObject({
+      etape: 1,
+      attendu: { type: 'finirTour' },
+    });
+    const relue = await app.inject({ method: 'GET', url: `/api/v1/parties/${partie.id}` });
+    expect(relue.json<PartieVisible>().guide?.etape).toBe(1);
+  });
+
+  it('suivie jusqu’au bout puis jouée au conseil, se gagne sans rapporter de booster', async () => {
+    const { app } = appli();
+    const jeton = (await creerJoueur(ouverte.base, 'Guide', CLE_CODES_DEVELOPPEMENT)).jeton;
+    const auth = { authorization: `Bearer ${jeton}` };
+    let partie = (await guidee(app, auth)).json<PartieVisible>();
+    for (let i = 0; i < 80 && !partie.vue.issue; i++) {
+      const action =
+        partie.guide?.attendu ??
+        (
+          await app.inject({
+            method: 'GET',
+            url: `/api/v1/parties/${partie.id}/conseil`,
+            headers: auth,
+          })
+        ).json<{ action: object }>().action;
+      const reponse = await app.inject({
+        method: 'POST',
+        url: `/api/v1/parties/${partie.id}/actions`,
+        headers: auth,
+        payload: action,
+      });
+      expect(reponse.statusCode).toBe(200);
+      partie = reponse.json<PartieVisible & { recompense?: object }>();
+    }
+    expect(partie.vue.issue?.gagnant).toBe('j1');
+    expect(partie.guide?.attendu).toBeNull();
+    expect('recompense' in partie).toBe(false);
+  });
+
+  it('une partie ordinaire n’a pas d’étape', async () => {
+    const { app } = appli();
+    const { partie } = await creer(app);
+    expect('guide' in partie).toBe(false);
+  });
+});

@@ -7,6 +7,7 @@ import { cartesVedettes, EventailCartes } from '../cartes/eventail-cartes';
 import { CollectionService } from '../collection/collection.service';
 import { CompteService } from '../compte/compte.service';
 import { MesDuelsService } from '../duels/mes-duels.service';
+import { PreferencesService } from '../preferences';
 import { Icone } from '../icone';
 
 /**
@@ -24,6 +25,7 @@ export class Accueil {
   protected readonly compte = inject(CompteService);
   protected readonly stock = inject(StockBoostersService);
   protected readonly duels = inject(MesDuelsService);
+  protected readonly preferences = inject(PreferencesService);
   private readonly collection = inject(CollectionService);
 
   /** Paramètre `?invitation=` : le code d'un lien d'invitation, transmis à « Mon compte ». */

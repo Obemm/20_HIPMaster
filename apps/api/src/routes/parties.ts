@@ -9,6 +9,7 @@ import type { Base } from '../db/index.ts';
 import { limiter, type LimitesDebit } from '../limites.ts';
 import {
   conseillerPartie,
+  estGuidee,
   jouerPartie,
   lancerPartie,
   lirePartie,
@@ -99,7 +100,10 @@ export const routesParties: FastifyPluginAsyncZod<{
     partie,
     joueurId,
   }: PartieLue): Promise<PartieVisible & { recompense?: Recompense }> {
-    if (!joueurId || partie.vue.issue?.gagnant !== partie.vue.joueur) return partie;
+    // La partie guidée ne rapporte rien (US-067).
+    if (!joueurId || estGuidee(partie.deck) || partie.vue.issue?.gagnant !== partie.vue.joueur) {
+      return partie;
+    }
     return {
       ...partie,
       recompense: await recompenserVictoire(base, partie.id, joueurId, boosters),
@@ -129,7 +133,16 @@ export const routesParties: FastifyPluginAsyncZod<{
     {
       config: limiter(limites, 'creationPartie'),
       schema: {
-        body: z.object({ deck: z.string().max(64), niveau: z.string().max(64).optional() }),
+        body: z
+          .object({
+            deck: z.string().max(64).optional(),
+            niveau: z.string().max(64).optional(),
+            // La première partie guidée (US-067) : decks, graine et niveau fixés par le serveur.
+            guidee: z.boolean().default(false),
+          })
+          .refine((corps) => corps.guidee || corps.deck !== undefined, {
+            message: 'Le deck est obligatoire, sauf pour la partie guidée.',
+          }),
         response: { 201: schemaPartie },
       },
     },
@@ -144,10 +157,11 @@ export const routesParties: FastifyPluginAsyncZod<{
         joueur && jeton ? { joueurId: joueur.id, session: empreinteJeton(jeton) } : null;
       const resultat = await lancerPartie(
         base,
-        requete.body.deck,
+        requete.body.deck ?? '',
         requete.body.niveau,
         proprietaire,
         parties,
+        requete.body.guidee,
       );
       if (!resultat.ok) return refuser(reponse, resultat);
       return reponse

@@ -564,6 +564,83 @@ describe('PartieEcran', () => {
     await fixture.whenStable();
   });
 
+  describe('partie guidée (US-067)', () => {
+    const etape = (attendu: Vue['actions'][number] | null, numero = 0) => ({
+      version: numero,
+      guide: {
+        etape: numero,
+        total: 13,
+        titre: 'Le Débit paie vos cartes',
+        texte: 'Touchez API REST, puis « Poser ».',
+        attendu,
+      },
+    });
+
+    it('affiche l’étape, met en évidence sa carte et refuse poliment un autre geste', async () => {
+      localStorage.removeItem('hipmaster.aide-vue');
+      const { fixture, http, page } = await ouvrir(vue(), etape({ type: 'poser', carte: 'j1-01' }));
+      // L'aide ne s'ouvre pas d'elle-même par-dessus la partie guidée.
+      expect(page.querySelector('dialog')?.open).toBe(false);
+      const bulle = page.querySelector('#bulle-guide');
+      expect(bulle?.textContent).toContain('Étape 1 / 13 : Le Débit paie vos cartes');
+      expect(page.querySelector('#main-j1-01')?.classList).toContain('conseille');
+      // Pas de conseil pendant une étape : la bulle dit déjà quoi faire.
+      expect(bouton(page, 'Un conseil ?')).toBeUndefined();
+
+      bouton(page, 'Finir mon tour')?.click();
+      fixture.detectChanges();
+      expect(bulle?.textContent).toContain(
+        'Pas tout de suite : suivez l’étape « Le Débit paie vos cartes ».',
+      );
+      bouton(page, 'API REST')?.click();
+      fixture.detectChanges();
+      bouton(page, 'Décommissionner')?.click();
+      fixture.detectChanges();
+      http.expectNone(`/api/v1/parties/${ID}/actions`);
+
+      bouton(page, 'API REST')?.click();
+      fixture.detectChanges();
+      bouton(page, 'Poser')?.click();
+      const action = http.expectOne(`/api/v1/parties/${ID}/actions`);
+      expect(action.request.body).toEqual({ type: 'poser', carte: 'j1-01' });
+      action.flush({ ...partie(vue()), ...etape({ type: 'finirTour' }, 1) });
+      await fixture.whenStable();
+      fixture.detectChanges();
+      expect(page.querySelector('#bulle-guide')?.textContent).not.toContain('Pas tout de suite');
+      expect(page.querySelector('#finir-tour')?.classList).toContain('conseille');
+    });
+
+    it('se passe à tout moment, et n’est plus proposée ensuite', async () => {
+      const { fixture, page } = await ouvrir(vue(), etape({ type: 'poser', carte: 'j1-01' }));
+      bouton(page, 'Passer le guide')?.click();
+      fixture.detectChanges();
+      expect(page.querySelector('#bulle-guide')).toBeNull();
+      expect(localStorage.getItem('hipmaster.partie-guidee-finie')).toBe('oui');
+      expect(page.querySelector('#main-j1-01')?.classList).not.toContain('conseille');
+    });
+
+    it('la dernière étape laisse jouer librement, et le guide est fini', async () => {
+      const { page } = await ouvrir(vue(), etape(null, 12));
+      expect(page.querySelector('#bulle-guide')?.textContent).toContain('Étape 13 / 13');
+      expect(bouton(page, 'Compris')).toBeTruthy();
+      expect(localStorage.getItem('hipmaster.partie-guidee-finie')).toBe('oui');
+      expect(bouton(page, 'Un conseil ?')).toBeTruthy();
+    });
+
+    it('à la victoire, félicite et propose Stagiaire avec le conseil, sans booster', async () => {
+      const fin = vue({ issue: { gagnant: 'j1', raison: 'sla' }, actions: [] });
+      const { fixture, page } = await ouvrir(fin, etape(null, 12));
+      expect(page.textContent).toContain('Bravo, vous savez jouer !');
+      expect(page.textContent).toContain('La partie guidée ne rapporte pas de booster.');
+      expect(page.querySelector('#bulle-guide')).toBeNull();
+      const naviguer = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+      bouton(page, 'Jouer contre Stagiaire avec le conseil')?.click();
+      await fixture.whenStable();
+      expect(localStorage.getItem('hipmaster.conseil-chaque-coup')).toBe('oui');
+      expect(naviguer).toHaveBeenCalledWith(['/jouer']);
+    });
+  });
+
   describe('conseil (US-066)', () => {
     const CONSEIL = '/api/v1/parties/' + ID + '/conseil';
     const posez = {
@@ -955,6 +1032,27 @@ describe('ChoixDeck', () => {
     bouton(page, 'Jouer avec Moderne')?.click();
     const creation = http.expectOne('/api/v1/parties');
     expect(creation.request.body).toEqual({ deck: 'moderne', niveau: 'agent-autonome' });
+    creation.flush(partie(vue()));
+    await fixture.whenStable();
+    expect(naviguer).toHaveBeenCalledWith(['/jouer', ID]);
+  });
+
+  it('propose d’abord la partie guidée, et la crée sans deck ni niveau (US-067)', async () => {
+    localStorage.clear();
+    const fixture = TestBed.createComponent(ChoixDeck);
+    fixture.detectChanges();
+    const http = TestBed.inject(HttpTestingController);
+    http.expectOne('/api/v1/decks').flush([]);
+    http.expectOne('/api/v1/niveaux').flush([]);
+    http.expectOne('/api/v1/cartes').flush([]);
+    await fixture.whenStable();
+    fixture.detectChanges();
+    const naviguer = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+    const page = fixture.nativeElement as HTMLElement;
+    expect(page.querySelector('h2')?.textContent).toContain('Première partie ?');
+    bouton(page, 'Apprendre à jouer (5 min)')?.click();
+    const creation = http.expectOne('/api/v1/parties');
+    expect(creation.request.body).toEqual({ guidee: true });
     creation.flush(partie(vue()));
     await fixture.whenStable();
     expect(naviguer).toHaveBeenCalledWith(['/jouer', ID]);
