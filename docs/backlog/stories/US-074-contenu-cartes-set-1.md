@@ -1,7 +1,7 @@
 # US-074 — Enrichir le contenu des 71 cartes du set 1
 
 - **Epic** : EPIC-12
-- **Statut** : En revue
+- **Statut** : Faite
 - **Priorité** : Must
 - **Taille** : L
 - **Branche** : `us-074-contenu-cartes-set-1`
@@ -36,7 +36,7 @@ d'utile** afin de **mieux comprendre les technologies, patterns et incidents de 
       liens morts.
 - [x] **Étant donné** le texte visible de la carte, **alors** il reste court et ludique ; il est retouché seulement s'il
       était inexact.
-- [ ] Le contenu est relu par le porteur du projet, famille par famille (Fichiers & Batch, Messagerie & ESB, API,
+- [x] Le contenu est relu par le porteur du projet, famille par famille (Fichiers & Batch, Messagerie & ESB, API,
       iPaaS, Événementiel, IA agentique, Patterns, Bestiaire) : une PR par famille si c'est plus simple à relire.
 
 ## Notes
@@ -54,3 +54,4 @@ d'utile** afin de **mieux comprendre les technologies, patterns et incidents de 
   fiche par carte », script `npm run fiches:liens`, texte de SFTP corrigé. En revue : relecture du porteur du projet.
 - 2026-10-24 — décision du porteur du projet : SFTP est proscrit chez Elis, comme FTP, mais encore utilisé par
   beaucoup de projets ; la fiche le dit. ADR des fiches renuméroté 0036 (le 0034 est celui d'US-058).
+- 2026-10-24 — livrée : fiche « En savoir plus » pour les 71 cartes du set 1 (127 liens vérifiés, npm run fiches:liens), texte de SFTP corrigé, SFTP proscrit chez Elis ; textes relus et validés par le porteur du projet
