@@ -1,8 +1,8 @@
 <main class="mx-auto flex w-full max-w-3xl flex-col gap-8 px-4 py-8 sm:px-6">
   <div class="flex flex-col gap-2">
-    <p class="surtitre">Sans compte, tout de suite</p>
-    <h1 class="titre-page">Jouer contre le bot</h1>
-    <p class="text-texte-doux">
+    <p class="surtitre" i18n>Sans compte, tout de suite</p>
+    <h1 class="titre-page" i18n>Jouer contre le bot</h1>
+    <p class="text-texte-doux" i18n>
       Choisissez la difficulté, puis votre deck : la partie commence aussitôt.
     </p>
   </div>
@@ -17,7 +17,7 @@
 
   @if (niveaux.hasValue()) {
     <fieldset class="flex flex-col gap-3">
-      <legend class="mb-3 font-titre text-xl font-extrabold">1. Difficulté du bot</legend>
+      <legend class="mb-3 font-titre text-xl font-extrabold" i18n>1. Difficulté du bot</legend>
       <div class="grid gap-3 sm:grid-cols-2">
         @for (n of niveaux.value(); track n.id) {
           <label class="choix">
@@ -39,6 +39,7 @@
     </fieldset>
   } @else if (niveaux.error()) {
     <hip-erreur-chargement
+      i18n-quoi
       quoi="Les niveaux du bot n’ont pas pu être chargés : sans choix, il jouera au plus simple."
       [erreur]="niveaux.error()"
       [enCours]="niveaux.isLoading()"
@@ -47,8 +48,10 @@
   }
 
   <section aria-labelledby="titre-deck" class="flex flex-col gap-3">
-    <h2 id="titre-deck" class="text-xl font-extrabold">2. Votre deck</h2>
-    <p class="text-texte-doux">Choisissez un deck prêté. Le bot joue avec un deck tiré au sort.</p>
+    <h2 id="titre-deck" class="text-xl font-extrabold" i18n>2. Votre deck</h2>
+    <p class="text-texte-doux" i18n>
+      Choisissez un deck prêté. Le bot joue avec un deck tiré au sort.
+    </p>
 
     @if (erreur()) {
       <p role="alert" class="text-alerte">{{ erreur() }}</p>
@@ -65,7 +68,11 @@
                 [disabled]="enCours() !== null"
                 (click)="jouer(deck)"
               >
-                {{ enCours() === deck.id ? 'Création…' : 'Jouer avec ' + deck.nom }}
+                @if (enCours() === deck.id) {
+                  <ng-container i18n>Création…</ng-container>
+                } @else {
+                  <ng-container i18n>Jouer avec {{ deck.nom }}</ng-container>
+                }
               </button>
             </hip-boite-deck>
           </li>
@@ -73,22 +80,23 @@
       </ul>
     } @else if (decks.error()) {
       <hip-erreur-chargement
+        i18n-quoi
         quoi="Les decks n’ont pas pu être chargés."
         [erreur]="decks.error()"
         [enCours]="decks.isLoading()"
         (reessayer)="decks.reload()"
       />
     } @else {
-      <p>Chargement des decks…</p>
+      <p i18n>Chargement des decks…</p>
     }
   </section>
 
   <section aria-labelledby="titre-humain" class="panneau flex flex-col gap-3 p-4">
-    <h2 id="titre-humain" class="text-xl font-extrabold">Envie d’affronter un humain ?</h2>
-    <p class="text-texte-doux">Le duel se joue au tour par tour, chacun à son rythme.</p>
+    <h2 id="titre-humain" class="text-xl font-extrabold" i18n>Envie d’affronter un humain ?</h2>
+    <p class="text-texte-doux" i18n>Le duel se joue au tour par tour, chacun à son rythme.</p>
     <p class="flex flex-col gap-3 sm:flex-row">
-      <a routerLink="/duels/nouveau" class="bouton bouton-contour">Défier un collègue</a>
-      <a routerLink="/duels/hasard" class="bouton bouton-contour"
+      <a routerLink="/duels/nouveau" class="bouton bouton-contour" i18n>Défier un collègue</a>
+      <a routerLink="/duels/hasard" class="bouton bouton-contour" i18n
         >Affronter un adversaire au hasard</a
       >
     </p>
@@ -106,9 +114,13 @@
       [class.border-or]="!preferences.guideFini()"
     >
       <h2 id="titre-guide" class="text-xl font-extrabold">
-        {{ preferences.guideFini() ? 'Revoir les règles en jouant' : 'Première partie ?' }}
+        @if (preferences.guideFini()) {
+          <ng-container i18n>Revoir les règles en jouant</ng-container>
+        } @else {
+          <ng-container i18n>Première partie ?</ng-container>
+        }
       </h2>
-      <p class="text-texte-doux">
+      <p class="text-texte-doux" i18n>
         Une partie guidée pas à pas contre Stagiaire : poser, attaquer, la Garde, la riposte… sans
         rien lire avant. Elle ne rapporte pas de booster.
       </p>
@@ -120,13 +132,17 @@
         [disabled]="enCours() !== null"
         (click)="jouerGuidee()"
       >
-        {{ enCours() === 'guidee' ? 'Création…' : 'Apprendre à jouer (5 min)' }}
+        @if (enCours() === 'guidee') {
+          <ng-container i18n>Création…</ng-container>
+        } @else {
+          <ng-container i18n>Apprendre à jouer (5 min)</ng-container>
+        }
       </button>
     </section>
   </ng-template>
 
   <details class="panneau group p-4">
-    <summary class="cursor-pointer font-titre text-lg font-bold">La règle en bref</summary>
+    <summary class="cursor-pointer font-titre text-lg font-bold" i18n>La règle en bref</summary>
     <div class="pt-3"><hip-regle-courte /></div>
   </details>
 </main>

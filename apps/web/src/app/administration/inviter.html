@@ -1,10 +1,10 @@
 <main class="mx-auto flex w-full max-w-xl flex-col gap-6 px-4 py-8 sm:px-6">
   <p>
-    <a routerLink="/compte" class="lien text-sm">← Mon compte</a>
+    <a routerLink="/compte" class="lien text-sm" i18n>← Mon compte</a>
   </p>
   @if (administrateur()) {
-    <h1 class="titre-page">Inviter</h1>
-    <p class="text-texte-doux">
+    <h1 class="titre-page" i18n>Inviter</h1>
+    <p class="text-texte-doux" i18n>
       Créez une invitation, puis envoyez son lien : il ouvre la page « Mon compte » avec le code
       déjà rempli. Chaque invitation crée un nombre de comptes limité, jusqu’à sa date limite.
     </p>
@@ -19,63 +19,71 @@
         aria-labelledby="titre-creee"
         class="panneau flex flex-col gap-3 border-2 border-action p-4"
       >
-        <h2 id="titre-creee" tabindex="-1" class="text-xl font-extrabold focus:outline-none">
+        <h2 id="titre-creee" tabindex="-1" class="text-xl font-extrabold focus:outline-none" i18n>
           Invitation « {{ c.invitation.libelle }} » créée
         </h2>
         <div class="flex flex-col gap-1">
-          <label for="lien-invitation" class="etiquette">Lien d’invitation</label>
+          <label for="lien-invitation" class="etiquette" i18n>Lien d’invitation</label>
           <input id="lien-invitation" readonly class="champ font-mono text-sm" [value]="c.lien" />
         </div>
-        <p class="text-sm">
+        <p class="text-sm" i18n>
           <strong>Copiez-le ou partagez-le maintenant</strong> : il ne sera plus jamais affiché. Il
-          crée {{ c.invitation.utilisationsMax }}
-          {{ c.invitation.utilisationsMax > 1 ? 'comptes' : 'compte' }} au plus,
-          {{ echeance(c.invitation) }}. Code seul :
+          crée
+          {c.invitation.utilisationsMax, plural,
+            =1 {1 compte}
+            other {{{ c.invitation.utilisationsMax }} comptes}
+          }
+          au plus, {{ echeance(c.invitation) }}. Code seul :
           <span class="font-mono font-semibold">{{ c.code }}</span>
         </p>
         <p class="flex flex-wrap gap-2">
-          <button type="button" class="bouton bouton-plein" (click)="copier(c.lien)">
+          <button type="button" class="bouton bouton-plein" (click)="copier(c.lien)" i18n>
             Copier le lien
           </button>
           @if (partageDisponible) {
-            <button type="button" class="bouton bouton-contour" (click)="partager(c)">
+            <button type="button" class="bouton bouton-contour" (click)="partager(c)" i18n>
               Partager
             </button>
           }
-          <button type="button" class="bouton bouton-contour" (click)="oublierLien()">
+          <button type="button" class="bouton bouton-contour" (click)="oublierLien()" i18n>
             C’est envoyé
           </button>
         </p>
-        <p role="status" class="text-sm text-texte-doux">{{ copie() ? 'Lien copié.' : '' }}</p>
+        <p role="status" class="text-sm text-texte-doux">
+          @if (copie()) {
+            <ng-container i18n>Lien copié.</ng-container>
+          }
+        </p>
       </section>
     }
 
     <section aria-labelledby="titre-nouvelle" class="panneau flex flex-col gap-3 p-4">
-      <h2 id="titre-nouvelle" tabindex="-1" class="text-xl font-extrabold focus:outline-none">
+      <h2 id="titre-nouvelle" tabindex="-1" class="text-xl font-extrabold focus:outline-none" i18n>
         Nouvelle invitation
       </h2>
       <form class="flex flex-col gap-3" (submit)="creer($event)">
         <div class="flex flex-col gap-1">
-          <label for="libelle" class="etiquette">Pour qui</label>
+          <label for="libelle" class="etiquette" i18n>Pour qui</label>
           <input
             id="libelle"
             name="libelle"
             autocomplete="off"
             maxlength="80"
             required
+            i18n-placeholder
             placeholder="Équipe intégration"
             aria-describedby="aide-libelle"
             class="champ"
             [value]="libelle()"
             (input)="libelle.set($any($event.target).value)"
           />
-          <p id="aide-libelle" class="text-sm text-texte-doux">
+          <p id="aide-libelle" class="text-sm text-texte-doux" i18n>
             Un libellé pour vous y retrouver : une équipe, une démo… Les invités ne le voient pas.
           </p>
         </div>
         <div class="flex flex-col gap-3 sm:flex-row">
           <div class="flex flex-col gap-1 sm:flex-1">
-            <label for="utilisations" class="etiquette">Nombre de comptes</label>
+            <label for="utilisations" class="etiquette" i18n>Nombre de comptes</label>
             <input
               id="utilisations"
               name="utilisations"
@@ -91,7 +99,7 @@
             />
           </div>
           <div class="flex flex-col gap-1 sm:flex-1">
-            <label for="expire" class="etiquette">Date limite (incluse)</label>
+            <label for="expire" class="etiquette" i18n>Date limite (incluse)</label>
             <input
               id="expire"
               name="expire"
@@ -104,17 +112,17 @@
             />
           </div>
         </div>
-        <button type="submit" class="bouton bouton-jeu self-start" [disabled]="occupe()">
+        <button type="submit" class="bouton bouton-jeu self-start" [disabled]="occupe()" i18n>
           Créer l’invitation
         </button>
       </form>
     </section>
 
     <section aria-labelledby="titre-invitations" class="flex flex-col gap-3">
-      <h2 id="titre-invitations" class="text-xl font-extrabold">Invitations</h2>
+      <h2 id="titre-invitations" class="text-xl font-extrabold" i18n>Invitations</h2>
       @if (invitations(); as liste) {
         @if (liste.length === 0) {
-          <p class="text-texte-doux">Aucune invitation pour l’instant.</p>
+          <p class="text-texte-doux" i18n>Aucune invitation pour l’instant.</p>
         } @else {
           <ul class="flex flex-col gap-3">
             @for (i of liste; track i.id) {
@@ -138,9 +146,9 @@
                     <div
                       class="flex flex-col gap-2"
                       role="group"
-                      [attr.aria-label]="'Confirmer la révocation de « ' + i.libelle + ' »'"
+                      [attr.aria-label]="libelleConfirmation(i)"
                     >
-                      <p class="text-sm font-semibold">
+                      <p class="text-sm font-semibold" i18n>
                         Révoquer « {{ i.libelle }} » ? Son lien ne créera plus de compte ; les
                         comptes déjà créés restent.
                       </p>
@@ -150,6 +158,7 @@
                           class="bouton bouton-plein"
                           [disabled]="occupe()"
                           (click)="revoquer(i)"
+                          i18n
                         >
                           Oui, révoquer
                         </button>
@@ -158,6 +167,7 @@
                           [id]="'garder-' + i.id"
                           class="bouton bouton-contour"
                           (click)="annulerRevocation(i.id)"
+                          i18n
                         >
                           Non, la garder
                         </button>
@@ -169,8 +179,9 @@
                         type="button"
                         [id]="'revoquer-' + i.id"
                         class="bouton bouton-contour bouton-petit"
-                        [attr.aria-label]="'Révoquer « ' + i.libelle + ' »'"
+                        [attr.aria-label]="libelleRevoquer(i)"
                         (click)="demanderRevocation(i.id)"
+                        i18n
                       >
                         Révoquer
                       </button>
@@ -183,13 +194,14 @@
         }
       } @else if (panne()) {
         <hip-erreur-chargement
+          i18n-quoi
           quoi="Les invitations n’ont pas pu être chargées."
           [erreur]="panne()"
           [enCours]="enLecture()"
           (reessayer)="charger()"
         />
       } @else {
-        <p>Chargement des invitations…</p>
+        <p i18n>Chargement des invitations…</p>
       }
     </section>
   } @else if (!compte.pret()) {

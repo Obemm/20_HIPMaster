@@ -81,3 +81,43 @@ test('l’ancien service worker de la racine laisse place à celui qui se désin
     expect(manifeste).toMatchObject({ lang: langue, start_url: `/${langue}/` });
   }
 });
+
+test.describe('en anglais sur un petit téléphone (375 × 667)', () => {
+  test.use({ viewport: { width: 375, height: 667 } });
+
+  test('le plateau tient dans l’écran, sans un mot de français ni défilement (US-080)', async ({
+    page,
+  }) => {
+    await page.goto('/en/jouer');
+    await expect(page.locator('html')).toHaveAttribute('lang', 'en');
+    await page.getByRole('button', { name: /^Play with Hybrid/ }).click();
+    await expect(
+      page.getByRole('heading', { level: 1, name: 'Game against the bot' }),
+    ).toBeVisible();
+    const aide = page.getByRole('dialog', { name: 'How to play?' });
+    await aide.getByRole('button', { name: 'Let’s go' }).click();
+    await expect(aide).toBeHidden();
+
+    for (const zone of [
+      page.getByRole('list', { name: 'the bot’s board' }),
+      page.getByRole('list', { name: 'Your board' }),
+      page.getByRole('region', { name: /^Your hand/ }),
+      page.getByRole('button', { name: 'End my turn' }),
+    ]) {
+      const boite = await zone.boundingBox();
+      expect(boite).not.toBeNull();
+      expect(boite!.y).toBeGreaterThanOrEqual(0);
+      expect(boite!.y + boite!.height).toBeLessThanOrEqual(667);
+    }
+    const debords = await page.evaluate(() => {
+      const racine = document.documentElement;
+      return {
+        vertical: racine.scrollHeight - racine.clientHeight,
+        horizontal: racine.scrollWidth - racine.clientWidth,
+      };
+    });
+    expect(debords).toEqual({ vertical: 0, horizontal: 0 });
+    const audit = await new AxeBuilder({ page }).withTags(REGLES_WCAG).analyze();
+    expect(audit.violations).toEqual([]);
+  });
+});

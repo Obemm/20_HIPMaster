@@ -7,6 +7,10 @@ Toutes les évolutions notables du projet sont consignées ici
 
 ### Ajouté
 
+- Toute l'interface en anglais sous `/en/` : chaque écran, bouton, message, aide et texte réservé aux lecteurs d'écran
+  (642 messages), avec un glossaire du jeu constant (System, Throughput, HP, deploy…) ; dates, nombres et pluriels
+  suivent la langue, et le plateau tient toujours dans un téléphone de 375 × 667. Une règle ESLint interdit tout
+  texte en dur dans un gabarit (US-080).
 - Le jeu existe en deux versions, française (`/fr/`) et anglaise (`/en/`), compilées par l'i18n d'Angular. La racine
   du site emmène chaque joueur dans sa langue (celle choisie, puis celle du navigateur, l'anglais à défaut), anciens
   liens compris ; un sélecteur FR / EN dans le bandeau bascule sur la même page dans l'autre langue et retient le

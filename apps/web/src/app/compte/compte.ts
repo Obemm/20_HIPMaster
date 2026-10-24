@@ -9,9 +9,9 @@ import { EtatSession } from './etat-session';
 
 /** Ce que dit la page après la fermeture des autres sessions du compte (US-047). */
 export function bilanDeconnexion(sessionsFermees: number): string {
-  if (sessionsFermees === 0) return 'Aucun autre appareil n’était connecté.';
-  if (sessionsFermees === 1) return 'Votre autre appareil a été déconnecté.';
-  return `Vos ${sessionsFermees} autres appareils ont été déconnectés.`;
+  if (sessionsFermees === 0) return $localize`Aucun autre appareil n’était connecté.`;
+  if (sessionsFermees === 1) return $localize`Votre autre appareil a été déconnecté.`;
+  return $localize`Vos ${sessionsFermees}:nombre: autres appareils ont été déconnectés.`;
 }
 
 /** Messages des refus de l'API, par statut ; une panne, ou un autre statut, affiche sa cause. */
@@ -45,8 +45,8 @@ export class CompteEcran {
   });
   protected readonly libelleRetour = computed(() =>
     this.retourSur()?.startsWith('/duels')
-      ? 'Code noté : revenir au défi'
-      : 'Code noté : revenir à ma page',
+      ? $localize`Code noté : revenir au défi`
+      : $localize`Code noté : revenir à ma page`,
   );
 
   /** Paramètre `?invitation=` : le code d'un lien d'invitation (US-048), qui remplit le champ. */
@@ -86,52 +86,65 @@ export class CompteEcran {
       },
       {
         ...refusDe(
-          'Ce pseudo ne convient pas : 2 à 24 lettres, chiffres, espaces, tirets, points ou soulignés.',
+          $localize`Ce pseudo ne convient pas : 2 à 24 lettres, chiffres, espaces, tirets, points ou soulignés.`,
         ),
-        403:
-          'Ce code d’invitation n’est pas accepté : vérifiez-le auprès de qui vous a invité. Il a pu ' +
-          'expirer, ou déjà servir autant de fois que prévu.',
+        403: $localize`Ce code d’invitation n’est pas accepté : vérifiez-le auprès de qui vous a invité. Il a pu expirer, ou déjà servir autant de fois que prévu.`,
       },
     );
   }
 
   protected async recuperer(evenement: Event): Promise<void> {
     evenement.preventDefault();
-    await this.agir(async () => {
-      await this.compte.recuperer(this.code());
-      const retour = this.retourSur();
-      if (retour) await this.router.navigateByUrl(retour);
-    }, refusDe('Code de récupération inconnu : vérifiez-le, ou créez un nouveau compte.'));
+    await this.agir(
+      async () => {
+        await this.compte.recuperer(this.code());
+        const retour = this.retourSur();
+        if (retour) await this.router.navigateByUrl(retour);
+      },
+      refusDe($localize`Code de récupération inconnu : vérifiez-le, ou créez un nouveau compte.`),
+    );
   }
 
   protected async regenerer(): Promise<void> {
-    await this.agir(async () => {
-      const { codeRecuperation, sessionsFermees } = await this.compte.nouveauCode();
-      this.codeAffiche.set(codeRecuperation);
-      this.info.set(bilanDeconnexion(sessionsFermees));
-    }, refusDe('Le code n’a pas pu être régénéré.'));
+    await this.agir(
+      async () => {
+        const { codeRecuperation, sessionsFermees } = await this.compte.nouveauCode();
+        this.codeAffiche.set(codeRecuperation);
+        this.info.set(bilanDeconnexion(sessionsFermees));
+      },
+      refusDe($localize`Le code n’a pas pu être régénéré.`),
+    );
   }
 
   protected async deconnecterAutres(): Promise<void> {
-    await this.agir(async () => {
-      this.info.set(bilanDeconnexion(await this.compte.deconnecterAutresAppareils()));
-    }, refusDe('Les autres appareils n’ont pas pu être déconnectés.'));
+    await this.agir(
+      async () => {
+        this.info.set(bilanDeconnexion(await this.compte.deconnecterAutresAppareils()));
+      },
+      refusDe($localize`Les autres appareils n’ont pas pu être déconnectés.`),
+    );
   }
 
   protected async deconnecter(): Promise<void> {
-    await this.agir(async () => {
-      this.codeAffiche.set(null);
-      await this.compte.deconnecter();
-    }, refusDe('La déconnexion a échoué.'));
+    await this.agir(
+      async () => {
+        this.codeAffiche.set(null);
+        await this.compte.deconnecter();
+      },
+      refusDe($localize`La déconnexion a échoué.`),
+    );
   }
 
   protected async supprimer(): Promise<void> {
-    await this.agir(async () => {
-      await this.compte.supprimerCompte();
-      this.codeAffiche.set(null);
-      this.confirmerSuppression.set(false);
-      this.supprime.set(true);
-    }, refusDe('Le compte n’a pas pu être supprimé.'));
+    await this.agir(
+      async () => {
+        await this.compte.supprimerCompte();
+        this.codeAffiche.set(null);
+        this.confirmerSuppression.set(false);
+        this.supprime.set(true);
+      },
+      refusDe($localize`Le compte n’a pas pu être supprimé.`),
+    );
   }
 
   protected async copier(code: string): Promise<void> {

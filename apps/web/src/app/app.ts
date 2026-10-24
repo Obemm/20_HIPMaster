@@ -34,10 +34,10 @@ interface Onglet {
 }
 
 const ONGLETS: readonly Onglet[] = [
-  { lien: '/jouer', libelle: 'Jouer', icone: 'jouer' },
-  { lien: '/duels', libelle: 'Duels', icone: 'duels' },
-  { lien: '/boosters', libelle: 'Boosters', icone: 'boosters' },
-  { lien: '/collection', libelle: 'Collection', icone: 'collection' },
+  { lien: '/jouer', libelle: $localize`Jouer`, icone: 'jouer' },
+  { lien: '/duels', libelle: $localize`Duels`, icone: 'duels' },
+  { lien: '/boosters', libelle: $localize`Boosters`, icone: 'boosters' },
+  { lien: '/collection', libelle: $localize`Collection`, icone: 'collection' },
 ];
 
 /**

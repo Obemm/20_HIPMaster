@@ -41,7 +41,9 @@ export class ClassementEcran {
       await this.service.changer(coche.checked);
     } catch (erreur) {
       coche.checked = !coche.checked;
-      this.erreurChoix.set(`Votre choix n’a pas pu être enregistré. ${expliquer(erreur)}`);
+      this.erreurChoix.set(
+        $localize`Votre choix n’a pas pu être enregistré. ${expliquer(erreur)}:raison:`,
+      );
     } finally {
       this.enregistrement.set(false);
     }

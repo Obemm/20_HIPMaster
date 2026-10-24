@@ -1,12 +1,13 @@
 <main class="mx-auto flex w-full max-w-2xl flex-col gap-6 px-4 py-8 sm:px-6">
   <div class="flex flex-col gap-2">
+    <!-- eslint-disable-next-line @angular-eslint/template/i18n -- le nom du jeu ne se traduit pas -->
     <p class="surtitre">HIPMaster</p>
-    <h1 class="titre-page">À propos et confidentialité</h1>
+    <h1 class="titre-page" i18n>À propos et confidentialité</h1>
   </div>
 
   <section aria-labelledby="titre-editeur" class="panneau flex flex-col gap-2 p-4">
-    <h2 id="titre-editeur" class="text-xl font-extrabold">Qui édite le jeu</h2>
-    <p>
+    <h2 id="titre-editeur" class="text-xl font-extrabold" i18n>Qui édite le jeu</h2>
+    <p i18n>
       HIPMaster est un projet personnel et gratuit, sans publicité ni rien à vendre, réalisé par
       Obemm, son porteur. On y joue sur invitation. Pour toute question, ou pour exercer vos droits
       : passez par la personne qui vous a invité, ou ouvrez une demande sur
@@ -18,61 +19,65 @@
   </section>
 
   <section aria-labelledby="titre-hebergement" class="panneau flex flex-col gap-2 p-4">
-    <h2 id="titre-hebergement" class="text-xl font-extrabold">Qui l’héberge</h2>
+    <h2 id="titre-hebergement" class="text-xl font-extrabold" i18n>Qui l’héberge</h2>
     <ul class="list-disc space-y-1 pl-5">
-      <li>le site : Firebase Hosting (Google) ;</li>
-      <li>le serveur du jeu : Google Cloud (Cloud Run), à Francfort ;</li>
-      <li>la base de données : Neon (PostgreSQL), à Francfort.</li>
+      <li i18n>le site : Firebase Hosting (Google) ;</li>
+      <li i18n>le serveur du jeu : Google Cloud (Cloud Run), à Francfort ;</li>
+      <li i18n>la base de données : Neon (PostgreSQL), à Francfort.</li>
     </ul>
   </section>
 
   <section aria-labelledby="titre-donnees" class="panneau flex flex-col gap-2 p-4">
-    <h2 id="titre-donnees" class="text-xl font-extrabold">Ce que le jeu garde, et pourquoi</h2>
-    <p>Rien de plus que ce qu’il faut pour jouer et pour protéger le jeu :</p>
+    <h2 id="titre-donnees" class="text-xl font-extrabold" i18n>Ce que le jeu garde, et pourquoi</h2>
+    <p i18n>Rien de plus que ce qu’il faut pour jouer et pour protéger le jeu :</p>
     <ul class="list-disc space-y-1 pl-5">
-      <li>
+      <li i18n>
         <strong>votre compte</strong> : le pseudo que vous avez choisi, sa date de création,
         l’invitation qui l’a permis, et une empreinte de votre code de récupération (jamais le code
         lui-même). Ni nom, ni e-mail, ni mot de passe ;
       </li>
-      <li>
+      <li i18n>
         <strong>votre jeu</strong> : votre collection, vos boosters, vos récompenses, vos duels
         (adversaires, decks, coups joués), vos parties contre le bot, et votre score (vos points,
         partie par partie, et votre cote de duel) ;
       </li>
-      <li>
+      <li i18n>
         <strong>vos sessions</strong> : une par appareil connecté, avec une empreinte de son jeton
         (jamais le jeton) et sa date d’ouverture ;
       </li>
-      <li>
+      <li i18n>
         <strong>des journaux techniques</strong> : pour chaque requête, l’heure, l’adresse demandée,
         la réponse et l’adresse IP d’où elle vient, pour corriger les pannes et repérer les abus. La
         même adresse IP sert aussi, une heure au plus, à limiter le nombre de requêtes.
       </li>
     </ul>
-    <p>
+    <p i18n>
       Ces données servent au seul fonctionnement du jeu que vous avez demandé, et à sa sécurité.
       Elles ne sont ni vendues, ni partagées, ni utilisées pour vous profiler.
     </p>
   </section>
 
   <section aria-labelledby="titre-autres" class="panneau flex flex-col gap-2 p-4">
-    <h2 id="titre-autres" class="text-xl font-extrabold">Ce que les autres joueurs voient</h2>
+    <h2 id="titre-autres" class="text-xl font-extrabold" i18n>Ce que les autres joueurs voient</h2>
     <ul class="list-disc space-y-1 pl-5">
-      <li>vos adversaires en duel voient votre pseudo et les coups que vous jouez contre eux ;</li>
-      <li>
+      <li i18n>
+        vos adversaires en duel voient votre pseudo et les coups que vous jouez contre eux ;
+      </li>
+      <li i18n>
         les joueurs connectés voient, dans le
         <a routerLink="/classement" class="lien">classement</a>, votre pseudo, vos points, votre
         rang et votre cote de duel, dès votre premier point. Vous pouvez vous en retirer à tout
         moment depuis cette page : votre score continue de compter, mais vous seul·e le voyez.
       </li>
     </ul>
-    <p>Personne d’autre ne voit votre collection, vos boosters ni vos parties contre le bot.</p>
+    <p i18n>
+      Personne d’autre ne voit votre collection, vos boosters ni vos parties contre le bot.
+    </p>
   </section>
 
   <section aria-labelledby="titre-navigateur" class="panneau flex flex-col gap-2 p-4">
-    <h2 id="titre-navigateur" class="text-xl font-extrabold">Dans votre navigateur</h2>
-    <p>
+    <h2 id="titre-navigateur" class="text-xl font-extrabold" i18n>Dans votre navigateur</h2>
+    <p i18n>
       Le jeu y garde une seule chose : le jeton de votre session, qui vous évite de saisir votre
       code à chaque visite. Il est strictement nécessaire au service : aucun bandeau de consentement
       n’est donc requis. Le jeu n’utilise aucun cookie publicitaire, aucun traceur et aucun outil de
@@ -81,8 +86,8 @@
   </section>
 
   <section aria-labelledby="titre-duree" class="panneau flex flex-col gap-2 p-4">
-    <h2 id="titre-duree" class="text-xl font-extrabold">Combien de temps</h2>
-    <p>
+    <h2 id="titre-duree" class="text-xl font-extrabold" i18n>Combien de temps</h2>
+    <p i18n>
       Le jeu ne supprime jamais de lui-même votre compte, votre collection ni vos résultats : seules
       des données techniques expirent, et sont effacées chaque nuit.
     </p>
@@ -97,8 +102,8 @@
   </section>
 
   <section aria-labelledby="titre-droits" class="panneau flex flex-col gap-2 p-4">
-    <h2 id="titre-droits" class="text-xl font-extrabold">Vos droits</h2>
-    <p>
+    <h2 id="titre-droits" class="text-xl font-extrabold" i18n>Vos droits</h2>
+    <p i18n>
       Vous pouvez à tout moment accéder à vos données, les faire corriger, vous opposer à leur usage
       ou les faire supprimer. Le plus simple : <strong>supprimer votre compte</strong> depuis
       <a routerLink="/compte" class="lien">Mon compte</a>, ce qui efface en une fois votre compte,

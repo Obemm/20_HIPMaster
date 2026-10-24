@@ -59,6 +59,12 @@ export class DetailCarte implements OnDestroy {
     const origine = this.carte.hasValue() ? this.carte.value().origine : undefined;
     return origine === undefined ? undefined : `/api/v1/cartes/${origine}`;
   });
+  /** Le nom de la carte d'origine, ou son numéro tant qu'il n'est pas lu. */
+  protected readonly nomOrigine = computed(() => {
+    if (this.origine.hasValue()) return this.origine.value().nom;
+    const numero = this.carte.hasValue() ? this.carte.value().origine : undefined;
+    return $localize`la carte n° ${numero}:numero:`;
+  });
 
   protected readonly compte = inject(CompteService);
   private readonly collection = inject(CollectionService);

@@ -3,13 +3,15 @@
   <header class="flex flex-col gap-0.5">
     <div class="flex items-center justify-between gap-2">
       <h1 class="min-w-0 truncate text-base font-bold tracking-tight sm:text-xl">
-        {{
-          mode() === 'duel' ? 'Duel contre ' + (pseudoAdversaire() ?? '…') : 'Partie contre le bot'
-        }}
+        @if (mode() === 'duel') {
+          <ng-container i18n>Duel contre {{ pseudoAdversaire() ?? '…' }}</ng-container>
+        } @else {
+          <ng-container i18n>Partie contre le bot</ng-container>
+        }
       </h1>
       <p class="flex shrink-0 items-center gap-1 text-sm">
         @if (vue(); as v) {
-          <span class="me-1 font-semibold">Tour {{ v.tour }} / {{ TOURS_MAX }}</span>
+          <span class="me-1 font-semibold" i18n>Tour {{ v.tour }} / {{ TOURS_MAX }}</span>
         }
         @if (pret() && mode() === 'bot' && monTour() && !attendu()) {
           <!-- Conseil à la demande (US-066) : contre le bot seulement, jamais en duel (ADR 0040). -->
@@ -21,7 +23,7 @@
             (click)="demanderConseil()"
           >
             <hip-icone nom="conseil" class="size-4 text-or" />
-            <span class="sr-only sm:not-sr-only">Un conseil ?</span>
+            <span class="sr-only sm:not-sr-only" i18n>Un conseil ?</span>
           </button>
         }
         @if (pret()) {
@@ -31,40 +33,52 @@
             aria-haspopup="dialog"
             (click)="ouvrirAide()"
           >
-            <span aria-hidden="true">?</span><span class="sr-only">Comment jouer ?</span>
+            <span aria-hidden="true">?</span><span class="sr-only" i18n>Comment jouer ?</span>
           </button>
         }
         <a
           routerLink="/jouer"
           class="px-2 py-2 text-texte-doux underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-accent"
+          i18n
           >Quitter</a
         >
       </p>
     </div>
     @if (mode() === 'bot' && nomNiveau()) {
-      <p class="text-xs text-texte-doux">Niveau : {{ nomNiveau() }}</p>
+      <p class="text-xs text-texte-doux" i18n>Niveau : {{ nomNiveau() }}</p>
     }
     @if (mode() === 'duel' && vue(); as v) {
       @if (!v.issue) {
         <div class="flex flex-wrap items-center justify-between gap-x-2 text-xs">
           <p class="text-texte-doux">
             @if (reste(); as reste) {
-              {{ v.actif === v.joueur ? 'À vous de jouer' : autre().sujet + ' doit jouer' }} dans
-              les {{ reste }}, sinon forfait.
+              @if (v.actif === v.joueur) {
+                <ng-container i18n
+                  >À vous de jouer dans les {{ reste }}, sinon forfait.</ng-container
+                >
+              } @else {
+                <ng-container i18n
+                  >{{ autre().sujet }} doit jouer dans les {{ reste }}, sinon forfait.</ng-container
+                >
+              }
             }
           </p>
           @if (confirmerAbandon()) {
             <p
               class="flex flex-wrap items-center gap-2"
               role="group"
+              i18n-aria-label
               aria-label="Confirmer l’abandon"
             >
-              <span class="font-semibold">Abandonner ce duel ? {{ autre().sujet }} gagnera.</span>
+              <span class="font-semibold" i18n
+                >Abandonner ce duel ? {{ autre().sujet }} gagnera.</span
+              >
               <button
                 type="button"
                 class="bouton bouton-danger bouton-petit"
                 [disabled]="occupe()"
                 (click)="abandonner()"
+                i18n
               >
                 Oui, abandonner
               </button>
@@ -72,6 +86,7 @@
                 type="button"
                 class="bouton bouton-contour bouton-petit"
                 (click)="confirmerAbandon.set(false)"
+                i18n
               >
                 Non, continuer
               </button>
@@ -81,6 +96,7 @@
               type="button"
               class="min-h-6 font-semibold underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
               (click)="confirmerAbandon.set(true)"
+              i18n
             >
               Abandonner
             </button>
@@ -93,16 +109,23 @@
   @if (introuvable()) {
     <section class="flex flex-col gap-2 py-4" aria-labelledby="titre-introuvable">
       <h2 id="titre-introuvable" class="text-lg font-semibold">
-        {{ mode() === 'duel' ? 'Duel introuvable' : 'Partie introuvable' }}
-      </h2>
-      <p role="alert">
         @if (mode() === 'duel') {
-          Ce duel n’existe pas, ou vous n’y participez pas.
+          <ng-container i18n>Duel introuvable</ng-container>
         } @else {
-          Cette partie n’existe plus : elle expire après 24 heures sans coup joué.
+          <ng-container i18n>Partie introuvable</ng-container>
         }
-        <a routerLink="/jouer" class="lien">Commencer une nouvelle partie</a>.
-      </p>
+      </h2>
+      @if (mode() === 'duel') {
+        <p role="alert" i18n>
+          Ce duel n’existe pas, ou vous n’y participez pas.
+          <a routerLink="/jouer" class="lien">Commencer une nouvelle partie</a>.
+        </p>
+      } @else {
+        <p role="alert" i18n>
+          Cette partie n’existe plus : elle expire après 24 heures sans coup joué.
+          <a routerLink="/jouer" class="lien">Commencer une nouvelle partie</a>.
+        </p>
+      }
     </section>
   } @else if (pret()) {
     @let v = vue()!;
@@ -134,34 +157,38 @@
             [attr.aria-controls]="composantChoisi() === 'si' ? 'detail-plateau' : null"
             (click)="choisirComposant('si', 'adversaire')"
           >
-            <span>SI {{ autre().de }}</span>
+            <span i18n>SI {{ autre().de }}</span>
             <span class="flex flex-col items-end">
-              <span class="whitespace-nowrap">SLA {{ v.adversaire.sla }} / 20</span>
+              <span class="whitespace-nowrap" i18n>SLA {{ v.adversaire.sla }} / 20</span>
               @if (siIndisponible()) {
                 <!-- Coup de pouce (US-065) : le serveur ne propose pas le SI à l'attaquant choisi. -->
-                <span class="text-xs/3 font-normal whitespace-nowrap text-alerte"
-                  >Indisponible{{ gardesAdverses().length ? ' : Garde' : '' }}</span
-                >
+                <span class="text-xs/3 font-normal whitespace-nowrap text-alerte">
+                  @if (gardesAdverses().length) {
+                    <ng-container i18n>Indisponible : Garde</ng-container>
+                  } @else {
+                    <ng-container i18n>Indisponible</ng-container>
+                  }
+                </span>
               }
             </span>
             @if (ciblesPossibles().has('si')) {
-              <span class="sr-only">: cible possible</span>
+              <span class="sr-only" i18n>: cible possible</span>
             }
             @if (conseilles().has('si')) {
-              <span class="sr-only">: conseillé</span>
+              <span class="sr-only" i18n>: conseillé</span>
             }
           </button>
           <p class="flex gap-2 text-xs text-texte-doux">
-            <span class="whitespace-nowrap"
+            <span class="whitespace-nowrap" i18n
               ><hip-icone nom="debit" class="size-3.5" /> Débit {{ v.adversaire.debit }}</span
             >
-            <span class="whitespace-nowrap">Main {{ v.adversaire.main }}</span>
-            <span class="whitespace-nowrap">Pioche {{ v.adversaire.pioche }}</span>
+            <span class="whitespace-nowrap" i18n>Main {{ v.adversaire.main }}</span>
+            <span class="whitespace-nowrap" i18n>Pioche {{ v.adversaire.pioche }}</span>
           </p>
         </div>
         <ul
           class="flex min-h-[5.5rem] gap-2 overflow-x-auto pb-1"
-          [attr.aria-label]="'Plateau ' + autre().de"
+          [attr.aria-label]="libellePlateauAdverse()"
         >
           @for (c of v.adversaire.plateau; track c.id) {
             @let carte = carteDe(c.numero)!;
@@ -185,16 +212,14 @@
                 [attr.aria-pressed]="choisi"
                 [attr.aria-controls]="choisi ? 'detail-plateau' : null"
                 [class.conseille]="conseilles().has(c.id)"
-                [attr.aria-label]="
-                  decrireComposant(c, carte) +
-                  (ciblesPossibles().has(c.id) ? ' : cible possible' : '') +
-                  (conseilles().has(c.id) ? ' : conseillé' : '')
-                "
+                [attr.aria-label]="libelleJetonAdverse(c, carte)"
                 (click)="choisirComposant(c.id, 'adversaire')"
               ></button>
             </li>
           } @empty {
-            <li class="flex-1 self-center text-center text-sm text-texte-doux">Aucun composant.</li>
+            <li class="flex-1 self-center text-center text-sm text-texte-doux" i18n>
+              Aucun composant.
+            </li>
           }
         </ul>
       </section>
@@ -209,7 +234,7 @@
         </p>
         @if (capacitesEnJeu().length) {
           <details class="hidden rounded-lg border border-bordure px-3 py-2 lg:block">
-            <summary class="cursor-pointer font-semibold">
+            <summary class="cursor-pointer font-semibold" i18n>
               Capacités en jeu ({{ capacitesEnJeu().length }})
             </summary>
             <div class="pt-2"><ng-container *ngTemplateOutlet="glossaire" /></div>
@@ -222,7 +247,7 @@
             class="absolute inset-x-0 top-0 z-10 flex items-start gap-2 rounded-lg bg-surface py-1.5 lg:static lg:flex-col lg:py-2"
             [class.shadow-xl]="journalOuvert()"
           >
-            <h2 id="titre-journal" class="sr-only lg:not-sr-only lg:px-2 lg:font-semibold">
+            <h2 id="titre-journal" class="sr-only lg:not-sr-only lg:px-2 lg:font-semibold" i18n>
               Journal
             </h2>
             <!--
@@ -250,6 +275,7 @@
               aria-controls="journal-partie"
               [attr.aria-expanded]="journalOuvert()"
               (click)="basculerJournal()"
+              i18n
             >
               Journal
             </button>
@@ -259,7 +285,11 @@
 
       <!-- Mon camp -->
       <section aria-labelledby="titre-moi" class="zone-moi flex flex-col gap-1.5">
-        <ul class="flex min-h-[5.5rem] gap-2 overflow-x-auto pb-1" aria-label="Votre plateau">
+        <ul
+          class="flex min-h-[5.5rem] gap-2 overflow-x-auto pb-1"
+          i18n-aria-label
+          aria-label="Votre plateau"
+        >
           @for (c of v.moi.plateau; track c.id) {
             @let carte = carteDe(c.numero)!;
             @let choisi = composantChoisi() === c.id;
@@ -278,16 +308,12 @@
                 [attr.aria-pressed]="choisi"
                 [attr.aria-controls]="choisi ? 'detail-plateau' : null"
                 [class.conseille]="conseilles().has(c.id)"
-                [attr.aria-label]="
-                  decrireComposant(c, carte) +
-                  (attaquantsPossibles().has(c.id) ? ' : peut attaquer' : '') +
-                  (conseilles().has(c.id) ? ' : conseillé' : '')
-                "
+                [attr.aria-label]="libelleJetonMien(c, carte)"
                 (click)="choisirComposant(c.id, 'moi')"
               ></button>
             </li>
           } @empty {
-            <li class="flex-1 self-center text-center text-sm text-texte-doux">
+            <li class="flex-1 self-center text-center text-sm text-texte-doux" i18n>
               Aucun composant : posez une carte de votre main.
             </li>
           }
@@ -296,14 +322,14 @@
           <ng-container *ngTemplateOutlet="panneauDetail" />
         }
         <div class="flex flex-wrap items-center justify-between gap-x-3 text-sm">
-          <h2 id="titre-moi" class="font-semibold">Vous</h2>
+          <h2 id="titre-moi" class="font-semibold" i18n>Vous</h2>
           <p class="flex flex-wrap gap-x-3">
-            <span class="font-semibold">Votre SI : SLA {{ v.moi.sla }} / 20</span>
-            <span class="font-semibold">
+            <span class="font-semibold" i18n>Votre SI : SLA {{ v.moi.sla }} / 20</span>
+            <span class="font-semibold" i18n>
               <hip-icone nom="debit" class="size-3.5 text-amber-600 dark:text-amber-400" /> Débit
               {{ v.moi.debit }}
             </span>
-            <span class="text-texte-doux">Pioche {{ v.moi.pioche }}</span>
+            <span class="text-texte-doux" i18n>Pioche {{ v.moi.pioche }}</span>
           </p>
         </div>
       </section>
@@ -322,45 +348,60 @@
               [class.text-or]="issue.gagnant === v.joueur"
             >
               @if (issue.gagnant === null) {
-                Partie nulle
+                <ng-container i18n>Partie nulle</ng-container>
               } @else if (issue.gagnant === v.joueur) {
-                Victoire !
+                <ng-container i18n>Victoire !</ng-container>
               } @else {
-                Défaite
+                <ng-container i18n>Défaite</ng-container>
               }
             </h2>
             <p class="text-texte-doux">
               {{ raisonFin(issue, v.joueur) }}
-              SLA final : vous {{ v.moi.sla }}, {{ autre().nom }} {{ v.adversaire.sla }}.
+              <ng-container i18n
+                >SLA final : vous {{ v.moi.sla }}, {{ autre().nom }}
+                {{ v.adversaire.sla }}.</ng-container
+              >
             </p>
             @if (guidee()) {
               <!-- Fin de la partie guidée (US-067) : elle ne rapporte pas de booster. -->
               <p class="font-semibold">
                 @if (issue.gagnant === v.joueur) {
-                  Bravo, vous savez jouer ! Prochaine étape : une vraie partie contre Stagiaire,
-                  avec un conseil à chaque coup.
+                  <ng-container i18n
+                    >Bravo, vous savez jouer ! Prochaine étape : une vraie partie contre Stagiaire,
+                    avec un conseil à chaque coup.</ng-container
+                  >
                 } @else {
-                  Vous connaissez les règles : place à une vraie partie contre Stagiaire, avec un
-                  conseil à chaque coup.
+                  <ng-container i18n
+                    >Vous connaissez les règles : place à une vraie partie contre Stagiaire, avec un
+                    conseil à chaque coup.</ng-container
+                  >
                 }
               </p>
-              <p class="text-sm text-texte-doux">La partie guidée ne rapporte pas de booster.</p>
+              <p class="text-sm text-texte-doux" i18n>
+                La partie guidée ne rapporte pas de booster.
+              </p>
             } @else if (partie()?.recompense; as recompense) {
               <p class="font-semibold">
                 @if (recompense.booster) {
-                  Un booster gagné ! Il vous attend dans vos boosters.
+                  <ng-container i18n
+                    >Un booster gagné ! Il vous attend dans vos boosters.</ng-container
+                  >
                 } @else if (recompense.motif === 'adversaire-deja-affronte') {
-                  Pas de booster cette fois : une victoire par abandon ou forfait ne compte qu’une
-                  fois par jour contre le même adversaire.
+                  <ng-container i18n
+                    >Pas de booster cette fois : une victoire par abandon ou forfait ne compte
+                    qu’une fois par jour contre le même adversaire.</ng-container
+                  >
                 } @else {
-                  Plafond atteint : 3 boosters gagnés aujourd’hui. Revenez demain pour en gagner
-                  d’autres.
+                  <ng-container i18n
+                    >Plafond atteint : 3 boosters gagnés aujourd’hui. Revenez demain pour en gagner
+                    d’autres.</ng-container
+                  >
                 }
               </p>
             } @else if (
               mode() === 'bot' && issue.gagnant === v.joueur && compte.pret() && !compte.joueur()
             ) {
-              <p>
+              <p i18n>
                 Avec un compte, chaque victoire rapporte un booster :
                 <a routerLink="/compte" class="lien">créer un compte</a>
                 (un pseudo suffit).
@@ -368,27 +409,37 @@
             }
             <p class="flex flex-wrap justify-center gap-3">
               @if (guidee()) {
-                <button type="button" class="bouton bouton-jeu" (click)="continuerAvecConseil()">
+                <button
+                  type="button"
+                  class="bouton bouton-jeu"
+                  (click)="continuerAvecConseil()"
+                  i18n
+                >
                   Jouer contre Stagiaire avec le conseil
                 </button>
               }
               @if (partie()?.recompense?.booster) {
-                <a routerLink="/boosters" class="bouton bouton-jeu">Ouvrir mon booster</a>
+                <a routerLink="/boosters" class="bouton bouton-jeu" i18n>Ouvrir mon booster</a>
               }
               <a
                 [routerLink]="mode() === 'duel' ? '/duels/nouveau' : '/jouer'"
                 class="bouton"
                 [class.bouton-jeu]="!partie()?.recompense?.booster"
                 [class.bouton-contour]="partie()?.recompense?.booster"
-                >{{ mode() === 'duel' ? 'Lancer une revanche' : 'Rejouer' }}</a
               >
-              <a routerLink="/" class="lien px-4 py-3">Accueil</a>
+                @if (mode() === 'duel') {
+                  <ng-container i18n>Lancer une revanche</ng-container>
+                } @else {
+                  <ng-container i18n>Rejouer</ng-container>
+                }
+              </a>
+              <a routerLink="/" class="lien px-4 py-3" i18n>Accueil</a>
             </p>
           </section>
         } @else {
           <!-- Ma main -->
           <section aria-labelledby="titre-main" class="flex flex-col">
-            <h2 id="titre-main" class="sr-only">Votre main ({{ v.moi.main.length }})</h2>
+            <h2 id="titre-main" class="sr-only" i18n>Votre main ({{ v.moi.main.length }})</h2>
             <!-- Focusable : la main défile au clavier même quand ses cartes sont désactivées (tour adverse). -->
             <ul
               class="flex gap-2 overflow-x-auto pb-1 focus-visible:outline-2 focus-visible:outline-accent"
@@ -424,10 +475,15 @@
                       [disabled]="occupe()"
                       (click)="choisirCarte(instance.id)"
                     >
-                      <span class="sr-only"
-                        >{{ carteDe(instance.numero)?.nom
-                        }}{{ conseilles().has(instance.id) ? ' : conseillée' : '' }}</span
-                      >
+                      <span class="sr-only">
+                        @if (conseilles().has(instance.id)) {
+                          <ng-container i18n
+                            >{{ carteDe(instance.numero)?.nom }} : conseillée</ng-container
+                          >
+                        } @else {
+                          {{ carteDe(instance.numero)?.nom }}
+                        }
+                      </span>
                     </button>
                   </div>
                   <!-- Carte injouable (US-071) : une mention visible, pas un grisé ; la raison complète pour les lecteurs d'écran. -->
@@ -435,13 +491,14 @@
                     <p
                       [id]="'raison-main-' + instance.id"
                       class="mt-0.5 text-center text-xs font-semibold text-texte-doux"
+                      i18n
                     >
                       Pas jouable<span class="sr-only"> : {{ instance.injouable }}</span>
                     </p>
                   }
                 </li>
               } @empty {
-                <li class="text-sm text-texte-doux">Main vide.</li>
+                <li class="text-sm text-texte-doux" i18n>Main vide.</li>
               }
             </ul>
 
@@ -453,13 +510,19 @@
           <!-- L'action principale reste collée au bas de l'écran. -->
           <div class="sticky bottom-0 flex flex-col gap-2 bg-fond pt-1 pb-2">
             @if (actionsOutillage().length) {
-              <div class="flex flex-wrap gap-2" role="group" aria-label="Outillage de vos agents">
+              <div
+                class="flex flex-wrap gap-2"
+                role="group"
+                i18n-aria-label
+                aria-label="Outillage de vos agents"
+              >
                 @for (action of actionsOutillage(); track action.source) {
                   <button
                     type="button"
                     class="bouton bouton-contour bouton-petit"
                     [disabled]="occupe()"
                     (click)="jouer(action)"
+                    i18n
                   >
                     Outillage : vos agents prennent les capacités de {{ nommer(action.source) }}
                   </button>
@@ -478,7 +541,7 @@
               >
                 <div aria-live="polite" aria-atomic="true">
                   <h2 id="titre-guide" class="font-bold">
-                    <span class="font-normal text-texte-doux"
+                    <span class="font-normal text-texte-doux" i18n
                       >Étape {{ e.etape + 1 }} / {{ e.total }} :</span
                     >
                     {{ e.titre }}
@@ -494,6 +557,7 @@
                       type="button"
                       class="min-h-11 px-2 text-xs font-semibold underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-accent"
                       (click)="passerGuide()"
+                      i18n
                     >
                       Passer le guide
                     </button>
@@ -502,6 +566,7 @@
                       type="button"
                       class="bouton bouton-contour bouton-petit"
                       (click)="passerGuide()"
+                      i18n
                     >
                       Compris
                     </button>
@@ -518,7 +583,7 @@
                     class="flex items-start gap-2 rounded-lg border-2 border-dashed border-or px-2 py-1 text-xs sm:text-sm"
                   >
                     <hip-icone nom="conseil" class="mt-0.5 size-4 shrink-0 text-or" />
-                    <span class="min-w-0 flex-1"
+                    <span class="min-w-0 flex-1" i18n
                       ><strong>Conseil :</strong> {{ c.explication }}</span
                     >
                     <button
@@ -527,7 +592,7 @@
                       (click)="masquerConseil()"
                     >
                       <hip-icone nom="fermer" class="size-4" />
-                      <span class="sr-only">Masquer le conseil</span>
+                      <span class="sr-only" i18n>Masquer le conseil</span>
                     </button>
                   </p>
                 }
@@ -540,22 +605,24 @@
                   class="min-w-0 rounded-lg border-2 border-amber-600 px-2 py-1 text-xs dark:border-amber-400"
                 >
                   <!-- Court à l'écran, pour que la barre reste basse (US-059) ; en entier pour les lecteurs d'écran. -->
-                  <span aria-hidden="true"
+                  <span aria-hidden="true" i18n
                     ><strong>Attention :</strong> {{ attaquesOublieesCourt() }}</span
-                  ><span class="sr-only"
+                  ><span class="sr-only" i18n
                     >Attention : {{ attaquesOubliees() }} Si vous finissez votre tour, ces attaques
                     sont perdues.</span
                   >
                 </p>
               } @else {
                 <p class="min-w-0 text-xs text-texte-doux sm:text-sm">
-                  {{
-                    monTour()
-                      ? aide()
-                      : mode() === 'duel'
-                        ? 'Au tour de ' + autre().nom + ' : son coup s’affichera ici.'
-                        : 'Le bot joue…'
-                  }}
+                  @if (monTour()) {
+                    {{ aide() }}
+                  } @else if (mode() === 'duel') {
+                    <ng-container i18n
+                      >Au tour de {{ autre().nom }} : son coup s’affichera ici.</ng-container
+                    >
+                  } @else {
+                    <ng-container i18n>Le bot joue…</ng-container>
+                  }
                 </p>
               }
               <button
@@ -568,6 +635,7 @@
                   attaquesOubliees() && !attaquant() ? 'attaques-oubliees' : null
                 "
                 (click)="finirTour()"
+                i18n
               >
                 Finir mon tour
               </button>
@@ -584,7 +652,7 @@
                 aria-describedby="texte-fin-tour"
                 class="fixed inset-x-0 bottom-0 z-20 mx-auto flex max-w-3xl flex-col gap-3 rounded-t-2xl border-2 border-b-0 border-amber-600 bg-fond p-4 shadow-2xl dark:border-amber-400"
               >
-                <h2 id="titre-fin-tour" class="font-bold">Avant de finir votre tour</h2>
+                <h2 id="titre-fin-tour" class="font-bold" i18n>Avant de finir votre tour</h2>
                 <ul id="texte-fin-tour" class="flex list-disc flex-col gap-1 ps-5 text-sm">
                   @for (phrase of resteAFaire(); track phrase) {
                     <li>{{ phrase }}</li>
@@ -596,6 +664,7 @@
                     id="revenir-plateau"
                     class="bouton bouton-contour"
                     (click)="revenirAuPlateau()"
+                    i18n
                   >
                     Revenir au plateau
                   </button>
@@ -604,11 +673,12 @@
                     class="bouton bouton-plein"
                     [disabled]="occupe()"
                     (click)="finirQuandMeme()"
+                    i18n
                   >
                     Finir quand même
                   </button>
                 </p>
-                <p class="text-xs text-texte-doux">
+                <p class="text-xs text-texte-doux" i18n>
                   Ces coups de pouce se désactivent dans l’aide « ? ».
                 </p>
               </div>
@@ -630,14 +700,14 @@
     >
       <div class="flex flex-col gap-4 p-5">
         <div class="flex items-start justify-between gap-2">
-          <h2 id="titre-aide" class="text-xl font-bold">Comment jouer ?</h2>
+          <h2 id="titre-aide" class="text-xl font-bold" i18n>Comment jouer ?</h2>
           <button
             type="button"
             class="shrink-0 rounded-full p-2 text-texte-doux hover:bg-surface focus-visible:outline-2 focus-visible:outline-accent"
             (click)="fermerAide()"
           >
             <hip-icone nom="fermer" class="size-5" />
-            <span class="sr-only">Fermer l’aide</span>
+            <span class="sr-only" i18n>Fermer l’aide</span>
           </button>
         </div>
         <p class="rounded-lg bg-surface px-3 py-2 text-sm">
@@ -652,13 +722,13 @@
             [checked]="preferences.coupsDePouce()"
             (change)="basculerCoupsDePouce($event)"
           />
-          <span>
+          <span i18n>
             <strong>Coups de pouce</strong> : avant de finir votre tour, un message signale une
             attaque ou une carte encore possible, et le SI protégé par Garde est signalé.
           </span>
         </label>
         @if (mode() === 'bot' && !guidee()) {
-          <p class="text-sm">
+          <p class="text-sm" i18n>
             Tout découvrir pas à pas ?
             <a routerLink="/jouer" class="lien" (click)="fermerAide()">Apprendre à jouer (5 min)</a>
           </p>
@@ -672,7 +742,7 @@
               [checked]="preferences.conseilAChaqueCoup()"
               (change)="basculerConseilAChaqueCoup($event)"
             />
-            <span>
+            <span i18n>
               <strong>Un conseil à chaque coup</strong> : le meilleur coup du moment s’affiche, avec
               sa raison, sans le demander. Sinon, touchez l’ampoule en haut de l’écran.
             </span>
@@ -680,21 +750,23 @@
         }
         @if (capacitesEnJeu().length) {
           <section aria-labelledby="titre-glossaire" class="flex flex-col gap-2">
-            <h3 id="titre-glossaire" class="font-semibold">
+            <h3 id="titre-glossaire" class="font-semibold" i18n>
               Capacités en jeu ({{ capacitesEnJeu().length }})
             </h3>
             <ng-container *ngTemplateOutlet="glossaire" />
           </section>
         }
-        <button type="button" class="bouton bouton-jeu self-end" (click)="fermerAide()">
+        <button type="button" class="bouton bouton-jeu self-end" (click)="fermerAide()" i18n>
           C’est parti
         </button>
       </div>
     </dialog>
 
     <ng-template #objectif>
-      <strong>Objectif :</strong> faire tomber le SLA du SI {{ autre().de }} à 0. Après 20 tours, le
-      meilleur SLA gagne.
+      <ng-container i18n
+        ><strong>Objectif :</strong> faire tomber le SLA du SI {{ autre().de }} à 0. Après 20 tours,
+        le meilleur SLA gagne.</ng-container
+      >
     </ng-template>
 
     <ng-template #glossaire>
@@ -734,10 +806,11 @@
                     id="titre-detail-plateau"
                     tabindex="-1"
                     class="text-lg font-bold focus:outline-none"
+                    i18n
                   >
                     SI {{ autre().de }}
                   </h3>
-                  <p class="text-sm text-texte-doux">
+                  <p class="text-sm text-texte-doux" i18n>
                     SLA {{ vue()?.adversaire?.sla }} / 20. À 0, {{ autre().nom }} a perdu : chaque
                     attaque qui l’atteint lui retire autant de SLA que l’attaque du composant.
                   </p>
@@ -757,20 +830,20 @@
                     {{ libelleType(c) }} · {{ libellesFamille[c.famille] }}
                   </p>
                   <p class="mt-1 flex flex-wrap items-center gap-x-3 text-sm font-semibold">
-                    <span class="flex items-center gap-1"
+                    <span class="flex items-center gap-1" i18n
                       ><hip-icone
                         nom="debit"
                         class="size-4 text-amber-600 dark:text-amber-400"
                       />Débit {{ c.cout }}</span
                     >
                     @if (c.attaque !== undefined) {
-                      <span class="flex items-center gap-1"
+                      <span class="flex items-center gap-1" i18n
                         ><hip-icone
                           nom="attaque"
                           class="size-4 text-red-600 dark:text-red-400"
                         />Attaque {{ c.attaque }}</span
                       >
-                      <span class="flex items-center gap-1"
+                      <span class="flex items-center gap-1" i18n
                         ><hip-icone nom="pv" class="size-4 text-blue-600 dark:text-blue-400" />PV
                         {{ c.pv }}</span
                       >
@@ -784,7 +857,7 @@
                 (click)="fermerDetail()"
               >
                 <hip-icone nom="fermer" class="size-5" />
-                <span class="sr-only">Fermer le détail</span>
+                <span class="sr-only" i18n>Fermer le détail</span>
               </button>
             </div>
 
@@ -792,13 +865,13 @@
               <!-- L'état du moment, tel que le serveur l'expose : rien n'est recalculé ici (ADR 0004). -->
               <dl class="flex flex-wrap gap-x-4 gap-y-1 rounded-lg bg-surface p-2 text-sm">
                 <div>
-                  <dt class="inline font-semibold">En jeu :</dt>
-                  <dd class="inline">
+                  <dt class="inline font-semibold" i18n>En jeu :</dt>
+                  <dd class="inline" i18n>
                     attaque {{ d.composant.attaque }}, PV {{ d.composant.pv }} / {{ d.carte.pv }}
                   </dd>
                 </div>
                 @if (d.composant.aAttaqueCeTour) {
-                  <div><dd class="inline">A déjà attaqué ce tour</dd></div>
+                  <div><dd class="inline" i18n>A déjà attaqué ce tour</dd></div>
                 }
                 @for (statut of statutsComposant(d.composant); track statut) {
                   <div>
@@ -821,6 +894,7 @@
                 <div
                   class="flex flex-wrap gap-2"
                   role="group"
+                  i18n-aria-label
                   aria-label="Actions pour la carte choisie"
                 >
                   @for (action of actionsCarte(); track $index) {
@@ -836,7 +910,7 @@
                 </div>
               } @else if (d.zone === 'moi') {
                 @if (attaquant() === d.id) {
-                  <p class="text-sm font-semibold">
+                  <p class="text-sm font-semibold" i18n>
                     Attaquant désigné : choisissez sa cible, un composant {{ autre().de }} ou son
                     SI, puis confirmez.
                   </p>
@@ -851,7 +925,7 @@
                   <p class="text-sm text-texte-doux">{{ d.composant.sansAttaque }}</p>
                 }
               } @else if (attaqueChoisie(); as attaque) {
-                <div class="flex flex-wrap gap-2" role="group" aria-label="Attaque">
+                <div class="flex flex-wrap gap-2" role="group" i18n-aria-label aria-label="Attaque">
                   <button
                     type="button"
                     class="bouton bouton-danger"
@@ -863,11 +937,20 @@
                 </div>
               } @else if (attaquant()) {
                 <p class="text-sm text-texte-doux">
-                  {{ nommer(attaquant()!) }} ne peut pas attaquer cette cible
-                  {{ gardesAdverses().length ? '(Garde)' : 'maintenant' }}.
+                  @if (gardesAdverses().length) {
+                    <ng-container i18n
+                      >{{ nommer(attaquant()!) }} ne peut pas attaquer cette cible
+                      (Garde).</ng-container
+                    >
+                  } @else {
+                    <ng-container i18n
+                      >{{ nommer(attaquant()!) }} ne peut pas attaquer cette cible
+                      maintenant.</ng-container
+                    >
+                  }
                 </p>
               } @else {
-                <p class="text-sm text-texte-doux">
+                <p class="text-sm text-texte-doux" i18n>
                   Pour l’attaquer : sélectionnez d’abord un de vos composants qui peut attaquer.
                 </p>
               }
@@ -876,7 +959,9 @@
                 @if (d.zone === 'main') {
                   {{ d.injouable }}
                 } @else {
-                  Ce n’est pas votre tour : vous pourrez attaquer au prochain.
+                  <ng-container i18n
+                    >Ce n’est pas votre tour : vous pourrez attaquer au prochain.</ng-container
+                  >
                 }
               </p>
             }
@@ -884,27 +969,26 @@
             @if (d.zone !== 'si') {
               @let c = d.carte;
               @if (c.origine !== undefined) {
-                <p class="text-sm">
-                  Évolution de
-                  <strong>{{ carteDe(c.origine)?.nom ?? 'la carte n° ' + c.origine }}</strong> :
-                  elle se pose à sa place.
+                <p class="text-sm" i18n>
+                  Évolution de <strong>{{ nomOrigine(c.origine) }}</strong> : elle se pose à sa
+                  place.
                 </p>
               }
               @if (c.effet) {
-                <p class="text-sm"><span class="font-semibold">Effet :</span> {{ c.effet }}</p>
+                <p class="text-sm"><span class="font-semibold" i18n>Effet :</span> {{ c.effet }}</p>
               }
               @if (c.capacites.length) {
                 <dl class="flex flex-col gap-1 text-sm">
                   @for (capacite of c.capacites; track capacite.id) {
                     <div>
-                      <dt class="me-1 inline font-semibold">{{ capacite.nom }} :</dt>
+                      <dt class="me-1 inline font-semibold" i18n>{{ capacite.nom }} :</dt>
                       <dd class="inline text-texte-doux">{{ capacite.description }}</dd>
                     </div>
                   }
                 </dl>
               }
               <p class="rounded-lg bg-surface p-2 text-sm">
-                <span class="font-semibold">En vrai :</span> {{ c.enVrai }}
+                <span class="font-semibold" i18n>En vrai :</span> {{ c.enVrai }}
               </p>
               <hip-en-savoir-plus
                 [carte]="c"
@@ -918,9 +1002,7 @@
     </ng-template>
   } @else if (echec(); as e) {
     <hip-erreur-chargement
-      [quoi]="
-        mode() === 'duel' ? 'Le duel n’a pas pu être chargé.' : 'La partie n’a pas pu être chargée.'
-      "
+      [quoi]="echecChargement()"
       [erreur]="e"
       [enCours]="nouvelEssai()"
       (reessayer)="reessayer()"
@@ -928,6 +1010,6 @@
   } @else if (erreur()) {
     <p role="alert" class="text-alerte">{{ erreur() }}</p>
   } @else {
-    <p>Chargement de la partie…</p>
+    <p i18n>Chargement de la partie…</p>
   }
 </main>

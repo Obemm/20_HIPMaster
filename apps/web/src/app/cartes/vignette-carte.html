@@ -7,7 +7,7 @@
     <span>{{ libelleRarete() }}</span>
     <span class="gemme-debit font-titre text-[max(0.6875rem,6cqw)] leading-none font-extrabold">
       <hip-icone nom="debit" class="size-[max(0.625rem,5cqw)]" />
-      <span class="sr-only">Débit </span>{{ c.cout }}
+      <span class="sr-only" i18n>Débit </span>{{ c.cout }}
     </span>
   </div>
 
@@ -67,11 +67,11 @@
     >
       <span class="flex items-center gap-[1.5cqw]">
         <hip-icone nom="attaque" class="size-[max(0.875rem,7cqw)] text-red-600 dark:text-red-400" />
-        <span class="sr-only">Attaque </span>{{ c.attaque }}
+        <span class="sr-only" i18n>Attaque </span>{{ c.attaque }}
       </span>
       <span class="flex items-center gap-[1.5cqw]">
         <hip-icone nom="pv" class="size-[max(0.875rem,7cqw)] text-blue-600 dark:text-blue-400" />
-        <span class="sr-only">PV </span>{{ c.pv }}
+        <span class="sr-only" i18n>PV </span>{{ c.pv }}
       </span>
     </div>
   }

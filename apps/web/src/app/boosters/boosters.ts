@@ -21,6 +21,7 @@ import { CompteService } from '../compte/compte.service';
 import { EtatSession } from '../compte/etat-session';
 import { PresenceService } from '../presence';
 import { ErreurChargement } from '../reseau/erreur-chargement';
+import { LOCALE } from '../langue';
 import { LIBELLES_RARETE, SYMBOLES_RARETE } from '../libelles';
 import { expliquer } from '../reseau/reseau';
 import { ChancesBooster } from './chances-booster';
@@ -53,7 +54,9 @@ export function annonceRecus({
   libelle,
   offerts,
 }: Pick<BoostersRecus, 'libelle' | 'offerts'>): string {
-  return `« ${libelle} » : ${offerts} ${offerts > 1 ? 'boosters offerts' : 'booster offert'} ! Ils vous attendent dans votre stock.`;
+  return offerts > 1
+    ? $localize`« ${libelle}:libelle: » : ${offerts}:nombre: boosters offerts ! Ils vous attendent dans votre stock.`
+    : $localize`« ${libelle}:libelle: » : ${offerts}:nombre: booster offert ! Ils vous attendent dans votre stock.`;
 }
 
 /**
@@ -143,7 +146,10 @@ export class BoostersEcran {
     const secondes = this.restant();
     if (secondes === null) return null;
     const minutes = Math.floor(secondes / 60);
-    return minutes > 0 ? `${minutes} min ${secondes % 60} s` : `${secondes} s`;
+    const reste = secondes % 60;
+    return minutes > 0
+      ? $localize`${minutes}:minutes: min ${reste}:secondes: s`
+      : $localize`${secondes}:secondes: s`;
   });
 
   constructor() {
@@ -180,7 +186,9 @@ export class BoostersEcran {
       );
       this.retournees.set(new Set());
       this.tirage.set(ouverture.cartes);
-      this.annonce.set(`Booster ouvert : ${ouverture.cartes.length} cartes, face cachée.`);
+      this.annonce.set(
+        $localize`Booster ouvert : ${ouverture.cartes.length}:nombre: cartes, face cachée.`,
+      );
       this.focaliser('#carte-cachee-0');
       this.afficher(ouverture.boosters);
       void this.collection.charger();
@@ -188,8 +196,8 @@ export class BoostersEcran {
       const vide = erreur instanceof HttpErrorResponse && erreur.status === 409;
       this.erreur.set(
         vide
-          ? 'Plus de booster en stock : attendez la prochaine recharge.'
-          : `Le booster n’a pas pu être ouvert. ${expliquer(erreur)}`,
+          ? $localize`Plus de booster en stock : attendez la prochaine recharge.`
+          : $localize`Le booster n’a pas pu être ouvert. ${expliquer(erreur)}:explication:`,
       );
       // Sans réponse, l'ouverture a pu aboutir quand même : le stock et la collection sont relus.
       if (!vide) void this.collection.charger();
@@ -217,8 +225,8 @@ export class BoostersEcran {
       const refuse = erreur instanceof HttpErrorResponse && erreur.status === 403;
       this.erreurCode.set(
         refuse
-          ? 'Ce code ne donne pas de booster : vérifiez-le. Il a pu expirer, être épuisé, ou vous l’avez déjà utilisé.'
-          : `Le code n’a pas pu être utilisé. ${expliquer(erreur)}`,
+          ? $localize`Ce code ne donne pas de booster : vérifiez-le. Il a pu expirer, être épuisé, ou vous l’avez déjà utilisé.`
+          : $localize`Le code n’a pas pu être utilisé. ${expliquer(erreur)}:raison:`,
       );
     } finally {
       this.occupeCode.set(false);
@@ -230,9 +238,13 @@ export class BoostersEcran {
     const r = this.revelees().find((carte) => carte.rang === rang);
     if (!r || r.retournee) return;
     this.retournees.update((rangs) => new Set([...rangs, rang]));
-    const rarete = LIBELLES_RARETE[r.carte.rarete].toLowerCase();
+    const rarete = LIBELLES_RARETE[r.carte.rarete].toLocaleLowerCase(LOCALE);
+    const position = rang + 1;
+    const nom = r.carte.nom;
     this.annonce.set(
-      `Carte ${rang + 1} : ${r.carte.nom}, ${rarete}${r.nouvelle ? ', nouvelle !' : '.'}`,
+      r.nouvelle
+        ? $localize`Carte ${position}:position: : ${nom}:nom:, ${rarete}:rarete:, nouvelle !`
+        : $localize`Carte ${position}:position: : ${nom}:nom:, ${rarete}:rarete:.`,
     );
     const suivante = this.revelees().find((carte) => !carte.retournee);
     this.focaliser(suivante ? `#carte-cachee-${suivante.rang}` : '#titre-tirage');

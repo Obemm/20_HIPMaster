@@ -16,7 +16,11 @@ import { expliquer } from './reseau';
         [disabled]="enCours()"
         (click)="reessayer.emit()"
       >
-        {{ enCours() ? 'Nouvel essai…' : 'Réessayer' }}
+        @if (enCours()) {
+          <ng-container i18n>Nouvel essai…</ng-container>
+        } @else {
+          <ng-container i18n>Réessayer</ng-container>
+        }
       </button>
     </p>
   `,

@@ -8,7 +8,7 @@ import { Component } from '@angular/core';
   selector: 'hip-paquet-booster',
   template: `
     <img src="/logo.svg" alt="" width="64" height="64" />
-    <span class="paquet-libelle">Set 1</span>
+    <span class="paquet-libelle" i18n>Set 1</span>
   `,
   host: { class: 'paquet', 'aria-hidden': 'true' },
 })

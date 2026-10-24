@@ -21,19 +21,28 @@ import type { Duel } from './modele';
   template: `
     <main class="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 py-8 sm:px-6">
       <div class="flex flex-col gap-2">
-        <p class="surtitre">Duel entre joueurs</p>
+        <p class="surtitre" i18n>Duel entre joueurs</p>
         <h1 class="titre-page">
-          {{ hasard() ? 'Adversaire au hasard' : 'Défier un collègue' }}
+          @if (hasard()) {
+            <ng-container i18n>Adversaire au hasard</ng-container>
+          } @else {
+            <ng-container i18n>Défier un collègue</ng-container>
+          }
         </h1>
       </div>
       @if (compte.joueur()) {
         <p class="text-texte-doux">
           @if (hasard()) {
-            Choisissez votre deck : vous affronterez le premier joueur qui attend un adversaire, ou
-            vous attendrez le suivant. Le duel se joue au tour par tour, chacun à son rythme.
+            <ng-container i18n
+              >Choisissez votre deck : vous affronterez le premier joueur qui attend un adversaire,
+              ou vous attendrez le suivant. Le duel se joue au tour par tour, chacun à son
+              rythme.</ng-container
+            >
           } @else {
-            Choisissez votre deck : vous obtiendrez un lien à envoyer à votre collègue. Le duel se
-            joue au tour par tour, chacun à son rythme.
+            <ng-container i18n
+              >Choisissez votre deck : vous obtiendrez un lien à envoyer à votre collègue. Le duel
+              se joue au tour par tour, chacun à son rythme.</ng-container
+            >
           }
         </p>
         @if (erreur()) {
@@ -50,11 +59,13 @@ import type { Duel } from './modele';
                     [disabled]="enCours() !== null"
                     (click)="defier(deck)"
                   >
-                    {{
-                      enCours() === deck.id
-                        ? 'Recherche…'
-                        : (hasard() ? 'Jouer avec ' : 'Défier avec ') + deck.nom
-                    }}
+                    @if (enCours() === deck.id) {
+                      <ng-container i18n>Recherche…</ng-container>
+                    } @else if (hasard()) {
+                      <ng-container i18n>Jouer avec {{ deck.nom }}</ng-container>
+                    } @else {
+                      <ng-container i18n>Défier avec {{ deck.nom }}</ng-container>
+                    }
                   </button>
                 </hip-boite-deck>
               </li>
@@ -62,16 +73,17 @@ import type { Duel } from './modele';
           </ul>
         } @else if (decks.error()) {
           <hip-erreur-chargement
+            i18n-quoi
             quoi="Les decks n’ont pas pu être chargés."
             [erreur]="decks.error()"
             [enCours]="decks.isLoading()"
             (reessayer)="decks.reload()"
           />
         } @else {
-          <p>Chargement des decks…</p>
+          <p i18n>Chargement des decks…</p>
         }
       } @else if (compte.pret()) {
-        <p>
+        <p i18n>
           Pour jouer en duel, il faut un compte.
           <a
             routerLink="/compte"
@@ -110,7 +122,7 @@ export class NouveauDefi {
       const duel = await firstValueFrom(this.http.post<Duel>(url, { deck: deck.id }));
       await this.router.navigate(['/duels', duel.id]);
     } catch (erreur) {
-      this.erreur.set(`Le duel n’a pas pu être créé. ${expliquer(erreur)}`);
+      this.erreur.set($localize`Le duel n’a pas pu être créé. ${expliquer(erreur)}:cause:`);
     } finally {
       this.enCours.set(null);
     }

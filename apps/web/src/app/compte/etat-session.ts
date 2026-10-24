@@ -13,13 +13,14 @@ import { CompteService } from './compte.service';
   template: `
     @if (compte.echec(); as echec) {
       <hip-erreur-chargement
+        i18n-quoi
         quoi="Votre session n’a pas pu être vérifiée, mais votre compte reste gardé par ce navigateur."
         [erreur]="echec"
         [enCours]="compte.enVerification()"
         (reessayer)="compte.reessayer()"
       />
     } @else {
-      <p>Vérification de votre session…</p>
+      <p i18n>Vérification de votre session…</p>
     }
   `,
 })

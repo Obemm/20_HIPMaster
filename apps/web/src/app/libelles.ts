@@ -1,10 +1,10 @@
 export type Rarete = 'commune' | 'rare' | 'epique' | 'legendaire';
 
 export const LIBELLES_RARETE: Record<Rarete, string> = {
-  commune: 'Commune',
-  rare: 'Rare',
-  epique: 'Épique',
-  legendaire: 'Légendaire',
+  commune: $localize`Commune`,
+  rare: $localize`Rare`,
+  epique: $localize`Épique`,
+  legendaire: $localize`Légendaire`,
 };
 
 /** Symbole affiché avec le libellé : la rareté ne se lit pas seulement à la couleur. */

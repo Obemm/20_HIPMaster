@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { effect, inject, Injectable, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { CompteService } from '../compte/compte.service';
+import { LANGUE } from '../langue';
 
 /** Le score d'un joueur ; `cote` vaut `null` tant qu'aucun duel n'est compté. */
 export interface Score {
@@ -16,8 +17,20 @@ export interface Classement {
   joueurs: (Score & { rang: number; moi: boolean })[];
 }
 
-/** « 1er », « 2e »… */
-export const ordinal = (rang: number): string => (rang === 1 ? '1er' : `${rang}e`);
+/** Suffixes des ordinaux anglais, selon la règle d'`Intl` (« 1st », « 2nd », « 3rd », « 11th »…). */
+const SUFFIXES_EN: Readonly<Record<string, string>> = {
+  one: 'st',
+  two: 'nd',
+  few: 'rd',
+  other: 'th',
+};
+const ORDINAUX_EN = new Intl.PluralRules('en', { type: 'ordinal' });
+
+/** « 1er », « 2e »… ; « 1st », « 2nd »… dans la version anglaise (US-080). */
+export const ordinal = (rang: number): string => {
+  if (LANGUE === 'en') return `${rang}${SUFFIXES_EN[ORDINAUX_EN.select(rang)] ?? 'th'}`;
+  return rang === 1 ? '1er' : `${rang}e`;
+};
 
 /**
  * Score et classement du joueur connecté (US-069). Le serveur les calcule (ADR 0004, 0044) : le front ne fait que les

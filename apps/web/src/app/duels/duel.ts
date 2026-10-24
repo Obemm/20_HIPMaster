@@ -130,7 +130,9 @@ export class DuelEcran {
     } catch (erreur) {
       const statut = erreur instanceof HttpErrorResponse ? erreur.status : 0;
       if (statut === 409 || statut === 404 || statut === 410) {
-        this.erreur.set('Ce défi n’est plus disponible : il a été relevé, annulé ou a expiré.');
+        this.erreur.set(
+          $localize`Ce défi n’est plus disponible : il a été relevé, annulé ou a expiré.`,
+        );
         await this.charger();
       } else {
         this.erreur.set(expliquer(erreur));

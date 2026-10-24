@@ -49,7 +49,9 @@ export class ChoixDeck {
       const partie = await firstValueFrom(this.http.post<Partie>('/api/v1/parties', corps));
       await this.router.navigate(['/jouer', partie.id]);
     } catch (erreur) {
-      this.erreur.set(`La partie n’a pas pu être créée. ${expliquer(erreur)}`);
+      this.erreur.set(
+        $localize`La partie n’a pas pu être créée. ${expliquer(erreur)}:explication:`,
+      );
     } finally {
       this.enCours.set(null);
     }

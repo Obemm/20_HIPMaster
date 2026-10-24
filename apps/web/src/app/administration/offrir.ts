@@ -16,6 +16,7 @@ import { CompteService } from '../compte/compte.service';
 import { EtatSession } from '../compte/etat-session';
 import { ErreurChargement } from '../reseau/erreur-chargement';
 import { expliquer } from '../reseau/reseau';
+import { LOCALE } from '../langue';
 import { dateDans } from './inviter';
 
 /** Un code de boosters, tel que l'API le montre à un administrateur : jamais le code (contrat administration.yaml). */
@@ -46,32 +47,38 @@ export interface Beneficiaire {
 }
 
 export const LIBELLES_STATUT_CODE: Record<CodeBoosters['statut'], string> = {
-  actif: 'Actif',
-  epuise: 'Épuisé',
-  expire: 'Expiré',
-  revoque: 'Révoqué',
+  actif: $localize`Actif`,
+  epuise: $localize`Épuisé`,
+  expire: $localize`Expiré`,
+  revoque: $localize`Révoqué`,
 };
 
-const dateLongue = new Intl.DateTimeFormat('fr-FR', { dateStyle: 'long', timeZone: 'UTC' });
-const dateLocale = new Intl.DateTimeFormat('fr-FR', { dateStyle: 'long' });
-const dateHeure = new Intl.DateTimeFormat('fr-FR', { dateStyle: 'medium', timeStyle: 'short' });
-
-const pluriel = (n: number, un: string, plusieurs: string) => `${n} ${n > 1 ? plusieurs : un}`;
+const dateLongue = new Intl.DateTimeFormat(LOCALE, { dateStyle: 'long', timeZone: 'UTC' });
+const dateLocale = new Intl.DateTimeFormat(LOCALE, { dateStyle: 'long' });
+const dateHeure = new Intl.DateTimeFormat(LOCALE, { dateStyle: 'medium', timeStyle: 'short' });
 
 /** « 3 boosters par joueur · 2 joueurs sur 10 », « 1 booster par joueur · Personne sur 5 ». */
 export function usageCode(
   code: Pick<CodeBoosters, 'boosters' | 'utilisations' | 'utilisationsMax'>,
 ): string {
   const { boosters, utilisations, utilisationsMax } = code;
-  const parJoueur = `${pluriel(boosters, 'booster', 'boosters')} par joueur`;
-  const joueurs = utilisations === 0 ? 'Personne' : pluriel(utilisations, 'joueur', 'joueurs');
-  return `${parJoueur} · ${joueurs} sur ${utilisationsMax}`;
+  const parJoueur =
+    boosters > 1
+      ? $localize`${boosters}:nombre: boosters par joueur`
+      : $localize`${boosters}:nombre: booster par joueur`;
+  let joueurs: string;
+  if (utilisations === 0) joueurs = $localize`Personne sur ${utilisationsMax}:total:`;
+  else if (utilisations === 1) joueurs = $localize`1 joueur sur ${utilisationsMax}:total:`;
+  else joueurs = $localize`${utilisations}:nombre: joueurs sur ${utilisationsMax}:total:`;
+  return `${parJoueur} · ${joueurs}`;
 }
 
 /** « valable jusqu'au 31 décembre 2026 », ou « révoqué le 24 octobre 2026 » : le dernier jour, minuit UTC exclu. */
 export function echeanceCode(code: Pick<CodeBoosters, 'expireLe' | 'revoqueLe'>): string {
-  if (code.revoqueLe) return `révoqué le ${dateLocale.format(new Date(code.revoqueLe))}`;
-  return `valable jusqu’au ${dateLongue.format(new Date(Date.parse(code.expireLe) - 1))}`;
+  if (code.revoqueLe) {
+    return $localize`révoqué le ${dateLocale.format(new Date(code.revoqueLe))}:date:`;
+  }
+  return $localize`valable jusqu’au ${dateLongue.format(new Date(Date.parse(code.expireLe) - 1))}:date:`;
 }
 
 /**
@@ -172,8 +179,8 @@ export class OffrirEcran {
   protected async partager(cree: CodeBoostersCree): Promise<void> {
     try {
       await navigator.share({
-        title: 'Des boosters HIPMaster',
-        text: `Bravo : « ${cree.codeBoosters.libelle} » ! Des boosters HIPMaster vous attendent avec ce lien.`,
+        title: $localize`Des boosters HIPMaster`,
+        text: $localize`Bravo : « ${cree.codeBoosters.libelle}:libelle: » ! Des boosters HIPMaster vous attendent avec ce lien.`,
         url: cree.lien,
       });
     } catch {
@@ -203,6 +210,24 @@ export class OffrirEcran {
     });
   }
 
+  // Libellés nommés pour les lecteurs d'écran, calculés ici : un `aria-label` traduit qui interpole n'est pas rendu
+  // sur un bouton au contenu traduit (US-080).
+  protected libelleRevoquer(code: CodeBoosters): string {
+    return $localize`Révoquer « ${code.libelle}:libelle: »`;
+  }
+
+  protected libelleConfirmation(code: CodeBoosters): string {
+    return $localize`Confirmer la révocation de « ${code.libelle}:libelle: »`;
+  }
+
+  protected libelleQui(code: CodeBoosters): string {
+    return $localize`Qui l’a utilisé ? « ${code.libelle}:libelle: »`;
+  }
+
+  protected libelleBeneficiaires(code: CodeBoosters): string {
+    return $localize`Bénéficiaires de « ${code.libelle}:libelle: »`;
+  }
+
   protected demanderRevocation(id: string): void {
     this.aRevoquer.set(id);
     this.focaliser(`garder-${id}`);
@@ -221,7 +246,7 @@ export class OffrirEcran {
       this.codes.update((liste) => (liste ?? []).map((c) => (c.id === revoque.id ? revoque : c)));
       if (this.cree()?.codeBoosters.id === revoque.id) this.cree.set(null);
       this.info.set(
-        `Code « ${revoque.libelle} » révoqué : il n’offre plus de booster ; les boosters déjà reçus restent.`,
+        $localize`Code « ${revoque.libelle}:libelle: » révoqué : il n’offre plus de booster ; les boosters déjà reçus restent.`,
       );
       this.focaliser(`code-${revoque.id}`);
     });
@@ -239,10 +264,8 @@ export class OffrirEcran {
     } catch (erreur) {
       const statut = erreur instanceof HttpErrorResponse ? erreur.status : 0;
       const messages: Partial<Record<number, string>> = {
-        400:
-          'Code refusé : une réussite de 1 à 80 caractères, de 1 à 20 boosters, de 1 à 1000 joueurs, ' +
-          'et une date limite à partir d’aujourd’hui.',
-        404: 'Ce code n’est plus en cours, ou ce compte n’est plus administrateur.',
+        400: $localize`Code refusé : une réussite de 1 à 80 caractères, de 1 à 20 boosters, de 1 à 1000 joueurs, et une date limite à partir d’aujourd’hui.`,
+        404: $localize`Ce code n’est plus en cours, ou ce compte n’est plus administrateur.`,
       };
       this.erreur.set(messages[statut] ?? expliquer(erreur));
     } finally {

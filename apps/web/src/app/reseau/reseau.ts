@@ -42,20 +42,22 @@ function dureeLisible(ms: number): string {
 /** La cause d'un échec, avec les mots d'un joueur et ce qu'il peut y faire (US-055). */
 export function expliquer(erreur: unknown): string {
   if (!(erreur instanceof HttpErrorResponse)) {
-    return 'Une erreur inattendue est survenue : réessayez dans un instant.';
+    return $localize`Une erreur inattendue est survenue : réessayez dans un instant.`;
   }
   if (erreur.status === 429) {
     const attente = attenteDemandee(erreur);
-    const duree = attente ? dureeLisible(attente) : 'un instant';
-    return `Trop de demandes en peu de temps : patientez ${duree}, puis réessayez.`;
+    const duree = attente ? dureeLisible(attente) : $localize`un instant`;
+    return $localize`Trop de demandes en peu de temps : patientez ${duree}:duree:, puis réessayez.`;
   }
-  if (erreur.status === 0) return 'Serveur injoignable : vérifiez votre connexion, puis réessayez.';
+  if (erreur.status === 0) {
+    return $localize`Serveur injoignable : vérifiez votre connexion, puis réessayez.`;
+  }
   if ([408, 502, 503, 504].includes(erreur.status)) {
-    return 'Serveur injoignable pour le moment : réessayez dans un instant.';
+    return $localize`Serveur injoignable pour le moment : réessayez dans un instant.`;
   }
   if (erreur.status >= 500)
-    return 'Le serveur a rencontré un problème : réessayez dans un instant.';
-  return 'La demande n’a pas abouti : réessayez dans un instant.';
+    return $localize`Le serveur a rencontré un problème : réessayez dans un instant.`;
+  return $localize`La demande n’a pas abouti : réessayez dans un instant.`;
 }
 
 /**

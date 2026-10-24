@@ -51,14 +51,14 @@ export interface CarteDetaillee extends Carte {
 }
 
 export const LIBELLES_FAMILLE: Record<Famille, string> = {
-  fichiers: 'Fichiers & Batch',
-  esb: 'Messagerie & ESB',
-  api: 'API',
-  ipaas: 'iPaaS',
-  eda: 'Événementiel (EDA)',
-  ia: 'IA agentique',
-  patterns: 'Patterns',
-  bestiaire: 'Bestiaire',
+  fichiers: $localize`Fichiers & Batch`,
+  esb: $localize`Messagerie & ESB`,
+  api: $localize`API`,
+  ipaas: $localize`iPaaS`,
+  eda: $localize`Événementiel (EDA)`,
+  ia: $localize`IA agentique`,
+  patterns: $localize`Patterns`,
+  bestiaire: $localize`Bestiaire`,
 };
 
 /**
@@ -79,12 +79,12 @@ export const ILLUSTRATIONS_FAMILLE: Record<Famille, string> = {
 export function libelleType(carte: Carte): string {
   switch (carte.type) {
     case 'composant':
-      return 'Composant';
+      return $localize`Composant`;
     case 'evolution':
-      return 'Évolution';
+      return $localize`Évolution`;
     case 'sort':
-      return 'Sort';
+      return $localize`Sort`;
     case 'incident':
-      return carte.ia ? 'Incident IA' : 'Incident';
+      return carte.ia ? $localize`Incident IA` : $localize`Incident`;
   }
 }

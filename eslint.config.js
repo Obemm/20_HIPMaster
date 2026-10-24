@@ -53,5 +53,39 @@ export default defineConfig([
     files: ['apps/web/**/*.html'],
     extends: [angular.configs.templateRecommended, angular.configs.templateAccessibility],
   },
+  {
+    // Aucun texte d'interface en dur (US-080, ADR 0042) : tout texte et tout attribut lu par le joueur porte `i18n`.
+    // Les attributs techniques (identifiants, classes, SVG…) n'ont rien à traduire.
+    // index.html est traduit à part, par la coquille de chaque langue (scripts/langues/assembler-site.ts).
+    files: ['apps/web/src/app/**/*.html'],
+    ignores: ['**/*.spec.ts/**'],
+    rules: {
+      '@angular-eslint/template/i18n': [
+        'error',
+        {
+          checkId: false,
+          ignoreAttributes: [
+            'aria-labelledby',
+            'aria-describedby',
+            'aria-controls',
+            'aria-haspopup',
+            'aria-live',
+            'ariaCurrentWhenActive',
+            'decoding',
+            'inputmode',
+            'loading',
+            'rel',
+            'mode',
+            'nom',
+            'stroke-linecap',
+            'stroke-linejoin',
+            'quoi',
+            'scope',
+            'autocapitalize',
+          ],
+        },
+      ],
+    },
+  },
   prettier,
 ]);

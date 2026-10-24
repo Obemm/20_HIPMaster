@@ -1,12 +1,12 @@
 <main class="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 py-8 sm:px-6">
   <div class="flex flex-col gap-2">
-    <p class="surtitre">Set 1 · De FTP aux agents</p>
-    <h1 class="titre-page">Ma collection</h1>
+    <p class="surtitre" i18n>Set 1 · De FTP aux agents</p>
+    <h1 class="titre-page" i18n>Ma collection</h1>
   </div>
 
   @if (!compte.joueur()) {
     @if (compte.pret()) {
-      <p>
+      <p i18n>
         Votre collection se remplit en ouvrant des boosters : il faut un compte pour la garder.
         <a routerLink="/compte" class="lien">Créer un compte</a>
         en un clic (un pseudo suffit) : 5 boosters vous sont offerts.
@@ -16,7 +16,7 @@
     }
   } @else if (progression(); as p) {
     <section aria-labelledby="titre-progression" class="panneau flex flex-col gap-3 p-4">
-      <h2 id="titre-progression" class="text-xl font-extrabold">
+      <h2 id="titre-progression" class="text-xl font-extrabold" i18n>
         Set 1 : {{ p.obtenues }} / {{ p.total }} cartes
       </h2>
       <div
@@ -43,35 +43,39 @@
         }
       </ul>
       @if (p.obtenues === 0) {
-        <p>
+        <p i18n>
           Votre collection est vide :
           <a routerLink="/boosters" class="lien">ouvrez un booster</a>.
         </p>
       }
     </section>
 
-    <form class="panneau grid gap-3 p-4 sm:grid-cols-3" aria-label="Filtrer la collection">
+    <form
+      class="panneau grid gap-3 p-4 sm:grid-cols-3"
+      i18n-aria-label
+      aria-label="Filtrer la collection"
+    >
       <div class="flex flex-col gap-1">
-        <label for="filtre-possession" class="etiquette">Possession</label>
+        <label for="filtre-possession" class="etiquette" i18n>Possession</label>
         <select id="filtre-possession" class="champ" (change)="choisirPossession($event)">
-          <option value="">Toutes les cartes</option>
-          <option value="possedees">Possédées</option>
-          <option value="manquantes">Manquantes</option>
+          <option value="" i18n>Toutes les cartes</option>
+          <option value="possedees" i18n>Possédées</option>
+          <option value="manquantes" i18n>Manquantes</option>
         </select>
       </div>
       <div class="flex flex-col gap-1">
-        <label for="filtre-famille" class="etiquette">Famille</label>
+        <label for="filtre-famille" class="etiquette" i18n>Famille</label>
         <select id="filtre-famille" class="champ" (change)="choisirFamille($event)">
-          <option value="">Toutes les familles</option>
+          <option value="" i18n>Toutes les familles</option>
           @for (f of familles; track f[0]) {
             <option [value]="f[0]">{{ f[1] }}</option>
           }
         </select>
       </div>
       <div class="flex flex-col gap-1">
-        <label for="filtre-rarete" class="etiquette">Rareté</label>
+        <label for="filtre-rarete" class="etiquette" i18n>Rareté</label>
         <select id="filtre-rarete" class="champ" (change)="choisirRarete($event)">
-          <option value="">Toutes les raretés</option>
+          <option value="" i18n>Toutes les raretés</option>
           @for (r of raretes; track r[0]) {
             <option [value]="r[0]">{{ symbolesRarete[r[0]] }} {{ r[1] }}</option>
           }
@@ -79,17 +83,11 @@
       </div>
     </form>
 
-    <p role="status" class="font-semibold">
-      @switch (affichees().length) {
-        @case (0) {
-          Aucune carte ne correspond à ces filtres.
-        }
-        @case (1) {
-          1 carte affichée
-        }
-        @default {
-          {{ affichees().length }} cartes affichées
-        }
+    <p role="status" class="font-semibold" i18n>
+      {affichees().length, plural,
+        =0 {Aucune carte ne correspond à ces filtres.}
+        =1 {1 carte affichée}
+        other {{{ affichees().length }} cartes affichées}
       }
     </p>
 
@@ -100,10 +98,12 @@
             @if (l.exemplaires > 0) {
               <span class="statut statut-a-jouer"
                 >× {{ l.exemplaires
-                }}<span class="sr-only"> exemplaire{{ l.exemplaires > 1 ? 's' : '' }}</span></span
+                }}<span class="sr-only" i18n>
+                  {l.exemplaires, plural, =1 {exemplaire} other {exemplaires}}</span
+                ></span
               >
             } @else {
-              <span class="statut statut-attente">Manquante</span>
+              <span class="statut statut-attente" i18n>Manquante</span>
             }
           </p>
           <hip-vignette-carte
@@ -116,13 +116,14 @@
     </ul>
   } @else if (echec(); as e) {
     <hip-erreur-chargement
+      i18n-quoi
       quoi="La collection n’a pas pu être chargée."
       [erreur]="e"
       [enCours]="nouvelEssai()"
       (reessayer)="reessayer()"
     />
   } @else {
-    <p>Chargement de la collection…</p>
+    <p i18n>Chargement de la collection…</p>
   }
 </main>
 

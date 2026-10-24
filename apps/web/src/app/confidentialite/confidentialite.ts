@@ -14,21 +14,27 @@ export interface Conservation {
  */
 export const CONSERVATIONS: readonly Conservation[] = [
   {
-    donnees: 'Votre compte, votre collection, vos récompenses, vos résultats et votre score',
-    duree: 'sans limite, jusqu’à ce que vous supprimiez votre compte',
+    donnees: $localize`Votre compte, votre collection, vos récompenses, vos résultats et votre score`,
+    duree: $localize`sans limite, jusqu’à ce que vous supprimiez votre compte`,
   },
   {
-    donnees: 'Une session inutilisée (il suffit ensuite de se reconnecter avec son code)',
-    duree: '90 jours sans utilisation',
+    donnees: $localize`Une session inutilisée (il suffit ensuite de se reconnecter avec son code)`,
+    duree: $localize`90 jours sans utilisation`,
   },
   {
-    donnees: 'Une partie contre le bot abandonnée (une récompense gagnée reste acquise)',
-    duree: '24 heures sans coup joué',
+    donnees: $localize`Une partie contre le bot abandonnée (une récompense gagnée reste acquise)`,
+    duree: $localize`24 heures sans coup joué`,
   },
-  { donnees: 'Un défi jamais accepté', duree: '7 jours' },
-  { donnees: 'Les journaux techniques (adresses IP comprises)', duree: '30 jours au plus' },
-  { donnees: 'Les sauvegardes de la base', duree: '30 jours au plus' },
-  { donnees: 'Les compteurs anti-abus (adresse IP)', duree: 'une heure au plus, en mémoire' },
+  { donnees: $localize`Un défi jamais accepté`, duree: $localize`7 jours` },
+  {
+    donnees: $localize`Les journaux techniques (adresses IP comprises)`,
+    duree: $localize`30 jours au plus`,
+  },
+  { donnees: $localize`Les sauvegardes de la base`, duree: $localize`30 jours au plus` },
+  {
+    donnees: $localize`Les compteurs anti-abus (adresse IP)`,
+    duree: $localize`une heure au plus, en mémoire`,
+  },
 ];
 
 /** Page « À propos et confidentialité » (US-053) : qui édite le jeu, ce qu'il garde, pourquoi, combien de temps. */

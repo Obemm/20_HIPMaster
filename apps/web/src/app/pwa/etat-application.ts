@@ -13,7 +13,7 @@ import { SwUpdate, type VersionEvent } from '@angular/service-worker';
   template: `
     @if (horsLigne()) {
       <p role="status" class="bandeau-etat">
-        <span
+        <span i18n
           ><strong>Pas de réseau.</strong> HIPMaster se joue en ligne : vos cartes et vos parties
           sont gardées par le serveur. Reconnectez-vous pour continuer.</span
         >
@@ -21,8 +21,13 @@ import { SwUpdate, type VersionEvent } from '@angular/service-worker';
     }
     @if (nouvelleVersion()) {
       <div role="status" class="bandeau-etat">
-        <p>Une nouvelle version de HIPMaster est prête.</p>
-        <button type="button" class="bouton bouton-jeu bouton-petit shrink-0" (click)="recharger()">
+        <p i18n>Une nouvelle version de HIPMaster est prête.</p>
+        <button
+          type="button"
+          class="bouton bouton-jeu bouton-petit shrink-0"
+          (click)="recharger()"
+          i18n
+        >
           Recharger
         </button>
       </div>

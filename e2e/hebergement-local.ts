@@ -4,7 +4,7 @@
  * /api/** vers l'API locale comme la réécriture vers Cloud Run (sans les cookies, que Hosting ne transmet pas).
  * Seul ajout : un `report-uri` dans la CSP, pour consigner chaque violation ; bilan-csp.ts les relit à la fin.
  *
- * Usage : node e2e/hebergement-local.ts (port 4300), une fois le front construit (npm run build) ; l'API attendue
+ * Usage : node e2e/hebergement-local.ts (port 4300, ou SITE_PORT), une fois le front construit (npm run build) ; l'API attendue
  * écoute sur API_PORT (3000 par défaut).
  */
 import { createReadStream } from 'node:fs';
@@ -13,7 +13,8 @@ import { createServer, type IncomingMessage, request, type ServerResponse } from
 import { extname, join, resolve } from 'node:path';
 import { entetesPour, lireConfiguration, reecriturePour } from '../scripts/gcp/hebergement.ts';
 
-const PORT = 4300;
+/** 4300 par défaut ; `SITE_PORT` pour lancer les parcours à côté de ceux d'une autre session. */
+const PORT = Number(process.env.SITE_PORT ?? 4300);
 const API = { host: '127.0.0.1', port: Number(process.env.API_PORT ?? 3000) };
 /** Rapports de violation de la CSP : sous /__/, préfixe que Hosting se réserve (aucune route du jeu n'y mène). */
 const RAPPORTS = '/__/rapports-csp';

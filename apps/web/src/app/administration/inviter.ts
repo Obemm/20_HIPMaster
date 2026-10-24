@@ -15,6 +15,7 @@ import { firstValueFrom } from 'rxjs';
 import { CompteService } from '../compte/compte.service';
 import { EtatSession } from '../compte/etat-session';
 import { ErreurChargement } from '../reseau/erreur-chargement';
+import { LOCALE } from '../langue';
 import { expliquer } from '../reseau/reseau';
 
 /** Une invitation, telle que l'API la montre à un administrateur : jamais son code (contrat administration.yaml). */
@@ -38,15 +39,15 @@ export interface InvitationCreee {
 }
 
 export const LIBELLES_STATUT: Record<Invitation['statut'], string> = {
-  active: 'Active',
-  epuisee: 'Épuisée',
-  expiree: 'Expirée',
-  revoquee: 'Révoquée',
+  active: $localize`Active`,
+  epuisee: $localize`Épuisée`,
+  expiree: $localize`Expirée`,
+  revoquee: $localize`Révoquée`,
 };
 
 const JOUR_MS = 24 * 60 * 60 * 1000;
-const dateLongue = new Intl.DateTimeFormat('fr-FR', { dateStyle: 'long', timeZone: 'UTC' });
-const dateLocale = new Intl.DateTimeFormat('fr-FR', { dateStyle: 'long' });
+const dateLongue = new Intl.DateTimeFormat(LOCALE, { dateStyle: 'long', timeZone: 'UTC' });
+const dateLocale = new Intl.DateTimeFormat(LOCALE, { dateStyle: 'long' });
 
 /** La date du jour, ou de `jours` jours plus tard, au format d'un champ date (`AAAA-MM-JJ`, fuseau du joueur). */
 export function dateDans(jours: number, maintenant = new Date()): string {
@@ -58,8 +59,9 @@ export function dateDans(jours: number, maintenant = new Date()): string {
 /** « 3 comptes créés sur 20 », « Aucun compte créé sur 5 ». */
 export function usage(invitation: Pick<Invitation, 'utilisations' | 'utilisationsMax'>): string {
   const { utilisations, utilisationsMax } = invitation;
-  if (utilisations === 0) return `Aucun compte créé sur ${utilisationsMax}`;
-  return `${utilisations} ${utilisations > 1 ? 'comptes créés' : 'compte créé'} sur ${utilisationsMax}`;
+  if (utilisations === 0) return $localize`Aucun compte créé sur ${utilisationsMax}:total:`;
+  if (utilisations === 1) return $localize`1 compte créé sur ${utilisationsMax}:total:`;
+  return $localize`${utilisations}:nombre: comptes créés sur ${utilisationsMax}:total:`;
 }
 
 /**
@@ -68,10 +70,11 @@ export function usage(invitation: Pick<Invitation, 'utilisations' | 'utilisation
  */
 export function echeance(invitation: Pick<Invitation, 'expireLe' | 'revoqueeLe'>): string {
   if (invitation.revoqueeLe) {
-    return `révoquée le ${dateLocale.format(new Date(invitation.revoqueeLe))}`;
+    const revoqueeLe = dateLocale.format(new Date(invitation.revoqueeLe));
+    return $localize`révoquée le ${revoqueeLe}:date:`;
   }
   const dernierJour = dateLongue.format(new Date(Date.parse(invitation.expireLe) - 1));
-  return `valable jusqu’au ${dernierJour}`;
+  return $localize`valable jusqu’au ${dernierJour}:date:`;
 }
 
 /**
@@ -102,6 +105,16 @@ export class InviterEcran {
   /** L'invitation qui vient d'être créée, avec son code et son lien (montrés cette seule fois). */
   protected readonly creee = signal<InvitationCreee | null>(null);
   protected readonly invitations = signal<Invitation[] | null>(null);
+
+  // Un `aria-label` traduit qui interpole n'est pas rendu sur un élément dont le contenu est lui-même traduit : les
+  // libellés nommés passent donc par le code (US-080).
+  protected libelleRevoquer(invitation: Invitation): string {
+    return $localize`Révoquer « ${invitation.libelle}:libelle: »`;
+  }
+
+  protected libelleConfirmation(invitation: Invitation): string {
+    return $localize`Confirmer la révocation de « ${invitation.libelle}:libelle: »`;
+  }
   protected readonly panne = signal<unknown>(null);
   protected readonly enLecture = signal(false);
   /** L'invitation dont la révocation attend confirmation. */
@@ -170,8 +183,8 @@ export class InviterEcran {
   protected async partager(creee: InvitationCreee): Promise<void> {
     try {
       await navigator.share({
-        title: 'Invitation à HIPMaster',
-        text: 'Une invitation à jouer à HIPMaster, le jeu de cartes de l’IT : créez votre compte avec ce lien.',
+        title: $localize`Invitation à HIPMaster`,
+        text: $localize`Une invitation à jouer à HIPMaster, le jeu de cartes de l’IT : créez votre compte avec ce lien.`,
         url: creee.lien,
       });
     } catch {
@@ -205,7 +218,7 @@ export class InviterEcran {
       );
       if (this.creee()?.invitation.id === revoquee.id) this.creee.set(null);
       this.info.set(
-        `Invitation « ${revoquee.libelle} » révoquée : son lien ne crée plus de compte ; les comptes déjà créés restent.`,
+        $localize`Invitation « ${revoquee.libelle}:libelle: » révoquée : son lien ne crée plus de compte ; les comptes déjà créés restent.`,
       );
       this.focaliser(`invitation-${revoquee.id}`);
     });
@@ -223,10 +236,8 @@ export class InviterEcran {
     } catch (erreur) {
       const statut = erreur instanceof HttpErrorResponse ? erreur.status : 0;
       const messages: Partial<Record<number, string>> = {
-        400:
-          'Invitation refusée : un libellé de 1 à 80 caractères, de 1 à 1000 comptes, et une date limite ' +
-          'à partir d’aujourd’hui.',
-        404: 'Cette invitation n’est plus en cours, ou ce compte n’est plus administrateur.',
+        400: $localize`Invitation refusée : un libellé de 1 à 80 caractères, de 1 à 1000 comptes, et une date limite à partir d’aujourd’hui.`,
+        404: $localize`Cette invitation n’est plus en cours, ou ce compte n’est plus administrateur.`,
       };
       this.erreur.set(messages[statut] ?? expliquer(erreur));
     } finally {

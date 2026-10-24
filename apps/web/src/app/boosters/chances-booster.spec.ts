@@ -23,9 +23,10 @@ describe('ChancesBooster', () => {
     const page = fixture.nativeElement as HTMLElement;
     expect(page.querySelector('h2')?.textContent).toBe('Chances par booster');
     expect(page.textContent).toContain('Commune');
-    expect(page.textContent).toContain('70 %');
+    // Intl sépare le nombre du signe par une espace fine insécable (U+202F) en français.
+    expect(page.textContent).toMatch(/70\s%/);
     expect(page.textContent).toContain('★ Légendaire');
-    expect(page.textContent).toContain('1 %');
+    expect(page.textContent).toMatch(/Légendaire1\s%/);
   });
 
   it('prévient en mots de joueur quand le serveur ne répond pas, et propose de réessayer', async () => {
@@ -44,7 +45,7 @@ describe('ChancesBooster', () => {
     TestBed.tick();
     http.expectOne('/api/v1/raretes').flush([{ rarete: 'commune', chance: 0.7 }]);
     await fixture.whenStable();
-    expect(page.textContent).toContain('70 %');
+    expect(page.textContent).toMatch(/70\s%/);
     expect(page.querySelector('[role="alert"]')).toBeNull();
   });
 });

@@ -52,7 +52,7 @@ export class EnSavoirPlus {
   protected readonly erreur = computed(() => (this.charger() ? this.detail.error() : undefined));
   /** Un incident ne « sert » à rien : sa fiche dit plutôt comment il survient. */
   protected readonly titreUsage = computed(() =>
-    this.carte().type === 'incident' ? 'Comment ça arrive ?' : 'À quoi ça sert ?',
+    this.carte().type === 'incident' ? $localize`Comment ça arrive ?` : $localize`À quoi ça sert ?`,
   );
 
   protected basculer(): void {

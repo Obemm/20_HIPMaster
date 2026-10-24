@@ -1,5 +1,5 @@
 <main class="mx-auto flex w-full max-w-xl flex-col gap-6 px-4 py-8 sm:px-6">
-  <h1 class="titre-page">Mon compte</h1>
+  <h1 class="titre-page" i18n>Mon compte</h1>
 
   @if (invitation()?.trim() && compte.pret() && !compte.joueur() && !codeAffiche()) {
     <!-- L'arrivée d'un invité (US-061) : on voit le jeu avant le formulaire. -->
@@ -8,8 +8,8 @@
       class="panneau flex flex-col items-center gap-2 overflow-hidden px-4 pt-2 pb-5 text-center"
     >
       <hip-eventail-cartes [cartes]="vedettes()" />
-      <h2 id="titre-bienvenue" class="text-2xl font-extrabold">Bienvenue dans HIPMaster !</h2>
-      <p class="text-texte-doux">
+      <h2 id="titre-bienvenue" class="text-2xl font-extrabold" i18n>Bienvenue dans HIPMaster !</h2>
+      <p class="text-texte-doux" i18n>
         Vous êtes invité·e au jeu de cartes de l’intégration : choisissez un pseudo, et 5 boosters
         vous attendent.
       </p>
@@ -18,10 +18,18 @@
 
   @if (compte.expiree()) {
     <p role="alert" class="panneau border-2 border-accent p-3">
-      <strong>Session expirée</strong> : ce navigateur n’est plus connecté à votre compte.
-      Retrouvez-le avec votre code de récupération{{
-        retourSur() ? ' ; vous reviendrez ensuite à votre page' : ''
-      }}.
+      @if (retourSur()) {
+        <ng-container i18n
+          ><strong>Session expirée</strong> : ce navigateur n’est plus connecté à votre compte.
+          Retrouvez-le avec votre code de récupération ; vous reviendrez ensuite à votre
+          page.</ng-container
+        >
+      } @else {
+        <ng-container i18n
+          ><strong>Session expirée</strong> : ce navigateur n’est plus connecté à votre compte.
+          Retrouvez-le avec votre code de récupération.</ng-container
+        >
+      }
     </p>
   }
 
@@ -30,7 +38,7 @@
   }
 
   @if (supprime()) {
-    <p role="status" class="panneau border-2 border-accent p-3">
+    <p role="status" class="panneau border-2 border-accent p-3" i18n>
       <strong>Votre compte a été supprimé</strong>, sur tous vos appareils. Vous pouvez continuer à
       jouer contre le bot sans compte, ou en créer un nouveau.
     </p>
@@ -41,46 +49,52 @@
       aria-labelledby="titre-code"
       class="panneau flex flex-col gap-3 border-2 border-action p-4"
     >
-      <h2 id="titre-code" class="text-xl font-extrabold">Votre code de récupération</h2>
+      <h2 id="titre-code" class="text-xl font-extrabold" i18n>Votre code de récupération</h2>
       <p class="font-mono text-2xl font-bold tracking-widest">{{ code }}</p>
-      <p class="text-sm">
+      <p class="text-sm" i18n>
         <strong>Notez-le maintenant</strong> : il ne sera plus jamais affiché. Il permet de
         retrouver votre compte sur un autre appareil. Sans lui, un compte perdu ne se récupère pas.
       </p>
       <p class="flex flex-wrap gap-2">
-        <button type="button" class="bouton bouton-contour" (click)="copier(code)">
+        <button type="button" class="bouton bouton-contour" (click)="copier(code)" i18n>
           Copier le code
         </button>
-        <button type="button" class="bouton bouton-jeu" (click)="codeAffiche.set(null)">
+        <button type="button" class="bouton bouton-jeu" (click)="codeAffiche.set(null)" i18n>
           C’est noté
         </button>
         @if (retourSur(); as retour) {
           <a [routerLink]="retour" class="bouton bouton-contour">{{ libelleRetour() }}</a>
         }
       </p>
-      <p role="status" class="text-sm text-texte-doux">{{ copie() ? 'Code copié.' : '' }}</p>
+      <p role="status" class="text-sm text-texte-doux">
+        @if (copie()) {
+          <ng-container i18n>Code copié.</ng-container>
+        }
+      </p>
     </section>
   }
 
   @if (compte.joueur(); as joueur) {
     <section aria-labelledby="titre-connecte" class="panneau flex flex-col gap-3 p-4">
-      <h2 id="titre-connecte" class="text-xl font-extrabold">
+      <h2 id="titre-connecte" class="text-xl font-extrabold" i18n>
         Connecté en tant que {{ joueur.pseudo }}
       </h2>
       @if (joueur.administrateur) {
         <p class="flex flex-wrap gap-2">
-          <a routerLink="/inviter" class="bouton bouton-plein inline-block"
+          <a routerLink="/inviter" class="bouton bouton-plein inline-block" i18n
             >Inviter des collègues</a
           >
-          <a routerLink="/offrir" class="bouton bouton-contour inline-block">Offrir des boosters</a>
+          <a routerLink="/offrir" class="bouton bouton-contour inline-block" i18n
+            >Offrir des boosters</a
+          >
         </p>
       }
-      <p class="text-texte-doux">
+      <p class="text-texte-doux" i18n>
         Votre compte est gardé par ce navigateur. Pour le retrouver ailleurs, utilisez votre code de
         récupération. Perdu, ou vu par quelqu’un d’autre ? Générez-en un nouveau : l’ancien cessera
         de fonctionner, et vos autres appareils seront déconnectés.
       </p>
-      <p class="text-texte-doux">
+      <p class="text-texte-doux" i18n>
         Resté connecté sur un appareil prêté ? « Déconnecter mes autres appareils » ferme votre
         compte partout sauf ici, sans changer de code.
       </p>
@@ -90,6 +104,7 @@
           class="bouton bouton-contour"
           [disabled]="occupe()"
           (click)="regenerer()"
+          i18n
         >
           Générer un nouveau code
         </button>
@@ -98,6 +113,7 @@
           class="bouton bouton-contour"
           [disabled]="occupe()"
           (click)="deconnecterAutres()"
+          i18n
         >
           Déconnecter mes autres appareils
         </button>
@@ -106,6 +122,7 @@
           class="bouton bouton-contour"
           [disabled]="occupe()"
           (click)="deconnecter()"
+          i18n
         >
           Se déconnecter
         </button>
@@ -114,10 +131,11 @@
       <details class="text-sm text-texte-doux">
         <summary
           class="cursor-pointer font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+          i18n
         >
           Identifiant du compte
         </summary>
-        <p class="mt-2">
+        <p class="mt-2" i18n>
           Utile seulement si l’on vous le demande, par exemple pour faire de ce compte un
           administrateur (US-072). Il ne permet pas de se connecter.
         </p>
@@ -129,8 +147,8 @@
       aria-labelledby="titre-supprimer"
       class="panneau flex flex-col gap-3 border-2 border-alerte p-4"
     >
-      <h2 id="titre-supprimer" class="text-xl font-extrabold">Supprimer mon compte</h2>
-      <p class="text-texte-doux">
+      <h2 id="titre-supprimer" class="text-xl font-extrabold" i18n>Supprimer mon compte</h2>
+      <p class="text-texte-doux" i18n>
         Votre collection, vos boosters et vos parties en cours disparaissent pour de bon, et vos
         duels en cours sont perdus par forfait. Vos adversaires gardent leurs duels terminés, sans
         votre pseudo. Rien ne pourra être restauré.
@@ -140,9 +158,10 @@
         <p
           class="flex flex-wrap items-center gap-2"
           role="group"
+          i18n-aria-label
           aria-label="Confirmer la suppression du compte"
         >
-          <span class="font-semibold"
+          <span class="font-semibold" i18n
             >Supprimer définitivement le compte {{ joueur.pseudo }} ?</span
           >
           <button
@@ -150,6 +169,7 @@
             class="bouton bouton-danger"
             [disabled]="occupe()"
             (click)="supprimer()"
+            i18n
           >
             Oui, supprimer mon compte
           </button>
@@ -157,6 +177,7 @@
             type="button"
             class="bouton bouton-contour"
             (click)="confirmerSuppression.set(false)"
+            i18n
           >
             Non, le garder
           </button>
@@ -168,6 +189,7 @@
             class="bouton bouton-danger"
             [disabled]="occupe()"
             (click)="confirmerSuppression.set(true)"
+            i18n
           >
             Supprimer mon compte…
           </button>
@@ -176,11 +198,11 @@
     </section>
   } @else if (compte.pret()) {
     <section aria-labelledby="titre-creer" class="panneau flex flex-col gap-3 p-4">
-      <h2 id="titre-creer" class="text-xl font-extrabold">Créer mon compte</h2>
-      <p class="text-texte-doux">Un pseudo suffit : ni mot de passe, ni e-mail.</p>
+      <h2 id="titre-creer" class="text-xl font-extrabold" i18n>Créer mon compte</h2>
+      <p class="text-texte-doux" i18n>Un pseudo suffit : ni mot de passe, ni e-mail.</p>
       <form class="flex flex-col gap-3" (submit)="creer($event)">
         <div class="flex flex-col gap-1">
-          <label for="pseudo" class="etiquette">Pseudo</label>
+          <label for="pseudo" class="etiquette" i18n>Pseudo</label>
           <input
             id="pseudo"
             name="pseudo"
@@ -193,37 +215,39 @@
           />
         </div>
         <div class="flex flex-col gap-1">
-          <label for="invitation" class="etiquette">Code d’invitation</label>
+          <label for="invitation" class="etiquette" i18n>Code d’invitation</label>
           <input
             id="invitation"
             name="invitation"
             autocomplete="off"
             maxlength="40"
+            i18n-placeholder="Exemple de code d’invitation, à garder tel quel"
             placeholder="ABCD-EFGH-JKLM-NPQR"
             aria-describedby="aide-invitation"
             class="champ font-mono uppercase"
             [value]="codeInvitation()"
             (input)="codeInvitation.set($any($event.target).value)"
           />
-          <p id="aide-invitation" class="text-sm text-texte-doux">
+          <p id="aide-invitation" class="text-sm text-texte-doux" i18n>
             Reçu avec votre invitation : le lien d’invitation le remplit tout seul.
           </p>
         </div>
-        <button type="submit" class="bouton bouton-jeu self-start" [disabled]="occupe()">
+        <button type="submit" class="bouton bouton-jeu self-start" [disabled]="occupe()" i18n>
           Créer mon compte
         </button>
       </form>
     </section>
 
     <section aria-labelledby="titre-retrouver" class="panneau flex flex-col gap-3 p-4">
-      <h2 id="titre-retrouver" class="text-xl font-extrabold">J’ai déjà un compte</h2>
+      <h2 id="titre-retrouver" class="text-xl font-extrabold" i18n>J’ai déjà un compte</h2>
       <form class="flex flex-col gap-2 sm:flex-row sm:items-end" (submit)="recuperer($event)">
         <div class="flex flex-1 flex-col gap-1">
-          <label for="code" class="etiquette">Code de récupération</label>
+          <label for="code" class="etiquette" i18n>Code de récupération</label>
           <input
             id="code"
             name="code"
             autocomplete="off"
+            i18n-placeholder="Exemple de code de récupération, à garder tel quel"
             placeholder="ABCD-EFGH-JKLM"
             required
             class="champ font-mono uppercase"
@@ -231,7 +255,7 @@
             (input)="code.set($any($event.target).value)"
           />
         </div>
-        <button type="submit" class="bouton bouton-contour" [disabled]="occupe()">
+        <button type="submit" class="bouton bouton-contour" [disabled]="occupe()" i18n>
           Retrouver mon compte
         </button>
       </form>

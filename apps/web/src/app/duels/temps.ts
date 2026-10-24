@@ -4,9 +4,9 @@ export function duree(ms: number): string {
   const jours = Math.floor(minutes / 1440);
   const heures = Math.floor((minutes % 1440) / 60);
   const reste = minutes % 60;
-  if (jours > 0) return `${jours} j ${heures} h`;
-  if (heures > 0) return `${heures} h ${reste} min`;
-  return `${reste} min`;
+  if (jours > 0) return $localize`${jours}:jours: j ${heures}:heures: h`;
+  if (heures > 0) return $localize`${heures}:heures: h ${reste}:minutes: min`;
+  return $localize`${reste}:minutes: min`;
 }
 
 /** Temps restant avant une échéance (ISO), ou `null` si elle est passée ou absente. */

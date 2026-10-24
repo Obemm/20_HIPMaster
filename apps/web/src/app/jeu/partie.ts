@@ -21,6 +21,7 @@ import { EnSavoirPlus } from '../cartes/en-savoir-plus';
 import { VignetteCarte } from '../cartes/vignette-carte';
 import { Icone } from '../icone';
 import { estUuid } from '../identifiant';
+import { LOCALE } from '../langue';
 import { LIBELLES_RARETE, SYMBOLES_RARETE } from '../libelles';
 import { interroger } from '../presence';
 import { ErreurChargement } from '../reseau/erreur-chargement';
@@ -129,11 +130,10 @@ export class PartieEcran implements OnInit, OnDestroy {
   protected readonly reste = computed(() => resteAvant(this.echeance()));
   protected readonly autre = computed<Adversaire>(() => {
     if (this.mode() !== 'duel') return BOT;
-    return adversaireNomme(this.pseudoAdversaire() ?? 'votre adversaire');
+    return adversaireNomme(this.pseudoAdversaire() ?? $localize`votre adversaire`);
   });
 
   protected readonly TOURS_MAX = TOURS_MAX;
-  protected readonly decrireComposant = decrireComposant;
   protected readonly statutsComposant = statutsComposant;
   protected readonly libelleType = libelleType;
   protected readonly libellesFamille = LIBELLES_FAMILLE;
@@ -292,16 +292,16 @@ export class PartieEcran implements OnInit, OnDestroy {
     const noms = [...this.attaquantsPossibles()].map((id) => this.nommer(id));
     if (noms.length === 0) return '';
     return noms.length === 1
-      ? `${noms[0]} peut encore attaquer : sélectionnez-le, puis sa cible, et confirmez.`
-      : `${noms.length} composants peuvent encore attaquer (${noms.join(', ')}) : sélectionnez-les, puis leur cible, et confirmez.`;
+      ? $localize`${noms[0]}:composant: peut encore attaquer : sélectionnez-le, puis sa cible, et confirmez.`
+      : $localize`${noms.length}:nombre: composants peuvent encore attaquer (${noms.join(', ')}:composants:) : sélectionnez-les, puis leur cible, et confirmez.`;
   });
   /** La même chose en quelques mots, pour la barre d'action d'un écran de téléphone (US-059). */
   protected readonly attaquesOublieesCourt = computed(() => {
     const [premier, ...autres] = this.attaquantsPossibles();
     if (!this.monTour() || !this.preferences.coupsDePouce() || premier === undefined) return '';
     return autres.length === 0
-      ? `${this.nommer(premier)} peut encore attaquer.`
-      : `${autres.length + 1} composants peuvent encore attaquer.`;
+      ? $localize`${this.nommer(premier)}:composant: peut encore attaquer.`
+      : $localize`${autres.length + 1}:nombre: composants peuvent encore attaquer.`;
   });
   /**
    * Coups de pouce (US-065) : ce qui reste possible au moment de finir son tour, en phrases. Tout vient des actions
@@ -314,8 +314,8 @@ export class PartieEcran implements OnInit, OnDestroy {
     if (premier !== undefined) {
       phrases.push(
         autres.length === 0
-          ? `${this.nommer(premier)} peut encore attaquer.`
-          : `${autres.length + 1} de vos composants peuvent encore attaquer.`,
+          ? $localize`${this.nommer(premier)}:composant: peut encore attaquer.`
+          : $localize`${autres.length + 1}:nombre: de vos composants peuvent encore attaquer.`,
       );
     }
     const aPoser = new Set<string>();
@@ -325,8 +325,10 @@ export class PartieEcran implements OnInit, OnDestroy {
       (action.type === 'jouer' ? aJouer : aPoser).add(this.nommer(action.carte));
     }
     for (const nom of aJouer) aPoser.delete(nom);
-    if (aPoser.size) phrases.push(`Vous pouvez encore poser ${enListe([...aPoser])}.`);
-    if (aJouer.size) phrases.push(`Vous pouvez encore jouer ${enListe([...aJouer])}.`);
+    if (aPoser.size)
+      phrases.push($localize`Vous pouvez encore poser ${enListe([...aPoser])}:cartes:.`);
+    if (aJouer.size)
+      phrases.push($localize`Vous pouvez encore jouer ${enListe([...aJouer])}:cartes:.`);
     return phrases;
   });
   /**
@@ -350,7 +352,10 @@ export class PartieEcran implements OnInit, OnDestroy {
   protected readonly rappelGarde = computed(() => {
     const gardes = this.gardesAdverses();
     if (!this.siIndisponible() || gardes.length === 0) return '';
-    return `Garde : ${enListe(gardes)} ${gardes.length > 1 ? 'doivent' : 'doit'} tomber avant le SI ${this.autre().de}.`;
+    const de = this.autre().de;
+    return gardes.length > 1
+      ? $localize`Garde : ${enListe(gardes)}:composants: doivent tomber avant le SI ${de}:adversaire:.`
+      : $localize`Garde : ${enListe(gardes)}:composants: doit tomber avant le SI ${de}:adversaire:.`;
   });
 
   protected readonly ciblesPossibles = computed(() => {
@@ -373,16 +378,16 @@ export class PartieEcran implements OnInit, OnDestroy {
   protected readonly aide = computed(() => {
     if (!this.monTour()) return '';
     if (!this.attaquant()) {
-      return 'Choisissez une carte de votre main, ou un composant pour attaquer.';
+      return $localize`Choisissez une carte de votre main, ou un composant pour attaquer.`;
     }
     if (this.attaqueChoisie()) {
-      return 'Confirmez l’attaque sous le détail de la cible, ou choisissez-en une autre.';
+      return $localize`Confirmez l’attaque sous le détail de la cible, ou choisissez-en une autre.`;
     }
     const gardes = this.gardesAdverses();
     if (gardes.length > 0 && this.preferences.coupsDePouce()) {
-      return `${this.autre().sujet} est protégé par Garde (${gardes.join(', ')}) : attaquez d’abord ce composant, son SI est inaccessible tant qu’il est en jeu.`;
+      return $localize`${this.autre().sujet}:adversaire: est protégé par Garde (${gardes.join(', ')}:composants:) : attaquez d’abord ce composant, son SI est inaccessible tant qu’il est en jeu.`;
     }
-    return `Choisissez la cible de l’attaque : un composant ${this.autre().de} ou son SI.`;
+    return $localize`Choisissez la cible de l’attaque : un composant ${this.autre().de}:adversaire: ou son SI.`;
   });
 
   /**
@@ -399,7 +404,7 @@ export class PartieEcran implements OnInit, OnDestroy {
         parId.set(capacite.id, { nom, description: capacite.description });
       }
     }
-    return [...parId.values()].sort((a, b) => a.nom.localeCompare(b.nom, 'fr'));
+    return [...parId.values()].sort((a, b) => a.nom.localeCompare(b.nom, LOCALE));
   });
 
   constructor() {
@@ -440,7 +445,7 @@ export class PartieEcran implements OnInit, OnDestroy {
 
   protected nommer = (id: string): string => {
     const numero = this.numeros.get(id);
-    return (numero !== undefined && this.carteDe(numero)?.nom) || 'une carte';
+    return (numero !== undefined && this.carteDe(numero)?.nom) || $localize`une carte`;
   };
 
   protected choisirCarte(id: string): void {
@@ -539,7 +544,9 @@ export class PartieEcran implements OnInit, OnDestroy {
     if (!attendu || memeAction(action, attendu)) return false;
     this.confirmerFin.set(false);
     this.fermerDetail();
-    this.refusGuide.set(`Pas tout de suite : suivez l’étape « ${this.etape()?.titre ?? ''} ».`);
+    this.refusGuide.set(
+      $localize`Pas tout de suite : suivez l’étape « ${this.etape()?.titre ?? ''}:etape: ».`,
+    );
     return true;
   }
 
@@ -621,28 +628,66 @@ export class PartieEcran implements OnInit, OnDestroy {
 
   /** « Attaquer avec API REST » : le libellé du bouton qui confirme l'attaque choisie. */
   protected libelleAttaque(attaque: Attaque): string {
-    return `Attaquer avec ${this.nommer(attaque.attaquant)}`;
+    return $localize`Attaquer avec ${this.nommer(attaque.attaquant)}:composant:`;
   }
+
+  /** Nom du plateau adverse pour les lecteurs d'écran : « Plateau du bot », « Plateau d’Ada ». */
+  protected readonly libellePlateauAdverse = computed(
+    () => $localize`Plateau ${this.autre().de}:adversaire:`,
+  );
+
+  /** Le nom d'un jeton adverse : sa description, et s'il est une cible possible ou le coup conseillé. */
+  protected libelleJetonAdverse(composant: Composant, carte: Carte): string {
+    let libelle = decrireComposant(composant, carte);
+    if (this.ciblesPossibles().has(composant.id)) {
+      libelle = $localize`${libelle}:composant: : cible possible`;
+    }
+    if (this.conseilles().has(composant.id)) libelle = $localize`${libelle}:composant: : conseillé`;
+    return libelle;
+  }
+
+  /** Le nom d'un de mes jetons : sa description, et s'il peut attaquer ou est le coup conseillé. */
+  protected libelleJetonMien(composant: Composant, carte: Carte): string {
+    let libelle = decrireComposant(composant, carte);
+    if (this.attaquantsPossibles().has(composant.id)) {
+      libelle = $localize`${libelle}:composant: : peut attaquer`;
+    }
+    if (this.conseilles().has(composant.id)) libelle = $localize`${libelle}:composant: : conseillé`;
+    return libelle;
+  }
+
+  /** La carte dont une évolution prend la place : son nom, ou son numéro si le catalogue l'ignore. */
+  protected nomOrigine(numero: number): string {
+    return this.carteDe(numero)?.nom ?? $localize`la carte n° ${numero}:numero:`;
+  }
+
+  /** Ce qui n'a pas pu être chargé, pour l'écran d'échec (US-055). */
+  protected readonly echecChargement = computed(() =>
+    this.mode() === 'duel'
+      ? $localize`Le duel n’a pas pu être chargé.`
+      : $localize`La partie n’a pas pu être chargée.`,
+  );
 
   protected libelleAction(action: ActionCarte): string {
     const vue = this.vue();
     const instance = vue?.moi.main.find((c) => c.id === action.carte);
     const carte = instance ? this.carteDe(instance.numero) : undefined;
+    const cout = carte?.cout ?? 0;
     switch (action.type) {
       case 'poser':
         return action.cible
-          ? `Poser et renforcer ${this.nommer(action.cible)} (${carte?.cout ?? 0} Débit)`
-          : `Poser (${carte?.cout ?? 0} Débit)`;
+          ? $localize`Poser et renforcer ${this.nommer(action.cible)}:composant: (${cout}:cout: Débit)`
+          : $localize`Poser (${cout}:cout: Débit)`;
       case 'evoluer':
-        return `Faire évoluer ${this.nommer(action.origine)} (${carte?.cout ?? 0} Débit)`;
+        return $localize`Faire évoluer ${this.nommer(action.origine)}:composant: (${cout}:cout: Débit)`;
       case 'decommissionner':
-        return `Décommissionner (+${this.gainDecommission(carte)} Débit)`;
+        return $localize`Décommissionner (+${this.gainDecommission(carte)}:gain: Débit)`;
       case 'jouer':
-        return this.libelleJeu(action.cibles, carte?.cout ?? 0);
+        return this.libelleJeu(action.cibles, cout);
       case 'router':
-        return `Routage : renvoyer ${this.nommer(action.retour)} en main et poser cette carte (gratuit)`;
+        return $localize`Routage : renvoyer ${this.nommer(action.retour)}:composant: en main et poser cette carte (gratuit)`;
       case 'migrer':
-        return `Migrer ${this.nommer(action.source)} vers cette carte (${Math.max(0, (carte?.cout ?? 0) - 2)} Débit)`;
+        return $localize`Migrer ${this.nommer(action.source)}:composant: vers cette carte (${Math.max(0, cout - 2)}:cout: Débit)`;
     }
   }
 
@@ -655,9 +700,14 @@ export class PartieEcran implements OnInit, OnDestroy {
 
   /** « Jouer (2 Débit) », « Jouer sur Adaptateur SAP (2 Débit) », « Jouer sur SOAP / WSDL et EDI (3 Débit) ». */
   private libelleJeu(cibles: readonly string[], cout: number): string {
-    if (cibles.length === 0) return `Jouer (${cout} Débit)`;
-    const noms = cibles.map((id) => (id === 'si' ? `le SI ${this.autre().de}` : this.nommer(id)));
-    return `Jouer sur ${noms.join(' et ')} (${cout} Débit)`;
+    if (cibles.length === 0) return $localize`Jouer (${cout}:cout: Débit)`;
+    const de = this.autre().de;
+    const noms = cibles.map((id) =>
+      id === 'si' ? $localize`le SI ${de}:adversaire:` : this.nommer(id),
+    );
+    // « A et B et C », comme avant : chaque paire se lie dans la langue du site.
+    const liste = noms.reduce((debut, nom) => $localize`${debut}:debut: et ${nom}:dernier:`);
+    return $localize`Jouer sur ${liste}:cibles: (${cout}:cout: Débit)`;
   }
 
   private gainDecommission(carte: Carte | undefined): number {
@@ -765,21 +815,23 @@ export class PartieEcran implements OnInit, OnDestroy {
     const gagne = issue.gagnant === joueur;
     switch (issue.raison) {
       case 'sla':
-        return 'Un SI est tombé à 0 de SLA.';
+        return $localize`Un SI est tombé à 0 de SLA.`;
       case 'tours':
-        return 'Les 20 tours sont joués : le meilleur SLA l’emporte.';
+        return $localize`Les 20 tours sont joués : le meilleur SLA l’emporte.`;
       case 'abandon':
-        return gagne ? `${this.autre().sujet} a abandonné.` : 'Vous avez abandonné.';
+        return gagne
+          ? $localize`${this.autre().sujet}:adversaire: a abandonné.`
+          : $localize`Vous avez abandonné.`;
       case 'forfait':
         return gagne
-          ? `${this.autre().sujet} n’a pas joué à temps : forfait.`
-          : 'Vous n’avez pas joué à temps : forfait.';
+          ? $localize`${this.autre().sujet}:adversaire: n’a pas joué à temps : forfait.`
+          : $localize`Vous n’avez pas joué à temps : forfait.`;
     }
   }
 
   /** Un duel vu comme une partie, pour réutiliser tout l'écran ; retient version, curseur et adversaire. */
   private depuisDuel(duel: Duel): Partie {
-    if (!duel.vue) throw new Error('Le duel n’a pas commencé.');
+    if (!duel.vue) throw new Error($localize`Le duel n’a pas commencé.`);
     this.version = duel.version;
     this.curseur = duel.curseur;
     this.echeance.set(duel.echeance);
@@ -800,13 +852,15 @@ export class PartieEcran implements OnInit, OnDestroy {
   private signalerErreur(erreur: unknown): void {
     if (erreur instanceof HttpErrorResponse && erreur.status === 409 && this.mode() === 'duel') {
       // Le duel a bougé entre-temps (autre onglet) : on le recharge.
-      this.erreur.set('Le duel a changé entre-temps : il vient d’être rechargé.');
+      this.erreur.set($localize`Le duel a changé entre-temps : il vient d’être rechargé.`);
       this.evenements.set([]);
       void this.charger();
     } else if (erreur instanceof HttpErrorResponse && erreur.status === 404) {
       this.introuvable.set(true);
     } else if (erreur instanceof HttpErrorResponse && erreur.status === 422) {
-      this.erreur.set((erreur.error as { detail?: string } | null)?.detail ?? 'Action refusée.');
+      this.erreur.set(
+        (erreur.error as { detail?: string } | null)?.detail ?? $localize`Action refusée.`,
+      );
     } else {
       this.erreur.set(expliquer(erreur));
     }
@@ -885,5 +939,6 @@ function memeAction(a: Action, b: Action): boolean {
 
 /** « Pub/Sub », « Pub/Sub et Webhook », « Pub/Sub, Topic et Webhook ». */
 function enListe(noms: string[]): string {
-  return noms.length < 2 ? (noms[0] ?? '') : `${noms.slice(0, -1).join(', ')} et ${noms.at(-1)}`;
+  if (noms.length < 2) return noms[0] ?? '';
+  return $localize`${noms.slice(0, -1).join(', ')}:debut: et ${noms.at(-1)}:dernier:`;
 }

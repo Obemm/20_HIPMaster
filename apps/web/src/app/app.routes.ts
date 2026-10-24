@@ -11,34 +11,36 @@ export const routes: Routes = [
   {
     path: 'cartes',
     loadComponent: () => import('./cartes/catalogue').then((m) => m.Catalogue),
-    title: 'Catalogue des cartes — HIPMaster',
+    title: $localize`Catalogue des cartes — HIPMaster`,
     // Le détail s'affiche en fenêtre modale par-dessus le catalogue, qui reste en place avec ses filtres.
-    children: [{ path: ':numero', loadComponent: detailCarte, title: 'Carte — HIPMaster' }],
+    children: [
+      { path: ':numero', loadComponent: detailCarte, title: $localize`Carte — HIPMaster` },
+    ],
   },
   {
     path: 'jouer',
     loadComponent: () => import('./jeu/choix-deck').then((m) => m.ChoixDeck),
-    title: 'Jouer contre le bot — HIPMaster',
+    title: $localize`Jouer contre le bot — HIPMaster`,
   },
   {
     path: 'jouer/:id',
     loadComponent: () => import('./jeu/partie').then((m) => m.PartieEcran),
-    title: 'Partie — HIPMaster',
+    title: $localize`Partie — HIPMaster`,
   },
   {
     path: 'boosters',
     loadComponent: () => import('./boosters/boosters').then((m) => m.BoostersEcran),
-    title: 'Mes boosters — HIPMaster',
+    title: $localize`Mes boosters — HIPMaster`,
   },
   {
     path: 'collection',
     loadComponent: () => import('./collection/collection').then((m) => m.CollectionEcran),
-    title: 'Ma collection — HIPMaster',
+    title: $localize`Ma collection — HIPMaster`,
     children: [
       {
         path: ':numero',
         loadComponent: detailCarte,
-        title: 'Carte — HIPMaster',
+        title: $localize`Carte — HIPMaster`,
         data: { retour: '/collection' },
       },
     ],
@@ -46,51 +48,51 @@ export const routes: Routes = [
   {
     path: 'duels',
     loadComponent: () => import('./duels/mes-duels').then((m) => m.MesDuels),
-    title: 'Mes duels — HIPMaster',
+    title: $localize`Mes duels — HIPMaster`,
   },
   {
     path: 'duels/hasard',
     loadComponent: () => import('./duels/nouveau-defi').then((m) => m.NouveauDefi),
-    title: 'Adversaire au hasard — HIPMaster',
+    title: $localize`Adversaire au hasard — HIPMaster`,
     data: { hasard: true },
   },
   {
     path: 'duels/nouveau',
     loadComponent: () => import('./duels/nouveau-defi').then((m) => m.NouveauDefi),
-    title: 'Défier un collègue — HIPMaster',
+    title: $localize`Défier un collègue — HIPMaster`,
   },
   {
     path: 'duels/:id',
     loadComponent: () => import('./duels/duel').then((m) => m.DuelEcran),
-    title: 'Duel — HIPMaster',
+    title: $localize`Duel — HIPMaster`,
   },
   {
     path: 'classement',
     loadComponent: () => import('./classement/classement').then((m) => m.ClassementEcran),
-    title: 'Classement — HIPMaster',
+    title: $localize`Classement — HIPMaster`,
   },
   {
     path: 'compte',
     loadComponent: () => import('./compte/compte').then((m) => m.CompteEcran),
-    title: 'Mon compte — HIPMaster',
+    title: $localize`Mon compte — HIPMaster`,
   },
   {
     path: 'confidentialite',
     loadComponent: () =>
       import('./confidentialite/confidentialite').then((m) => m.ConfidentialiteEcran),
-    title: 'À propos et confidentialité — HIPMaster',
+    title: $localize`À propos et confidentialité — HIPMaster`,
   },
   // Réservée aux administrateurs (US-072) : pour tout autre joueur, retour à l'accueil.
   {
     path: 'inviter',
     loadComponent: () => import('./administration/inviter').then((m) => m.InviterEcran),
-    title: 'Inviter — HIPMaster',
+    title: $localize`Inviter — HIPMaster`,
   },
   // Réservée aux administrateurs, comme « Inviter » (US-070, ADR 0045).
   {
     path: 'offrir',
     loadComponent: () => import('./administration/offrir').then((m) => m.OffrirEcran),
-    title: 'Offrir des boosters — HIPMaster',
+    title: $localize`Offrir des boosters — HIPMaster`,
   },
   { path: '**', redirectTo: '' },
 ];

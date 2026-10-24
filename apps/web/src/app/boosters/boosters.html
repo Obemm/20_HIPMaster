@@ -1,12 +1,12 @@
 <main class="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 py-8 sm:px-6">
   <div class="flex flex-col gap-2">
-    <p class="surtitre">5 cartes par booster</p>
-    <h1 class="titre-page">Mes boosters</h1>
+    <p class="surtitre" i18n>5 cartes par booster</p>
+    <h1 class="titre-page" i18n>Mes boosters</h1>
   </div>
 
   @if (compte.joueur()) {
     <section aria-labelledby="titre-stock" class="panneau flex flex-col gap-4 p-4 sm:p-6">
-      <h2 id="titre-stock" class="sr-only">Stock</h2>
+      <h2 id="titre-stock" class="sr-only" i18n>Stock</h2>
       @if (boosters(); as b) {
         <div class="flex flex-col items-center gap-4 sm:flex-row sm:gap-8">
           <!-- Les paquets en stock, en éventail ; le nombre exact est dit à côté. -->
@@ -18,16 +18,22 @@
             }
           </div>
           <div class="flex flex-col items-center gap-3 text-center sm:items-start sm:text-left">
-            <p class="text-lg">
+            <p class="text-lg" i18n>
               <strong class="font-titre text-3xl font-black">{{ b.stock }}</strong>
-              booster{{ b.stock > 1 ? 's' : '' }} en stock
+              {b.stock, plural,
+                =0 {booster en stock}
+                =1 {booster en stock}
+                other {boosters en stock}
+              }
               <span class="text-texte-doux">(au plus {{ b.plafond }})</span>
             </p>
             <p class="text-texte-doux">
               @if (attente(); as attente) {
-                Prochain booster gratuit dans {{ attente }}.
+                <ng-container i18n>Prochain booster gratuit dans {{ attente }}.</ng-container>
               } @else if (b.prochainDans === null) {
-                Stock plein : ouvrez un booster pour relancer la recharge.
+                <ng-container i18n
+                  >Stock plein : ouvrez un booster pour relancer la recharge.</ng-container
+                >
               }
             </p>
             <p>
@@ -37,26 +43,32 @@
                 [disabled]="occupe() || b.stock === 0 || !catalogue.hasValue()"
                 (click)="ouvrir()"
               >
-                {{ occupe() ? 'Ouverture…' : 'Ouvrir un booster' }}
+                @if (occupe()) {
+                  <ng-container i18n>Ouverture…</ng-container>
+                } @else {
+                  <ng-container i18n>Ouvrir un booster</ng-container>
+                }
               </button>
             </p>
           </div>
         </div>
         @if (catalogue.error()) {
           <hip-erreur-chargement
+            i18n-quoi
             quoi="Les cartes n’ont pas pu être chargées : sans elles, un booster ouvert ne pourrait pas vous les montrer."
             [erreur]="catalogue.error()"
             [enCours]="catalogue.isLoading()"
             (reessayer)="catalogue.reload()"
           />
         } @else if (!catalogue.hasValue()) {
-          <p class="text-texte-doux">Chargement des cartes…</p>
+          <p class="text-texte-doux" i18n>Chargement des cartes…</p>
         }
       } @else if (!erreurStock()) {
-        <p>Lecture de votre stock…</p>
+        <p i18n>Lecture de votre stock…</p>
       }
       @if (erreurStock(); as e) {
         <hip-erreur-chargement
+          i18n-quoi
           quoi="Votre stock de boosters n’a pas pu être lu."
           [erreur]="e"
           [enCours]="lectureStock()"
@@ -73,14 +85,18 @@
         <div class="flex flex-wrap items-center justify-between gap-3">
           <h2 id="titre-tirage" tabindex="-1" class="text-xl font-extrabold focus:outline-none">
             @if (toutesRetournees()) {
-              Votre booster : {{ revelees().length }} cartes,
-              {{
-                nouvelles() === 0
-                  ? 'aucune nouvelle'
-                  : nouvelles() + ' nouvelle' + (nouvelles() > 1 ? 's' : '')
-              }}
+              <ng-container i18n
+                >Votre booster : {{ revelees().length }} cartes,
+                {nouvelles(), plural,
+                  =0 {aucune nouvelle}
+                  =1 {1 nouvelle}
+                  other {{{ nouvelles() }} nouvelles}
+                }</ng-container
+              >
             } @else {
-              Votre booster : {{ revelees().length }} cartes à retourner
+              <ng-container i18n
+                >Votre booster : {{ revelees().length }} cartes à retourner</ng-container
+              >
             }
           </h2>
           @if (!toutesRetournees()) {
@@ -88,13 +104,14 @@
               type="button"
               class="bouton bouton-contour bouton-petit"
               (click)="toutRetourner()"
+              i18n
             >
               Tout révéler
             </button>
           }
         </div>
         @if (!toutesRetournees()) {
-          <p class="text-texte-doux">
+          <p class="text-texte-doux" i18n>
             Touchez une carte pour la retourner : sa rareté se lit déjà sur son dos.
           </p>
         }
@@ -103,7 +120,7 @@
             <li class="flex flex-col gap-2">
               <p class="h-7 text-sm font-semibold">
                 @if (r.retournee && r.nouvelle) {
-                  <span class="statut statut-a-jouer">Nouvelle !</span>
+                  <span class="statut statut-a-jouer" i18n>Nouvelle !</span>
                 }
               </p>
               @if (r.retournee) {
@@ -124,7 +141,7 @@
                 >
                   <hip-dos-carte />
                   <span class="font-titre font-bold"
-                    ><span class="sr-only">Retourner la carte {{ r.rang + 1 }} : </span
+                    ><span class="sr-only" i18n>Retourner la carte {{ r.rang + 1 }} : </span
                     ><span aria-hidden="true">{{ symbolesRarete[r.carte.rarete] }} </span
                     >{{ libellesRarete[r.carte.rarete] }}</span
                   >
@@ -138,14 +155,14 @@
     </section>
 
     <section aria-labelledby="titre-code" class="panneau flex flex-col gap-3 p-4 sm:p-6">
-      <h2 id="titre-code" class="text-xl font-extrabold">Un code cadeau ?</h2>
-      <p class="text-texte-doux">
+      <h2 id="titre-code" class="text-xl font-extrabold" i18n>Un code cadeau ?</h2>
+      <p class="text-texte-doux" i18n>
         Une réussite de l’équipe récompensée ? Saisissez le code reçu : ses boosters s’ajoutent à
         votre stock, même au-delà du plafond.
       </p>
       <form class="flex flex-col gap-3 sm:flex-row sm:items-end" (submit)="utiliserCode($event)">
         <div class="flex flex-col gap-1 sm:flex-1">
-          <label for="code-boosters" class="etiquette">Code cadeau</label>
+          <label for="code-boosters" class="etiquette" i18n>Code cadeau</label>
           <input
             id="code-boosters"
             name="code"
@@ -154,6 +171,7 @@
             spellcheck="false"
             maxlength="64"
             required
+            i18n-placeholder="Exemple de code de boosters, à garder tel quel"
             placeholder="ABCD-EFGH-JKLM-NPQR"
             class="champ font-mono"
             [value]="codeSaisi()"
@@ -165,7 +183,11 @@
           class="bouton bouton-plein"
           [disabled]="occupeCode() || !codeSaisi().trim()"
         >
-          {{ occupeCode() ? 'Vérification…' : 'Recevoir les boosters' }}
+          @if (occupeCode()) {
+            <ng-container i18n>Vérification…</ng-container>
+          } @else {
+            <ng-container i18n>Recevoir les boosters</ng-container>
+          }
         </button>
       </form>
       @if (erreurCode()) {
@@ -174,13 +196,13 @@
       <p role="status" class="font-semibold">{{ recus() }}</p>
     </section>
   } @else if (compte.pret()) {
-    <p>
+    <p i18n>
       Les boosters remplissent votre collection : il faut un compte pour la garder.
       <a routerLink="/compte" class="lien">Créer un compte</a>
       en un clic (un pseudo suffit) : 5 boosters vous sont offerts.
     </p>
     @if (code()) {
-      <p class="panneau p-4">
+      <p class="panneau p-4" i18n>
         Un code cadeau vous attend : créez votre compte ou connectez-vous, puis rouvrez le lien reçu
         pour recevoir ses boosters.
       </p>

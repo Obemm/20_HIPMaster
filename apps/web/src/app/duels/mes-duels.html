@@ -1,12 +1,12 @@
 <main class="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 py-8 sm:px-6">
   <div class="flex flex-col gap-2">
-    <p class="surtitre">Entre joueurs</p>
-    <h1 class="titre-page">Mes duels</h1>
+    <p class="surtitre" i18n>Entre joueurs</p>
+    <h1 class="titre-page" i18n>Mes duels</h1>
   </div>
 
   @if (!compte.joueur()) {
     @if (compte.pret()) {
-      <p>
+      <p i18n>
         Les duels se jouent entre comptes :
         <a routerLink="/compte" class="lien">créer un compte</a>
         en un clic (un pseudo suffit).
@@ -16,8 +16,8 @@
     }
   } @else if (groupes(); as liste) {
     <p class="flex flex-col gap-3 sm:flex-row">
-      <a routerLink="/duels/nouveau" class="bouton bouton-jeu">Défier un collègue</a>
-      <a routerLink="/duels/hasard" class="bouton bouton-contour"
+      <a routerLink="/duels/nouveau" class="bouton bouton-jeu" i18n>Défier un collègue</a>
+      <a routerLink="/duels/hasard" class="bouton bouton-contour" i18n
         >Affronter un adversaire au hasard</a
       >
     </p>
@@ -27,7 +27,7 @@
           {{ groupe.titre }} ({{ groupe.duels.length }})
         </h2>
         @if (groupe.duels.length === 0) {
-          <p class="text-sm text-texte-doux">Aucun duel.</p>
+          <p class="text-sm text-texte-doux" i18n>Aucun duel.</p>
         } @else {
           <ul class="flex flex-col gap-2">
             @for (d of groupe.duels; track d.id) {
@@ -43,20 +43,10 @@
                   }}</span>
                   <span class="flex min-w-0 flex-1 flex-col">
                     <span class="truncate font-titre font-bold">
-                      {{ d.adversaire ? 'Contre ' + d.adversaire.pseudo : 'Défi non relevé' }}
+                      {{ intitule(d) }}
                     </span>
                     <span class="text-sm text-texte-doux">
-                      @if (d.resultat) {
-                        @if (d.raison && precisions[d.raison]; as precision) {
-                          {{ precision }} ·
-                        }
-                      } @else if (d.tour) {
-                        Tour {{ d.tour }} ·
-                        @if (resteAvant(d.echeance); as reste) {
-                          reste {{ reste }} ·
-                        }
-                      }
-                      {{ d.statut === 'attente' ? 'lancé' : 'dernier coup' }} {{ depuis(d.majLe) }}
+                      {{ detail(d) }}
                     </span>
                   </span>
                   <span class="statut" [class]="e.classe">{{ e.libelle }}</span>
@@ -69,12 +59,13 @@
     }
   } @else if (service.erreur(); as e) {
     <hip-erreur-chargement
+      i18n-quoi
       quoi="Vos duels n’ont pas pu être chargés."
       [erreur]="e"
       [enCours]="service.enCours()"
       (reessayer)="service.charger()"
     />
   } @else {
-    <p>Chargement de vos duels…</p>
+    <p i18n>Chargement de vos duels…</p>
   }
 </main>

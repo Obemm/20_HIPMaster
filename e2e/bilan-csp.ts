@@ -10,7 +10,7 @@ const decrire = (violation: Violation) =>
   `${String(violation['blocked-uri'])} (page ${String(violation['document-uri'])})`;
 
 export default async function bilanCsp(): Promise<void> {
-  const reponse = await fetch('http://localhost:4300/__/rapports-csp');
+  const reponse = await fetch(`http://localhost:${process.env.SITE_PORT ?? 4300}/__/rapports-csp`);
   const violations = (await reponse.json()) as Violation[];
   if (violations.length > 0) {
     throw new Error(

@@ -6,7 +6,7 @@
     [attr.aria-controls]="id"
     (click)="basculer()"
   >
-    En savoir plus
+    <ng-container i18n>En savoir plus</ng-container>
     <hip-icone nom="deplier" class="size-4 transition-transform" [class.rotate-180]="ouverte()" />
   </button>
 
@@ -14,7 +14,7 @@
     @if (fiche(); as f) {
       <dl class="flex flex-col gap-3">
         <div>
-          <dt class="font-semibold">C’est quoi ?</dt>
+          <dt class="font-semibold" i18n>C’est quoi ?</dt>
           <dd>{{ f.definition }}</dd>
         </div>
         <div>
@@ -22,23 +22,23 @@
           <dd>{{ f.usage }}</dd>
         </div>
         <div>
-          <dt class="font-semibold">Un exemple</dt>
+          <dt class="font-semibold" i18n>Un exemple</dt>
           <dd>{{ f.exemple }}</dd>
         </div>
         <div>
-          <dt class="font-semibold">À retenir</dt>
+          <dt class="font-semibold" i18n>À retenir</dt>
           <dd>{{ f.aRetenir }}</dd>
         </div>
         @if (f.enInterne) {
           <div>
-            <dt class="font-semibold">En interne</dt>
+            <dt class="font-semibold" i18n>En interne</dt>
             <dd>{{ f.enInterne }}</dd>
           </div>
         }
         <div>
-          <dt class="font-semibold">Pour aller plus loin</dt>
+          <dt class="font-semibold" i18n>Pour aller plus loin</dt>
           <dd class="flex flex-col gap-2">
-            <p class="text-sm text-texte-doux">
+            <p class="text-sm text-texte-doux" i18n>
               Ces liens ouvrent un autre site, dans un nouvel onglet.
             </p>
             <ul class="flex flex-col gap-2">
@@ -52,13 +52,18 @@
                     class="lien inline-flex items-baseline gap-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
                     >{{ lien.titre }}<hip-icone nom="externe" class="size-4 self-center" /><span
                       class="sr-only"
+                      i18n
                     >
                       (nouvel onglet)</span
                     ></a
                   >
-                  <span class="block text-sm text-texte-doux"
-                    >{{ site(lien) }}{{ lien.langue === 'en' ? ' · en anglais' : '' }}</span
-                  >
+                  <span class="block text-sm text-texte-doux">
+                    @if (lien.langue === 'en') {
+                      <ng-container i18n>{{ site(lien) }} · en anglais</ng-container>
+                    } @else {
+                      {{ site(lien) }}
+                    }
+                  </span>
                 </li>
               }
             </ul>
@@ -67,15 +72,16 @@
       </dl>
     } @else if (erreur()) {
       <hip-erreur-chargement
+        i18n-quoi
         quoi="La fiche n’a pas pu être chargée."
         [erreur]="erreur()"
         [enCours]="detail.isLoading()"
         (reessayer)="recharger()"
       />
     } @else if (chargement()) {
-      <p>Chargement de la fiche…</p>
+      <p i18n>Chargement de la fiche…</p>
     } @else {
-      <p>La fiche de cette carte est en cours d’écriture.</p>
+      <p i18n>La fiche de cette carte est en cours d’écriture.</p>
     }
   </div>
 }

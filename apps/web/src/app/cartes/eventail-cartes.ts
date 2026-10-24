@@ -20,7 +20,7 @@ export function cartesVedettes(catalogue: readonly Carte[]): Carte[] {
   imports: [DosCarte, VignetteCarte],
   template: `
     @if (cartes()?.length) {
-      <ul class="eventail" aria-label="Quelques cartes du jeu">
+      <ul class="eventail" i18n-aria-label aria-label="Quelques cartes du jeu">
         @for (carte of cartes(); track carte.numero) {
           <li><hip-vignette-carte [carte]="carte" [titre]="false" /></li>
         }

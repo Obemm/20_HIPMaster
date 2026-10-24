@@ -67,20 +67,25 @@ export class JetonComposant {
 /** Les statuts visibles d'un composant (sorts et incidents), en toutes lettres. */
 export function statutsComposant(composant: Composant): string[] {
   const statuts: string[] = [];
-  if ((composant.immobiliseJusquAuTour ?? null) !== null) statuts.push('Immobilisé');
-  if ((composant.sansCapacitesJusquAuTour ?? null) !== null) statuts.push('Sans capacités');
-  if (composant.doublon) statuts.push('Doublon');
-  if (composant.attaqueNulle) statuts.push('Attaque nulle');
-  if (composant.coupleA) statuts.push('Couplé');
-  if (composant.capacitesEmpruntees?.length) {
-    statuts.push(`Outillé : ${composant.capacitesEmpruntees.length} capacité(s)`);
-  }
+  if ((composant.immobiliseJusquAuTour ?? null) !== null) statuts.push($localize`Immobilisé`);
+  if ((composant.sansCapacitesJusquAuTour ?? null) !== null)
+    statuts.push($localize`Sans capacités`);
+  if (composant.doublon) statuts.push($localize`Doublon`);
+  if (composant.attaqueNulle) statuts.push($localize`Attaque nulle`);
+  if (composant.coupleA) statuts.push($localize`Couplé`);
+  const empruntees = composant.capacitesEmpruntees?.length ?? 0;
+  if (empruntees === 1) statuts.push($localize`Outillé : 1 capacité`);
+  else if (empruntees > 1) statuts.push($localize`Outillé : ${empruntees}:nombre: capacités`);
   return statuts;
 }
 
 /** Nom accessible d'un composant : tout ce que le jeton montre, en toutes lettres. */
 export function decrireComposant(composant: Composant, carte: Carte): string {
-  const parties = [carte.nom, `attaque ${composant.attaque}`, `PV ${composant.pv}`];
+  const parties = [
+    carte.nom,
+    $localize`attaque ${composant.attaque}:attaque:`,
+    $localize`PV ${composant.pv}:pv:`,
+  ];
   parties.push(...carte.capacites.map((c) => c.nom), ...statutsComposant(composant));
   return parties.join(', ');
 }
