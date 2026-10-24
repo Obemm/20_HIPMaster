@@ -148,6 +148,9 @@ describe('PartieEcran', () => {
       imports: [PartieEcran],
       providers: [provideHttpClient(), provideHttpClientTesting(), provideRouter([])],
     });
+    // L'aide a déjà été vue (ADR 0032), sauf dans les tests qui portent sur elle : sinon elle s'ouvre par-dessus tout.
+    localStorage.clear();
+    localStorage.setItem('hipmaster.aide-vue', 'oui');
   });
 
   it('affiche les deux camps, la main et le journal avec les noms des cartes', async () => {
@@ -159,18 +162,45 @@ describe('PartieEcran', () => {
     expect(page.querySelector('[role="log"]')?.textContent).toContain('Le bot pose SOAP / WSDL.');
   });
 
-  it('rappelle l’objectif, et ouvre « Comment jouer ? » au début de la partie seulement', async () => {
-    const debut = vue();
-    debut.moi.tours = 1;
-    const { page } = await ouvrir(debut);
-    expect(page.textContent).toContain('faire tomber le SLA du SI du bot à 0');
-    expect(page.querySelector('details')?.open).toBe(true);
-    expect(page.querySelector('details')?.textContent).toContain('Comment gagner ?');
+  it('ouvre l’aide d’elle-même à la première partie, avec l’objectif, et le retient (US-059)', async () => {
+    localStorage.removeItem('hipmaster.aide-vue');
+    const { fixture, page } = await ouvrir();
+    const aide = page.querySelector('dialog');
+    expect(aide?.open).toBe(true);
+    expect(aide?.textContent).toContain('faire tomber le SLA du SI du bot à 0');
+    expect(aide?.textContent).toContain('Comment gagner ?');
+    expect(localStorage.getItem('hipmaster.aide-vue')).toBe('oui');
+
+    bouton(page, 'C’est parti')?.click();
+    fixture.detectChanges();
+    expect(aide?.open).toBe(false);
+    // Le bouton « ? » de l'en-tête la rouvre à tout moment.
+    bouton(page, 'Comment jouer ?')?.click();
+    fixture.detectChanges();
+    expect(aide?.open).toBe(true);
   });
 
-  it('replie « Comment jouer ? » une fois la partie avancée', async () => {
+  it('n’ouvre plus l’aide d’elle-même une fois qu’elle a été vue (US-059)', async () => {
     const { page } = await ouvrir();
-    expect(page.querySelector('details')?.open).toBe(false);
+    expect(page.querySelector('dialog')?.open).toBe(false);
+  });
+
+  it('déplie le journal à la demande, et Échap le replie (US-059)', async () => {
+    const { fixture, page } = await ouvrir();
+    const basculer = bouton(page, 'Journal');
+    expect(basculer?.getAttribute('aria-expanded')).toBe('false');
+    expect(basculer?.getAttribute('aria-controls')).toBe('journal-partie');
+    basculer?.click();
+    fixture.detectChanges();
+    expect(basculer?.getAttribute('aria-expanded')).toBe('true');
+    expect(page.querySelector('[role="log"]')?.classList).toContain('max-h-[55dvh]');
+
+    page
+      .querySelector('[role="log"]')
+      ?.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+    fixture.detectChanges();
+    expect(basculer?.getAttribute('aria-expanded')).toBe('false');
+    expect(document.activeElement).toBe(basculer);
   });
 
   it('explique Garde quand le bot en a une : aide à l’attaque et capacités en jeu', async () => {
@@ -223,6 +253,9 @@ describe('PartieEcran', () => {
     expect(detail?.textContent).toContain('Des ressources et des verbes HTTP.');
     expect(detail?.querySelector('[role="group"]')?.textContent).toContain('Poser (2 Débit)');
     expect(bouton(page, 'API REST')?.getAttribute('aria-controls')).toBe('detail-main');
+    // Le détail s'affiche en feuille par-dessus la main (US-059) : le focus y passe.
+    await fixture.whenStable();
+    expect(document.activeElement).toBe(detail?.querySelector('h3'));
 
     detail?.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
     fixture.detectChanges();
@@ -430,6 +463,10 @@ describe('PartieEcran', () => {
     expect(finir?.getAttribute('aria-describedby')).toBe('attaques-oubliees');
     expect(finir?.disabled).toBe(false);
     finir?.click();
+    fixture.detectChanges();
+    // Le coup de pouce le redit (US-065), sans bloquer : « Finir quand même » finit le tour.
+    http.expectNone(`/api/v1/parties/${ID}/actions`);
+    bouton(page, 'Finir quand même')?.click();
     const requete = http.expectOne(`/api/v1/parties/${ID}/actions`);
     expect(requete.request.body).toEqual({ type: 'finirTour' });
     requete.flush(partie(vue()));
@@ -527,9 +564,153 @@ describe('PartieEcran', () => {
     await fixture.whenStable();
   });
 
+  describe('coups de pouce (US-065)', () => {
+    const attaquant = {
+      id: 'j1-02',
+      numero: 22,
+      pv: 2,
+      attaque: 3,
+      poseAuTour: 1,
+      aAttaqueCeTour: false,
+    };
+
+    it('avant de finir, dit ce qui reste possible, et « Revenir au plateau » ne finit pas le tour', async () => {
+      const v = vue({
+        actions: [
+          { type: 'attaquer', attaquant: 'j1-02', cible: 'si' },
+          { type: 'poser', carte: 'j1-01' },
+          { type: 'decommissionner', carte: 'j1-01' },
+          { type: 'finirTour' },
+        ],
+      });
+      v.moi.plateau = [attaquant];
+      const { fixture, http, page } = await ouvrir(v);
+      bouton(page, 'Finir mon tour')?.click();
+      fixture.detectChanges();
+      await fixture.whenStable();
+      const message = page.querySelector<HTMLElement>('[role="alertdialog"]');
+      expect(message?.getAttribute('aria-labelledby')).toBe('titre-fin-tour');
+      expect(message?.textContent).toContain('API REST peut encore attaquer.');
+      expect(message?.textContent).toContain('Vous pouvez encore poser API REST.');
+      expect(document.activeElement).toBe(bouton(page, 'Revenir au plateau'));
+      http.expectNone(`/api/v1/parties/${ID}/actions`);
+
+      bouton(page, 'Revenir au plateau')?.click();
+      fixture.detectChanges();
+      await fixture.whenStable();
+      expect(page.querySelector('[role="alertdialog"]')).toBeNull();
+      expect(document.activeElement).toBe(page.querySelector('#finir-tour'));
+      http.expectNone(`/api/v1/parties/${ID}/actions`);
+    });
+
+    it('se referme quand on choisit une carte ou un composant : le détail ne le recouvre jamais', async () => {
+      const v = vue({
+        actions: [
+          { type: 'attaquer', attaquant: 'j1-02', cible: 'si' },
+          { type: 'poser', carte: 'j1-01' },
+          { type: 'finirTour' },
+        ],
+      });
+      v.moi.plateau = [attaquant];
+      const { fixture, http, page } = await ouvrir(v);
+      for (const choisir of ['SI du bot', 'API REST']) {
+        bouton(page, 'Finir mon tour')?.click();
+        fixture.detectChanges();
+        expect(page.querySelector('[role="alertdialog"]')).not.toBeNull();
+        bouton(page, choisir)?.click();
+        fixture.detectChanges();
+        expect(page.querySelector('[role="alertdialog"]')).toBeNull();
+        expect(page.querySelector('#detail-plateau, #detail-main')).not.toBeNull();
+      }
+      http.expectNone(`/api/v1/parties/${ID}/actions`);
+    });
+
+    it('compte les attaquants, distingue poser et jouer, et ignore le décommissionnement', async () => {
+      const v = vue({
+        actions: [
+          { type: 'attaquer', attaquant: 'j1-02', cible: 'si' },
+          { type: 'attaquer', attaquant: 'j1-03', cible: 'si' },
+          { type: 'jouer', carte: 'j1-09', cibles: ['j2-05'] },
+          { type: 'decommissionner', carte: 'j1-01' },
+          { type: 'finirTour' },
+        ],
+      });
+      v.moi.main = [
+        { id: 'j1-01', numero: 22 },
+        { id: 'j1-09', numero: 55 },
+      ];
+      v.moi.plateau = [attaquant, { ...attaquant, id: 'j1-03', numero: 13 }];
+      const { fixture, page } = await ouvrir(v);
+      bouton(page, 'Finir mon tour')?.click();
+      fixture.detectChanges();
+      const texte = page.querySelector('[role="alertdialog"]')?.textContent ?? '';
+      expect(texte).toContain('2 de vos composants peuvent encore attaquer.');
+      expect(texte).toContain('Vous pouvez encore jouer Content-Based Router.');
+      expect(texte).not.toContain('poser API REST');
+    });
+
+    it('finit le tour sans rien dire quand il ne reste rien à faire', async () => {
+      const { fixture, http, page } = await ouvrir(
+        vue({ actions: [{ type: 'decommissionner', carte: 'j1-01' }, { type: 'finirTour' }] }),
+      );
+      bouton(page, 'Finir mon tour')?.click();
+      fixture.detectChanges();
+      expect(page.querySelector('[role="alertdialog"]')).toBeNull();
+      http.expectOne(`/api/v1/parties/${ID}/actions`).flush(partie(vue()));
+      await fixture.whenStable();
+    });
+
+    it('signale le SI indisponible et rappelle la Garde, d’après les cibles du serveur', async () => {
+      const v = vue({
+        actions: [{ type: 'attaquer', attaquant: 'j1-02', cible: 'j2-06' }, { type: 'finirTour' }],
+      });
+      v.moi.plateau = [attaquant];
+      v.adversaire.plateau = [
+        { id: 'j2-06', numero: 13, pv: 5, attaque: 3, poseAuTour: 1, aAttaqueCeTour: false },
+      ];
+      const { fixture, page } = await ouvrir(v);
+      expect(bouton(page, 'SI du bot')?.textContent).not.toContain('Indisponible');
+      bouton(page, 'peut attaquer')?.click();
+      fixture.detectChanges();
+      expect(bouton(page, 'SI du bot')?.textContent).toContain('Indisponible : Garde');
+      expect(page.querySelector('#detail-plateau')?.textContent).toContain(
+        'Garde : Adaptateur SAP doit tomber avant le SI du bot.',
+      );
+    });
+
+    it('se désactivent dans l’aide, et le réglage est gardé par le navigateur', async () => {
+      const v = vue({
+        actions: [
+          { type: 'attaquer', attaquant: 'j1-02', cible: 'j2-05' },
+          { type: 'poser', carte: 'j1-01' },
+          { type: 'finirTour' },
+        ],
+      });
+      v.moi.plateau = [attaquant];
+      const { fixture, http, page } = await ouvrir(v);
+      const reglage = page.querySelector<HTMLInputElement>('dialog input[type="checkbox"]');
+      expect(reglage?.checked).toBe(true);
+      reglage?.click();
+      fixture.detectChanges();
+      expect(localStorage.getItem('hipmaster.coups-de-pouce')).toBe('non');
+      // Plus d'avertissement d'attaques oubliées (US-039), ni de SI « indisponible », ni de message.
+      expect(page.querySelector('#attaques-oubliees')).toBeNull();
+      bouton(page, 'peut attaquer')?.click();
+      fixture.detectChanges();
+      expect(bouton(page, 'SI du bot')?.textContent).not.toContain('Indisponible');
+      bouton(page, 'Finir mon tour')?.click();
+      fixture.detectChanges();
+      expect(page.querySelector('[role="alertdialog"]')).toBeNull();
+      http.expectOne(`/api/v1/parties/${ID}/actions`).flush(partie(vue()));
+      await fixture.whenStable();
+    });
+  });
+
   it('affiche le refus du serveur', async () => {
     const { fixture, http, page } = await ouvrir();
     bouton(page, 'Finir mon tour')?.click();
+    fixture.detectChanges();
+    bouton(page, 'Finir quand même')?.click();
     http
       .expectOne(`/api/v1/parties/${ID}/actions`)
       .flush(
@@ -676,6 +857,8 @@ describe('ChoixDeck', () => {
       { id: 'stagiaire', nom: 'Stagiaire', description: 'Facile.' },
       { id: 'agent-autonome', nom: 'Agent autonome', description: 'Expert.' },
     ]);
+    // Le catalogue donne les cartes phares de chaque deck (US-068).
+    http.expectOne('/api/v1/cartes').flush([]);
     await fixture.whenStable();
     fixture.detectChanges();
     const naviguer = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
@@ -752,7 +935,13 @@ describe('PartieEcran en duel (US-034)', () => {
     expect(page.querySelector('#titre-bot')?.textContent).toContain('Bob');
     expect(page.textContent).not.toContain('Niveau :');
 
+    // Les coups de pouce valent aussi en duel (US-065).
     bouton(page, 'Finir mon tour')?.click();
+    fixture.detectChanges();
+    expect(page.querySelector('[role="alertdialog"]')?.textContent).toContain(
+      'Vous pouvez encore poser API REST.',
+    );
+    bouton(page, 'Finir quand même')?.click();
     const action = http.expectOne(`/api/v1/duels/${ID}/actions`);
     expect(action.request.headers.get('If-Match')).toBe('"4"');
     action.flush(duel(vue({ actif: 'j2', actions: [] }), 5));

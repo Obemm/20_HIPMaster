@@ -1,62 +1,100 @@
-import { Component, DestroyRef, inject } from '@angular/core';
-import { NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
+import {
+  afterNextRender,
+  Component,
+  computed,
+  DestroyRef,
+  effect,
+  inject,
+  Injector,
+  signal,
+} from '@angular/core';
+import {
+  NavigationEnd,
+  type Route,
+  Router,
+  RouterLink,
+  RouterLinkActive,
+  RouterOutlet,
+} from '@angular/router';
 import { filter } from 'rxjs';
+import { StockBoostersService } from './boosters/stock-boosters.service';
 import { CompteService } from './compte/compte.service';
 import { MesDuelsService } from './duels/mes-duels.service';
+import { Icone, type NomIcone } from './icone';
+import { EtatApplication } from './pwa/etat-application';
+
+/** Une partie ou un duel ouvert : la barre d'onglets s'efface sur téléphone pour laisser l'écran au plateau. */
+const EN_PARTIE = /^\/(jouer|duels)\/(?!nouveau|hasard)[^/?#]+/;
+
+interface Onglet {
+  lien: string;
+  libelle: string;
+  icone: NomIcone;
+}
+
+const ONGLETS: readonly Onglet[] = [
+  { lien: '/jouer', libelle: 'Jouer', icone: 'jouer' },
+  { lien: '/duels', libelle: 'Duels', icone: 'duels' },
+  { lien: '/boosters', libelle: 'Boosters', icone: 'boosters' },
+  { lien: '/collection', libelle: 'Collection', icone: 'collection' },
+];
 
 /**
- * Coquille de l'application : un bandeau (accueil, compte du joueur), puis la page, qui fournit son propre `<main>`.
+ * Coquille de l'application : un bandeau (logo, et au bureau la navigation), la page, qui fournit son propre
+ * `<main>`, et sur téléphone la navigation en barre d'onglets fixée en bas (US-060).
  */
 @Component({
   selector: 'hip-root',
-  imports: [RouterOutlet, RouterLink],
-  template: `
-    <header class="border-b border-bordure">
-      <nav
-        class="mx-auto flex w-full max-w-6xl items-center justify-between gap-3 px-4 py-2 text-sm sm:px-6"
-        aria-label="Navigation principale"
-      >
-        <a routerLink="/" class="font-bold tracking-tight">HIPMaster</a>
-        @if (compte.joueur(); as joueur) {
-          <span class="flex items-center gap-4">
-            <a routerLink="/duels" class="flex items-center gap-1 underline underline-offset-4">
-              Duels
-              @if (duels.aMonTour() > 0) {
-                <span
-                  class="rounded-full bg-accent px-1.5 text-xs font-bold text-sur-accent no-underline"
-                  >{{ duels.aMonTour() }}<span class="sr-only"> à vous de jouer</span></span
-                >
-              }
-            </a>
-            <a routerLink="/boosters" class="underline underline-offset-4">Boosters</a>
-            <a routerLink="/collection" class="underline underline-offset-4">Collection</a>
-            <a routerLink="/compte" class="underline underline-offset-4">
-              <span class="sr-only">Mon compte : </span>{{ joueur.pseudo }}
-            </a>
-          </span>
-        } @else if (compte.pret()) {
-          <a routerLink="/compte" class="underline underline-offset-4">Créer un compte</a>
-        }
-      </nav>
-    </header>
-    <router-outlet />
-  `,
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, Icone, EtatApplication],
+  templateUrl: './app.html',
 })
 export class App {
   protected readonly compte = inject(CompteService);
   protected readonly duels = inject(MesDuelsService);
+  protected readonly stock = inject(StockBoostersService);
+  protected readonly onglets = ONGLETS;
+
+  private readonly router = inject(Router);
+  private readonly injecteur = inject(Injector);
+  private readonly url = signal(this.router.url);
+  protected readonly enPartie = computed(() => EN_PARTIE.test(this.url()));
 
   constructor() {
     // Vérifie la session gardée par le navigateur, sans retarder l'affichage.
     void this.compte.charger();
+    // Le stock de boosters de l'onglet « Boosters », lu à la connexion (US-060).
+    effect(() => {
+      if (this.compte.joueur()) void this.stock.charger();
+    });
     // « À vous de jouer » se met à jour à chaque changement de page (US-035), et une session que le serveur n'a pas
     // pu vérifier est revérifiée (US-055).
-    const navigation = inject(Router)
-      .events.pipe(filter((e) => e instanceof NavigationEnd))
-      .subscribe(() => {
+    let pagePrecedente: Route | null | undefined;
+    const navigation = this.router.events
+      .pipe(filter((e) => e instanceof NavigationEnd))
+      .subscribe((fin) => {
+        this.url.set(fin.urlAfterRedirects);
         void this.duels.charger();
         if (this.compte.echec()) void this.compte.charger();
+        // Nouvelle page (pas une fenêtre de détail ouverte sur la même) : son titre prend le focus (US-060).
+        const page = this.router.routerState.snapshot.root.firstChild?.routeConfig;
+        if (pagePrecedente !== undefined && page !== pagePrecedente) this.focaliserTitre();
+        pagePrecedente = page ?? null;
       });
     inject(DestroyRef).onDestroy(() => navigation.unsubscribe());
+  }
+
+  /** Le lecteur d'écran annonce la nouvelle page : le focus va à son titre `h1`, à défaut à son `<main>`. */
+  private focaliserTitre(): void {
+    afterNextRender(
+      () => {
+        const document = globalThis.document;
+        const cible =
+          document?.querySelector<HTMLElement>('main h1') ?? document?.querySelector('main');
+        if (!cible) return;
+        if (!cible.hasAttribute('tabindex')) cible.setAttribute('tabindex', '-1');
+        cible.focus();
+      },
+      { injector: this.injecteur },
+    );
   }
 }

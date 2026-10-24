@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: HIPMaster — duels entre joueurs
-  version: 1.2.0
+  version: 1.3.0
   description: >
     Duels asynchrones, au tour par tour, entre deux comptes (US-032, ADR 0020). Le serveur tient l'état complet du
     moteur et ne renvoie à chacun que sa vue. Le créateur d'un duel le lance avec son deck ; un autre joueur le
@@ -12,6 +12,10 @@ info:
     Protections (US-047, ADR 0025) : chaque route est limitée par adresse IP (valeurs de production dans sa
     description, multipliées par le réglage `LIMITES_DEBIT` de l'API), 429 avec `Retry-After` au-delà ; réponses en
     `Cache-Control: no-store` ; corps de 16 Ko au plus (413).
+
+    Un joueur qui supprime son compte (`DELETE /moi`, US-053, ADR 0031) perd par forfait ses duels en cours ; ses
+    défis en attente disparaissent. Ses duels terminés restent à son adversaire, où il apparaît sous le pseudo
+    « Compte supprimé ».
 servers:
   - url: /api/v1
 security: [{ jeton: [] }]
@@ -49,8 +53,10 @@ paths:
       description: >
         Rejoint le plus ancien duel ouvert d'un autre joueur (en évitant, si possible, le dernier adversaire) : le
         duel commence (200). S'il n'y en a pas, ouvre un duel et place le joueur dans la file (201) ; un joueur
-        déjà dans la file y garde sa place. Les défis privés (lien, POST /duels) ne sont jamais proposés. Limite : 60
-        recherches par heure et par adresse.
+        déjà dans la file y garde sa place. Les défis privés (lien, POST /duels) ne sont jamais proposés. Les
+        recherches simultanées passent une à une (US-058) : deux joueurs qui cherchent en même temps se retrouvent
+        dans le même duel, et un joueur n'a jamais deux duels ouverts dans la file. Limite : 60 recherches par heure et
+        par adresse.
       requestBody:
         required: true
         content:
@@ -332,7 +338,8 @@ components:
           description: >
             Présente quand le joueur qui demande a gagné le duel (US-038) : un booster, dans le même plafond quotidien
             que les victoires contre le bot, une seule fois par duel. Une victoire par abandon ou forfait ne rapporte
-            rien contre un adversaire déjà affronté le même jour (UTC).
+            rien contre un adversaire déjà affronté le même jour (UTC) : le jour de la fin du duel, quelle que soit la
+            date de lecture (US-058).
           required: [booster, plafondAtteint, motif]
           properties:
             booster: { type: boolean }
@@ -345,7 +352,11 @@ components:
       type: object
       required: [pseudo]
       properties:
-        pseudo: { type: string }
+        pseudo:
+          type: string
+          description: >
+            « Compte supprimé » pour un joueur qui a supprimé son compte (US-053) ; `adversaire` n'est `null` que
+            pour un duel qui attend encore son adversaire.
     ResumeDuel:
       type: object
       required: [id, statut, adversaire, monTour, tour, resultat, raison, majLe, echeance]

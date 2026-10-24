@@ -6,7 +6,15 @@ import { empreinteJeton, joueurDuJeton } from '../comptes/comptes.ts';
 import { type OptionsBoosters, type Recompense, recompenserVictoire } from '../comptes/boosters.ts';
 import type { Base } from '../db/index.ts';
 import { limiter, type LimitesDebit } from '../limites.ts';
-import type { DepotParties, PartieVisible, ResultatDepot } from '../parties/depot.ts';
+import {
+  jouerPartie,
+  lancerPartie,
+  lirePartie,
+  type OptionsParties,
+  type PartieLue,
+  type PartieVisible,
+  type ResultatPartie,
+} from '../parties/parties.ts';
 import { jetonDe, sessionDe } from './comptes.ts';
 import { schemaAction, schemaDeck, schemaNiveau, schemaPartie } from '../parties/schemas.ts';
 
@@ -24,8 +32,18 @@ const schemaPartieRecompensee = schemaPartie.extend({
 
 const PROBLEME = 'application/problem+json';
 
-/** Traduit un échec du dépôt en Problem Details (RFC 9457). */
-function refuser(reponse: FastifyReply, resultat: Exclude<ResultatDepot<unknown>, { ok: true }>) {
+/** L'ETag d'une version de partie ou de duel. */
+export const etiquette = (version: number) => `"${version}"`;
+
+/** La version d'un en-tête `If-Match` ou `If-None-Match` (`"3"` ou `W/"3"`) ; `undefined` sinon. */
+export function versionDe(entete: string | string[] | undefined): number | undefined {
+  const valeur = Array.isArray(entete) ? entete[0] : entete;
+  const correspondance = valeur?.match(/^(?:W\/)?"(\d+)"$/);
+  return correspondance?.[1] === undefined ? undefined : Number(correspondance[1]);
+}
+
+/** Traduit un échec en Problem Details (RFC 9457). */
+function refuser(reponse: FastifyReply, resultat: Exclude<ResultatPartie<unknown>, { ok: true }>) {
   const corps = (status: number, title: string, extra: object = {}) =>
     reponse
       .status(status)
@@ -38,6 +56,8 @@ function refuser(reponse: FastifyReply, resultat: Exclude<ResultatDepot<unknown>
       return corps(422, 'Deck inconnu');
     case 'niveau-inconnu':
       return corps(422, 'Niveau de bot inconnu');
+    case 'version-perimee':
+      return corps(409, 'La partie a changé : rechargez-la avant de jouer');
     case 'action-refusee':
       return corps(422, 'Action refusée', {
         detail: resultat.erreur.message,
@@ -55,24 +75,30 @@ export function versAction(corps: z.infer<typeof schemaAction>): Action {
   return cible === undefined ? pose : { ...pose, cible };
 }
 
+/** Parties contre le bot, gardées en base (US-052, ADR 0030). */
 export const routesParties: FastifyPluginAsyncZod<{
-  depot: DepotParties;
-  base?: Base;
+  base: Base;
+  parties?: OptionsParties;
   boosters?: OptionsBoosters;
   limites?: LimitesDebit;
 }> = async (app, options) => {
-  const { depot, base, boosters, limites } = options;
+  const { base, parties = {}, boosters, limites } = options;
 
   /** Une partie gagnée par un joueur connecté rapporte un booster, une seule fois (US-025). */
-  async function avecRecompense(
-    partie: PartieVisible,
-  ): Promise<PartieVisible & { recompense?: Recompense }> {
-    const joueurId = depot.proprietaire(partie.id);
-    if (!base || !joueurId || partie.vue.issue?.gagnant !== partie.vue.joueur) return partie;
+  async function avecRecompense({
+    partie,
+    joueurId,
+  }: PartieLue): Promise<PartieVisible & { recompense?: Recompense }> {
+    if (!joueurId || partie.vue.issue?.gagnant !== partie.vue.joueur) return partie;
     return {
       ...partie,
       recompense: await recompenserVictoire(base, partie.id, joueurId, boosters),
     };
+  }
+
+  async function envoyer(reponse: FastifyReply, lue: PartieLue) {
+    const partie = await avecRecompense(lue);
+    return reponse.header('etag', etiquette(partie.version)).send(partie);
   }
 
   app.get('/decks', { schema: { response: { 200: z.array(schemaDeck) } } }, async () =>
@@ -95,13 +121,24 @@ export const routesParties: FastifyPluginAsyncZod<{
     async (requete, reponse) => {
       // Connecté, le joueur pourra être récompensé, et la partie n'appartient qu'à sa session (US-047) ; sans compte
       // (ou session expirée), la partie reste jouable par qui connaît son identifiant.
-      const jeton = base ? jetonDe(requete) : null;
-      const joueur = base && jeton ? await joueurDuJeton(base, jeton) : null;
+      const jeton = jetonDe(requete);
+      const joueur = jeton
+        ? await joueurDuJeton(base, jeton, requete.server.optionsSessions)
+        : null;
       const proprietaire =
-        joueur && jeton ? { joueurId: joueur.id, session: empreinteJeton(jeton) } : undefined;
-      const resultat = depot.creer(requete.body.deck, requete.body.niveau, proprietaire);
+        joueur && jeton ? { joueurId: joueur.id, session: empreinteJeton(jeton) } : null;
+      const resultat = await lancerPartie(
+        base,
+        requete.body.deck,
+        requete.body.niveau,
+        proprietaire,
+        parties,
+      );
       if (!resultat.ok) return refuser(reponse, resultat);
-      return reponse.status(201).send(resultat.valeur);
+      return reponse
+        .status(201)
+        .header('etag', etiquette(resultat.valeur.version))
+        .send(resultat.valeur);
     },
   );
 
@@ -109,8 +146,8 @@ export const routesParties: FastifyPluginAsyncZod<{
     '/parties/:id',
     { schema: { params: parametres, response: { 200: schemaPartieRecompensee } } },
     async (requete, reponse) => {
-      const resultat = depot.lire(requete.params.id, sessionDe(requete));
-      return resultat.ok ? avecRecompense(resultat.valeur) : refuser(reponse, resultat);
+      const resultat = await lirePartie(base, requete.params.id, sessionDe(requete), parties);
+      return resultat.ok ? envoyer(reponse, resultat.valeur) : refuser(reponse, resultat);
     },
   );
 
@@ -125,8 +162,15 @@ export const routesParties: FastifyPluginAsyncZod<{
       },
     },
     async (requete, reponse) => {
-      const resultat = depot.jouer(requete.params.id, versAction(requete.body), sessionDe(requete));
-      return resultat.ok ? avecRecompense(resultat.valeur) : refuser(reponse, resultat);
+      const resultat = await jouerPartie(
+        base,
+        requete.params.id,
+        versAction(requete.body),
+        sessionDe(requete),
+        versionDe(requete.headers['if-match']),
+        parties,
+      );
+      return resultat.ok ? envoyer(reponse, resultat.valeur) : refuser(reponse, resultat);
     },
   );
 };

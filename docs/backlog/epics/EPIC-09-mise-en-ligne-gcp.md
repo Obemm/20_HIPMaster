@@ -26,15 +26,15 @@ gratuite, que Claude installe, déploie et maintient en ligne de commande
 - [x] US-047 — Les protections indispensables avant l'ouverture
 - [x] US-048 — Inscription sur invitation
 - [x] US-049 — Infrastructure gratuite et reproductible
-- [ ] US-050 — Déploiement continu vers Cloud Run et Firebase Hosting
-- [ ] US-051 — Supervision, sauvegardes vérifiées et scan de sécurité
-- [ ] US-052 — Parties contre le bot gardées en base
-- [ ] US-053 — Page de confidentialité et suppression de son compte
-- [ ] US-054 — Des sessions qui expirent et des données qui ne s'accumulent pas
+- [x] US-050 — Déploiement continu vers Cloud Run et Firebase Hosting
+- [x] US-051 — Supervision, sauvegardes vérifiées et scan de sécurité
+- [x] US-052 — Parties contre le bot gardées en base
+- [x] US-053 — Page de confidentialité et suppression de son compte
+- [x] US-054 — Des sessions qui expirent et des données qui ne s'accumulent pas
 - [x] US-055 — Un front robuste au démarrage à froid et aux sessions expirées
 - [x] US-056 — La CI teste l'API sur un vrai PostgreSQL
 - [ ] US-057 — Des requêtes légères : index, lectures bornées, cache et chargement à la demande
-- [ ] US-058 — Des duels équitables : hasard imprévisible et appariement sûr
+- [x] US-058 — Des duels équitables : hasard imprévisible et appariement sûr
 - [x] US-072 — Une page « Inviter » réservée au porteur du projet
 
 Ordre suggéré, en trois lots :

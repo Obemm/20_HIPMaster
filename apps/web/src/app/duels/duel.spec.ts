@@ -61,6 +61,10 @@ describe('DuelEcran', () => {
         lecture.flush(reponse);
       }
     }
+    // Un défi à relever charge le catalogue, pour les cartes phares des decks (US-068), une fois le duel lu.
+    await new Promise((fin) => setTimeout(fin));
+    TestBed.tick();
+    for (const requete of http.match('/api/v1/cartes')) requete.flush([]);
     await fixture.whenStable();
     fixture.detectChanges();
     return { fixture, http, page: fixture.nativeElement as HTMLElement };

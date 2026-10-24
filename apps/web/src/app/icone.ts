@@ -16,6 +16,16 @@ const TRACES = {
   attaque: 'M20 4L9 15 M20 4h-5 M20 4v5 M7 13l4 4 M8 16l-4 4',
   pv: 'M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z',
   fermer: 'M6 6l12 12 M18 6L6 18',
+  // Fiche « En savoir plus » (US-073)
+  deplier: 'M6 9l6 6 6-6',
+  externe: 'M14 4h6v6 M20 4l-9 9 M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5',
+  // Navigation (US-060)
+  jouer: 'M7 4l13 8-13 8z',
+  duels:
+    'M4 4l10 10 M4 4h4 M4 4v4 M20 4L10 14 M20 4h-4 M20 4v4 M8 14l-3 3 M16 14l3 3 M4 20l2-2 M20 20l-2-2',
+  boosters: 'M12 3l8 4.5v9L12 21l-8-4.5v-9z M4 7.5l8 4.5 8-4.5 M12 12v9',
+  collection: 'M4 4h7v7H4z M13 4h7v7h-7z M4 13h7v7H4z M13 13h7v7h-7z',
+  compte: 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8z M4 21a8 8 0 0 1 16 0',
 } as const;
 
 export type NomIcone = keyof typeof TRACES;

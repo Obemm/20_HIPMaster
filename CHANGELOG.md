@@ -7,6 +7,11 @@ Toutes les évolutions notables du projet sont consignées ici
 
 ### Ajouté
 
+- Le jeu s'installe sur l'écran d'accueil d'un téléphone (PWA) : manifeste web (nom, couleurs de nuit, icônes 192 et
+  512 px et masquable, affichage autonome) et service worker d'Angular en production, qui garde l'interface et les
+  illustrations en cache mais jamais l'API ; un bandeau propose « Recharger » quand une nouvelle version est prête,
+  un autre dit, hors ligne, que le jeu se joue en ligne. Un parcours e2e vérifie l'installabilité selon Chrome et
+  l'ouverture hors ligne sur le build de production (US-063, ADR 0038).
 - Socle de développement : TypeScript strict, ESLint, Prettier, Vitest, Playwright + axe-core, Husky, commitlint,
   CI GitHub Actions, Dependabot (US-001).
 - Next.js 16 + Tailwind CSS 4, page d'accueil provisoire en français (US-002, ADR 0001).
@@ -143,7 +148,8 @@ Toutes les évolutions notables du projet sont consignées ici
   Cloud Run, renvoie `index.html` aux routes Angular, règle le cache (aucun pour `index.html`, un jour pour les
   illustrations, un an pour les fichiers à empreinte) et pose une CSP stricte avec les en-têtes de sécurité ;
   `robots.txt` et `noindex` tiennent les robots à l'écart. Guide d'exploitation complété : déploiement, retour
-  arrière, migrations compatibles (US-050, ADR 0028).
+  arrière, migrations compatibles Vérifié en production : retour arrière essayé (API en
+  32 s, front en 42 s), base Neon en veille 6 minutes au plus après la dernière requête (US-050, ADR 0028).
 - Page « Inviter », réservée au porteur du projet : créer une invitation (pour qui, nombre de comptes, date limite),
   copier son lien en un geste ou le partager par le menu du téléphone, suivre les comptes créés par chaque invitation et
   en révoquer une après confirmation. Les administrateurs sont désignés par le réglage `ADMINISTRATEURS` de l'API
@@ -152,9 +158,85 @@ Toutes les évolutions notables du projet sont consignées ici
   route qui n'existe pas. Le lien « Inviter des collègues » n'apparaît dans « Mon compte » que pour un administrateur,
   et « Mon compte » montre l'identifiant du compte. Une invitation révoquée se distingue désormais d'une invitation
   expirée, dans la page comme dans `npm run invitation -- --lister` (US-072, ADR 0029).
+- Page « À propos et confidentialité », à laquelle mène un lien en pied de chaque page : qui édite et héberge le jeu
+  (Firebase Hosting, Cloud Run et Neon à Francfort), ce qu'il garde et pourquoi (pseudo, collection, duels, sessions,
+  adresses IP des journaux), combien de temps, et comment exercer ses droits ; le seul stockage du navigateur est le
+  jeton de session, strictement nécessaire : ni bandeau de consentement, ni traceur, ni mesure d'audience. Comptes, collections,
+  récompenses et résultats sont gardés sans limite, sauf suppression par le joueur ; seules des données techniques
+  expirent (sessions inutilisées 90 jours, journaux et sauvegardes 30 jours, parties abandonnées, défis jamais
+  acceptés) ; celles que la purge d'US-054 appliquera sont marquées « bientôt ». « Mon compte » permet de supprimer son
+  compte après confirmation (`DELETE /api/v1/moi`, contrat `comptes.yaml` 1.4.0) : compte, sessions sur tous les
+  appareils, collection, récompenses et parties disparaissent en une transaction ; ses duels en cours se terminent
+  par forfait au lieu de disparaître pour l'adversaire, qui garde ses duels terminés face à « Compte supprimé »
+  (`duels.yaml` 1.3.0) (US-053, ADR 0031).
+- Supervision du jeu en ligne : test de disponibilité de `/api/v1/sante` toutes les 15 minutes (sans réveiller la
+  base) et e-mail quand le site tombe ; sauvegarde de chaque nuit de la base Neon (`pg_dump` vérifié, 30 jours dans
+  Cloud Storage) et relevé quotidien de sa consommation, avec un e-mail au moindre échec ou au-delà de 70 % du quota ;
+  restauration essayée dans une branche Neon temporaire (`scripts/gcp/restaurer.sh`). Les erreurs JavaScript des
+  joueurs partent vers Error Reporting par `POST /api/v1/erreurs` (contrat OpenAPI, débit limité), sans jeton ni
+  paramètres d'adresse. Scan OWASP ZAP de base : aucune alerte élevée ni moyenne (US-051, ADR 0033).
+- Fiche « En savoir plus » des cartes : un bouton déplie, sous le texte « En vrai », ce qu'est la technologie, à quoi
+  elle sert (ou comment survient l'incident), un exemple, le piège à éviter, le lien avec Elis quand il est public, et
+  de 1 à 3 ressources externes (Wikipédia, éditeurs, standards) qui s'ouvrent dans un nouvel onglet, site et langue
+  annoncés. Depuis le détail d'une carte (catalogue, collection, booster) et le panneau de la carte choisie en partie.
+  Fiches versionnées dans le domaine, format validé par les tests ; `GET /api/v1/cartes/{numero}` les renvoie
+  (`cartes.yaml` 1.1.0), la liste reste légère. Huit cartes pilotes, une par famille (US-073, ADR 0036).
+- Les 71 cartes du set 1 ont leur fiche « En savoir plus » : 127 liens vers Wikipédia, la documentation des éditeurs
+  (Apigee, Solace, IBM, Anthropic), des standards (RFC, OpenAPI, AsyncAPI, A2A) et les _Enterprise Integration
+  Patterns_, tous vérifiés ; `npm run fiches:liens` signale les liens morts. Le texte de SFTP, inexact, est corrigé
+  (US-074).
+- Coups de pouce au bon moment, contre le bot comme en duel : avant de finir son tour, un message non bloquant dit
+  ce qui reste possible (« 2 de vos composants peuvent encore attaquer », « Vous pouvez encore poser Pub/Sub »), avec
+  « Revenir au plateau » et « Finir quand même » ; quand un attaquant est choisi et que le SI adverse ne lui est pas
+  proposé, le SI est signalé « Indisponible : Garde » et le détail rappelle quel composant doit tomber d'abord. Tout
+  vient des actions proposées par le serveur. Une case de l'aide « Comment jouer ? » les désactive, réglage gardé par
+  le navigateur (US-065, ADR 0032).
 
 ### Modifié
 
+- Ouvrir un booster devient un moment : les paquets en stock sont dessinés (feuille métallisée, logo) ; les cartes
+  arrivent face cachée, distribuées une à une, la rareté lisible sur leur dos (liseré, halo, nom) ; on les retourne
+  d'un appui, ou toutes avec « Tout révéler » ; une épique ou une légendaire jaillit d'un éclat de lumière. Chaque
+  retournement est annoncé aux lecteurs d'écran et le focus passe à la carte suivante. Aucune animation si le système
+  demande de les réduire ; le tirage reste fait par le serveur (US-062).
+- Revue visuelle de tout le site avec la nouvelle identité : sur « Jouer », la difficulté en tuiles et les decks en
+  boîtes de jeu (trois cartes phares en éventail, « Jouer avec… » en or), la règle en bref repliée ; « Mes duels »
+  en cartes avec l'initiale de l'adversaire et une pastille d'état (À vous, Son tour, Victoire…) ; « Finir mon tour »,
+  « Ouvrir un booster », « Relever le défi », « Créer mon compte » et « Créer l'invitation » en or ; collection avec
+  jauge dorée et raretés en cadres de carte ; filtres, champs, compte, confidentialité et invitations en panneaux ;
+  pied de page signé. Les liens « ← Accueil » qui restaient disparaissent. Charte graphique complétée des composants
+  d'écran et des gabarits (US-068).
+- Une identité de jeu : ambiance « nuit électrique » reprise des illustrations (fond bleu nuit, halos, trame de
+  points, thème clair conservé), bandeau et barre d'onglets de nuit dans les deux thèmes, indigo électrique pour les
+  liens et la sélection, boutons en relief et en or pour l'action principale de chaque écran, police de titres Exo 2
+  servie par le site, logo (deux cartes en éventail), favicon, icône d'écran d'accueil et aperçu des liens partagés
+  (Open Graph). Cartes avec gemme de Débit et chiffres en relief. L'accueil montre trois cartes en éventail dès le
+  premier écran du téléphone, la promesse du jeu et « Jouer contre le bot » ; un visiteur y lit comment on joue, un
+  joueur connecté retrouve ses duels, boosters et collection ; un lien d'invitation fait de « Créer mon compte »
+  l'action principale, et « Mon compte » accueille l'invité avec les cartes. Les chances par booster passent sur
+  l'écran des boosters ; « Projet en cours de construction » disparaît. Contrastes AA des jetons vérifiés par un test,
+  animations coupées si le système le demande ; charte graphique dans `docs/produit` (US-061, ADR 0037).
+- Les parties contre le bot sont gardées en base au lieu de la mémoire de l'API : elles survivent aux déploiements,
+  aux arrêts à zéro et aux redémarrages, et expirent après 24 heures sans coup joué (une lecture ne compte pas), ce
+  que dit désormais l'écran de partie. Chaque action, tour du bot compris, s'écrit en une seule fois à condition que
+  la partie n'ait pas changé : de deux actions simultanées, une seule passe, l'autre reçoit 409. Chaque partie porte
+  sa `version` (en-tête `ETag`), que `If-Match` peut exiger (contrat `parties.yaml` 1.3.0). Les parties expirées
+  sont purgées à chaque création ; au-delà de 1 000, la partie anonyme la moins récemment jouée part la première.
+  Fermer sa session supprime ses parties. Plus rien dans les parties n'impose une seule instance Cloud Run
+  (US-052, ADR 0030, qui remplace l'ADR 0014).
+- Navigation pensée pour le téléphone : sous 768 px, une barre d'onglets fixée en bas (Jouer, Duels avec la pastille
+  « à vous de jouer », Boosters avec le stock, Collection, Compte), au-delà les mêmes onglets dans le bandeau. Onglets
+  d'au moins 44 px, onglet courant signalé (trait, gras, `aria-current`), zone de sécurité des téléphones à encoche
+  respectée ; la barre s'efface pendant une partie sur téléphone. À chaque changement de page, le focus passe sur son
+  titre. Les liens « ← Accueil » disparaissent. L'audit axe des parcours e2e vérifie aussi WCAG 2.1 et 2.2 AA ; les
+  cartes de la main et les jetons du plateau respectent « Libellé dans le nom » (US-060).
+- L'écran de partie et de duel tient dans un écran de téléphone (375 × 667) sans faire défiler la page : en-tête
+  compact, camps et main en rangées qui défilent horizontalement, journal en bandeau de deux lignes qui se déplie à la
+  demande, détail d'une carte ou d'un composant en feuille au bas de l'écran, « Finir mon tour » collé au bas.
+  L'aide « Comment jouer ? » (objectif, règle, capacités en jeu) devient une fenêtre qui s'ouvre d'elle-même à la
+  première partie dans le navigateur, puis depuis le bouton « ? ». Au bureau, l'objectif, les capacités en jeu et le
+  journal passent sur le côté du plateau. Le texte des cartes et des jetons suit la taille de texte choisie sur le
+  téléphone (tailles en `rem`) (US-059, ADR 0032).
 - Les parcours e2e de la CI tournent sur le build de production, servi avec les en-têtes de `firebase.json` : la
   moindre violation de la CSP fait échouer la série (`npm run test:e2e:production`). Le build de production
   n'insère plus de CSS critique en ligne, que la CSP bloquerait. Le compte de déploiement lit les métadonnées des
@@ -179,6 +261,13 @@ Toutes les évolutions notables du projet sont consignées ici
 
 ### Corrigé
 
+- Téléphone : les cartes de la main montrent toujours leur attaque et leurs PV ; sur une petite carte, l'illustration
+  rétrécit et la ligne type · famille s'efface, le nom tient sur deux lignes (US-068).
+- Partie : choisir une carte ou un composant pendant le message « Avant de finir votre tour » le referme ; la fiche
+  de détail se posait par-dessus et cachait ses boutons (US-065).
+- Scripts d'exploitation sous Windows : les corps JSON envoyés aux API Google passent par un fichier, car un argument
+  de `curl` y perdait ses lettres accentuées (message du retour arrière du front, noms des objets de supervision)
+  (US-051).
 - L'écran de partie et de duel dit pourquoi une carte de la main ne se joue pas, avec les mots du serveur : une
   évolution sans sa carte d'origine (« Évolution d’Apigee API Gateway : posez d’abord Apigee API Gateway, puis
   faites-la évoluer. »), le Débit qui manque (coût effectif, Cache sémantique compris), le plateau plein, un sort ou
@@ -209,6 +298,9 @@ Toutes les évolutions notables du projet sont consignées ici
 - La vue de partie renvoyée par l'API perdait le bonus d'attaque des composants et les marqueurs du joueur : un bot
   du domaine joué depuis l'API (Agent autonome) évaluait tout à `NaN` et ne gagnait plus aucune partie. Le schéma et
   le contrat OpenAPI les exposent ; la vue de l'API suffit désormais à reconstituer la partie (US-026).
+- Statut des epics : `scripts/cloturer-story.py` déduit le statut et l'avancement de chaque epic de ses stories et
+  les écrit à l'identique dans le fichier de l'epic et le tableau ; `--recompter` les recalcule tous (EPIC-00,
+  EPIC-02 et EPIC-04 terminés mais restés « En cours », avancements faux après l'ajout de stories) (US-075).
 
 ### Sécurité
 
@@ -228,3 +320,22 @@ Toutes les évolutions notables du projet sont consignées ici
     mémoire évince d'abord les parties anonymes ;
   - toutes les réponses portent `X-Content-Type-Options: nosniff` et, sauf politique propre à une route,
     `Cache-Control: no-store` ; corps de requête limités à 16 Ko (413).
+- Des duels équitables (US-058, ADR 0034) :
+  - le hasard des duels et des parties contre le bot vient de ChaCha20, dont la clé de 256 bits est tirée par
+    `node:crypto` et ne quitte jamais le serveur : un joueur ne peut plus retrouver la graine à partir de sa main et
+    prévoir la main adverse ou les pioches. Les parties restent rejouables ; celles créées avant gardent leur
+    générateur et se terminent normalement ;
+  - deux joueurs qui cherchent un adversaire au même instant se retrouvent dans le même duel au lieu de s'attendre
+    l'un l'autre, et un double clic n'ouvre plus deux duels ;
+  - la règle « pas de booster contre un adversaire déjà affronté le même jour » vaut au jour de la fin du duel : lire
+    son résultat le lendemain ne la contourne plus.
+- Des sessions qui expirent et des données qui ne s'accumulent pas (US-054, ADR 0035) :
+  - une session inutilisée pendant 90 jours est refusée (401) ; chaque usage la prolonge, avec au plus une écriture par
+    jour. Le joueur se reconnecte avec son code de récupération (`SESSIONS_DUREE_JOURS`, contrat `comptes.yaml`
+    1.5.0) ;
+  - une purge (`npm run purge -w apps/api`) supprime les sessions expirées, les défis jamais acceptés depuis 7 jours et
+    les parties contre le bot abandonnées depuis 24 heures, et journalise ce qu'elle a supprimé ; elle ne touche jamais
+    un compte, une collection, une récompense ni un duel commencé ;
+  - en production, job Cloud Run `hipmaster-purge` lancé chaque nuit à 5 h 25 par Cloud Scheduler, ajouté aux scripts
+    `infrastructure.sh` et `deployer.sh` et au guide d'exploitation ; mise en service par le porteur du projet ;
+  - la page « À propos et confidentialité » ne marque plus ces durées « bientôt ».

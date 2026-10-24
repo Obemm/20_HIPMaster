@@ -1,8 +1,9 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, type Page, test } from '@playwright/test';
+import { REGLES_WCAG } from './axe';
 
 const auditer = async (page: Page) => {
-  const { violations } = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
+  const { violations } = await new AxeBuilder({ page }).withTags(REGLES_WCAG).analyze();
   expect(violations).toEqual([]);
 };
 
@@ -15,7 +16,7 @@ const sansDefilementHorizontal = async (page: Page) => {
 
 test('depuis l’accueil, le catalogue liste les 71 cartes et se filtre', async ({ page }) => {
   await page.goto('/');
-  await page.getByRole('link', { name: 'Voir le catalogue des cartes' }).click();
+  await page.getByRole('link', { name: 'Découvrir les cartes' }).click();
   await expect(page).toHaveURL(/\/cartes$/);
   await expect(page.getByRole('heading', { level: 1, name: 'Catalogue du set 1' })).toBeVisible();
 
@@ -70,6 +71,34 @@ test('une évolution mène à sa carte d’origine, et le bouton Fermer referme 
   await fenetre.getByRole('button', { name: 'Fermer' }).click();
   await expect(page.getByRole('dialog')).toBeHidden();
   await expect(page).toHaveURL(/\/cartes$/);
+});
+
+test('« En savoir plus » déplie la fiche d’une carte, et ses liens partent dans un nouvel onglet', async ({
+  page,
+}) => {
+  await page.goto('/cartes/1');
+  const fenetre = page.getByRole('dialog', { name: 'FTP' });
+  const bouton = fenetre.getByRole('button', { name: 'En savoir plus' });
+  await expect(bouton).toHaveAttribute('aria-expanded', 'false');
+  await expect(fenetre.getByText('C’est quoi ?')).toBeHidden();
+
+  await bouton.click();
+  await expect(bouton).toHaveAttribute('aria-expanded', 'true');
+  await expect(fenetre.getByText('C’est quoi ?')).toBeVisible();
+  await expect(fenetre.getByText('Chez Elis', { exact: true })).toBeVisible();
+  const lien = fenetre.getByRole('link', {
+    name: 'File Transfer Protocol (nouvel onglet)',
+    exact: true,
+  });
+  await expect(lien).toHaveAttribute(
+    'href',
+    'https://fr.wikipedia.org/wiki/File_Transfer_Protocol',
+  );
+  await expect(lien).toHaveAttribute('target', '_blank');
+  await expect(lien).toHaveAttribute('rel', 'noopener noreferrer');
+  await expect(fenetre.getByText('rfc-editor.org · en anglais')).toBeVisible();
+  await sansDefilementHorizontal(page);
+  await auditer(page);
 });
 
 test('une carte inconnue est annoncée comme introuvable', async ({ page }) => {

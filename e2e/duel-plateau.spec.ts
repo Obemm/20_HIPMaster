@@ -1,6 +1,7 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, type Page, test } from '@playwright/test';
 import { duelParApi } from './duel-api';
+import { REGLES_WCAG } from './axe';
 
 // Le duel est préparé par l'API (US-042) : ces parcours vérifient le plateau, pas le défi par lien (duels.spec.ts).
 
@@ -68,6 +69,32 @@ test('abandonner un duel, après confirmation : l’adversaire voit sa victoire 
   await contexte.close();
 });
 
+test('sur un petit téléphone, le plateau du duel tient dans l’écran (US-059)', async ({
+  page,
+  browser,
+}) => {
+  await page.setViewportSize({ width: 375, height: 667 });
+  const { ada, contexte } = await duelParApi(page, browser, 'mobile');
+  await expect(ada.getByText(/sinon forfait\./)).toBeVisible();
+  const zones = [
+    ada.locator('#plateau-si'),
+    ada.getByRole('list', { name: /^Plateau de / }),
+    ada.getByRole('list', { name: 'Votre plateau' }),
+    ada.getByRole('region', { name: /Votre main/ }),
+    finir(ada),
+  ];
+  for (const zone of zones) {
+    const boite = await zone.boundingBox();
+    expect(boite).not.toBeNull();
+    expect(boite!.y + boite!.height).toBeLessThanOrEqual(667);
+  }
+  const debord = await ada.evaluate(
+    () => document.documentElement.scrollHeight - document.documentElement.clientHeight,
+  );
+  expect(debord).toBeLessThanOrEqual(0);
+  await contexte.close();
+});
+
 for (const theme of ['light', 'dark'] as const) {
   test(`le plateau du duel ne présente aucune violation d’accessibilité (thème ${theme})`, async ({
     page,
@@ -75,9 +102,7 @@ for (const theme of ['light', 'dark'] as const) {
   }) => {
     await page.emulateMedia({ colorScheme: theme });
     const { ada, contexte } = await duelParApi(page, browser, theme);
-    const { violations } = await new AxeBuilder({ page: ada })
-      .withTags(['wcag2a', 'wcag2aa'])
-      .analyze();
+    const { violations } = await new AxeBuilder({ page: ada }).withTags(REGLES_WCAG).analyze();
     expect(violations).toEqual([]);
     await contexte.close();
   });

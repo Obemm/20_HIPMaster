@@ -1,5 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, type Page, test } from '@playwright/test';
+import { REGLES_WCAG } from './axe';
 
 async function creerCompte(page: Page, pseudo: string) {
   await page.goto('/compte');
@@ -8,10 +9,17 @@ async function creerCompte(page: Page, pseudo: string) {
   await expect(page.getByRole('heading', { name: `Connecté en tant que ${pseudo}` })).toBeVisible();
 }
 
-test('sans compte, la page des boosters invite à en créer un', async ({ page }) => {
+test('sans compte, la page des boosters invite à en créer un et montre les chances par booster', async ({
+  page,
+}) => {
   await page.goto('/boosters');
   await expect(page.getByText('il faut un compte pour la garder')).toBeVisible();
   await expect(page.getByRole('main').getByRole('link', { name: 'Créer un compte' })).toBeVisible();
+  // Les chances calculées par l'API, près de ce qu'elles décrivent (sur l'accueil avant US-061).
+  const raretes = page.getByRole('region', { name: 'Chances par booster' });
+  await expect(raretes.getByRole('listitem')).toHaveCount(4);
+  await expect(raretes).toContainText('Légendaire');
+  await expect(raretes).toContainText('1 %');
 });
 
 test('un nouveau compte reçoit 5 boosters et en ouvre un : 5 cartes révélées', async ({ page }) => {
@@ -23,10 +31,24 @@ test('un nouveau compte reçoit 5 boosters et en ouvre un : 5 cartes révélées
 
   await page.getByRole('button', { name: 'Ouvrir un booster' }).click();
   await expect(page.getByRole('heading', { name: /Votre booster : 5 cartes/ })).toBeVisible();
-  await expect(page.locator('hip-vignette-carte')).toHaveCount(5);
-  // Premier booster : au moins la première carte est forcément nouvelle.
-  await expect(page.getByText('Nouvelle !').first()).toBeVisible();
   await expect(page.getByText('4 boosters en stock')).toBeVisible();
+
+  // Les cartes arrivent face cachée, rareté au dos (US-062) : on les retourne une à une…
+  const premiere = page.getByRole('button', { name: /^Retourner la carte 1 : / });
+  await expect(premiere).toBeFocused();
+  await expect(page.locator('hip-vignette-carte')).toHaveCount(0);
+  await premiere.click();
+  await expect(page.locator('hip-vignette-carte')).toHaveCount(1);
+  await expect(page.getByRole('button', { name: /^Retourner la carte 2 : / })).toBeFocused();
+  // Premier booster : la première carte est forcément nouvelle.
+  await expect(page.getByText('Nouvelle !', { exact: true })).toBeVisible();
+  await expect(page.getByRole('status').filter({ hasText: 'Carte 1 :' })).toContainText('nouvelle');
+
+  // … ou toutes d'un coup.
+  await page.getByRole('button', { name: 'Tout révéler' }).click();
+  await expect(page.locator('hip-vignette-carte')).toHaveCount(5);
+  await expect(page.getByRole('heading', { name: /Votre booster : 5 cartes, / })).toBeFocused();
+  await expect(page.getByRole('button', { name: 'Tout révéler' })).toHaveCount(0);
 });
 
 for (const theme of ['light', 'dark'] as const) {
@@ -37,8 +59,13 @@ for (const theme of ['light', 'dark'] as const) {
     await creerCompte(page, `Axe ${theme}`);
     await page.goto('/boosters');
     await page.getByRole('button', { name: 'Ouvrir un booster' }).click();
+    // Face cachée, puis retournées (US-062) : l'audit passe aux deux moments.
+    await expect(page.getByRole('button', { name: /^Retourner la carte/ })).toHaveCount(5);
+    const cachees = await new AxeBuilder({ page }).withTags(REGLES_WCAG).analyze();
+    expect(cachees.violations).toEqual([]);
+    await page.getByRole('button', { name: 'Tout révéler' }).click();
     await expect(page.locator('hip-vignette-carte')).toHaveCount(5);
-    const { violations } = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
+    const { violations } = await new AxeBuilder({ page }).withTags(REGLES_WCAG).analyze();
     expect(violations).toEqual([]);
   });
 }

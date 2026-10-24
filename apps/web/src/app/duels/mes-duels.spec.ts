@@ -5,7 +5,7 @@ import { Title } from '@angular/platform-browser';
 import { provideRouter, Router, TitleStrategy } from '@angular/router';
 import { CompteService, intercepteurJeton } from '../compte/compte.service';
 import { TitreAvecDuels } from '../titre';
-import { MesDuels } from './mes-duels';
+import { etatDuel, MesDuels } from './mes-duels';
 import type { ResumeDuel } from './mes-duels.service';
 
 const il = (minutes: number) => new Date(Date.now() - minutes * 60_000).toISOString();
@@ -95,13 +95,32 @@ describe('Mes duels', () => {
     const liens = [...page.querySelectorAll<HTMLAnchorElement>('li a')].map((a) =>
       a.textContent?.replaceAll(/\s+/g, ' ').trim(),
     );
+    // L'initiale de l'adversaire, puis le duel, puis son état en pastille (US-068).
     expect(liens).toEqual([
-      'Contre Bob Tour 5 · reste 2 j 1 h · dernier coup il y a 3 min',
-      'Contre Eve Tour 2 · reste 2 j 22 h · dernier coup il y a 2 h',
-      'Défi non relevé lancé il y a 30 min',
-      'Contre Bob Victoire par forfait · dernier coup il y a 2 j',
+      'B Contre Bob Tour 5 · reste 2 j 1 h · dernier coup il y a 3 min À vous',
+      'E Contre Eve Tour 2 · reste 2 j 22 h · dernier coup il y a 2 h Son tour',
+      '? Défi non relevé lancé il y a 30 min En attente',
+      'B Contre Bob Par forfait · dernier coup il y a 2 j Victoire',
     ]);
     expect(page.querySelector('li a')?.getAttribute('href')).toBe('/duels/a');
+  });
+
+  it('résume l’état de chaque duel en une pastille, un mot doublé d’une couleur (US-068)', () => {
+    const [aMoi, aLui, enAttente, gagne] = DUELS as [
+      ResumeDuel,
+      ResumeDuel,
+      ResumeDuel,
+      ResumeDuel,
+    ];
+    expect(etatDuel(aMoi)).toEqual({ libelle: 'À vous', classe: 'statut-a-jouer' });
+    expect(etatDuel(aLui)).toEqual({ libelle: 'Son tour', classe: 'statut-attente' });
+    expect(etatDuel(enAttente)).toEqual({ libelle: 'En attente', classe: 'statut-attente' });
+    expect(etatDuel(gagne)).toEqual({ libelle: 'Victoire', classe: 'statut-victoire' });
+    expect(etatDuel({ ...gagne, resultat: 'defaite' }).classe).toBe('statut-defaite');
+    expect(etatDuel({ ...gagne, resultat: 'nulle' })).toEqual({
+      libelle: 'Partie nulle',
+      classe: 'statut-attente',
+    });
   });
 
   it('si la liste n’a pas pu être lue, dit pourquoi et la relit quand on réessaie (US-055)', async () => {

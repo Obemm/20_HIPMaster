@@ -1,23 +1,25 @@
 # Tableau de suivi
 
-_Dernière mise à jour : 2026-10-23_
+_Dernière mise à jour : 2026-10-24_
 
 ## Epics
 
 | Epic                                                                                              | Priorité | Statut    | Avancement |
 | ------------------------------------------------------------------------------------------------- | -------- | --------- | ---------- |
-| [EPIC-00 — Fondations](epics/EPIC-00-fondations.md)                                               | Must     | Terminé   | 9/9        |
+| [EPIC-00 — Fondations](epics/EPIC-00-fondations.md)                                               | Must     | Terminé   | 10/10      |
 | [EPIC-01 — Univers et modèle de carte](epics/EPIC-01-univers-cartes.md)                           | Must     | Terminé   | 2/2        |
 | [EPIC-02 — Comptes joueurs](epics/EPIC-02-comptes-joueurs.md)                                     | Must     | Terminé   | 1/1        |
-| [EPIC-03 — Boosters et collection](epics/EPIC-03-boosters-collection.md)                          | Must     | Terminé   | 2/2        |
+| [EPIC-03 — Boosters et collection](epics/EPIC-03-boosters-collection.md)                          | Must     | En cours  | 2/3        |
 | [EPIC-04 — Combat contre le bot](epics/EPIC-04-combat-bot.md)                                     | Must     | Terminé   | 15/15      |
 | [EPIC-05 — Illustrations des cartes](epics/EPIC-05-illustrations.md)                              | Should   | En cours  | 3/5        |
 | [EPIC-06 — Duels entre joueurs](epics/EPIC-06-duels-joueurs.md)                                   | Should   | Terminé   | 8/8        |
-| [EPIC-07 — Vie sociale](epics/EPIC-07-vie-sociale.md)                                             | Could    | À affiner | 0/0        |
+| [EPIC-07 — Vie sociale](epics/EPIC-07-vie-sociale.md)                                             | Could    | À affiner | 0/1        |
 | [EPIC-08 — Cartes proposées par la communauté IT](epics/EPIC-08-cartes-communaute.md)             | Should   | À affiner | 0/5        |
-| [EPIC-09 — Mise en ligne sur Google Cloud](epics/EPIC-09-mise-en-ligne-gcp.md)                    | Must     | En cours  | 7/14       |
-| [EPIC-10 — Identité visuelle et confort sur téléphone](epics/EPIC-10-identite-visuelle-mobile.md) | Should   | À affiner | 0/5        |
-| [EPIC-11 — Apprendre à jouer](epics/EPIC-11-apprendre-a-jouer.md)                                 | Should   | À affiner | 0/3        |
+| [EPIC-09 — Mise en ligne sur Google Cloud](epics/EPIC-09-mise-en-ligne-gcp.md)                    | Must     | En cours  | 13/14      |
+| [EPIC-10 — Identité visuelle et confort sur téléphone](epics/EPIC-10-identite-visuelle-mobile.md) | Should   | Terminé   | 6/6        |
+| [EPIC-11 — Apprendre à jouer](epics/EPIC-11-apprendre-a-jouer.md)                                 | Should   | En cours  | 1/3        |
+| [EPIC-12 — Des cartes qui enseignent](epics/EPIC-12-cartes-qui-enseignent.md)                     | Must     | Terminé   | 2/2        |
+| [EPIC-13 — Un set 2 : architecture et pratiques](epics/EPIC-13-set-2-architecture-pratiques.md)   | Could    | À affiner | 0/1        |
 
 ## Itération 0 (en cours) — fondations
 
@@ -34,6 +36,7 @@ Objectif : un socle outillé, vérifié automatiquement, et une méthode de trav
 | [US-043 — Tests de l'API robustes sur un poste chargé](stories/US-043-tests-api-pglite.md)                               | EPIC-00 | Must     | S      | Faite  |
 | [US-044 — Le quality gate ignore les worktrees de l'app Claude Desktop](stories/US-044-quality-gate-ignore-worktrees.md) | EPIC-00 | Must     | XS     | Faite  |
 | [US-045 — `npm run dev` ne redémarre l'API que sur un changement des sources](stories/US-045-api-dev-watch-sources.md)   | EPIC-00 | Must     | XS     | Faite  |
+| [US-075 — Un statut d'epic toujours conforme à ses stories](stories/US-075-statut-epics.md)                              | EPIC-00 | Must     | XS     | Faite  |
 
 ## Itération 1 (à venir) — définir le jeu
 
@@ -131,22 +134,32 @@ Google Cloud, Firebase Hosting et une base Neon gratuite (ADR 0021, accepté le 
 | [US-048 — Inscription sur invitation](stories/US-048-inscription-sur-invitation.md)                                                   | EPIC-09 | Must     | M      | 1   | Faite     |
 | [US-055 — Un front robuste au démarrage à froid et aux sessions expirées](stories/US-055-front-robuste.md)                            | EPIC-09 | Must     | M      | 1   | Faite     |
 | [US-049 — Infrastructure gratuite et reproductible](stories/US-049-infrastructure-gcp.md)                                             | EPIC-09 | Must     | M      | 1   | Faite     |
-| [US-050 — Déploiement continu vers Cloud Run et Firebase Hosting](stories/US-050-deploiement-continu.md)                              | EPIC-09 | Must     | M      | 1   | En revue  |
-| [US-052 — Parties contre le bot gardées en base](stories/US-052-parties-bot-en-base.md)                                               | EPIC-09 | Must     | M      | 2   | À affiner |
-| [US-051 — Supervision, sauvegardes vérifiées et scan de sécurité](stories/US-051-supervision-sauvegardes-securite.md)                 | EPIC-09 | Must     | S      | 2   | À affiner |
-| [US-053 — Page de confidentialité et suppression de son compte](stories/US-053-confidentialite-suppression-compte.md)                 | EPIC-09 | Should   | S      | 2   | À affiner |
+| [US-050 — Déploiement continu vers Cloud Run et Firebase Hosting](stories/US-050-deploiement-continu.md)                              | EPIC-09 | Must     | M      | 1   | Faite     |
+| [US-052 — Parties contre le bot gardées en base](stories/US-052-parties-bot-en-base.md)                                               | EPIC-09 | Must     | M      | 2   | Faite     |
+| [US-051 — Supervision, sauvegardes vérifiées et scan de sécurité](stories/US-051-supervision-sauvegardes-securite.md)                 | EPIC-09 | Must     | S      | 2   | Faite     |
+| [US-053 — Page de confidentialité et suppression de son compte](stories/US-053-confidentialite-suppression-compte.md)                 | EPIC-09 | Should   | S      | 2   | Faite     |
 | [US-072 — Une page « Inviter » réservée au porteur du projet](stories/US-072-page-inviter.md)                                         | EPIC-09 | Must     | M      | 2   | Faite     |
-| [US-059 — Un plateau de partie qui tient dans un écran de téléphone](stories/US-059-plateau-mobile-un-ecran.md)                       | EPIC-10 | Should   | M      | 2   | À affiner |
-| [US-060 — Une navigation pensée pour le téléphone](stories/US-060-navigation-mobile.md)                                               | EPIC-10 | Should   | S      | 2   | À affiner |
-| [US-065 — Des coups de pouce au bon moment](stories/US-065-coups-de-pouce.md)                                                         | EPIC-11 | Should   | S      | 2   | À affiner |
+| [US-059 — Un plateau de partie qui tient dans un écran de téléphone](stories/US-059-plateau-mobile-un-ecran.md)                       | EPIC-10 | Should   | M      | 2   | Faite     |
+| [US-060 — Une navigation pensée pour le téléphone](stories/US-060-navigation-mobile.md)                                               | EPIC-10 | Should   | S      | 2   | Faite     |
+| [US-065 — Des coups de pouce au bon moment](stories/US-065-coups-de-pouce.md)                                                         | EPIC-11 | Should   | S      | 2   | Faite     |
 | [US-066 — Un conseil à la demande, contre le bot](stories/US-066-conseil-en-partie.md)                                                | EPIC-11 | Should   | M      | 2   | À affiner |
-| [US-054 — Des sessions qui expirent et des données qui ne s'accumulent pas](stories/US-054-sessions-purge.md)                         | EPIC-09 | Should   | M      | 3   | À affiner |
+| [US-054 — Des sessions qui expirent et des données qui ne s'accumulent pas](stories/US-054-sessions-purge.md)                         | EPIC-09 | Should   | M      | 3   | Faite     |
 | [US-057 — Des requêtes légères : index, lectures bornées, cache et chargement à la demande](stories/US-057-requetes-legeres-cache.md) | EPIC-09 | Should   | M      | 3   | À affiner |
-| [US-058 — Des duels équitables : hasard imprévisible et appariement sûr](stories/US-058-duels-equitables.md)                          | EPIC-09 | Should   | S      | 3   | À affiner |
-| [US-061 — Une identité visuelle et un accueil qui donnent envie](stories/US-061-accueil-identite-visuelle.md)                         | EPIC-10 | Should   | M      | 3   | À affiner |
-| [US-063 — Installer le jeu sur son téléphone (PWA)](stories/US-063-pwa-installable.md)                                                | EPIC-10 | Could    | S      | 3   | À affiner |
-| [US-062 — Ouvrir un booster, un vrai moment](stories/US-062-ouverture-booster-mise-en-scene.md)                                       | EPIC-10 | Could    | M      | 3   | À affiner |
+| [US-058 — Des duels équitables : hasard imprévisible et appariement sûr](stories/US-058-duels-equitables.md)                          | EPIC-09 | Should   | S      | 3   | Faite     |
+| [US-061 — Une identité visuelle et un accueil qui donnent envie](stories/US-061-accueil-identite-visuelle.md)                         | EPIC-10 | Should   | M      | 3   | Faite     |
+| [US-063 — Installer le jeu sur son téléphone (PWA)](stories/US-063-pwa-installable.md)                                                | EPIC-10 | Could    | S      | 3   | Faite     |
+| [US-062 — Ouvrir un booster, un vrai moment](stories/US-062-ouverture-booster-mise-en-scene.md)                                       | EPIC-10 | Could    | M      | 3   | Faite     |
 | [US-067 — Une première partie guidée](stories/US-067-premiere-partie-guidee.md)                                                       | EPIC-11 | Should   | L      | 3   | À affiner |
+
+## Acculturation — des cartes qui enseignent
+
+Demande du porteur du projet (2026-10-23) : l'objectif premier du jeu est l'acculturation ; les cartes doivent être
+riches tout en restant ludiques, avec des liens vers des ressources externes.
+
+| Story                                                                                                                   | Epic    | Priorité | Taille | Statut |
+| ----------------------------------------------------------------------------------------------------------------------- | ------- | -------- | ------ | ------ |
+| [US-073 — Une fiche « En savoir plus » et des liens externes pour chaque carte](stories/US-073-fiche-en-savoir-plus.md) | EPIC-12 | Must     | M      | Faite  |
+| [US-074 — Enrichir le contenu des 71 cartes du set 1](stories/US-074-contenu-cartes-set-1.md)                           | EPIC-12 | Must     | L      | Faite  |
 
 ## Plus tard — évolutions notées le 2026-10-23
 
@@ -154,7 +167,7 @@ Demandes du porteur du projet, à affiner le moment venu.
 
 | Story                                                                                                           | Epic    | Priorité | Taille | Statut    |
 | --------------------------------------------------------------------------------------------------------------- | ------- | -------- | ------ | --------- |
-| [US-068 — Une revue visuelle de tout le site](stories/US-068-revue-visuelle.md)                                 | EPIC-10 | Should   | M      | À affiner |
+| [US-068 — Une revue visuelle de tout le site](stories/US-068-revue-visuelle.md)                                 | EPIC-10 | Should   | M      | Faite     |
 | [US-069 — Un score et un classement](stories/US-069-score-classement.md)                                        | EPIC-07 | Could    | L      | À affiner |
 | [US-070 — Des boosters offerts par code, pour récompenser le travail réel](stories/US-070-boosters-par-code.md) | EPIC-03 | Should   | M      | À affiner |
 
@@ -171,3 +184,4 @@ catalogue, set d'accueil).
 | [US-029 — Relire et instruire les propositions](stories/US-029-relire-propositions.md)         | EPIC-08 | Should   | M      | À affiner |
 | [US-030 — Intégrer une carte acceptée au catalogue](stories/US-030-integrer-carte-acceptee.md) | EPIC-08 | Should   | M      | À affiner |
 | [US-031 — Créditer les contributeurs](stories/US-031-crediter-contributeurs.md)                | EPIC-08 | Could    | S      | À affiner |
+| [US-076 — Concevoir le set 2 : DDD, microservices, DevOps](stories/US-076-concevoir-set-2.md)  | EPIC-13 | Could    | L      | À affiner |

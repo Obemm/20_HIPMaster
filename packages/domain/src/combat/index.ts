@@ -1,3 +1,4 @@
+export { type EtatAlea, type Graine } from './alea.ts';
 export { appliquer } from './moteur.ts';
 export { conceder } from './fin.ts';
 export {

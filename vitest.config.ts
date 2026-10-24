@@ -29,6 +29,9 @@ export default defineConfig({
       },
       // Outillage d'exploitation : lecture de firebase.json pour le déploiement et les parcours e2e (US-050).
       { test: { name: 'scripts', include: ['scripts/**/*.test.ts'] } },
+      // Charte du front : contrastes des jetons de couleur de styles.css (US-061). Les composants Angular ont leur
+      // propre lanceur (`ng test`).
+      { test: { name: 'charte', include: ['apps/web/*.test.ts'] } },
     ],
     coverage: { provider: 'v8', include: ['packages/*/src/**', 'apps/api/src/**'] },
   },

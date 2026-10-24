@@ -1,11 +1,13 @@
 import { NgTemplateOutlet } from '@angular/common';
 import { HttpClient, HttpErrorResponse, httpResource } from '@angular/common/http';
 import {
+  afterNextRender,
   afterRenderEffect,
   Component,
   computed,
   type ElementRef,
   inject,
+  Injector,
   input,
   type OnDestroy,
   type OnInit,
@@ -15,6 +17,7 @@ import {
 import { RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { type Carte, LIBELLES_FAMILLE, libelleType } from '../cartes/carte';
+import { EnSavoirPlus } from '../cartes/en-savoir-plus';
 import { VignetteCarte } from '../cartes/vignette-carte';
 import { Icone } from '../icone';
 import { estUuid } from '../identifiant';
@@ -38,8 +41,19 @@ import {
   TOURS_MAX,
 } from './modele';
 import { CompteService } from '../compte/compte.service';
+import { PreferencesService } from '../preferences';
+import { StockBoostersService } from '../boosters/stock-boosters.service';
 
 type ActionCarte = Extract<Action, { carte: string }>;
+
+/** Les actions qui posent ou jouent une carte de la main : en oublier une est un coup de pouce à donner (US-065). */
+const ACTIONS_QUI_JOUENT = new Set<Action['type']>([
+  'poser',
+  'evoluer',
+  'jouer',
+  'router',
+  'migrer',
+]);
 type Attaque = Extract<Action, { type: 'attaquer' }>;
 
 /**
@@ -70,10 +84,12 @@ const INTERROGATION_DUEL_MS = 3000;
     Icone,
     RegleCourte,
     ErreurChargement,
+    EnSavoirPlus,
   ],
   templateUrl: './partie.html',
-  // Échap referme le détail de la carte ou du composant choisi (US-040, US-041), où que soit le focus dans l'écran.
-  host: { '(keydown.escape)': 'fermerDetail()' },
+  // Échap replie le journal, sinon referme le détail de la carte ou du composant choisi (US-040, US-041, US-059), où
+  // que soit le focus dans l'écran.
+  host: { '(keydown.escape)': 'echap()' },
 })
 export class PartieEcran implements OnInit, OnDestroy {
   /** Paramètre de route `:id`. */
@@ -88,7 +104,16 @@ export class PartieEcran implements OnInit, OnDestroy {
 
   private readonly http = inject(HttpClient);
   protected readonly compte = inject(CompteService);
+  protected readonly preferences = inject(PreferencesService);
+  private readonly stockBoosters = inject(StockBoostersService);
+  private readonly injecteur = inject(Injector);
   private readonly titreFin = viewChild<ElementRef<HTMLElement>>('titreFin');
+  private readonly fenetreAide = viewChild<ElementRef<HTMLDialogElement>>('fenetreAide');
+  private readonly boutonJournal = viewChild<ElementRef<HTMLElement>>('boutonJournal');
+  /** L'aide doit s'ouvrir d'elle-même dès qu'elle est affichée : première partie dans ce navigateur (US-059). */
+  private aideAOuvrir = false;
+  /** La fenêtre d'aide qui écoute déjà les clics sur son fond (elle est recréée si l'écran se réaffiche). */
+  private aideEcoutee: HTMLDialogElement | null = null;
   /** Événements reçus, pas encore affichés : ils passent un par un, toujours dans l'ordre. */
   private readonly enAttente: Evenement[] = [];
   private minuterie: ReturnType<typeof setTimeout> | null = null;
@@ -129,8 +154,8 @@ export class PartieEcran implements OnInit, OnDestroy {
       .map((e) => decrireEvenement(e, joueur, this.nommer, this.autre()))
       .filter((ligne): ligne is string => ligne !== null);
   });
-  /** L'aide « Comment jouer ? » est ouverte en début de partie, repliable ensuite. */
-  protected reglesOuvertes = false;
+  /** Le journal déplié par-dessus le plateau, sur téléphone (US-059) ; au bureau, il est toujours entier. */
+  protected readonly journalOuvert = signal(false);
   /** La carte de la main choisie (US-040), ou le composant du plateau choisi, `si` compris (US-041) : un seul détail. */
   protected readonly carteChoisie = signal<string | null>(null);
   protected readonly composantChoisi = signal<string | null>(null);
@@ -218,13 +243,71 @@ export class PartieEcran implements OnInit, OnDestroy {
    * proposées par l'API ; l'avertissement ne bloque pas la fin du tour.
    */
   protected readonly attaquesOubliees = computed(() => {
-    if (!this.monTour()) return '';
+    if (!this.monTour() || !this.preferences.coupsDePouce()) return '';
     const noms = [...this.attaquantsPossibles()].map((id) => this.nommer(id));
     if (noms.length === 0) return '';
     return noms.length === 1
       ? `${noms[0]} peut encore attaquer : sélectionnez-le, puis sa cible, et confirmez.`
       : `${noms.length} composants peuvent encore attaquer (${noms.join(', ')}) : sélectionnez-les, puis leur cible, et confirmez.`;
   });
+  /** La même chose en quelques mots, pour la barre d'action d'un écran de téléphone (US-059). */
+  protected readonly attaquesOublieesCourt = computed(() => {
+    const [premier, ...autres] = this.attaquantsPossibles();
+    if (!this.monTour() || !this.preferences.coupsDePouce() || premier === undefined) return '';
+    return autres.length === 0
+      ? `${this.nommer(premier)} peut encore attaquer.`
+      : `${autres.length + 1} composants peuvent encore attaquer.`;
+  });
+  /**
+   * Coups de pouce (US-065) : ce qui reste possible au moment de finir son tour, en phrases. Tout vient des actions
+   * proposées par le serveur : attaques, et cartes de la main qui se posent ou se jouent (pas le décommissionnement).
+   */
+  protected readonly resteAFaire = computed((): string[] => {
+    if (!this.monTour() || !this.preferences.coupsDePouce()) return [];
+    const phrases: string[] = [];
+    const [premier, ...autres] = this.attaquantsPossibles();
+    if (premier !== undefined) {
+      phrases.push(
+        autres.length === 0
+          ? `${this.nommer(premier)} peut encore attaquer.`
+          : `${autres.length + 1} de vos composants peuvent encore attaquer.`,
+      );
+    }
+    const aPoser = new Set<string>();
+    const aJouer = new Set<string>();
+    for (const action of this.vue()?.actions ?? []) {
+      if (!ACTIONS_QUI_JOUENT.has(action.type) || !('carte' in action)) continue;
+      (action.type === 'jouer' ? aJouer : aPoser).add(this.nommer(action.carte));
+    }
+    for (const nom of aJouer) aPoser.delete(nom);
+    if (aPoser.size) phrases.push(`Vous pouvez encore poser ${enListe([...aPoser])}.`);
+    if (aJouer.size) phrases.push(`Vous pouvez encore jouer ${enListe([...aJouer])}.`);
+    return phrases;
+  });
+  /**
+   * Le message « Avant de finir votre tour » est affiché (US-065). Choisir une carte ou un composant le referme : sa
+   * feuille et celle du détail occupent le même bas d'écran, et le détail cachait ses boutons.
+   */
+  protected readonly confirmerFin = signal(false);
+  /**
+   * Garde (US-065) : un attaquant est choisi et le serveur ne propose pas le SI adverse comme cible. Le nom des
+   * composants qui ont Garde, s'il y en a en jeu, dit pourquoi.
+   */
+  protected readonly siIndisponible = computed(
+    () =>
+      this.preferences.coupsDePouce() &&
+      this.monTour() &&
+      this.attaquant() !== null &&
+      !this.ciblesPossibles().has('si'),
+  );
+
+  /** Le rappel de Garde sous le détail de l'attaquant choisi, quand le SI ne lui est pas proposé (US-065). */
+  protected readonly rappelGarde = computed(() => {
+    const gardes = this.gardesAdverses();
+    if (!this.siIndisponible() || gardes.length === 0) return '';
+    return `Garde : ${enListe(gardes)} ${gardes.length > 1 ? 'doivent' : 'doit'} tomber avant le SI ${this.autre().de}.`;
+  });
+
   protected readonly ciblesPossibles = computed(() => {
     const attaquant = this.attaquant();
     return new Set(
@@ -251,7 +334,7 @@ export class PartieEcran implements OnInit, OnDestroy {
       return 'Confirmez l’attaque sous le détail de la cible, ou choisissez-en une autre.';
     }
     const gardes = this.gardesAdverses();
-    if (gardes.length > 0) {
+    if (gardes.length > 0 && this.preferences.coupsDePouce()) {
       return `${this.autre().sujet} est protégé par Garde (${gardes.join(', ')}) : attaquez d’abord ce composant, son SI est inaccessible tant qu’il est en jeu.`;
     }
     return `Choisissez la cible de l’attaque : un composant ${this.autre().de} ou son SI.`;
@@ -277,6 +360,19 @@ export class PartieEcran implements OnInit, OnDestroy {
   constructor() {
     // En fin de partie, le focus va au résultat pour qu'il soit annoncé.
     afterRenderEffect(() => this.titreFin()?.nativeElement.focus());
+    // À la première partie jouée dans ce navigateur, l'aide s'ouvre d'elle-même, une seule fois (US-059, ADR 0032).
+    afterRenderEffect(() => {
+      const aide = this.fenetreAide()?.nativeElement;
+      if (aide && aide !== this.aideEcoutee) {
+        // Clic sur le fond : équivalent souris de la touche Échap, que le `<dialog>` gère seul.
+        aide.addEventListener('click', (evenement) => this.clicFondAide(evenement));
+        this.aideEcoutee = aide;
+      }
+      if (!aide || !this.aideAOuvrir) return;
+      this.aideAOuvrir = false;
+      montrer(aide);
+      this.preferences.marquerAideVue();
+    });
     // En duel, tant que le joueur est là : onglet visible, geste depuis moins de 10 minutes (US-055).
     interroger(
       () => this.actualiserDuel(),
@@ -303,9 +399,11 @@ export class PartieEcran implements OnInit, OnDestroy {
   };
 
   protected choisirCarte(id: string): void {
+    this.confirmerFin.set(false);
     this.attaquant.set(null);
     this.composantChoisi.set(null);
     this.carteChoisie.update((actuelle) => (actuelle === id ? null : id));
+    if (this.carteChoisie()) this.focaliserDetail('titre-detail-main');
   }
 
   /**
@@ -314,6 +412,7 @@ export class PartieEcran implements OnInit, OnDestroy {
    * désélectionne, attaque comprise.
    */
   protected choisirComposant(id: string, camp: 'moi' | 'adversaire'): void {
+    this.confirmerFin.set(false);
     this.carteChoisie.set(null);
     if (this.composantChoisi() === id) {
       this.composantChoisi.set(null);
@@ -322,6 +421,89 @@ export class PartieEcran implements OnInit, OnDestroy {
     }
     this.composantChoisi.set(id);
     if (camp === 'moi') this.attaquant.set(this.attaquantsPossibles().has(id) ? id : null);
+    this.focaliserDetail('titre-detail-plateau');
+  }
+
+  /**
+   * Le détail s'affiche en feuille au bas de l'écran, par-dessus la main (US-059) : le focus y passe, pour que la
+   * feuille ne cache pas l'élément qui l'a. Fermer le détail le rend à la carte ou au jeton choisi.
+   */
+  private focaliserDetail(titre: string): void {
+    afterNextRender(() => globalThis.document?.getElementById(titre)?.focus(), {
+      injector: this.injecteur,
+    });
+  }
+
+  /**
+   * Échap : revient au plateau depuis le message de fin de tour, sinon replie le journal déplié, sinon referme le
+   * détail ; l'aide se ferme seule (`<dialog>`).
+   */
+  protected echap(): void {
+    if (this.fenetreAide()?.nativeElement.open) return;
+    if (this.confirmerFin()) {
+      this.revenirAuPlateau();
+      return;
+    }
+    if (this.journalOuvert()) {
+      this.journalOuvert.set(false);
+      this.boutonJournal()?.nativeElement.focus();
+      return;
+    }
+    this.fermerDetail();
+  }
+
+  /**
+   * « Finir mon tour » : s'il reste une attaque ou une carte à jouer, un message le dit d'abord (US-065), sans
+   * bloquer : « Finir quand même » finit le tour.
+   */
+  protected finirTour(): void {
+    if (this.resteAFaire().length > 0) {
+      this.fermerDetail();
+      this.confirmerFin.set(true);
+      afterNextRender(() => globalThis.document?.getElementById('revenir-plateau')?.focus(), {
+        injector: this.injecteur,
+      });
+      return;
+    }
+    void this.jouer({ type: 'finirTour' });
+  }
+
+  protected finirQuandMeme(): void {
+    this.confirmerFin.set(false);
+    void this.jouer({ type: 'finirTour' });
+  }
+
+  protected revenirAuPlateau(): void {
+    this.confirmerFin.set(false);
+    afterNextRender(() => globalThis.document?.getElementById('finir-tour')?.focus(), {
+      injector: this.injecteur,
+    });
+  }
+
+  protected basculerCoupsDePouce(evenement: Event): void {
+    this.preferences.activerCoupsDePouce((evenement.target as HTMLInputElement).checked);
+  }
+
+  protected basculerJournal(): void {
+    this.journalOuvert.update((ouvert) => !ouvert);
+  }
+
+  /** Le bouton « ? » de l'en-tête rouvre l'aide à tout moment. */
+  protected ouvrirAide(): void {
+    const aide = this.fenetreAide()?.nativeElement;
+    if (aide) montrer(aide);
+  }
+
+  protected fermerAide(): void {
+    const aide = this.fenetreAide()?.nativeElement;
+    if (!aide) return;
+    if (typeof aide.close === 'function') aide.close();
+    else aide.removeAttribute('open');
+  }
+
+  /** Un clic sur le fond de l'aide (hors de son contenu) a pour cible le `<dialog>` lui-même : il la ferme. */
+  private clicFondAide(evenement: MouseEvent): void {
+    if (evenement.target === this.fenetreAide()?.nativeElement) this.fermerAide();
   }
 
   /** Referme le détail et rend le focus à la carte de la main ou au jeton choisi (US-040, US-041). */
@@ -428,7 +610,7 @@ export class PartieEcran implements OnInit, OnDestroy {
           ? this.depuisDuel(await firstValueFrom(this.http.get<Duel>(this.cheminApi())))
           : await firstValueFrom(this.http.get<Partie>(this.cheminApi()));
       this.echecLecture.set(null);
-      this.reglesOuvertes = partie.vue.moi.tours <= 1;
+      if (!this.preferences.aideVue()) this.aideAOuvrir = true;
       this.recevoir(partie, false);
     } catch (erreur) {
       if (erreur instanceof HttpErrorResponse && erreur.status === 404) this.introuvable.set(true);
@@ -535,6 +717,8 @@ export class PartieEcran implements OnInit, OnDestroy {
    */
   private recevoir(partie: Partie, animer: boolean): void {
     this.retenirNumeros(partie);
+    // Une victoire qui rapporte un booster change le stock affiché dans la navigation (US-060).
+    if (partie.recompense?.booster && !this.partie()?.recompense) void this.stockBoosters.charger();
     this.partie.set(partie);
     if (this.minuterie) clearTimeout(this.minuterie);
     this.minuterie = null;
@@ -575,4 +759,15 @@ export class PartieEcran implements OnInit, OnDestroy {
       if (instance && typeof instance === 'object') this.numeros.set(instance.id, instance.numero);
     }
   }
+}
+
+/** Ouvre une fenêtre modale ; jsdom (tests unitaires) ne connaît pas `showModal`. */
+function montrer(dialogue: HTMLDialogElement): void {
+  if (typeof dialogue.showModal !== 'function') dialogue.setAttribute('open', '');
+  else if (!dialogue.open) dialogue.showModal();
+}
+
+/** « Pub/Sub », « Pub/Sub et Webhook », « Pub/Sub, Topic et Webhook ». */
+function enListe(noms: string[]): string {
+  return noms.length < 2 ? (noms[0] ?? '') : `${noms.slice(0, -1).join(', ')} et ${noms.at(-1)}`;
 }

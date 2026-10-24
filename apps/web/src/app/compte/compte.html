@@ -1,11 +1,23 @@
 <main class="mx-auto flex w-full max-w-xl flex-col gap-6 px-4 py-8 sm:px-6">
-  <p>
-    <a routerLink="/" class="text-texte-doux underline underline-offset-4">← Accueil</a>
-  </p>
-  <h1 class="text-3xl font-bold tracking-tight">Mon compte</h1>
+  <h1 class="titre-page">Mon compte</h1>
+
+  @if (invitation()?.trim() && compte.pret() && !compte.joueur() && !codeAffiche()) {
+    <!-- L'arrivée d'un invité (US-061) : on voit le jeu avant le formulaire. -->
+    <section
+      aria-labelledby="titre-bienvenue"
+      class="panneau flex flex-col items-center gap-2 overflow-hidden px-4 pt-2 pb-5 text-center"
+    >
+      <hip-eventail-cartes [cartes]="vedettes()" />
+      <h2 id="titre-bienvenue" class="text-2xl font-extrabold">Bienvenue dans HIPMaster !</h2>
+      <p class="text-texte-doux">
+        Vous êtes invité·e au jeu de cartes de l’intégration : choisissez un pseudo, et 5 boosters
+        vous attendent.
+      </p>
+    </section>
+  }
 
   @if (compte.expiree()) {
-    <p role="alert" class="rounded-lg border-2 border-accent p-3">
+    <p role="alert" class="panneau border-2 border-accent p-3">
       <strong>Session expirée</strong> : ce navigateur n’est plus connecté à votre compte.
       Retrouvez-le avec votre code de récupération{{
         retourSur() ? ' ; vous reviendrez ensuite à votre page' : ''
@@ -17,38 +29,33 @@
     <p role="alert" class="text-alerte">{{ erreur() }}</p>
   }
 
+  @if (supprime()) {
+    <p role="status" class="panneau border-2 border-accent p-3">
+      <strong>Votre compte a été supprimé</strong>, sur tous vos appareils. Vous pouvez continuer à
+      jouer contre le bot sans compte, ou en créer un nouveau.
+    </p>
+  }
+
   @if (codeAffiche(); as code) {
     <section
       aria-labelledby="titre-code"
-      class="flex flex-col gap-3 rounded-xl border-2 border-accent p-4"
+      class="panneau flex flex-col gap-3 border-2 border-action p-4"
     >
-      <h2 id="titre-code" class="text-lg font-semibold">Votre code de récupération</h2>
+      <h2 id="titre-code" class="text-xl font-extrabold">Votre code de récupération</h2>
       <p class="font-mono text-2xl font-bold tracking-widest">{{ code }}</p>
       <p class="text-sm">
         <strong>Notez-le maintenant</strong> : il ne sera plus jamais affiché. Il permet de
         retrouver votre compte sur un autre appareil. Sans lui, un compte perdu ne se récupère pas.
       </p>
       <p class="flex flex-wrap gap-2">
-        <button
-          type="button"
-          class="rounded-lg border-2 border-accent px-3 py-2 font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-          (click)="copier(code)"
-        >
+        <button type="button" class="bouton bouton-contour" (click)="copier(code)">
           Copier le code
         </button>
-        <button
-          type="button"
-          class="rounded-lg bg-accent px-3 py-2 font-semibold text-sur-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-          (click)="codeAffiche.set(null)"
-        >
+        <button type="button" class="bouton bouton-jeu" (click)="codeAffiche.set(null)">
           C’est noté
         </button>
         @if (retourSur(); as retour) {
-          <a
-            [routerLink]="retour"
-            class="rounded-lg border-2 border-accent px-3 py-2 font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-            >{{ libelleRetour() }}</a
-          >
+          <a [routerLink]="retour" class="bouton bouton-contour">{{ libelleRetour() }}</a>
         }
       </p>
       <p role="status" class="text-sm text-texte-doux">{{ copie() ? 'Code copié.' : '' }}</p>
@@ -56,15 +63,13 @@
   }
 
   @if (compte.joueur(); as joueur) {
-    <section aria-labelledby="titre-connecte" class="flex flex-col gap-3">
-      <h2 id="titre-connecte" class="text-lg font-semibold">
+    <section aria-labelledby="titre-connecte" class="panneau flex flex-col gap-3 p-4">
+      <h2 id="titre-connecte" class="text-xl font-extrabold">
         Connecté en tant que {{ joueur.pseudo }}
       </h2>
       @if (joueur.administrateur) {
         <p>
-          <a
-            routerLink="/inviter"
-            class="inline-block rounded-lg bg-accent px-3 py-2 font-semibold text-sur-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+          <a routerLink="/inviter" class="bouton bouton-plein inline-block"
             >Inviter des collègues</a
           >
         </p>
@@ -81,7 +86,7 @@
       <p class="flex flex-wrap gap-2">
         <button
           type="button"
-          class="rounded-lg border-2 border-accent px-3 py-2 font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:opacity-60"
+          class="bouton bouton-contour"
           [disabled]="occupe()"
           (click)="regenerer()"
         >
@@ -89,7 +94,7 @@
         </button>
         <button
           type="button"
-          class="rounded-lg border-2 border-accent px-3 py-2 font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:opacity-60"
+          class="bouton bouton-contour"
           [disabled]="occupe()"
           (click)="deconnecterAutres()"
         >
@@ -97,7 +102,7 @@
         </button>
         <button
           type="button"
-          class="rounded-lg border-2 border-bordure px-3 py-2 font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:opacity-60"
+          class="bouton bouton-contour"
           [disabled]="occupe()"
           (click)="deconnecter()"
         >
@@ -118,26 +123,76 @@
         <p class="mt-1 font-mono break-all text-texte select-all">{{ joueur.id }}</p>
       </details>
     </section>
+
+    <section
+      aria-labelledby="titre-supprimer"
+      class="panneau flex flex-col gap-3 border-2 border-alerte p-4"
+    >
+      <h2 id="titre-supprimer" class="text-xl font-extrabold">Supprimer mon compte</h2>
+      <p class="text-texte-doux">
+        Votre collection, vos boosters et vos parties en cours disparaissent pour de bon, et vos
+        duels en cours sont perdus par forfait. Vos adversaires gardent leurs duels terminés, sans
+        votre pseudo. Rien ne pourra être restauré.
+        <a routerLink="/confidentialite" class="lien">Ce que le jeu garde sur vous</a>.
+      </p>
+      @if (confirmerSuppression()) {
+        <p
+          class="flex flex-wrap items-center gap-2"
+          role="group"
+          aria-label="Confirmer la suppression du compte"
+        >
+          <span class="font-semibold"
+            >Supprimer définitivement le compte {{ joueur.pseudo }} ?</span
+          >
+          <button
+            type="button"
+            class="bouton bouton-danger"
+            [disabled]="occupe()"
+            (click)="supprimer()"
+          >
+            Oui, supprimer mon compte
+          </button>
+          <button
+            type="button"
+            class="bouton bouton-contour"
+            (click)="confirmerSuppression.set(false)"
+          >
+            Non, le garder
+          </button>
+        </p>
+      } @else {
+        <p>
+          <button
+            type="button"
+            class="bouton bouton-danger"
+            [disabled]="occupe()"
+            (click)="confirmerSuppression.set(true)"
+          >
+            Supprimer mon compte…
+          </button>
+        </p>
+      }
+    </section>
   } @else if (compte.pret()) {
-    <section aria-labelledby="titre-creer" class="flex flex-col gap-3">
-      <h2 id="titre-creer" class="text-lg font-semibold">Créer mon compte</h2>
+    <section aria-labelledby="titre-creer" class="panneau flex flex-col gap-3 p-4">
+      <h2 id="titre-creer" class="text-xl font-extrabold">Créer mon compte</h2>
       <p class="text-texte-doux">Un pseudo suffit : ni mot de passe, ni e-mail.</p>
       <form class="flex flex-col gap-3" (submit)="creer($event)">
         <div class="flex flex-col gap-1">
-          <label for="pseudo" class="text-sm font-semibold">Pseudo</label>
+          <label for="pseudo" class="etiquette">Pseudo</label>
           <input
             id="pseudo"
             name="pseudo"
             autocomplete="nickname"
             maxlength="24"
             required
-            class="rounded border border-bordure bg-fond px-3 py-2"
+            class="champ"
             [value]="pseudo()"
             (input)="pseudo.set($any($event.target).value)"
           />
         </div>
         <div class="flex flex-col gap-1">
-          <label for="invitation" class="text-sm font-semibold">Code d’invitation</label>
+          <label for="invitation" class="etiquette">Code d’invitation</label>
           <input
             id="invitation"
             name="invitation"
@@ -145,7 +200,7 @@
             maxlength="40"
             placeholder="ABCD-EFGH-JKLM-NPQR"
             aria-describedby="aide-invitation"
-            class="rounded border border-bordure bg-fond px-3 py-2 font-mono uppercase"
+            class="champ font-mono uppercase"
             [value]="codeInvitation()"
             (input)="codeInvitation.set($any($event.target).value)"
           />
@@ -153,37 +208,29 @@
             Reçu avec votre invitation : le lien d’invitation le remplit tout seul.
           </p>
         </div>
-        <button
-          type="submit"
-          class="self-start rounded-lg bg-accent px-4 py-2 font-semibold text-sur-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:opacity-60"
-          [disabled]="occupe()"
-        >
+        <button type="submit" class="bouton bouton-jeu self-start" [disabled]="occupe()">
           Créer mon compte
         </button>
       </form>
     </section>
 
-    <section aria-labelledby="titre-retrouver" class="flex flex-col gap-3">
-      <h2 id="titre-retrouver" class="text-lg font-semibold">J’ai déjà un compte</h2>
+    <section aria-labelledby="titre-retrouver" class="panneau flex flex-col gap-3 p-4">
+      <h2 id="titre-retrouver" class="text-xl font-extrabold">J’ai déjà un compte</h2>
       <form class="flex flex-col gap-2 sm:flex-row sm:items-end" (submit)="recuperer($event)">
         <div class="flex flex-1 flex-col gap-1">
-          <label for="code" class="text-sm font-semibold">Code de récupération</label>
+          <label for="code" class="etiquette">Code de récupération</label>
           <input
             id="code"
             name="code"
             autocomplete="off"
             placeholder="ABCD-EFGH-JKLM"
             required
-            class="rounded border border-bordure bg-fond px-3 py-2 font-mono uppercase"
+            class="champ font-mono uppercase"
             [value]="code()"
             (input)="code.set($any($event.target).value)"
           />
         </div>
-        <button
-          type="submit"
-          class="rounded-lg border-2 border-accent px-4 py-2 font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:opacity-60"
-          [disabled]="occupe()"
-        >
+        <button type="submit" class="bouton bouton-contour" [disabled]="occupe()">
           Retrouver mon compte
         </button>
       </form>

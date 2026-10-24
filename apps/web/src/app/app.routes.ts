@@ -1,16 +1,14 @@
 import { Routes } from '@angular/router';
 import { Accueil } from './accueil/accueil';
-import { InviterEcran } from './administration/inviter';
 import { BoostersEcran } from './boosters/boosters';
 import { CollectionEcran } from './collection/collection';
-import { DuelEcran } from './duels/duel';
 import { MesDuels } from './duels/mes-duels';
 import { NouveauDefi } from './duels/nouveau-defi';
 import { Catalogue } from './cartes/catalogue';
 import { CompteEcran } from './compte/compte';
+import { ConfidentialiteEcran } from './confidentialite/confidentialite';
 import { DetailCarte } from './cartes/detail-carte';
 import { ChoixDeck } from './jeu/choix-deck';
-import { PartieEcran } from './jeu/partie';
 
 export const routes: Routes = [
   { path: '', component: Accueil, title: 'HIPMaster' },
@@ -22,7 +20,12 @@ export const routes: Routes = [
     children: [{ path: ':numero', component: DetailCarte, title: 'Carte — HIPMaster' }],
   },
   { path: 'jouer', component: ChoixDeck, title: 'Jouer contre le bot — HIPMaster' },
-  { path: 'jouer/:id', component: PartieEcran, title: 'Partie — HIPMaster' },
+  // Le plateau (partie et duel) est chargé à la demande : l'accueil s'affiche plus vite (US-061).
+  {
+    path: 'jouer/:id',
+    loadComponent: () => import('./jeu/partie').then((m) => m.PartieEcran),
+    title: 'Partie — HIPMaster',
+  },
   { path: 'boosters', component: BoostersEcran, title: 'Mes boosters — HIPMaster' },
   {
     path: 'collection',
@@ -45,9 +48,22 @@ export const routes: Routes = [
     data: { hasard: true },
   },
   { path: 'duels/nouveau', component: NouveauDefi, title: 'Défier un collègue — HIPMaster' },
-  { path: 'duels/:id', component: DuelEcran, title: 'Duel — HIPMaster' },
+  {
+    path: 'duels/:id',
+    loadComponent: () => import('./duels/duel').then((m) => m.DuelEcran),
+    title: 'Duel — HIPMaster',
+  },
   { path: 'compte', component: CompteEcran, title: 'Mon compte — HIPMaster' },
+  {
+    path: 'confidentialite',
+    component: ConfidentialiteEcran,
+    title: 'À propos et confidentialité — HIPMaster',
+  },
   // Réservée aux administrateurs (US-072) : pour tout autre joueur, retour à l'accueil.
-  { path: 'inviter', component: InviterEcran, title: 'Inviter — HIPMaster' },
+  {
+    path: 'inviter',
+    loadComponent: () => import('./administration/inviter').then((m) => m.InviterEcran),
+    title: 'Inviter — HIPMaster',
+  },
   { path: '**', redirectTo: '' },
 ];

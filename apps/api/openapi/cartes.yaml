@@ -1,17 +1,18 @@
 openapi: 3.1.0
 info:
   title: HIPMaster — catalogue des cartes
-  version: 1.0.0
+  version: 1.1.0
   description: >
     Catalogue en lecture seule des cartes du set 1 (US-008, ADR 0011). Les cartes sont des données versionnées du
-    domaine : aucune écriture n'est exposée.
+    domaine : aucune écriture n'est exposée. Le détail d'une carte porte en plus sa fiche « En savoir plus »
+    (US-073, ADR 0036), absente de la liste pour la garder légère.
 servers:
   - url: /api/v1
 paths:
   /cartes:
     get:
       operationId: listerCartes
-      summary: Liste toutes les cartes, triées par numéro
+      summary: Liste toutes les cartes, triées par numéro, sans leur fiche
       responses:
         '200':
           description: Les cartes du set 1.
@@ -23,7 +24,7 @@ paths:
   /cartes/{numero}:
     get:
       operationId: lireCarte
-      summary: Lit une carte par son numéro
+      summary: Lit une carte par son numéro, avec sa fiche « En savoir plus »
       parameters:
         - name: numero
           in: path
@@ -34,7 +35,7 @@ paths:
           description: La carte demandée.
           content:
             application/json:
-              schema: { $ref: '#/components/schemas/Carte' }
+              schema: { $ref: '#/components/schemas/CarteDetaillee' }
         '400':
           description: Numéro invalide.
           content:
@@ -74,6 +75,50 @@ components:
           items: { $ref: '#/components/schemas/Capacite' }
         effet: { type: string, description: Effet propre à la carte, s'il y en a un. }
         enVrai: { type: string, description: Explication pédagogique. }
+    CarteDetaillee:
+      description: Une carte, avec sa fiche « En savoir plus » quand elle est rédigée.
+      allOf:
+        - $ref: '#/components/schemas/Carte'
+        - type: object
+          properties:
+            fiche: { $ref: '#/components/schemas/Fiche' }
+    Fiche:
+      type: object
+      description: >
+        Fiche « En savoir plus » (US-073, ADR 0036) : se lit en moins d'une minute, avec des ressources externes.
+      required: [definition, usage, exemple, aRetenir, liens]
+      properties:
+        definition: { type: string, maxLength: 220, description: Ce que c'est, en une phrase. }
+        usage:
+          type: string
+          maxLength: 360
+          description: À quoi ça sert ; pour un incident, comment il survient.
+        exemple: { type: string, maxLength: 360, description: Un exemple concret. }
+        aRetenir:
+          { type: string, maxLength: 320, description: Le piège à éviter ou la bonne pratique. }
+        chezElis:
+          type: string
+          maxLength: 240
+          description: Le lien avec l'intégration chez Elis, quand il est public et établi.
+        liens:
+          type: array
+          minItems: 1
+          maxItems: 3
+          items: { $ref: '#/components/schemas/LienExterne' }
+    LienExterne:
+      type: object
+      required: [titre, url, langue]
+      properties:
+        titre: { type: string }
+        url:
+          {
+            type: string,
+            format: uri,
+            pattern: '^https://',
+            description: Ressource externe,
+            en https.,
+          }
+        langue: { type: string, enum: [fr, en], description: Langue de la ressource. }
     Capacite:
       type: object
       required: [id, nom, description]

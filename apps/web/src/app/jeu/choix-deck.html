@@ -1,44 +1,33 @@
-<main class="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 py-8 sm:px-6">
-  <p>
-    <a routerLink="/" class="text-texte-doux underline underline-offset-4">← Accueil</a>
-  </p>
-  <h1 class="text-3xl font-bold tracking-tight">Jouer contre le bot</h1>
-  <p class="rounded-xl border-2 border-accent p-4">
-    Envie d’affronter un humain ?
-    <a routerLink="/duels/nouveau" class="font-semibold underline underline-offset-4"
-      >Défier un collègue</a
-    >
-    : vous lui envoyez un lien, et le duel se joue au tour par tour. Ou bien
-    <a routerLink="/duels/hasard" class="font-semibold underline underline-offset-4"
-      >un adversaire au hasard</a
-    >.
-  </p>
-  <section aria-labelledby="titre-regle" class="rounded-xl bg-surface p-4">
-    <h2 id="titre-regle" class="mb-2 text-lg font-semibold">La règle en bref</h2>
-    <hip-regle-courte />
-  </section>
+<main class="mx-auto flex w-full max-w-3xl flex-col gap-8 px-4 py-8 sm:px-6">
+  <div class="flex flex-col gap-2">
+    <p class="surtitre">Sans compte, tout de suite</p>
+    <h1 class="titre-page">Jouer contre le bot</h1>
+    <p class="text-texte-doux">
+      Choisissez la difficulté, puis votre deck : la partie commence aussitôt.
+    </p>
+  </div>
+
   @if (niveaux.hasValue()) {
-    <fieldset class="flex flex-col gap-2">
-      <legend class="mb-1 text-lg font-semibold">1. Difficulté du bot</legend>
-      @for (n of niveaux.value(); track n.id) {
-        <label
-          class="flex cursor-pointer gap-3 rounded-xl border-2 p-3 has-[:checked]:border-accent"
-          [class.border-bordure]="niveau() !== n.id"
-        >
-          <input
-            type="radio"
-            name="niveau"
-            class="mt-1 accent-current"
-            [value]="n.id"
-            [checked]="niveau() === n.id"
-            (change)="niveau.set(n.id)"
-          />
-          <span>
-            <span class="block font-semibold">{{ n.nom }}</span>
-            <span class="block text-sm text-texte-doux">{{ n.description }}</span>
-          </span>
-        </label>
-      }
+    <fieldset class="flex flex-col gap-3">
+      <legend class="mb-3 font-titre text-xl font-extrabold">1. Difficulté du bot</legend>
+      <div class="grid gap-3 sm:grid-cols-2">
+        @for (n of niveaux.value(); track n.id) {
+          <label class="choix">
+            <input
+              type="radio"
+              name="niveau"
+              class="mt-1 size-4 shrink-0"
+              [value]="n.id"
+              [checked]="niveau() === n.id"
+              (change)="niveau.set(n.id)"
+            />
+            <span>
+              <span class="block font-titre font-bold">{{ n.nom }}</span>
+              <span class="block text-sm text-texte-doux">{{ n.description }}</span>
+            </span>
+          </label>
+        }
+      </div>
     </fieldset>
   } @else if (niveaux.error()) {
     <hip-erreur-chargement
@@ -49,42 +38,56 @@
     />
   }
 
-  <h2 class="text-lg font-semibold">2. Votre deck</h2>
-  <p class="text-texte-doux">Choisissez un deck prêté. Le bot joue avec un deck tiré au sort.</p>
+  <section aria-labelledby="titre-deck" class="flex flex-col gap-3">
+    <h2 id="titre-deck" class="text-xl font-extrabold">2. Votre deck</h2>
+    <p class="text-texte-doux">Choisissez un deck prêté. Le bot joue avec un deck tiré au sort.</p>
 
-  @if (erreur()) {
-    <p role="alert" class="text-alerte">{{ erreur() }}</p>
-  }
+    @if (erreur()) {
+      <p role="alert" class="text-alerte">{{ erreur() }}</p>
+    }
 
-  @if (decks.hasValue()) {
-    <ul class="flex flex-col gap-3">
-      @for (deck of decks.value(); track deck.id) {
-        <li
-          class="flex flex-col gap-3 rounded-xl border border-bordure p-4 sm:flex-row sm:items-center"
-        >
-          <div class="flex-1">
-            <h2 class="text-xl font-semibold">{{ deck.nom }}</h2>
-            <p class="text-texte-doux">{{ deck.description }}</p>
-          </div>
-          <button
-            type="button"
-            class="rounded-lg bg-accent px-4 py-3 font-semibold text-sur-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:opacity-60"
-            [disabled]="enCours() !== null"
-            (click)="jouer(deck)"
-          >
-            {{ enCours() === deck.id ? 'Création…' : 'Jouer avec ' + deck.nom }}
-          </button>
-        </li>
-      }
-    </ul>
-  } @else if (decks.error()) {
-    <hip-erreur-chargement
-      quoi="Les decks n’ont pas pu être chargés."
-      [erreur]="decks.error()"
-      [enCours]="decks.isLoading()"
-      (reessayer)="decks.reload()"
-    />
-  } @else {
-    <p>Chargement des decks…</p>
-  }
+    @if (decks.hasValue()) {
+      <ul class="flex flex-col gap-3">
+        @for (deck of decks.value(); track deck.id) {
+          <li>
+            <hip-boite-deck [deck]="deck" [catalogue]="catalogue.value()" [niveauTitre]="3">
+              <button
+                type="button"
+                class="bouton bouton-jeu self-stretch sm:self-end"
+                [disabled]="enCours() !== null"
+                (click)="jouer(deck)"
+              >
+                {{ enCours() === deck.id ? 'Création…' : 'Jouer avec ' + deck.nom }}
+              </button>
+            </hip-boite-deck>
+          </li>
+        }
+      </ul>
+    } @else if (decks.error()) {
+      <hip-erreur-chargement
+        quoi="Les decks n’ont pas pu être chargés."
+        [erreur]="decks.error()"
+        [enCours]="decks.isLoading()"
+        (reessayer)="decks.reload()"
+      />
+    } @else {
+      <p>Chargement des decks…</p>
+    }
+  </section>
+
+  <section aria-labelledby="titre-humain" class="panneau flex flex-col gap-3 p-4">
+    <h2 id="titre-humain" class="text-xl font-extrabold">Envie d’affronter un humain ?</h2>
+    <p class="text-texte-doux">Le duel se joue au tour par tour, chacun à son rythme.</p>
+    <p class="flex flex-col gap-3 sm:flex-row">
+      <a routerLink="/duels/nouveau" class="bouton bouton-contour">Défier un collègue</a>
+      <a routerLink="/duels/hasard" class="bouton bouton-contour"
+        >Affronter un adversaire au hasard</a
+      >
+    </p>
+  </section>
+
+  <details class="panneau group p-4">
+    <summary class="cursor-pointer font-titre text-lg font-bold">La règle en bref</summary>
+    <div class="pt-3"><hip-regle-courte /></div>
+  </details>
 </main>

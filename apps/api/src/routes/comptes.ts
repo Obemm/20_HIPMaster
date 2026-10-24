@@ -9,6 +9,7 @@ import {
   joueurDuJeton,
   type Joueur,
   regenererCode,
+  supprimerCompte,
 } from '../comptes/comptes.ts';
 import { type Administrateurs, AUCUN, estAdministrateur } from '../comptes/administrateurs.ts';
 import { inscrire } from '../comptes/invitations.ts';
@@ -60,7 +61,7 @@ export async function exigerJoueur(
   reponse: FastifyReply,
 ): Promise<{ joueur: Joueur; jeton: string } | null> {
   const jeton = jetonDe(requete);
-  const joueur = jeton ? await joueurDuJeton(base, jeton) : null;
+  const joueur = jeton ? await joueurDuJeton(base, jeton, requete.server.optionsSessions) : null;
   if (!jeton || !joueur) {
     await refuser(reponse, 401, 'Compte requis : session absente ou expirée');
     return null;
@@ -148,6 +149,14 @@ export const routesComptes: FastifyPluginAsyncZod<{
   app.get('/moi', { schema: { response: { 200: schemaJoueur } } }, async (requete, reponse) => {
     const connecte = await exigerJoueur(base, requete, reponse);
     return connecte ? vu(connecte.joueur) : reponse;
+  });
+
+  // Suppression définitive du compte (US-053, ADR 0031).
+  app.delete('/moi', async (requete, reponse) => {
+    const connecte = await exigerJoueur(base, requete, reponse);
+    if (!connecte) return reponse;
+    await supprimerCompte(base, connecte.joueur.id);
+    return reponse.status(204).send();
   });
 
   app.post(

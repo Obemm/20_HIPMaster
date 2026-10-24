@@ -1,76 +1,67 @@
 <main class="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 py-8 sm:px-6">
-  <p>
-    <a routerLink="/" class="text-texte-doux underline underline-offset-4">← Accueil</a>
-  </p>
-  <h1 class="text-3xl font-bold tracking-tight">Ma collection</h1>
+  <div class="flex flex-col gap-2">
+    <p class="surtitre">Set 1 · De FTP aux agents</p>
+    <h1 class="titre-page">Ma collection</h1>
+  </div>
 
   @if (!compte.joueur()) {
     @if (compte.pret()) {
       <p>
         Votre collection se remplit en ouvrant des boosters : il faut un compte pour la garder.
-        <a routerLink="/compte" class="font-semibold underline underline-offset-4"
-          >Créer un compte</a
-        >
+        <a routerLink="/compte" class="lien">Créer un compte</a>
         en un clic (un pseudo suffit) : 5 boosters vous sont offerts.
       </p>
     } @else {
       <hip-etat-session />
     }
   } @else if (progression(); as p) {
-    <section aria-labelledby="titre-progression" class="flex flex-col gap-3">
-      <h2 id="titre-progression" class="text-lg font-semibold">
+    <section aria-labelledby="titre-progression" class="panneau flex flex-col gap-3 p-4">
+      <h2 id="titre-progression" class="text-xl font-extrabold">
         Set 1 : {{ p.obtenues }} / {{ p.total }} cartes
       </h2>
       <div
         role="progressbar"
-        class="h-3 overflow-hidden rounded-full bg-surface"
+        class="jauge"
         aria-labelledby="titre-progression"
         [attr.aria-valuenow]="p.obtenues"
         aria-valuemin="0"
         [attr.aria-valuemax]="p.total"
       >
-        <div class="h-full bg-accent" [style.width.%]="(p.obtenues / p.total) * 100"></div>
+        <div [style.width.%]="(p.obtenues / p.total) * 100"></div>
       </div>
       <ul class="grid grid-cols-2 gap-2 sm:grid-cols-4">
         @for (r of p.parRarete; track r.rarete) {
-          <li class="rounded bg-surface px-3 py-2">
-            <span class="block text-sm text-texte-doux"
+          <li
+            class="rounded-xl border-2 border-cadre bg-fond-carte px-3 py-2"
+            [class]="'cadre-' + r.rarete"
+          >
+            <span class="block text-sm font-semibold"
               >{{ symbolesRarete[r.rarete] }} {{ r.libelle }}</span
             >
-            <span class="text-xl font-semibold">{{ r.obtenues }} / {{ r.total }}</span>
+            <span class="font-titre text-2xl font-extrabold">{{ r.obtenues }} / {{ r.total }}</span>
           </li>
         }
       </ul>
       @if (p.obtenues === 0) {
         <p>
           Votre collection est vide :
-          <a routerLink="/boosters" class="font-semibold underline underline-offset-4"
-            >ouvrez un booster</a
-          >.
+          <a routerLink="/boosters" class="lien">ouvrez un booster</a>.
         </p>
       }
     </section>
 
-    <form class="flex flex-col gap-3 sm:flex-row" aria-label="Filtrer la collection">
+    <form class="panneau grid gap-3 p-4 sm:grid-cols-3" aria-label="Filtrer la collection">
       <div class="flex flex-col gap-1">
-        <label for="filtre-possession" class="text-sm font-semibold">Possession</label>
-        <select
-          id="filtre-possession"
-          class="rounded border border-bordure bg-fond px-3 py-2"
-          (change)="choisirPossession($event)"
-        >
+        <label for="filtre-possession" class="etiquette">Possession</label>
+        <select id="filtre-possession" class="champ" (change)="choisirPossession($event)">
           <option value="">Toutes les cartes</option>
           <option value="possedees">Possédées</option>
           <option value="manquantes">Manquantes</option>
         </select>
       </div>
       <div class="flex flex-col gap-1">
-        <label for="filtre-famille" class="text-sm font-semibold">Famille</label>
-        <select
-          id="filtre-famille"
-          class="rounded border border-bordure bg-fond px-3 py-2"
-          (change)="choisirFamille($event)"
-        >
+        <label for="filtre-famille" class="etiquette">Famille</label>
+        <select id="filtre-famille" class="champ" (change)="choisirFamille($event)">
           <option value="">Toutes les familles</option>
           @for (f of familles; track f[0]) {
             <option [value]="f[0]">{{ f[1] }}</option>
@@ -78,12 +69,8 @@
         </select>
       </div>
       <div class="flex flex-col gap-1">
-        <label for="filtre-rarete" class="text-sm font-semibold">Rareté</label>
-        <select
-          id="filtre-rarete"
-          class="rounded border border-bordure bg-fond px-3 py-2"
-          (change)="choisirRarete($event)"
-        >
+        <label for="filtre-rarete" class="etiquette">Rareté</label>
+        <select id="filtre-rarete" class="champ" (change)="choisirRarete($event)">
           <option value="">Toutes les raretés</option>
           @for (r of raretes; track r[0]) {
             <option [value]="r[0]">{{ symbolesRarete[r[0]] }} {{ r[1] }}</option>
@@ -111,12 +98,12 @@
         <li class="flex flex-col gap-1">
           <p class="text-sm font-semibold">
             @if (l.exemplaires > 0) {
-              <span class="rounded bg-accent px-2 py-0.5 text-sur-accent"
+              <span class="statut statut-a-jouer"
                 >× {{ l.exemplaires
                 }}<span class="sr-only"> exemplaire{{ l.exemplaires > 1 ? 's' : '' }}</span></span
               >
             } @else {
-              <span class="text-texte-doux">Manquante</span>
+              <span class="statut statut-attente">Manquante</span>
             }
           </p>
           <hip-vignette-carte

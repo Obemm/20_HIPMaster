@@ -1,21 +1,18 @@
 <main class="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 py-8 sm:px-6">
-  <p>
-    <a routerLink="/" class="text-texte-doux underline underline-offset-4">← Accueil</a>
-  </p>
-  <h1 class="text-3xl font-bold tracking-tight">Catalogue du set 1</h1>
-  <p class="text-texte-doux">
-    « De FTP aux agents » : les technologies, patterns et incidents de la plateforme d’intégration.
-  </p>
+  <div class="flex flex-col gap-2">
+    <p class="surtitre">Set 1 · De FTP aux agents</p>
+    <h1 class="titre-page">Catalogue du set 1</h1>
+    <p class="text-texte-doux">
+      Les technologies, patterns et incidents de la plateforme d’intégration : touchez une carte
+      pour la découvrir.
+    </p>
+  </div>
 
   @if (cartes.hasValue()) {
-    <form class="flex flex-col gap-3 sm:flex-row" aria-label="Filtrer les cartes">
+    <form class="panneau grid gap-3 p-4 sm:grid-cols-2" aria-label="Filtrer les cartes">
       <div class="flex flex-col gap-1">
-        <label for="filtre-famille" class="text-sm font-semibold">Famille</label>
-        <select
-          id="filtre-famille"
-          class="rounded border border-bordure bg-fond px-3 py-2"
-          (change)="choisirFamille($event)"
-        >
+        <label for="filtre-famille" class="etiquette">Famille</label>
+        <select id="filtre-famille" class="champ" (change)="choisirFamille($event)">
           <option value="">Toutes les familles</option>
           @for (f of familles; track f[0]) {
             <option [value]="f[0]">{{ f[1] }}</option>
@@ -23,12 +20,8 @@
         </select>
       </div>
       <div class="flex flex-col gap-1">
-        <label for="filtre-rarete" class="text-sm font-semibold">Rareté</label>
-        <select
-          id="filtre-rarete"
-          class="rounded border border-bordure bg-fond px-3 py-2"
-          (change)="choisirRarete($event)"
-        >
+        <label for="filtre-rarete" class="etiquette">Rareté</label>
+        <select id="filtre-rarete" class="champ" (change)="choisirRarete($event)">
           <option value="">Toutes les raretés</option>
           @for (r of raretes; track r[0]) {
             <option [value]="r[0]">{{ symbolesRarete[r[0]] }} {{ r[1] }}</option>

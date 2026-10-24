@@ -16,7 +16,8 @@ import { CompteService } from '../compte/compte.service';
 import { Icone } from '../icone';
 import { LIBELLES_RARETE, SYMBOLES_RARETE } from '../libelles';
 import { ErreurChargement } from '../reseau/erreur-chargement';
-import { type Carte, LIBELLES_FAMILLE, libelleType } from './carte';
+import { type Carte, type CarteDetaillee, LIBELLES_FAMILLE, libelleType } from './carte';
+import { EnSavoirPlus } from './en-savoir-plus';
 import { VignetteCarte } from './vignette-carte';
 
 /**
@@ -25,7 +26,7 @@ import { VignetteCarte } from './vignette-carte';
  */
 @Component({
   selector: 'hip-detail-carte',
-  imports: [RouterLink, Icone, VignetteCarte, ErreurChargement],
+  imports: [RouterLink, Icone, VignetteCarte, ErreurChargement, EnSavoirPlus],
   templateUrl: './detail-carte.html',
 })
 export class DetailCarte implements OnDestroy {
@@ -49,7 +50,7 @@ export class DetailCarte implements OnDestroy {
   protected readonly symbolesRarete = SYMBOLES_RARETE;
   protected readonly libelleType = libelleType;
 
-  protected readonly carte = httpResource<Carte>(
+  protected readonly carte = httpResource<CarteDetaillee>(
     () => `/api/v1/cartes/${encodeURIComponent(this.numero())}`,
   );
 

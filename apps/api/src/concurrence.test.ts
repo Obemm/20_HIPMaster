@@ -3,11 +3,12 @@ import { REGLES_BOOSTERS, TAILLE_BOOSTER } from '@hipmaster/domain';
 import { eq, sql, sum } from 'drizzle-orm';
 import { describe, expect, it } from 'vitest';
 import { type OptionsBoosters, ouvrirUnBooster, recompenserVictoire } from './comptes/boosters.ts';
-import { CLE_CODES_DEVELOPPEMENT, creerJoueur } from './comptes/comptes.ts';
+import { CLE_CODES_DEVELOPPEMENT, creerJoueur, supprimerCompte } from './comptes/comptes.ts';
 import { creerInvitation, inscrire } from './comptes/invitations.ts';
 import { baseDeTest } from './db/base-de-test.ts';
-import { collection, duels, invitations, joueurs, recompenses } from './db/schema.ts';
+import { collection, duels, invitations, joueurs, parties, recompenses } from './db/schema.ts';
 import { chercherAdversaire, creerDuel, jouerDuel, rejoindreDuel } from './duels/duels.ts';
+import { jouerPartie, lancerPartie } from './parties/parties.ts';
 
 /**
  * Opérations lancées en même temps (US-056). PGlite exécute les requêtes une par une : là, ces tests ne prouvent que la
@@ -118,6 +119,38 @@ describe('opérations simultanées (US-056)', () => {
     expect(chezAda[0]?.statut).toBe('en-cours');
   });
 
+  it('des joueurs qui cherchent en même temps dans une file vide se trouvent deux à deux (US-058)', async () => {
+    const enFile = await enParallele((i) =>
+      creerJoueur(ouverte.base, `Joueur ${i}`, CLE_CODES_DEVELOPPEMENT),
+    );
+
+    const resultats = await Promise.all(
+      enFile.map(({ joueur }) => chercherAdversaire(ouverte.base, joueur.id, 'moderne')),
+    );
+
+    expect(resultats.every((r) => r.ok)).toBe(true);
+    // Aucun joueur n'attend pendant qu'un autre attend aussi : FOIS joueurs, FOIS / 2 duels lancés.
+    const lignes = await ouverte.base.select().from(duels);
+    expect(lignes.map((l) => l.statut)).toEqual(Array.from({ length: FOIS / 2 }, () => 'en-cours'));
+    const participants = lignes.flatMap((l) => [l.createurId, l.adversaireId]);
+    expect(new Set(participants).size).toBe(FOIS);
+    expect(lignes.every((l) => l.createurId !== l.adversaireId)).toBe(true);
+  });
+
+  it('un joueur qui cherche plusieurs fois en même temps n’ouvre qu’un duel (US-058)', async () => {
+    const ada = await creerJoueur(ouverte.base, 'Ada', CLE_CODES_DEVELOPPEMENT);
+    const resultats = await enParallele(() =>
+      chercherAdversaire(ouverte.base, ada.joueur.id, 'moderne'),
+    );
+
+    const ids = resultats.flatMap((r) => (r.ok ? [r.valeur.duel.id] : []));
+    expect(ids).toHaveLength(FOIS);
+    expect(new Set(ids).size).toBe(1);
+    const lignes = await ouverte.base.select().from(duels);
+    expect(lignes).toHaveLength(1);
+    expect(lignes[0]).toMatchObject({ statut: 'attente', ouvert: true, adversaireId: null });
+  });
+
   describe('actions simultanées dans un duel', () => {
     /** Un duel lancé entre Ada et Bob ; renvoie aussi le joueur dont c'est le tour. */
     async function duelLance() {
@@ -128,7 +161,8 @@ describe('opérations simultanées (US-056)', () => {
       const lance = await rejoindreDuel(ouverte.base, cree.valeur.id, bob.joueur.id, 'heritage');
       if (!lance.ok || !lance.valeur.vue) throw new Error('Duel non lancé.');
       const actif = lance.valeur.vue.actif === 'j1' ? ada.joueur.id : bob.joueur.id;
-      return { id: cree.valeur.id, actif, version: lance.valeur.version };
+      const autre = actif === ada.joueur.id ? bob.joueur.id : ada.joueur.id;
+      return { id: cree.valeur.id, actif, autre, version: lance.valeur.version };
     }
 
     async function versionEnBase(id: string) {
@@ -163,6 +197,68 @@ describe('opérations simultanées (US-056)', () => {
         Array.from({ length: FOIS - 1 }, () => 'pas-ton-tour'),
       );
       expect(await versionEnBase(id)).toBe(version + 1);
+    });
+
+    it('un compte supprimé pendant que l’adversaire joue : le forfait passe avant ou après, jamais au milieu (US-053)', async () => {
+      const { id, actif, autre, version } = await duelLance();
+      const [, ...coups] = await enParallele((i) =>
+        i === 0
+          ? supprimerCompte(ouverte.base, autre).then(() => null)
+          : jouerDuel(ouverte.base, id, actif, { type: 'finirTour' }),
+      );
+
+      // Au plus la fin de tour de l'actif passe, avant le forfait ; ensuite, la partie est terminée.
+      const passes = coups.filter((r) => r?.ok).length;
+      expect(passes).toBeLessThanOrEqual(1);
+      const [ligne] = await ouverte.base.select().from(duels).where(eq(duels.id, id));
+      expect(ligne?.statut).toBe('termine');
+      expect(ligne?.etat?.issue?.raison).toBe('forfait');
+      expect(ligne?.version).toBe(version + passes + 1);
+    });
+  });
+
+  describe('actions simultanées dans une partie contre le bot (US-052)', () => {
+    async function partieLancee() {
+      const lancee = await lancerPartie(ouverte.base, 'moderne');
+      if (!lancee.ok) throw new Error('Partie non lancée.');
+      return lancee.valeur;
+    }
+
+    async function versionEnBase(id: string) {
+      const [ligne] = await ouverte.base
+        .select({ version: parties.version })
+        .from(parties)
+        .where(eq(parties.id, id));
+      return ligne?.version;
+    }
+
+    it('avec la même version attendue (If-Match), une seule s’applique', async () => {
+      const { id, version } = await partieLancee();
+      const resultats = await enParallele(() =>
+        jouerPartie(ouverte.base, id, { type: 'finirTour' }, null, version),
+      );
+
+      expect(resultats.filter((r) => r.ok)).toHaveLength(1);
+      expect(resultats.flatMap((r) => (r.ok ? [] : [r.raison]))).toEqual(
+        Array.from({ length: FOIS - 1 }, () => 'version-perimee'),
+      );
+      expect(await versionEnBase(id)).toBe(version + 1);
+    });
+
+    it('sans version attendue, aucune action ne s’applique sur une version déjà remplacée', async () => {
+      const { id, version } = await partieLancee();
+      const resultats = await enParallele(() =>
+        jouerPartie(ouverte.base, id, { type: 'finirTour' }, null),
+      );
+
+      // Les actions qui se croisent sont refusées ; celles qui arrivent après une autre s'appliquent à leur tour.
+      const appliquees = resultats.flatMap((r) => (r.ok ? [r.valeur.partie.version] : []));
+      expect(appliquees.length).toBeGreaterThan(0);
+      expect(new Set(appliquees).size).toBe(appliquees.length);
+      expect(resultats.flatMap((r) => (r.ok ? [] : [r.raison]))).toEqual(
+        Array.from({ length: FOIS - appliquees.length }, () => 'version-perimee'),
+      );
+      expect(await versionEnBase(id)).toBe(version + appliquees.length);
     });
   });
 

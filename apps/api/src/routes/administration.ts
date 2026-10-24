@@ -71,7 +71,7 @@ export const routesAdministration: FastifyPluginAsyncZod<{
   const personne = administrateurs !== TOUS && administrateurs.size === 0;
   app.addHook('onRequest', async (requete, reponse) => {
     const jeton = personne ? null : jetonDe(requete);
-    const joueur = jeton ? await joueurDuJeton(base, jeton) : null;
+    const joueur = jeton ? await joueurDuJeton(base, jeton, requete.server.optionsSessions) : null;
     if (joueur && estAdministrateur(administrateurs, joueur.id)) {
       administrateurDe.set(requete, joueur.id);
       return;

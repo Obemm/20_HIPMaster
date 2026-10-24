@@ -1,6 +1,7 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, type Route, test } from '@playwright/test';
 import { creerCompteParApi } from './duel-api';
+import { REGLES_WCAG } from './axe';
 
 // US-055 : le front face au démarrage à froid, aux pannes passagères, aux sessions expirées et aux 429. Les pannes
 // sont simulées par Playwright (`page.route`) : l'API réelle répond dès que la simulation la laisse passer.
@@ -23,7 +24,7 @@ test('une lecture qui échoue une fois (503 puis 200) est retentée seule : le j
     appels++;
     return appels === 1 ? indisponible(route) : route.continue();
   });
-  await page.goto('/');
+  await page.goto('/boosters');
   const raretes = page.getByRole('region', { name: 'Chances par booster' });
   await expect(raretes.getByRole('listitem')).toHaveCount(4);
   await expect(page.getByRole('alert')).toHaveCount(0);
@@ -159,11 +160,12 @@ for (const theme of ['light', 'dark'] as const) {
   }) => {
     await page.emulateMedia({ colorScheme: theme });
     await page.route('**/api/v1/raretes', indisponible);
-    await page.goto('/');
+    // Les chances par booster, sur l'écran des boosters depuis US-061.
+    await page.goto('/boosters');
     await expect(page.getByRole('button', { name: 'Réessayer' })).toBeVisible(
       APRES_NOUVELLES_TENTATIVES,
     );
-    const { violations } = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
+    const { violations } = await new AxeBuilder({ page }).withTags(REGLES_WCAG).analyze();
     expect(violations).toEqual([]);
   });
 }
