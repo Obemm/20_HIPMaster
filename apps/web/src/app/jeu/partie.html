@@ -49,7 +49,7 @@
               <span class="font-semibold">Abandonner ce duel ? {{ autre().sujet }} gagnera.</span>
               <button
                 type="button"
-                class="rounded-lg bg-accent px-3 py-1.5 font-semibold text-sur-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:opacity-60"
+                class="bouton bouton-danger bouton-petit"
                 [disabled]="occupe()"
                 (click)="abandonner()"
               >
@@ -57,7 +57,7 @@
               </button>
               <button
                 type="button"
-                class="rounded-lg border-2 border-bordure px-3 py-1.5 font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                class="bouton bouton-contour bouton-petit"
                 (click)="confirmerAbandon.set(false)"
               >
                 Non, continuer
@@ -88,8 +88,7 @@
         } @else {
           Cette partie n’existe plus : elle expire après 24 heures sans coup joué.
         }
-        <a routerLink="/jouer" class="underline underline-offset-4">Commencer une nouvelle partie</a
-        >.
+        <a routerLink="/jouer" class="lien">Commencer une nouvelle partie</a>.
       </p>
     </section>
   } @else if (pret()) {
@@ -108,7 +107,7 @@
           <button
             type="button"
             id="plateau-si"
-            class="flex min-h-11 flex-1 items-center justify-between gap-2 rounded-lg border-2 px-3 py-1.5 text-left text-sm font-semibold focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-default"
+            class="flex min-h-11 flex-1 items-center justify-between gap-2 rounded-lg border-2 bg-surface px-3 py-1.5 text-left text-sm font-semibold focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-default"
             [class]="
               ciblesPossibles().has('si') ? 'border-red-600 dark:border-red-400' : 'border-bordure'
             "
@@ -292,13 +291,14 @@
         @if (v.issue; as issue) {
           <section
             aria-labelledby="titre-fin"
-            class="flex flex-col items-center gap-3 rounded-xl border-2 border-accent p-5 text-center"
+            class="panneau flex flex-col items-center gap-3 border-2 border-action p-5 text-center"
           >
             <h2
               id="titre-fin"
               #titreFin
               tabindex="-1"
-              class="text-3xl font-bold focus:outline-none"
+              class="text-4xl font-black focus:outline-none"
+              [class.text-or]="issue.gagnant === v.joueur"
             >
               @if (issue.gagnant === null) {
                 Partie nulle
@@ -329,26 +329,22 @@
             ) {
               <p>
                 Avec un compte, chaque victoire rapporte un booster :
-                <a routerLink="/compte" class="font-semibold underline underline-offset-4"
-                  >créer un compte</a
-                >
+                <a routerLink="/compte" class="lien">créer un compte</a>
                 (un pseudo suffit).
               </p>
             }
             <p class="flex flex-wrap justify-center gap-3">
               @if (partie()?.recompense?.booster) {
-                <a
-                  routerLink="/boosters"
-                  class="rounded-lg bg-accent px-4 py-3 font-semibold text-sur-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-                  >Ouvrir mon booster</a
-                >
+                <a routerLink="/boosters" class="bouton bouton-jeu">Ouvrir mon booster</a>
               }
               <a
                 [routerLink]="mode() === 'duel' ? '/duels/nouveau' : '/jouer'"
-                class="rounded-lg bg-accent px-4 py-3 font-semibold text-sur-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                class="bouton"
+                [class.bouton-jeu]="!partie()?.recompense?.booster"
+                [class.bouton-contour]="partie()?.recompense?.booster"
                 >{{ mode() === 'duel' ? 'Lancer une revanche' : 'Rejouer' }}</a
               >
-              <a routerLink="/" class="px-4 py-3 underline underline-offset-4">Accueil</a>
+              <a routerLink="/" class="lien px-4 py-3">Accueil</a>
             </p>
           </section>
         } @else {
@@ -419,7 +415,7 @@
                 @for (action of actionsOutillage(); track action.source) {
                   <button
                     type="button"
-                    class="rounded-lg border-2 border-accent px-3 py-2 text-sm font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:opacity-60"
+                    class="bouton bouton-contour bouton-petit"
                     [disabled]="occupe()"
                     (click)="jouer(action)"
                   >
@@ -456,7 +452,7 @@
               <button
                 type="button"
                 id="finir-tour"
-                class="shrink-0 rounded-lg bg-accent px-4 py-3 font-semibold text-sur-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:opacity-60"
+                class="bouton bouton-jeu shrink-0"
                 [disabled]="!monTour() || occupe()"
                 [attr.aria-describedby]="
                   attaquesOubliees() && !attaquant() ? 'attaques-oubliees' : null
@@ -488,14 +484,14 @@
                   <button
                     type="button"
                     id="revenir-plateau"
-                    class="rounded-lg border-2 border-accent px-4 py-3 font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                    class="bouton bouton-contour"
                     (click)="revenirAuPlateau()"
                   >
                     Revenir au plateau
                   </button>
                   <button
                     type="button"
-                    class="rounded-lg bg-accent px-4 py-3 font-semibold text-sur-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:opacity-60"
+                    class="bouton bouton-plein"
                     [disabled]="occupe()"
                     (click)="finirQuandMeme()"
                   >
@@ -559,11 +555,7 @@
             <ng-container *ngTemplateOutlet="glossaire" />
           </section>
         }
-        <button
-          type="button"
-          class="self-end rounded-lg bg-accent px-4 py-3 font-semibold text-sur-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-          (click)="fermerAide()"
-        >
+        <button type="button" class="bouton bouton-jeu self-end" (click)="fermerAide()">
           C’est parti
         </button>
       </div>
@@ -703,7 +695,7 @@
                   @for (action of actionsCarte(); track $index) {
                     <button
                       type="button"
-                      class="rounded-lg border-2 border-accent px-3 py-2 font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:opacity-60"
+                      class="bouton bouton-plein"
                       [disabled]="occupe()"
                       (click)="jouer(action)"
                     >
@@ -731,7 +723,7 @@
                 <div class="flex flex-wrap gap-2" role="group" aria-label="Attaque">
                   <button
                     type="button"
-                    class="rounded-lg border-2 border-red-600 px-3 py-2 font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:opacity-60 dark:border-red-400"
+                    class="bouton bouton-danger"
                     [disabled]="occupe()"
                     (click)="jouer(attaque)"
                   >

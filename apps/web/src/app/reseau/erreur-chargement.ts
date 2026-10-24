@@ -12,7 +12,7 @@ import { expliquer } from './reseau';
     <p>
       <button
         type="button"
-        class="rounded-lg border-2 border-accent px-4 py-2 font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:opacity-60"
+        class="bouton bouton-contour"
         [disabled]="enCours()"
         (click)="reessayer.emit()"
       >
