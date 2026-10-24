@@ -63,7 +63,7 @@ paths:
         création supprime la partie sans compte la moins récemment jouée, et seulement à défaut celle d'un compte
         (ADR 0025, 0030). Avec l'en-tête `Authorization: Bearer`
         d'un compte (facultatif), une victoire rapportera un booster (US-025, voir `recompense`), et la partie
-        n'appartient qu'à cette session. Avec `guidee: true`, la partie guidée (US-067, ADR 0040) : decks
+        n'appartient qu'à cette session. Avec `guidee: true`, la partie guidée (US-067, ADR 0041) : decks
         d'initiation et graine fixes contre Stagiaire, `deck` et `niveau` ignorés, aucune récompense ; chaque réponse
         porte alors l'étape `guide` du moment. Limite : 20 créations par minute et par adresse.
       requestBody:

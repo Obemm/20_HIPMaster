@@ -107,7 +107,7 @@ export interface Partie {
   evenements: Evenement[];
   /** Présente après une victoire dans une partie lancée en étant connecté (US-025). */
   recompense?: Recompense;
-  /** Partie guidée seulement (US-067) : l'étape du moment, servie par l'API (ADR 0040). */
+  /** Partie guidée seulement (US-067) : l'étape du moment, servie par l'API (ADR 0041). */
   guide?: EtapeGuidee;
 }
 

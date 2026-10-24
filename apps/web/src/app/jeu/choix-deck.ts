@@ -37,7 +37,7 @@ export class ChoixDeck {
     return this.lancer(deck.id, { deck: deck.id, niveau: this.niveau() });
   }
 
-  /** La partie guidée (US-067) : le serveur fixe decks, graine et niveau (ADR 0040). */
+  /** La partie guidée (US-067) : le serveur fixe decks, graine et niveau (ADR 0041). */
   protected jouerGuidee(): Promise<void> {
     return this.lancer('guidee', { guidee: true });
   }

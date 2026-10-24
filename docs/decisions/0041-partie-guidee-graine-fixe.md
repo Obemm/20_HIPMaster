@@ -1,4 +1,4 @@
-# 0040 — Partie guidée : une graine fixe et des étapes servies par l'API
+# 0041 — Partie guidée : une graine fixe et des étapes servies par l'API
 
 - **Date** : 2026-10-24
 - **Statut** : Acceptée
@@ -20,7 +20,7 @@ tirée par le serveur (ADR 0034), et le front ne calcule aucune règle (ADR 0004
 - **Le scénario est une donnée versionnée du domaine** (`packages/domain/src/combat/partie-guidee.ts`, comme le
   catalogue, ADR 0011) : decks, graine, et pour chaque étape un titre, un texte et l'action attendue. Un test rejoue
   le scénario et vérifie que chaque action attendue est légale au moment voulu, que la Garde apparaît à son étape, et
-  que la partie se gagne ensuite en suivant le conseil (ADR 0039).
+  que la partie se gagne ensuite en suivant le conseil (ADR 0040).
 - **L'étape du moment est servie par l'API** dans la réponse de la partie (`guide`) : l'étape n attend la n-ième
   action du joueur, c'est-à-dire la version de la partie (ADR 0030). Le front affiche la bulle, met en évidence ce
   qu'elle désigne et refuse poliment un autre geste ; il ne déduit rien des règles.

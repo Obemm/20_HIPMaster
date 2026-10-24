@@ -29,7 +29,7 @@ En tant que **collègue qui découvre HIPMaster**, je veux **une première parti
 
 - À faire après US-059 (plateau qui tient dans un écran de téléphone), pour ne pas refaire les bulles.
 - Le scénario (decks, graine, étapes) est une donnée versionnée du domaine, comme le catalogue (ADR 0011).
-- Choix retenus ([ADR 0040](../../decisions/0040-partie-guidee-graine-fixe.md)) :
+- Choix retenus ([ADR 0041](../../decisions/0041-partie-guidee-graine-fixe.md)) :
   - **Scénario** (`packages/domain/src/combat/partie-guidee.ts`) : deck « Initiation » du joueur, deck du bot fait
     de petits composants et de deux Répertoires de dépôt (Garde), graine 1262 (le joueur commence), contre
     Stagiaire. 12 étapes guidées sur trois tours (poser, finir, attaquer le SI, décommissionner LLM pour poser deux
@@ -54,5 +54,5 @@ En tant que **collègue qui découvre HIPMaster**, je veux **une première parti
 ## Journal
 
 - 2026-10-23 — création, à la demande du porteur du projet (« un mode tuto »).
-- 2026-10-24 — affinée et commencée : choix notés ci-dessus (ADR 0040).
-- 2026-10-24 — livrée : partie guidée : decks et graine fixes contre Stagiaire, 12 étapes servies par l'API qui attendent le bon geste et refusent poliment les autres, passables, puis jeu libre jusqu'à la victoire, sans booster (ADR 0040)
+- 2026-10-24 — affinée et commencée : choix notés ci-dessus (ADR 0041).
+- 2026-10-24 — livrée : partie guidée : decks et graine fixes contre Stagiaire, 12 étapes servies par l'API qui attendent le bon geste et refusent poliment les autres, passables, puis jeu libre jusqu'à la victoire, sans booster (ADR 0041)

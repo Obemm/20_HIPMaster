@@ -78,7 +78,7 @@ export interface PartieVisible {
 /** Une étape de la partie guidée, avec sa place. */
 export type EtapeEnCours = EtapeGuidee & { etape: number; total: number };
 
-/** La partie guidée se reconnaît à son deck d'initiation (US-067, ADR 0040). */
+/** La partie guidée se reconnaît à son deck d'initiation (US-067, ADR 0041). */
 export const estGuidee = (deck: string) => deck === DECK_INITIATION.id;
 
 /** L'étape de la partie guidée pour cette version : la n-ième action du joueur, puis la dernière, libre. */
@@ -201,7 +201,7 @@ export async function lancerPartie(
   if (!deck) return echec('deck-inconnu');
   const niveau = trouverNiveau(guidee ? NIVEAU_PARTIE_GUIDEE : idNiveau);
   if (!niveau) return echec('niveau-inconnu');
-  // La partie guidée rejoue toujours la même partie (ADR 0040) ; les autres reçoivent une clé tirée (ADR 0034).
+  // La partie guidée rejoue toujours la même partie (ADR 0041) ; les autres reçoivent une clé tirée (ADR 0034).
   const graine = guidee ? GRAINE_PARTIE_GUIDEE : (options.tirerGraine ?? tirerGraine)();
   const deckBot = guidee
     ? DECK_INITIATION_BOT

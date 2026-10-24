@@ -191,7 +191,7 @@ export class PartieEcran implements OnInit, OnDestroy {
   });
 
   /**
-   * Partie guidée (US-067, ADR 0040) : l'étape du moment, servie par l'API, tant que le joueur ne l'a pas passée et
+   * Partie guidée (US-067, ADR 0041) : l'étape du moment, servie par l'API, tant que le joueur ne l'a pas passée et
    * que la partie dure. Les étapes ne calculent rien : elles disent quoi faire et attendent l'action prévue.
    */
   protected readonly guidee = computed(() => this.partie()?.guide !== undefined);

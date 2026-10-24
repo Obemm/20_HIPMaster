@@ -2,7 +2,7 @@ import { deck, type DeckPrete } from './decks.ts';
 import type { Action } from './types.ts';
 
 /**
- * La première partie guidée (US-067) : des decks d'initiation fixes contre Stagiaire, et une graine fixe (ADR 0040),
+ * La première partie guidée (US-067) : des decks d'initiation fixes contre Stagiaire, et une graine fixe (ADR 0041),
  * pour que la main de départ, les pioches et les coups du bot soient connus d'avance (moteur rejouable, ADR 0013).
  * Chaque étape attend une action précise du joueur ; la partie se poursuit ensuite librement jusqu'à la victoire.
  */

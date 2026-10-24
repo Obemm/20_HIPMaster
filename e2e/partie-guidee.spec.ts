@@ -2,7 +2,7 @@ import AxeBuilder from '@axe-core/playwright';
 import { expect, type Page, test } from '@playwright/test';
 import { REGLES_WCAG } from './axe';
 
-// La partie guidée (US-067, ADR 0040) : decks et graine fixes, chaque étape attend l'action prévue.
+// La partie guidée (US-067, ADR 0041) : decks et graine fixes, chaque étape attend l'action prévue.
 
 const bulle = (page: Page) => page.locator('#bulle-guide');
 
