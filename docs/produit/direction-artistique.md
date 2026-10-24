@@ -1,23 +1,44 @@
-# Direction artistique des illustrations (brouillon, essai US-016)
+# Direction artistique des illustrations
 
-> Brouillon soumis à l'essai sur 4 cartes. Il sera validé, ou corrigé, par le porteur du projet à la fin d'US-016.
+> Validée sur l'essai d'US-016, puis corrigée pendant US-017 (2026-10-24) : une créature à elle par carte.
 
 ## L'idée
 
-Chaque technologie devient une **machine-créature** de la salle serveur : un objet technique doté d'une personnalité,
-comme les créatures d'un jeu de cartes. FTP est un vieux robot facteur couvert de poussière ; une passerelle API est
-une forteresse qui filtre ; un agent d'IA est une créature lumineuse reliée à un réseau. Le ton suit l'univers
-([univers.md](univers.md)) : affectueux et un peu moqueur pour les anciennes briques, spectaculaire pour les modernes.
+Chaque carte est une **créature à elle** : une espèce, une silhouette, une posture et une petite scène tirées de ce
+que la carte représente, comme les créatures d'un jeu de cartes. FTP est un vieux pélican facteur dont la poche du bec,
+grande ouverte, laisse tout voir ; SFTP un coursier blindé à carapace de cadenas dans un tunnel chiffré ; une passerelle
+API un griffon gardien perché sur une porte fortifiée ; le RAG un écureuil bibliothécaire. Les créatures peuvent être
+en partie mécaniques, faites de pièces de la salle serveur. Le ton suit l'univers ([univers.md](univers.md)) :
+affectueux et un peu moqueur pour les anciennes briques, spectaculaire pour les modernes, inquiétant (sans horreur)
+pour le bestiaire.
+
+Le premier essai (une « machine-créature de la salle serveur » pour toutes, dans le cadrage de la première image)
+donnait toujours le même robot de face dans une arche, avec un halo : **seule la couleur changeait**, les cartes ne se
+distinguaient pas. D'où la règle : on partage le **rendu**, jamais le personnage.
+
+## Ce qui est commun, ce qui est propre à chaque carte
+
+- **Commun à tout le set** (repris de l'image de référence, SFTP) : la qualité du trait, l'ombrage doux en aplats
+  (_cel shading_), la lumière, le fond bleu nuit et sa lueur.
+- **Propre à la famille** : la palette, la couleur de la lueur et les motifs du décor (tableau ci-dessous).
+- **Propre à la rareté** : l'intensité de la lumière (voir les règles de composition).
+- **Propre à la carte** : la créature (espèce et silhouette jamais reprises ailleurs dans le set), sa posture, sa
+  scène. La liste des 71 créatures est dans [prompts-illustrations-gemini.md](prompts-illustrations-gemini.md).
+- **Les évolutions** (webMethods.io, Solace Agent Mesh, Apigee AI Gateway) reprennent l'espèce et la silhouette de
+  leur carte d'origine (Integration Server, Solace Event Mesh, Apigee API Gateway), en plus grand et plus
+  spectaculaire : on les reconnaît d'un coup d'œil.
 
 ## Règles de composition
 
-- **Format 4:3 paysage**, sujet **centré** et lisible à 170 px de large (grille du téléphone) : une seule silhouette
-  principale, un fond simple.
-- **Vue isométrique** légère, formes franches, ombrage doux en aplats (_cel shading_), fond sombre bleu nuit avec une
-  lueur de la couleur de la famille.
+- **Format 4:3 paysage**, **une seule créature principale** lisible à 170 px de large (grille du téléphone) ; de
+  petits personnages secondaires sont permis s'ils restent au second plan.
+- **Vue de trois quarts, dynamique**, dans une petite scène à elle ; pas de créature debout de face dans une arche, pas
+  de disque de lumière derrière elle, pas de cadrage symétrique.
+- Formes franches, ombrage doux en aplats, fond sombre bleu nuit avec une lueur de la couleur de la famille.
 - **Interdits** : texte, lettres et chiffres dans l'image ; logos et marques de produits (Apigee, Solace, webMethods…) ;
   personnes réelles reconnaissables ; données d'entreprise.
-- La **rareté** se lit à l'intensité : une commune est sobre, une légendaire a un halo et des particules.
+- La **rareté** se lit à l'intensité : une commune est sobre, une rare a quelques reflets, une épique une aura et des
+  particules, une légendaire une aura éclatante, des particules et des rayons qui emplissent la scène.
 
 ## Palette par famille (reprend les accents d'US-009)
 
@@ -32,34 +53,25 @@ une forteresse qui filtre ; un agent d'IA est une créature lumineuse reliée à
 | Patterns           | ardoise, gris bleuté    | engrenages, aiguillages, plans          |
 | Bestiaire          | rouge, rose sombre      | fissures, fumée, créatures menaçantes   |
 
-## Consigne type (pour Recraft)
+## Consigne type (pour Gemini)
 
 Les consignes sont écrites **en anglais**, la langue que les générateurs suivent le mieux ; tout le reste du projet
-reste en français. Chaque consigne assemble un **sujet** propre à la carte et le **bloc de style** commun :
+reste en français. Chaque consigne assemble une **ouverture** commune (ne reprendre de l'image de référence que le
+rendu), le **sujet** propre à la carte (sa créature), son sens, sa **rareté** et le **bloc de style** de sa famille :
 
-> _Bloc de style_ : `digital illustration for a collectible card game, light isometric view, single central subject,
-clean bold shapes, soft cel shading, dark navy background with a subtle {couleur} glow, limited palette dominated
-by {couleurs}, no text, no letters, no numbers, no logos, no watermark`
+> _Bloc de style_ : `Digital illustration for a collectible card game, landscape 4:3, one single main creature
+readable at small size, clean bold shapes, soft cel shading, dark navy blue background with a subtle {couleur} glow,
+limited palette dominated by {couleurs}, motifs: {motifs}. Strictly no text, no letters, no numbers, no logos, no
+brand marks, no watermark, no real people.`
 
-Réglages : style **Digital illustration**, format **4:3** (paysage), export **PNG**.
+Les 71 prompts prêts à l'emploi et leur mode d'emploi : [prompts-illustrations-gemini.md](prompts-illustrations-gemini.md).
+Gemini (application web) rend des JPEG 2400 × 1792, convertis en PNG puis déclinés par `npm run illustrations`
+([ADR 0015](../decisions/0015-illustrations-statiques-optimisees.md)).
 
 ## Texte alternatif
 
 Une phrase en français qui décrit **ce que montre l'image**, sans répéter le nom de la carte (il est déjà lu) :
-« Un vieux robot facteur couvert de poussière, qui transporte une pile de dossiers ».
-
-## Essai sur 4 cartes
-
-| N°  | Carte                               | Famille          | Sujet proposé                                                                                                       |
-| --- | ----------------------------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------- |
-| 1   | FTP                                 | Fichiers & Batch | Vieux robot facteur rouillé et poussiéreux, une pile de dossiers papier dans les bras, un cadenas ouvert pendouille |
-| 9   | webMethods Integration Server 10.15 | Messagerie & ESB | Énorme moyeu mécanique au centre d'une salle, des dizaines de tuyaux en étoile, un peu daté, tenu par des rustines  |
-| 18  | Apigee API Gateway                  | API              | Forteresse-porte lumineuse qui filtre une file de petits paquets, sentinelles et compteurs de quotas                |
-| 39  | Solace Agent Mesh                   | IA agentique     | Créatures lumineuses reliées par un maillage d'ondes, qui se passent des messages dans un ciel de constellations    |
-
-## Prompts pour Gemini
-
-Un prompt prêt à l'emploi par carte du set 1, avec le bloc de style ci-dessus : [prompts-illustrations-gemini.md](prompts-illustrations-gemini.md).
+« Un vieux pélican facteur en vol, la poche du bec grande ouverte et pleine de dossiers ».
 
 ## L'interface autour des cartes (US-061)
 
