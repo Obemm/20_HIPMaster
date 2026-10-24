@@ -48,3 +48,6 @@ En tant que **joueur de l'équipe d'intégration**, je veux **que chaque carte d
   la relance avec un décor a fonctionné.
 - 2026-10-24 — famille API (18 à 25) : Apigee API Gateway refait en griffon gardien (l'essai robot est écarté,
   original gardé) ; chaque prompt reçoit d'emblée une phrase de décor, consignée dans `set-1.json`.
+- 2026-10-24 — famille iPaaS (26 à 30) : webMethods.io générée avec deux références (le rendu de SFTP et la pieuvre
+  de la 9, dont elle est l'évolution) ; matières variées (plumes, pierre, ailes d'insecte) et non plus toutes
+  mécaniques. La limite quotidienne d'images de Gemini est tombée sur la 38 (AsyncAPI).
