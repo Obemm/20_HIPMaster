@@ -228,47 +228,47 @@
     },
     {
       "numero": 26,
-      "alt": "Illustration provisoire : un nuage muni d’un connecteur sur fond bleu nuit, avec des chevrons montants et un halo doré semé d’étincelles",
-      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "alt": "Une pieuvre translucide et légère, aux tentacules terminés par des connecteurs emboîtables, qui flotte au-dessus d'une mer de nuages au lever du soleil",
+      "consigne": "Generate a new image. From the first reference image, keep ONLY the rendering style: line quality, soft cel shading, lighting and dark navy background treatment; do NOT reuse its character, pose or composition. The second reference image shows the base form of this card’s creature: draw its evolved form, keeping its species and recognizable silhouette, upgraded and more spectacular, in a new dynamic three-quarter pose, in its own small scene, with no circular halo behind it. Do NOT reuse the setting of either image: give the scene its own place. Subject: the mechanical octopus hub, evolved: now sleek and floating among clouds, its pipe tentacles turned into snap-together connectors. It embodies \"webMethods.io\" (enterprise integration, iPaaS). It is the evolution of \"webMethods Integration Server 10.15\". What it means (French, for context only): « L’intégration en mode iPaaS, sans serveur à maintenir. ». Rarity: legendary card: a radiant aura, sparkling particles and light rays filling the scene. Digital illustration for a collectible card game, landscape 4:3, one single main creature readable at small size, clean bold shapes, soft cel shading, dark navy blue background with a subtle teal glow, limited palette dominated by teal and cyan, motifs: clouds, interlocking connectors. Strictly no text, no letters, no numbers, no logos, no brand marks, no watermark, no real people. Setting: drifting high above a sea of clouds between snowy mountain peaks at sunrise, seen from a slightly low angle; no water basin, no pumping station, no buildings. The octopus must stay clearly recognizable as the same species as in the second image, with the same bulging dome head, but lighter and weightless.",
       "provenance": {
-        "outil": "Générateur vectoriel HIPMaster",
-        "date": "2026-10-18"
+        "outil": "Gemini (Google), application web",
+        "date": "2026-10-24"
       }
     },
     {
       "numero": 27,
-      "alt": "Illustration provisoire : un nuage muni d’un connecteur sur fond bleu nuit, avec un anneau bleu",
-      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "alt": "Un bœuf mi-mécanique qui tire un chariot en forme de passerelle entre deux grandes granges, dans une cour à bois au crépuscule",
+      "consigne": "Generate a new image. From the reference image, keep ONLY the rendering style: line quality, soft cel shading, lighting and dark navy background treatment. Do NOT reuse its character, pose or composition: no robot standing in a doorway, no circular halo behind it, no frontal symmetric framing. Invent a creature with a clearly different body shape, size and pose, built from its own motifs, in a dynamic three-quarter view, in its own small scene. Do NOT reuse its setting either: no cable-covered floor, no punched tapes hanging on the sides, no server racks framing the picture; give the scene its own place and camera angle, drawn from the subject. Subject: a strong ox harnessed to a bridge-shaped cart, linking two large warehouses. It embodies \"Connecteur ERP\" (enterprise integration, iPaaS). What it means (French, for context only): « Un connecteur prêt à l’emploi vers l’ERP. ». Rarity: rare card: a few subtle glints and light effects. Digital illustration for a collectible card game, landscape 4:3, one single main creature readable at small size, clean bold shapes, soft cel shading, dark navy blue background with a subtle teal glow, limited palette dominated by teal and cyan, motifs: clouds, interlocking connectors. Strictly no text, no letters, no numbers, no logos, no brand marks, no watermark, no real people. Setting: a dusty timber yard at dusk between two huge wooden barn warehouses, the bridge-cart spanning a dry irrigation ditch; wide low-angle side view; no stone bridge, no ravine, no lanterns, no cardboard boxes.",
       "provenance": {
-        "outil": "Générateur vectoriel HIPMaster",
-        "date": "2026-10-18"
+        "outil": "Gemini (Google), application web",
+        "date": "2026-10-24"
       }
     },
     {
       "numero": 28,
-      "alt": "Illustration provisoire : un nuage muni d’un connecteur sur fond bleu nuit",
-      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "alt": "Un colibri aux plumes irisées qui relie par des câbles lumineux de petites îles-nuages flottantes couvertes de prairies",
+      "consigne": "Generate a new image. From the reference image, keep ONLY the rendering style: line quality, soft cel shading, lighting and dark navy background treatment. Do NOT reuse its character, pose or composition: no robot standing in a doorway, no circular halo behind it, no frontal symmetric framing. Invent a creature with a clearly different body shape, size and pose, built from its own motifs, in a dynamic three-quarter view, in its own small scene. Do NOT reuse its setting either: no cable-covered floor, no punched tapes hanging on the sides, no server racks framing the picture; give the scene its own place and camera angle, drawn from the subject. Subject: a hummingbird zipping between floating cloud islands, plugging a little cable into each one. It embodies \"Connecteur SaaS\" (enterprise integration, iPaaS). What it means (French, for context only): « Brancher une application cloud en quelques minutes. ». Rarity: common card: sober, minimal light effects. Digital illustration for a collectible card game, landscape 4:3, one single main creature readable at small size, clean bold shapes, soft cel shading, dark navy blue background with a subtle teal glow, limited palette dominated by teal and cyan, motifs: clouds, interlocking connectors. Strictly no text, no letters, no numbers, no logos, no brand marks, no watermark, no real people. Setting: an archipelago of small floating cloud islands topped with tiny meadows and trickling waterfalls under a starry twilight sky, seen from slightly above; no mountains, no moon. The hummingbird has real iridescent feathers, it is not a robot.",
       "provenance": {
-        "outil": "Générateur vectoriel HIPMaster",
-        "date": "2026-10-18"
+        "outil": "Gemini (Google), application web",
+        "date": "2026-10-24"
       }
     },
     {
       "numero": 29,
-      "alt": "Illustration provisoire : un nuage muni d’un connecteur sur fond bleu nuit",
-      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "alt": "Un golem trapu fait de gros blocs, accroupi dans un atelier de jouets, qui dispose ses propres blocs en organigramme sur le sol",
+      "consigne": "Generate a new image. From the reference image, keep ONLY the rendering style: line quality, soft cel shading, lighting and dark navy background treatment. Do NOT reuse its character, pose or composition: no robot standing in a doorway, no circular halo behind it, no frontal symmetric framing. Invent a creature with a clearly different body shape, size and pose, built from its own motifs, in a dynamic three-quarter view, in its own small scene. Do NOT reuse its setting either: no cable-covered floor, no punched tapes hanging on the sides, no server racks framing the picture; give the scene its own place and camera angle, drawn from the subject. Subject: a friendly golem made of snap-together blocks, rearranging its own limbs into a flowchart. It embodies \"Workflow low-code\" (enterprise integration, iPaaS). What it means (French, for context only): « Un flux dessiné plutôt que codé. ». Rarity: common card: sober, minimal light effects. Digital illustration for a collectible card game, landscape 4:3, one single main creature readable at small size, clean bold shapes, soft cel shading, dark navy blue background with a subtle teal glow, limited palette dominated by teal and cyan, motifs: clouds, interlocking connectors. Strictly no text, no letters, no numbers, no logos, no brand marks, no watermark, no real people. Setting: a cozy toy-maker's workshop at night with wooden shelves full of building blocks and a cluttered workbench, seen at eye level; no drafting table, no blueprints. The golem is a big hunched stone-like creature built of chunky teal and cyan blocks, with a craggy head and two glowing eyes but no screen face, seen in profile three-quarter view while it detaches one of its arms to place it in a flowchart on the floor; it must not look like a robot.",
       "provenance": {
-        "outil": "Générateur vectoriel HIPMaster",
-        "date": "2026-10-18"
+        "outil": "Gemini (Google), application web",
+        "date": "2026-10-24"
       }
     },
     {
       "numero": 30,
-      "alt": "Illustration provisoire : un nuage muni d’un connecteur sur fond bleu nuit, avec un cercle de runes",
-      "consigne": "Illustration vectorielle générée par packages/illustrations/src/vectoriel (US-018)",
+      "alt": "Un papillon dont une aile est faite de carrés et l'autre de cercles, posé sur une fleur dans une prairie au crépuscule, des carrés lumineux autour de lui",
+      "consigne": "Generate a new image. From the reference image, keep ONLY the rendering style: line quality, soft cel shading, lighting and dark navy background treatment. Do NOT reuse its character, pose or composition: no robot standing in a doorway, no circular halo behind it, no frontal symmetric framing. Invent a creature with a clearly different body shape, size and pose, built from its own motifs, in a dynamic three-quarter view, in its own small scene. Do NOT reuse its setting either: no cable-covered floor, no punched tapes hanging on the sides, no server racks framing the picture; give the scene its own place and camera angle, drawn from the subject. Subject: a butterfly with one wing made of squares and the other of circles: square tokens flying through it come out round. It embodies \"Mapping de données\" (enterprise integration, iPaaS). What it means (French, for context only): « Transformer un format en un autre. ». Rarity: common card: sober, minimal light effects. Digital illustration for a collectible card game, landscape 4:3, one single main creature readable at small size, clean bold shapes, soft cel shading, dark navy blue background with a subtle teal glow, limited palette dominated by teal and cyan, motifs: clouds, interlocking connectors. Strictly no text, no letters, no numbers, no logos, no brand marks, no watermark, no real people. Setting: a meadow of tall wildflowers beside a slow stream at dusk, macro close-up view at flower height; no large leaf, no moon. The butterfly is a real insect with soft scaled wings, not mechanical.",
       "provenance": {
-        "outil": "Générateur vectoriel HIPMaster",
-        "date": "2026-10-18"
+        "outil": "Gemini (Google), application web",
+        "date": "2026-10-24"
       }
     },
     {
