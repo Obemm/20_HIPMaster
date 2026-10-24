@@ -251,6 +251,21 @@
     padding: 0.75rem 1.5rem;
     font-size: 1.125rem;
   }
+  .bouton-petit {
+    min-height: 2.25rem;
+    border-radius: 0.75rem;
+    padding: 0.375rem 0.75rem;
+    font-size: 0.875rem;
+  }
+  /* Une action qui détruit (supprimer son compte) : le rouge d'alerte, en contour. */
+  .bouton-danger {
+    background-color: var(--hip-surface);
+    color: var(--hip-alerte);
+    box-shadow: inset 0 0 0 2px var(--hip-alerte);
+  }
+  .bouton-danger:hover:not(:disabled) {
+    background-color: var(--hip-surface-haute);
+  }
 
   @media (prefers-reduced-motion: no-preference) {
     .bouton-jeu:active:not(:disabled),
@@ -484,6 +499,151 @@
     box-shadow:
       inset 0 0 0 2px rgb(251 191 36 / 0.7),
       0 0.5rem 1.25rem -0.5rem rgb(11 16 41 / 0.6);
+  }
+}
+
+/*
+ * Écrans (US-068) : champs de formulaire, choix en tuiles, boîtes de deck, puces de statut et avatar. Les listes
+ * déroulantes gardent la flèche du système : une image de fond empêcherait axe de mesurer le contraste du texte.
+ */
+@layer components {
+  .etiquette {
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+  .champ {
+    width: 100%;
+    min-height: 2.75rem;
+    border: 1px solid var(--hip-bordure-forte);
+    border-radius: 0.75rem;
+    background-color: var(--hip-surface);
+    padding: 0.5rem 0.75rem;
+    color: var(--hip-texte);
+  }
+  .champ:focus-visible {
+    outline: 3px solid var(--hip-accent);
+    outline-offset: 1px;
+  }
+  .champ::placeholder {
+    color: var(--hip-texte-doux);
+  }
+
+  /* Un choix (bouton radio) présenté en tuile : la tuile choisie prend l'anneau de l'accent. */
+  .choix {
+    display: flex;
+    cursor: pointer;
+    gap: 0.75rem;
+    border: 2px solid var(--hip-bordure);
+    border-radius: 1rem;
+    background-color: var(--hip-surface);
+    padding: 0.75rem 1rem;
+    transition: border-color 150ms;
+  }
+  .choix:hover {
+    border-color: var(--hip-bordure-forte);
+  }
+  .choix:has(:checked) {
+    border-color: var(--hip-accent);
+    box-shadow: 0 0 0 1px var(--hip-accent);
+  }
+  .choix:has(:focus-visible) {
+    outline: 3px solid var(--hip-accent);
+    outline-offset: 3px;
+  }
+  .choix input {
+    accent-color: var(--hip-accent);
+  }
+
+  /* Trois cartes miniatures en éventail : les cartes phares d'un deck. */
+  .mini-eventail {
+    display: flex;
+    flex-shrink: 0;
+    padding: 0.375rem 0.625rem 0.125rem;
+  }
+  .mini-eventail > * {
+    width: 2.75rem;
+    aspect-ratio: 5 / 7;
+    overflow: hidden;
+    border: 2px solid var(--hip-cadre);
+    border-radius: 0.5rem;
+    background-color: #0b1029;
+    box-shadow: 0 0.25rem 0.5rem -0.25rem rgb(11 16 41 / 0.6);
+  }
+  .mini-eventail > * + * {
+    margin-left: -1rem;
+  }
+  .mini-eventail > :nth-child(1) {
+    transform: rotate(-9deg) translateY(0.15rem);
+  }
+  .mini-eventail > :nth-child(2) {
+    z-index: 1;
+    transform: translateY(-0.15rem);
+  }
+  .mini-eventail > :nth-child(3) {
+    transform: rotate(9deg) translateY(0.15rem);
+  }
+  .mini-eventail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* Statut d'un duel ou d'une invitation : une couleur par sens, toujours doublée d'un mot. */
+  .statut {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 9999px;
+    padding: 0.125rem 0.625rem;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    line-height: 1.25rem;
+    white-space: nowrap;
+  }
+  .statut-a-jouer {
+    background-color: #fbbf24;
+    color: #1f1400;
+  }
+  .statut-attente {
+    background-color: var(--hip-surface-haute);
+    color: var(--hip-texte);
+  }
+  .statut-victoire {
+    background-color: #15803d;
+    color: #ffffff;
+  }
+  .statut-defaite {
+    background-color: #be123c;
+    color: #ffffff;
+  }
+
+  /* L'initiale d'un joueur dans un rond, à côté de son pseudo. */
+  .avatar {
+    display: flex;
+    width: 2.5rem;
+    height: 2.5rem;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9999px;
+    background-color: var(--hip-accent);
+    color: var(--hip-sur-accent);
+    font-family: var(--font-titre);
+    font-size: 1.125rem;
+    font-weight: 800;
+  }
+
+  /* Une jauge (progression de la collection) : piste et remplissage doré. */
+  .jauge {
+    height: 0.75rem;
+    overflow: hidden;
+    border-radius: 9999px;
+    background-color: var(--hip-surface-haute);
+  }
+  .jauge > * {
+    height: 100%;
+    border-radius: 9999px;
+    background-color: #fbbf24;
+    box-shadow: inset 0 2px 0 rgb(255 255 255 / 0.45);
   }
 }
 

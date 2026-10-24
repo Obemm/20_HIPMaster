@@ -10,7 +10,8 @@ test('l’accueil montre un jeu de cartes : trois cartes en éventail, la promes
   const eventail = page.getByRole('list', { name: 'Quelques cartes du jeu' });
   await expect(eventail.getByRole('listitem')).toHaveCount(3);
   await expect(eventail).toContainText('Solace Agent Mesh');
-  await expect(page.getByText('Le jeu de cartes de l’intégration')).toBeVisible();
+  // Le pied de page signe aussi « le jeu de cartes de l’intégration » (US-068) : la promesse est dans la page.
+  await expect(page.getByRole('main').getByText('Le jeu de cartes de l’intégration')).toBeVisible();
   // Sur téléphone, l'appel à jouer tient dans le premier écran, au-dessus de la barre d'onglets.
   const jouer = page.getByRole('main').getByRole('link', { name: 'Jouer contre le bot' });
   await expect(jouer).toBeInViewport();

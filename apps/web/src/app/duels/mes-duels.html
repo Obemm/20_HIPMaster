@@ -1,29 +1,29 @@
 <main class="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 py-8 sm:px-6">
-  <h1 class="text-3xl font-bold tracking-tight">Mes duels</h1>
+  <div class="flex flex-col gap-2">
+    <p class="surtitre">Entre joueurs</p>
+    <h1 class="titre-page">Mes duels</h1>
+  </div>
 
   @if (!compte.joueur()) {
     @if (compte.pret()) {
       <p>
         Les duels se jouent entre comptes :
-        <a routerLink="/compte" class="font-semibold underline underline-offset-4"
-          >créer un compte</a
-        >
+        <a routerLink="/compte" class="lien">créer un compte</a>
         en un clic (un pseudo suffit).
       </p>
     } @else {
       <hip-etat-session />
     }
   } @else if (groupes(); as liste) {
-    <p>
-      <a
-        routerLink="/duels/nouveau"
-        class="inline-block rounded-lg bg-accent px-4 py-3 font-semibold text-sur-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-        >Défier un collègue</a
+    <p class="flex flex-col gap-3 sm:flex-row">
+      <a routerLink="/duels/nouveau" class="bouton bouton-jeu">Défier un collègue</a>
+      <a routerLink="/duels/hasard" class="bouton bouton-contour"
+        >Affronter un adversaire au hasard</a
       >
     </p>
     @for (groupe of liste; track groupe.id) {
       <section [attr.aria-labelledby]="'titre-' + groupe.id" class="flex flex-col gap-2">
-        <h2 [id]="'titre-' + groupe.id" class="text-lg font-semibold">
+        <h2 [id]="'titre-' + groupe.id" class="text-xl font-extrabold">
           {{ groupe.titre }} ({{ groupe.duels.length }})
         </h2>
         @if (groupe.duels.length === 0) {
@@ -31,28 +31,35 @@
         } @else {
           <ul class="flex flex-col gap-2">
             @for (d of groupe.duels; track d.id) {
+              @let e = etat(d);
               <li>
                 <a
                   [routerLink]="['/duels', d.id]"
-                  class="flex flex-wrap items-center justify-between gap-2 rounded-xl border-2 p-3 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-                  [class.border-accent]="d.monTour"
-                  [class.border-bordure]="!d.monTour"
+                  class="tuile flex-row items-center gap-3 p-3"
+                  [class.border-action]="d.monTour"
                 >
-                  <span class="font-semibold">
-                    {{ d.adversaire ? 'Contre ' + d.adversaire.pseudo : 'Défi non relevé' }}
-                  </span>
-                  <span class="text-sm text-texte-doux">
-                    @if (d.resultat) {
-                      {{ resultats[d.resultat]
-                      }}{{ d.raison ? (precisions[d.raison] ?? '') : '' }} ·
-                    } @else if (d.tour) {
-                      Tour {{ d.tour }} ·
-                      @if (resteAvant(d.echeance); as reste) {
-                        reste {{ reste }} ·
+                  <span class="avatar" aria-hidden="true">{{
+                    d.adversaire ? d.adversaire.pseudo.charAt(0).toUpperCase() : '?'
+                  }}</span>
+                  <span class="flex min-w-0 flex-1 flex-col">
+                    <span class="truncate font-titre font-bold">
+                      {{ d.adversaire ? 'Contre ' + d.adversaire.pseudo : 'Défi non relevé' }}
+                    </span>
+                    <span class="text-sm text-texte-doux">
+                      @if (d.resultat) {
+                        @if (d.raison && precisions[d.raison]; as precision) {
+                          {{ precision }} ·
+                        }
+                      } @else if (d.tour) {
+                        Tour {{ d.tour }} ·
+                        @if (resteAvant(d.echeance); as reste) {
+                          reste {{ reste }} ·
+                        }
                       }
-                    }
-                    {{ d.statut === 'attente' ? 'lancé' : 'dernier coup' }} {{ depuis(d.majLe) }}
+                      {{ d.statut === 'attente' ? 'lancé' : 'dernier coup' }} {{ depuis(d.majLe) }}
+                    </span>
                   </span>
+                  <span class="statut" [class]="e.classe">{{ e.libelle }}</span>
                 </a>
               </li>
             }

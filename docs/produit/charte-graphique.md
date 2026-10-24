@@ -81,6 +81,31 @@ couleur se déclare dans les deux thèmes et rejoint les paires vérifiées par 
 
 Les composants Angular n'ont pas de styles propres : la CSP refuse les feuilles qu'ils injecteraient.
 
+### Composants d'écran (US-068)
+
+| Classe ou composant                                              | Usage                                                                          |
+| ---------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| `bouton-petit`                                                   | Bouton secondaire dans une liste ou une barre serrée (36 px de haut au moins)  |
+| `bouton-danger`                                                  | Action qui détruit ou attaque : contour et texte rouge d'alerte                |
+| `etiquette`, `champ`                                             | Libellé et champ de formulaire (texte, liste déroulante, date)                 |
+| `choix`                                                          | Bouton radio présenté en tuile ; la tuile choisie prend l'anneau de l'accent   |
+| `hip-boite-deck` (`.mini-eventail`)                              | Un deck en boîte de jeu : trois cartes phares, nom, description, bouton fourni |
+| `statut` + `statut-a-jouer`, `-attente`, `-victoire`, `-defaite` | État en pastille, toujours un mot (« À vous », « Victoire »)                   |
+| `avatar`                                                         | Initiale d'un joueur dans un rond (décorative)                                 |
+| `jauge`                                                          | Progression (collection) : piste et remplissage doré                           |
+
+## Gabarits d'écran
+
+- **En-tête de page** : un `surtitre` (le contexte : « Entre joueurs », « Set 1 · De FTP aux agents »), le `h1` en
+  `titre-page`, une phrase en `text-texte-doux` qui dit quoi faire.
+- **Sections** : un `h2` en `text-xl font-extrabold` ; les blocs posés sur le fond sont des `panneau` (`p-4`).
+- **Listes d'objets du jeu** (decks, duels, invitations) : des tuiles ou des panneaux, jamais des lignes de tableau ;
+  l'état en `statut`, l'action à droite au bureau, en pleine largeur sur téléphone.
+- **Filtres** : un panneau en grille (une colonne sur téléphone, deux ou trois au-delà), `etiquette` + `champ`.
+- **États vides** : une phrase qui dit pourquoi et un lien vers l'action qui remplit (« ouvrez un booster ») ;
+  **erreurs** : `hip-erreur-chargement` (la cause en mots de joueur, « Réessayer »).
+- **Retour** : la barre d'onglets suffit ; un lien « ← … » seulement pour un écran sans onglet (« Inviter »).
+
 ## Icônes et images
 
 - Icônes : `hip-icone` (grille 24 × 24, trait de 2, dessinées pour le projet), toujours accompagnées d'un texte.

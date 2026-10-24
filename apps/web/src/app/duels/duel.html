@@ -3,19 +3,12 @@
   <hip-partie [id]="id()" mode="duel" />
 } @else {
   <main class="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 py-8 sm:px-6">
-    <p>
-      <a routerLink="/jouer" class="text-texte-doux underline underline-offset-4">← Jouer</a>
-    </p>
-
     @if (!compte.joueur()) {
-      <h1 class="text-3xl font-bold tracking-tight">Un collègue vous défie en duel</h1>
+      <h1 class="titre-page">Un collègue vous défie en duel</h1>
       @if (compte.pret()) {
         <p>
           Pour relever le défi, il faut un compte :
-          <a
-            routerLink="/compte"
-            [queryParams]="{ retour: '/duels/' + id() }"
-            class="font-semibold underline underline-offset-4"
+          <a routerLink="/compte" [queryParams]="{ retour: '/duels/' + id() }" class="lien"
             >créer un compte</a
           >
           en un clic (un pseudo suffit), puis revenez ici.
@@ -24,15 +17,15 @@
         <hip-etat-session />
       }
     } @else if (probleme() === 'introuvable') {
-      <h1 class="text-3xl font-bold tracking-tight">Défi introuvable</h1>
+      <h1 class="titre-page">Défi introuvable</h1>
       <p role="alert">Ce défi n’existe pas, a été annulé, ou un autre joueur l’a déjà relevé.</p>
-      <p><a routerLink="/duels/nouveau" class="underline underline-offset-4">Lancer un défi</a></p>
+      <p><a routerLink="/duels/nouveau" class="bouton bouton-jeu">Lancer un défi</a></p>
     } @else if (probleme() === 'expire') {
-      <h1 class="text-3xl font-bold tracking-tight">Défi expiré</h1>
+      <h1 class="titre-page">Défi expiré</h1>
       <p role="alert">Personne n’a relevé ce défi en 7 jours : il a expiré.</p>
-      <p><a routerLink="/duels/nouveau" class="underline underline-offset-4">Lancer un défi</a></p>
+      <p><a routerLink="/duels/nouveau" class="bouton bouton-jeu">Lancer un défi</a></p>
     } @else if (probleme() === 'panne') {
-      <h1 class="text-3xl font-bold tracking-tight">Duel</h1>
+      <h1 class="titre-page">Duel</h1>
       <hip-erreur-chargement
         quoi="Le duel n’a pas pu être chargé."
         [erreur]="panne()"
@@ -41,7 +34,7 @@
       />
     } @else if (duel(); as d) {
       @if (d.statut === 'attente' && d.moi === 'j1' && d.ouvert) {
-        <h1 class="text-3xl font-bold tracking-tight">Recherche d’un adversaire…</h1>
+        <h1 class="titre-page">Recherche d’un adversaire…</h1>
         <p role="status">
           Personne n’attend pour le moment : vous êtes dans la file. Le duel commencera dès qu’un
           joueur cherchera un adversaire ; vous pouvez fermer cette page, il vous attendra dans «
@@ -51,7 +44,7 @@
         <p>
           <button
             type="button"
-            class="rounded-lg border-2 border-bordure px-4 py-2 font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:opacity-60"
+            class="bouton bouton-contour"
             [disabled]="occupe()"
             (click)="annuler()"
           >
@@ -59,28 +52,17 @@
           </button>
         </p>
       } @else if (d.statut === 'attente' && d.moi === 'j1') {
-        <h1 class="text-3xl font-bold tracking-tight">Votre défi est lancé</h1>
+        <h1 class="titre-page">Votre défi est lancé</h1>
         <p>
           Envoyez ce lien au collègue que vous voulez défier. Il servira une seule fois, et expire
           dans 7 jours.
         </p>
         <div class="flex flex-col gap-2 sm:flex-row sm:items-end">
           <div class="flex flex-1 flex-col gap-1">
-            <label for="lien-defi" class="text-sm font-semibold">Lien du défi</label>
-            <input
-              id="lien-defi"
-              readonly
-              class="rounded border border-bordure bg-fond px-3 py-2 font-mono text-sm"
-              [value]="lien()"
-            />
+            <label for="lien-defi" class="etiquette">Lien du défi</label>
+            <input id="lien-defi" readonly class="champ font-mono text-sm" [value]="lien()" />
           </div>
-          <button
-            type="button"
-            class="rounded-lg bg-accent px-4 py-2 font-semibold text-sur-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-            (click)="copier()"
-          >
-            Copier le lien
-          </button>
+          <button type="button" class="bouton bouton-jeu" (click)="copier()">Copier le lien</button>
         </div>
         <p role="status" class="text-sm text-texte-doux">{{ copie() ? 'Lien copié.' : '' }}</p>
         <p class="text-texte-doux">
@@ -89,7 +71,7 @@
         <p>
           <button
             type="button"
-            class="rounded-lg border-2 border-bordure px-4 py-2 font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:opacity-60"
+            class="bouton bouton-contour"
             [disabled]="occupe()"
             (click)="annuler()"
           >
@@ -97,9 +79,7 @@
           </button>
         </p>
       } @else if (d.statut === 'attente') {
-        <h1 class="text-3xl font-bold tracking-tight">
-          {{ d.createur.pseudo }} vous défie en duel !
-        </h1>
+        <h1 class="titre-page">{{ d.createur.pseudo }} vous défie en duel !</h1>
         <p class="text-texte-doux">
           {{ d.createur.pseudo }} joue le deck {{ nomDeck(d.deckCreateur) }}. Choisissez le vôtre
           pour relever le défi : le duel se joue au tour par tour, chacun à son rythme.
@@ -107,21 +87,17 @@
         @if (decks.hasValue()) {
           <ul class="flex flex-col gap-3">
             @for (deck of decks.value(); track deck.id) {
-              <li
-                class="flex flex-col gap-3 rounded-xl border border-bordure p-4 sm:flex-row sm:items-center"
-              >
-                <div class="flex-1">
-                  <h2 class="text-xl font-semibold">{{ deck.nom }}</h2>
-                  <p class="text-texte-doux">{{ deck.description }}</p>
-                </div>
-                <button
-                  type="button"
-                  class="rounded-lg bg-accent px-4 py-3 font-semibold text-sur-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:opacity-60"
-                  [disabled]="occupe()"
-                  (click)="relever(deck)"
-                >
-                  Relever le défi avec {{ deck.nom }}
-                </button>
+              <li>
+                <hip-boite-deck [deck]="deck" [catalogue]="catalogue.value()">
+                  <button
+                    type="button"
+                    class="bouton bouton-jeu self-stretch sm:self-end"
+                    [disabled]="occupe()"
+                    (click)="relever(deck)"
+                  >
+                    Relever le défi avec {{ deck.nom }}
+                  </button>
+                </hip-boite-deck>
               </li>
             }
           </ul>

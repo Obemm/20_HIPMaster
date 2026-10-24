@@ -185,6 +185,13 @@ Toutes les évolutions notables du projet sont consignées ici
 
 ### Modifié
 
+- Revue visuelle de tout le site avec la nouvelle identité : sur « Jouer », la difficulté en tuiles et les decks en
+  boîtes de jeu (trois cartes phares en éventail, « Jouer avec… » en or), la règle en bref repliée ; « Mes duels »
+  en cartes avec l'initiale de l'adversaire et une pastille d'état (À vous, Son tour, Victoire…) ; « Finir mon tour »,
+  « Ouvrir un booster », « Relever le défi », « Créer mon compte » et « Créer l'invitation » en or ; collection avec
+  jauge dorée et raretés en cadres de carte ; filtres, champs, compte, confidentialité et invitations en panneaux ;
+  pied de page signé. Les liens « ← Accueil » qui restaient disparaissent. Charte graphique complétée des composants
+  d'écran et des gabarits (US-068).
 - Une identité de jeu : ambiance « nuit électrique » reprise des illustrations (fond bleu nuit, halos, trame de
   points, thème clair conservé), bandeau et barre d'onglets de nuit dans les deux thèmes, indigo électrique pour les
   liens et la sélection, boutons en relief et en or pour l'action principale de chaque écran, police de titres Exo 2

@@ -1,27 +1,24 @@
 <main class="mx-auto flex w-full max-w-2xl flex-col gap-6 px-4 py-8 sm:px-6">
-  <p>
-    <a routerLink="/" class="text-texte-doux underline underline-offset-4">← Accueil</a>
-  </p>
-  <h1 class="text-3xl font-bold tracking-tight">À propos et confidentialité</h1>
+  <div class="flex flex-col gap-2">
+    <p class="surtitre">HIPMaster</p>
+    <h1 class="titre-page">À propos et confidentialité</h1>
+  </div>
 
-  <section aria-labelledby="titre-editeur" class="flex flex-col gap-2">
-    <h2 id="titre-editeur" class="text-lg font-semibold">Qui édite le jeu</h2>
+  <section aria-labelledby="titre-editeur" class="panneau flex flex-col gap-2 p-4">
+    <h2 id="titre-editeur" class="text-xl font-extrabold">Qui édite le jeu</h2>
     <p>
       HIPMaster est un projet personnel et gratuit, sans publicité ni rien à vendre, réalisé par
       Obemm, son porteur. On y joue sur invitation. Pour toute question, ou pour exercer vos droits
       : passez par la personne qui vous a invité, ou ouvrez une demande sur
-      <a
-        href="https://github.com/Obemm/20_HIPMaster/issues"
-        rel="noopener noreferrer"
-        class="underline underline-offset-4"
+      <a href="https://github.com/Obemm/20_HIPMaster/issues" rel="noopener noreferrer" class="lien"
         >le dépôt du projet</a
       >
       (une demande y est publique : n’y écrivez jamais votre code de récupération).
     </p>
   </section>
 
-  <section aria-labelledby="titre-hebergement" class="flex flex-col gap-2">
-    <h2 id="titre-hebergement" class="text-lg font-semibold">Qui l’héberge</h2>
+  <section aria-labelledby="titre-hebergement" class="panneau flex flex-col gap-2 p-4">
+    <h2 id="titre-hebergement" class="text-xl font-extrabold">Qui l’héberge</h2>
     <ul class="list-disc space-y-1 pl-5">
       <li>le site : Firebase Hosting (Google) ;</li>
       <li>le serveur du jeu : Google Cloud (Cloud Run), à Francfort ;</li>
@@ -29,8 +26,8 @@
     </ul>
   </section>
 
-  <section aria-labelledby="titre-donnees" class="flex flex-col gap-2">
-    <h2 id="titre-donnees" class="text-lg font-semibold">Ce que le jeu garde, et pourquoi</h2>
+  <section aria-labelledby="titre-donnees" class="panneau flex flex-col gap-2 p-4">
+    <h2 id="titre-donnees" class="text-xl font-extrabold">Ce que le jeu garde, et pourquoi</h2>
     <p>Rien de plus que ce qu’il faut pour jouer et pour protéger le jeu :</p>
     <ul class="list-disc space-y-1 pl-5">
       <li>
@@ -58,8 +55,8 @@
     </p>
   </section>
 
-  <section aria-labelledby="titre-navigateur" class="flex flex-col gap-2">
-    <h2 id="titre-navigateur" class="text-lg font-semibold">Dans votre navigateur</h2>
+  <section aria-labelledby="titre-navigateur" class="panneau flex flex-col gap-2 p-4">
+    <h2 id="titre-navigateur" class="text-xl font-extrabold">Dans votre navigateur</h2>
     <p>
       Le jeu y garde une seule chose : le jeton de votre session, qui vous évite de saisir votre
       code à chaque visite. Il est strictement nécessaire au service : aucun bandeau de consentement
@@ -68,8 +65,8 @@
     </p>
   </section>
 
-  <section aria-labelledby="titre-duree" class="flex flex-col gap-2">
-    <h2 id="titre-duree" class="text-lg font-semibold">Combien de temps</h2>
+  <section aria-labelledby="titre-duree" class="panneau flex flex-col gap-2 p-4">
+    <h2 id="titre-duree" class="text-xl font-extrabold">Combien de temps</h2>
     <p>
       Le jeu ne supprime jamais de lui-même votre compte, votre collection ni vos résultats : seules
       des données techniques expirent, et sont effacées chaque nuit.
@@ -84,17 +81,17 @@
     </dl>
   </section>
 
-  <section aria-labelledby="titre-droits" class="flex flex-col gap-2">
-    <h2 id="titre-droits" class="text-lg font-semibold">Vos droits</h2>
+  <section aria-labelledby="titre-droits" class="panneau flex flex-col gap-2 p-4">
+    <h2 id="titre-droits" class="text-xl font-extrabold">Vos droits</h2>
     <p>
       Vous pouvez à tout moment accéder à vos données, les faire corriger, vous opposer à leur usage
       ou les faire supprimer. Le plus simple : <strong>supprimer votre compte</strong> depuis
-      <a routerLink="/compte" class="underline underline-offset-4">Mon compte</a>, ce qui efface en
-      une fois votre compte, vos sessions, votre collection, vos récompenses et vos parties ; vos
-      duels en cours sont alors perdus par forfait, et vos adversaires gardent leurs duels terminés,
-      sans votre pseudo. Pour le reste, écrivez au porteur du projet (voir plus haut) : sans e-mail
-      ni nom, donnez l’identifiant du compte, affiché dans « Mon compte ». Si vous estimez que vos
-      droits ne sont pas respectés, vous pouvez saisir la CNIL.
+      <a routerLink="/compte" class="lien">Mon compte</a>, ce qui efface en une fois votre compte,
+      vos sessions, votre collection, vos récompenses et vos parties ; vos duels en cours sont alors
+      perdus par forfait, et vos adversaires gardent leurs duels terminés, sans votre pseudo. Pour
+      le reste, écrivez au porteur du projet (voir plus haut) : sans e-mail ni nom, donnez
+      l’identifiant du compte, affiché dans « Mon compte ». Si vous estimez que vos droits ne sont
+      pas respectés, vous pouvez saisir la CNIL.
     </p>
   </section>
 </main>

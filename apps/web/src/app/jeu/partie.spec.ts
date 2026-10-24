@@ -857,6 +857,8 @@ describe('ChoixDeck', () => {
       { id: 'stagiaire', nom: 'Stagiaire', description: 'Facile.' },
       { id: 'agent-autonome', nom: 'Agent autonome', description: 'Expert.' },
     ]);
+    // Le catalogue donne les cartes phares de chaque deck (US-068).
+    http.expectOne('/api/v1/cartes').flush([]);
     await fixture.whenStable();
     fixture.detectChanges();
     const naviguer = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);

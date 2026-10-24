@@ -1,9 +1,9 @@
 <main class="mx-auto flex w-full max-w-xl flex-col gap-6 px-4 py-8 sm:px-6">
   <p>
-    <a routerLink="/compte" class="text-texte-doux underline underline-offset-4">← Mon compte</a>
+    <a routerLink="/compte" class="lien text-sm">← Mon compte</a>
   </p>
   @if (administrateur()) {
-    <h1 class="text-3xl font-bold tracking-tight">Inviter</h1>
+    <h1 class="titre-page">Inviter</h1>
     <p class="text-texte-doux">
       Créez une invitation, puis envoyez son lien : il ouvre la page « Mon compte » avec le code
       déjà rempli. Chaque invitation crée un nombre de comptes limité, jusqu’à sa date limite.
@@ -17,19 +17,14 @@
     @if (creee(); as c) {
       <section
         aria-labelledby="titre-creee"
-        class="flex flex-col gap-3 rounded-xl border-2 border-accent p-4"
+        class="panneau flex flex-col gap-3 border-2 border-action p-4"
       >
-        <h2 id="titre-creee" tabindex="-1" class="text-lg font-semibold focus:outline-none">
+        <h2 id="titre-creee" tabindex="-1" class="text-xl font-extrabold focus:outline-none">
           Invitation « {{ c.invitation.libelle }} » créée
         </h2>
         <div class="flex flex-col gap-1">
-          <label for="lien-invitation" class="text-sm font-semibold">Lien d’invitation</label>
-          <input
-            id="lien-invitation"
-            readonly
-            class="rounded border border-bordure bg-fond px-3 py-2 font-mono text-sm"
-            [value]="c.lien"
-          />
+          <label for="lien-invitation" class="etiquette">Lien d’invitation</label>
+          <input id="lien-invitation" readonly class="champ font-mono text-sm" [value]="c.lien" />
         </div>
         <p class="text-sm">
           <strong>Copiez-le ou partagez-le maintenant</strong> : il ne sera plus jamais affiché. Il
@@ -39,27 +34,15 @@
           <span class="font-mono font-semibold">{{ c.code }}</span>
         </p>
         <p class="flex flex-wrap gap-2">
-          <button
-            type="button"
-            class="rounded-lg bg-accent px-3 py-2 font-semibold text-sur-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-            (click)="copier(c.lien)"
-          >
+          <button type="button" class="bouton bouton-plein" (click)="copier(c.lien)">
             Copier le lien
           </button>
           @if (partageDisponible) {
-            <button
-              type="button"
-              class="rounded-lg border-2 border-accent px-3 py-2 font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-              (click)="partager(c)"
-            >
+            <button type="button" class="bouton bouton-contour" (click)="partager(c)">
               Partager
             </button>
           }
-          <button
-            type="button"
-            class="rounded-lg border-2 border-bordure px-3 py-2 font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-            (click)="oublierLien()"
-          >
+          <button type="button" class="bouton bouton-contour" (click)="oublierLien()">
             C’est envoyé
           </button>
         </p>
@@ -67,13 +50,13 @@
       </section>
     }
 
-    <section aria-labelledby="titre-nouvelle" class="flex flex-col gap-3">
-      <h2 id="titre-nouvelle" tabindex="-1" class="text-lg font-semibold focus:outline-none">
+    <section aria-labelledby="titre-nouvelle" class="panneau flex flex-col gap-3 p-4">
+      <h2 id="titre-nouvelle" tabindex="-1" class="text-xl font-extrabold focus:outline-none">
         Nouvelle invitation
       </h2>
       <form class="flex flex-col gap-3" (submit)="creer($event)">
         <div class="flex flex-col gap-1">
-          <label for="libelle" class="text-sm font-semibold">Pour qui</label>
+          <label for="libelle" class="etiquette">Pour qui</label>
           <input
             id="libelle"
             name="libelle"
@@ -82,7 +65,7 @@
             required
             placeholder="Équipe intégration"
             aria-describedby="aide-libelle"
-            class="rounded border border-bordure bg-fond px-3 py-2"
+            class="champ"
             [value]="libelle()"
             (input)="libelle.set($any($event.target).value)"
           />
@@ -92,7 +75,7 @@
         </div>
         <div class="flex flex-col gap-3 sm:flex-row">
           <div class="flex flex-col gap-1 sm:flex-1">
-            <label for="utilisations" class="text-sm font-semibold">Nombre de comptes</label>
+            <label for="utilisations" class="etiquette">Nombre de comptes</label>
             <input
               id="utilisations"
               name="utilisations"
@@ -102,37 +85,33 @@
               max="1000"
               step="1"
               required
-              class="rounded border border-bordure bg-fond px-3 py-2"
+              class="champ"
               [value]="utilisations()"
               (input)="utilisations.set($any($event.target).value)"
             />
           </div>
           <div class="flex flex-col gap-1 sm:flex-1">
-            <label for="expire" class="text-sm font-semibold">Date limite (incluse)</label>
+            <label for="expire" class="etiquette">Date limite (incluse)</label>
             <input
               id="expire"
               name="expire"
               type="date"
               required
-              class="rounded border border-bordure bg-fond px-3 py-2"
+              class="champ"
               [min]="aujourdhui"
               [value]="expire()"
               (input)="expire.set($any($event.target).value)"
             />
           </div>
         </div>
-        <button
-          type="submit"
-          class="self-start rounded-lg bg-accent px-4 py-2 font-semibold text-sur-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:opacity-60"
-          [disabled]="occupe()"
-        >
+        <button type="submit" class="bouton bouton-jeu self-start" [disabled]="occupe()">
           Créer l’invitation
         </button>
       </form>
     </section>
 
     <section aria-labelledby="titre-invitations" class="flex flex-col gap-3">
-      <h2 id="titre-invitations" class="text-lg font-semibold">Invitations</h2>
+      <h2 id="titre-invitations" class="text-xl font-extrabold">Invitations</h2>
       @if (invitations(); as liste) {
         @if (liste.length === 0) {
           <p class="text-texte-doux">Aucune invitation pour l’instant.</p>
@@ -142,14 +121,14 @@
               <li
                 [id]="'invitation-' + i.id"
                 tabindex="-1"
-                class="flex flex-col gap-2 rounded-lg border border-bordure p-3 focus:outline-2 focus:outline-accent"
+                class="panneau flex flex-col gap-2 p-3 focus:outline-2 focus:outline-accent"
               >
                 <p class="flex flex-wrap items-baseline justify-between gap-2">
-                  <span class="font-semibold break-words">{{ i.libelle }}</span>
+                  <span class="font-titre font-bold break-words">{{ i.libelle }}</span>
                   <span
-                    class="rounded-full border px-2 text-xs font-semibold"
-                    [class.border-accent]="i.statut === 'active'"
-                    [class.border-bordure]="i.statut !== 'active'"
+                    class="statut"
+                    [class.statut-victoire]="i.statut === 'active'"
+                    [class.statut-attente]="i.statut !== 'active'"
                     >{{ statut[i.statut] }}</span
                   >
                 </p>
@@ -168,7 +147,7 @@
                       <p class="flex flex-wrap gap-2">
                         <button
                           type="button"
-                          class="rounded-lg bg-accent px-3 py-1.5 font-semibold text-sur-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:opacity-60"
+                          class="bouton bouton-plein"
                           [disabled]="occupe()"
                           (click)="revoquer(i)"
                         >
@@ -177,7 +156,7 @@
                         <button
                           type="button"
                           [id]="'garder-' + i.id"
-                          class="rounded-lg border-2 border-bordure px-3 py-1.5 font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                          class="bouton bouton-contour"
                           (click)="annulerRevocation(i.id)"
                         >
                           Non, la garder
@@ -189,7 +168,7 @@
                       <button
                         type="button"
                         [id]="'revoquer-' + i.id"
-                        class="rounded-lg border-2 border-bordure px-3 py-1.5 text-sm font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                        class="bouton bouton-contour bouton-petit"
                         [attr.aria-label]="'Révoquer « ' + i.libelle + ' »'"
                         (click)="demanderRevocation(i.id)"
                       >

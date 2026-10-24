@@ -38,9 +38,12 @@ function couleur(valeur: string): Rgba {
 function jetons(texte: string): Record<string, Rgba> {
   const resultat: Record<string, Rgba> = {};
   for (const [, nom, valeur] of texte.matchAll(
-    /(--hip-[a-z0-9-]+|background|color):\s*(#[0-9a-f]{6}|rgb\([^)]*\));/gi,
+    /(--hip-[a-z0-9-]+|background(?:-color)?|color):\s*(#[0-9a-f]{6}|rgb\([^)]*\));/gi,
   )) {
-    if (nom && valeur) resultat[nom.replace(/^--hip-/, '')] = couleur(valeur);
+    if (nom && valeur) {
+      resultat[nom.replace(/^--hip-/, '').replace('background-color', 'background')] =
+        couleur(valeur);
+    }
   }
   return resultat;
 }
@@ -127,6 +130,14 @@ describe('contrastes de la charte', () => {
     const pastille = jetons(bloc('.pastille'));
     expect(contraste(pastille['color']!, pastille['background']!)).toBeGreaterThanOrEqual(4.5);
   });
+
+  it.each(['.statut-a-jouer', '.statut-victoire', '.statut-defaite'])(
+    'la pastille d’état %s se lit (US-068)',
+    (selecteur) => {
+      const pastille = jetons(bloc(selecteur));
+      expect(contraste(pastille['color']!, pastille['background']!)).toBeGreaterThanOrEqual(4.5);
+    },
+  );
 
   for (const rarete of ['commune', 'rare', 'epique', 'legendaire']) {
     it(`la carte ${rarete} se lit dans les deux thèmes`, () => {

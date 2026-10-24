@@ -2,15 +2,20 @@ import { HttpClient, httpResource } from '@angular/common/http';
 import { Component, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
+import type { Carte } from '../cartes/carte';
 import { ErreurChargement } from '../reseau/erreur-chargement';
 import { expliquer } from '../reseau/reseau';
 import type { Deck, Niveau, Partie } from './modele';
+import { BoiteDeck } from './boite-deck';
 import { RegleCourte } from './regle-courte';
 
-/** Choix d'un deck prêté, puis création de la partie contre le bot (US-013). */
+/**
+ * Choix d'un deck prêté, puis création de la partie contre le bot (US-013). Les decks se présentent en boîtes de jeu,
+ * avec leurs cartes phares tirées du catalogue (US-068).
+ */
 @Component({
   selector: 'hip-choix-deck',
-  imports: [RouterLink, RegleCourte, ErreurChargement],
+  imports: [RouterLink, RegleCourte, ErreurChargement, BoiteDeck],
   templateUrl: './choix-deck.html',
 })
 export class ChoixDeck {
@@ -18,6 +23,7 @@ export class ChoixDeck {
   private readonly router = inject(Router);
 
   protected readonly decks = httpResource<Deck[]>(() => '/api/v1/decks');
+  protected readonly catalogue = httpResource<Carte[]>(() => '/api/v1/cartes');
   protected readonly niveaux = httpResource<Niveau[]>(() => '/api/v1/niveaux');
   /** Niveau du bot choisi (Stagiaire par défaut, le plus simple : US-064). */
   protected readonly niveau = signal('stagiaire');

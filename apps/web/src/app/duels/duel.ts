@@ -3,9 +3,11 @@ import { HttpClient, HttpErrorResponse, httpResource } from '@angular/common/htt
 import { Component, computed, effect, inject, input, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
+import type { Carte } from '../cartes/carte';
 import { CompteService } from '../compte/compte.service';
 import { EtatSession } from '../compte/etat-session';
 import { estUuid } from '../identifiant';
+import { BoiteDeck } from '../jeu/boite-deck';
 import { PartieEcran } from '../jeu/partie';
 import type { Deck } from '../jeu/modele';
 import { interroger } from '../presence';
@@ -22,7 +24,7 @@ const ATTENTE_MS = 5000;
  */
 @Component({
   selector: 'hip-duel',
-  imports: [RouterLink, PartieEcran, ErreurChargement, EtatSession],
+  imports: [RouterLink, PartieEcran, ErreurChargement, EtatSession, BoiteDeck],
   templateUrl: './duel.html',
 })
 export class DuelEcran {
@@ -36,6 +38,11 @@ export class DuelEcran {
 
   protected readonly decks = httpResource<Deck[]>(() => '/api/v1/decks');
   protected readonly duel = signal<Duel | null>(null);
+  /** Le catalogue, pour les cartes phares des decks, seulement quand on choisit le sien pour relever (US-068). */
+  protected readonly catalogue = httpResource<Carte[]>(() => {
+    const duel = this.duel();
+    return duel?.statut === 'attente' && duel.moi !== 'j1' ? '/api/v1/cartes' : undefined;
+  });
   /** Échec de lecture : introuvable (404, ou identifiant qui n'est pas un UUID), expiré (410), ou panne. */
   protected readonly probleme = signal<'introuvable' | 'expire' | 'panne' | null>(null);
   /** La cause d'une panne de lecture, et une lecture en cours (US-055). */

@@ -26,6 +26,8 @@ describe('NouveauDefi', () => {
     fixture.detectChanges();
     const http = TestBed.inject(HttpTestingController);
     http.expectOne('/api/v1/decks').flush(DECKS);
+    // Le catalogue donne les cartes phares de chaque deck (US-068).
+    http.expectOne('/api/v1/cartes').flush([]);
     await fixture.whenStable();
     fixture.detectChanges();
     const page = fixture.nativeElement as HTMLElement;

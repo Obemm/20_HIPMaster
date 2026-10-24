@@ -14,9 +14,19 @@ const RESULTATS: Record<NonNullable<ResumeDuel['resultat']>, string> = {
 
 /** Précision sur la fin d'un duel : par abandon ou par forfait (US-036) ; rien pour une fin de jeu normale. */
 const PRECISIONS: Partial<Record<NonNullable<ResumeDuel['raison']>, string>> = {
-  abandon: ' par abandon',
-  forfait: ' par forfait',
+  abandon: 'Par abandon',
+  forfait: 'Par forfait',
 };
+
+/** L'état d'un duel en une pastille (US-068) : un mot, et une couleur qui le double. */
+export function etatDuel(duel: ResumeDuel): { libelle: string; classe: string } {
+  if (duel.resultat === 'victoire') return { libelle: 'Victoire', classe: 'statut-victoire' };
+  if (duel.resultat === 'defaite') return { libelle: 'Défaite', classe: 'statut-defaite' };
+  if (duel.resultat) return { libelle: RESULTATS[duel.resultat], classe: 'statut-attente' };
+  if (duel.monTour) return { libelle: 'À vous', classe: 'statut-a-jouer' };
+  if (duel.statut === 'attente') return { libelle: 'En attente', classe: 'statut-attente' };
+  return { libelle: 'Son tour', classe: 'statut-attente' };
+}
 
 /** « Il y a 5 min », « il y a 2 h », « il y a 3 j ». */
 function depuis(iso: string, maintenant = Date.now()): string {
@@ -37,8 +47,8 @@ export class MesDuels {
   protected readonly compte = inject(CompteService);
   protected readonly service = inject(MesDuelsService);
 
-  protected readonly resultats = RESULTATS;
   protected readonly precisions = PRECISIONS;
+  protected readonly etat = etatDuel;
   protected readonly resteAvant = resteAvant;
   protected readonly depuis = depuis;
   protected readonly groupes = computed(() => {
