@@ -10,6 +10,7 @@ import { provideServiceWorker } from '@angular/service-worker';
 import { routes } from './app.routes';
 import { intercepteurJeton } from './compte/compte.service';
 import { RapporteurErreurs } from './erreurs/rapporteur-erreurs';
+import { intercepteurCatalogue } from './reseau/catalogue';
 import { intercepteurReseau } from './reseau/reseau';
 import { TitreAvecDuels } from './titre';
 
@@ -19,8 +20,12 @@ export const appConfig: ApplicationConfig = {
     // Les erreurs non gérées partent aussi vers Error Reporting, par l'API (US-051).
     { provide: ErrorHandler, useClass: RapporteurErreurs },
     provideRouter(routes, withComponentInputBinding()),
-    // Le jeton d'abord (et le 401), puis les nouvelles tentatives des lectures en panne passagère (US-055).
-    provideHttpClient(withFetch(), withInterceptors([intercepteurJeton, intercepteurReseau])),
+    // Le catalogue déjà reçu d'abord (US-057), puis le jeton (et le 401), puis les nouvelles tentatives des lectures en
+    // panne passagère (US-055).
+    provideHttpClient(
+      withFetch(),
+      withInterceptors([intercepteurCatalogue, intercepteurJeton, intercepteurReseau]),
+    ),
     // Le titre de l'onglet compte les duels qui attendent le joueur (US-035).
     { provide: TitleStrategy, useClass: TitreAvecDuels },
     // Jeu installable (US-063, ADR 0038) : l'interface et les illustrations en cache, jamais l'API. Seulement en

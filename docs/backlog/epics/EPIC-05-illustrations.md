@@ -18,6 +18,7 @@ Toutes les cartes du premier set ont une illustration optimisée (WebP/AVIF, moi
 - [ ] US-016 — Direction artistique et choix du générateur d'images
 - [ ] US-017 — Illustrations des 71 cartes du set 1
 - [x] US-018 — Illustrations provisoires générées par le code
+- [ ] US-078 — Des illustrations à empreinte, gardées un an en cache
 
 Ordre : US-015 ne dépend de rien et se mène en premier ; US-016 attend la décision du porteur du projet sur l'outil
 ([Recraft](https://www.recraft.ai) en offre payante, ou une autre voie) ; US-017 suit les deux.
