@@ -79,3 +79,5 @@ ADR [0035](../../decisions/0035-purge-donnees-techniques.md).
   commande dédiée et un job Cloud Run planifié, ADR 0035. Aucune commande GCP lancée : la mise en service attend
   l'accord du porteur du projet.
 - 2026-10-24 — livrée : sessions refusées après 90 jours sans usage (SESSIONS_DUREE_JOURS), prolongées au plus une fois par jour ; purge des parties contre le bot abandonnées, des défis jamais acceptés et des sessions expirées par une commande dédiée, jamais un compte, une collection, une récompense ni un duel commencé (test sur un compte inactif depuis des années, dix ans plus tard) ; job Cloud Run hipmaster-purge et tâche Cloud Scheduler de 5 h 25 dans les scripts GCP, mise en service soumise au porteur du projet ; page de confidentialité sans « bientôt » ; ADR 0035
+- 2026-10-24 — purge mise en service en production par le porteur du projet (`infrastructure.sh`, `deployer.sh purge`) :
+  premier passage réussi (0 session, 0 défi, 0 partie supprimés), tâche planifiée « 25 5 * * * » (Europe/Paris) active.
