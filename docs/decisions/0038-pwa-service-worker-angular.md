@@ -1,7 +1,7 @@
 # 0038 — Jeu installable : manifeste web et service worker d'Angular, jamais l'API en cache
 
 - **Date** : 2026-10-24
-- **Statut** : Proposée (choix pris de nuit, sans le porteur du projet : à valider à la relecture de la PR d'US-063)
+- **Statut** : Acceptée (validée par le porteur du projet le 2026-10-24)
 - **Référence Elis** : ADR-016 v1 (une application mobile externe est une PWA) — retenu, comme l'annonçait
   l'ADR 0006 ; la v3 en brouillon (publication sur les magasins d'applications) ne s'applique pas.
 
