@@ -26,7 +26,9 @@
               }
             ],
             "styles": ["src/styles.css"],
-            "serviceWorker": "ngsw-config.json"
+            "serviceWorker": "ngsw-config.json",
+            "polyfills": ["@angular/localize/init"],
+            "i18nMissingTranslation": "error"
           },
           "configurations": {
             "production": {
@@ -50,12 +52,17 @@
                   "inlineCritical": false
                 },
                 "fonts": true
-              }
+              },
+              "localize": true,
+              "assets": []
             },
             "development": {
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true
+            },
+            "en": {
+              "localize": ["en"]
             }
           },
           "defaultConfiguration": "production"
@@ -68,6 +75,9 @@
             },
             "development": {
               "buildTarget": "web:build:development"
+            },
+            "en": {
+              "buildTarget": "web:build:development,en"
             }
           },
           "defaultConfiguration": "development",
@@ -77,6 +87,26 @@
         },
         "test": {
           "builder": "@angular/build:unit-test"
+        },
+        "extract-i18n": {
+          "builder": "@angular/build:extract-i18n",
+          "options": {
+            "buildTarget": "web:build:development",
+            "format": "json",
+            "outputPath": "src/locale"
+          }
+        }
+      },
+      "i18n": {
+        "sourceLocale": {
+          "code": "fr",
+          "subPath": "fr"
+        },
+        "locales": {
+          "en": {
+            "translation": "src/locale/messages.en.json",
+            "subPath": "en"
+          }
         }
       }
     }

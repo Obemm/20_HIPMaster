@@ -13,14 +13,14 @@ _Dernière mise à jour : 2026-10-24_
 | [EPIC-04 — Combat contre le bot](epics/EPIC-04-combat-bot.md)                                     | Must     | Terminé   | 15/15      |
 | [EPIC-05 — Illustrations des cartes](epics/EPIC-05-illustrations.md)                              | Should   | En cours  | 3/6        |
 | [EPIC-06 — Duels entre joueurs](epics/EPIC-06-duels-joueurs.md)                                   | Should   | Terminé   | 8/8        |
-| [EPIC-07 — Vie sociale](epics/EPIC-07-vie-sociale.md)                                             | Could    | En cours  | 1/1        |
+| [EPIC-07 — Vie sociale](epics/EPIC-07-vie-sociale.md)                                             | Could    | Terminé   | 1/1        |
 | [EPIC-08 — Cartes proposées par la communauté IT](epics/EPIC-08-cartes-communaute.md)             | Should   | À affiner | 0/5        |
 | [EPIC-09 — Mise en ligne sur Google Cloud](epics/EPIC-09-mise-en-ligne-gcp.md)                    | Must     | Terminé   | 14/14      |
 | [EPIC-10 — Identité visuelle et confort sur téléphone](epics/EPIC-10-identite-visuelle-mobile.md) | Should   | Terminé   | 6/6        |
 | [EPIC-11 — Apprendre à jouer](epics/EPIC-11-apprendre-a-jouer.md)                                 | Should   | Terminé   | 3/3        |
 | [EPIC-12 — Des cartes qui enseignent](epics/EPIC-12-cartes-qui-enseignent.md)                     | Must     | Terminé   | 2/2        |
 | [EPIC-13 — Un set 2 : architecture et pratiques](epics/EPIC-13-set-2-architecture-pratiques.md)   | Could    | À affiner | 0/2        |
-| [EPIC-14 — Un jeu en français et en anglais](epics/EPIC-14-multilingue.md)                        | Should   | À affiner | 0/4        |
+| [EPIC-14 — Un jeu en français et en anglais](epics/EPIC-14-multilingue.md)                        | Should   | En cours  | 1/4        |
 
 ## Itération 0 (en cours) — fondations
 
@@ -188,7 +188,7 @@ catalogue, set d'accueil).
 | [US-031 — Créditer les contributeurs](stories/US-031-crediter-contributeurs.md)                                                        | EPIC-08 | Could    | S      | À affiner |
 | [US-076 — Concevoir le set 2 : DDD, microservices, DevOps](stories/US-076-concevoir-set-2.md)                                          | EPIC-13 | Could    | L      | À affiner |
 | [US-077 — Trois nouvelles cartes : API First, EDA et API GraphQL](stories/US-077-api-first-eda-graphql.md)                             | EPIC-13 | Should   | M      | À affiner |
-| [US-079 — Le socle bilingue : i18n d'Angular, deux versions du site et un sélecteur de langue](stories/US-079-socle-bilingue.md)       | EPIC-14 | Should   | M      | À affiner |
+| [US-079 — Le socle bilingue : i18n d'Angular, deux versions du site et un sélecteur de langue](stories/US-079-socle-bilingue.md)       | EPIC-14 | Should   | M      | Faite     |
 | [US-080 — Toute l'interface en anglais](stories/US-080-interface-anglais.md)                                                           | EPIC-14 | Should   | L      | À affiner |
 | [US-081 — Les cartes, les capacités, les fiches et la règle en anglais](stories/US-081-contenu-anglais.md)                             | EPIC-14 | Should   | L      | À affiner |
 | [US-082 — Des messages d'erreur traduits et des parcours vérifiés dans les deux langues](stories/US-082-erreurs-parcours-bilingues.md) | EPIC-14 | Should   | S      | À affiner |

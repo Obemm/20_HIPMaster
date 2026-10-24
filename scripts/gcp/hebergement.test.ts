@@ -83,8 +83,18 @@ describe('firebase.json', () => {
     });
   });
 
-  it('renvoie index.html pour les routes Angular', () => {
-    for (const route of ['/', '/collection', '/cartes/12', '/duels/abc', '/inconnue']) {
+  it('sert chaque langue par sa propre version du site (US-079)', () => {
+    for (const langue of ['fr', 'en']) {
+      for (const route of ['/', '/collection', '/cartes/12', '/duels/abc', '/inconnue']) {
+        expect(reecriturePour(hosting, `/${langue}${route}`)?.destination).toBe(
+          `/${langue}/index.html`,
+        );
+      }
+    }
+  });
+
+  it('renvoie vers la page qui choisit la langue tout chemin sans langue, anciens liens compris', () => {
+    for (const route of ['/', '/collection', '/cartes/12', '/duels/abc', '/fr', '/de/x']) {
       expect(reecriturePour(hosting, route)?.destination).toBe('/index.html');
     }
   });
@@ -108,7 +118,7 @@ describe('firebase.json', () => {
     for (const chemin of [
       '/',
       '/collection',
-      '/main-HIUHHL6L.js',
+      '/fr/main-HIUHHL6L.js',
       '/cartes/set-1/1-320.avif',
       '/api/v1/sante',
     ]) {
@@ -138,9 +148,14 @@ describe('firebase.json', () => {
     ['/favicon.ico', 'no-cache'],
     // Le service worker d'une future PWA (US-063) n'a pas d'empreinte : il ne doit pas devenir immuable.
     ['/ngsw-worker.js', 'no-cache'],
-    ['/main-HIUHHL6L.js', IMMUABLE],
-    ['/chunk-AB12CD34.js', IMMUABLE],
-    ['/styles-7UTGZTYA.css', IMMUABLE],
+    ['/en/', 'no-cache'],
+    ['/en/index.html', 'no-cache'],
+    ['/fr/ngsw-worker.js', 'no-cache'],
+    ['/fr/manifest.webmanifest', 'no-cache'],
+    ['/langue.js', 'no-cache'],
+    ['/fr/main-HIUHHL6L.js', IMMUABLE],
+    ['/en/chunk-AB12CD34.js', IMMUABLE],
+    ['/fr/styles-7UTGZTYA.css', IMMUABLE],
     ['/cartes/set-1/1-320.avif', UN_JOUR],
     ['/cartes/set-1/71-640.webp', UN_JOUR],
   ])('cache de %s : %s', (chemin, attendu) => {
@@ -156,13 +171,15 @@ describe('firebase.json', () => {
     const configuration = configurationRest(hosting);
     expect(configuration.rewrites).toEqual([
       { glob: '/api/**', run: { serviceId: 'hipmaster-api', region: 'europe-west3' } },
+      { glob: '/fr/**', path: '/fr/index.html' },
+      { glob: '/en/**', path: '/en/index.html' },
       { glob: '**', path: '/index.html' },
     ]);
     expect(configuration.headers.map((regle) => regle.glob)).toEqual([
       '**',
       '!/api/**',
       '/cartes/**/*.@(avif|webp)',
-      '/*-+([0-9A-Z]).@(css|js)',
+      '/**/*-+([0-9A-Z]).@(css|js)',
     ]);
     expect(configuration.headers[0]?.headers['X-Content-Type-Options']).toBe('nosniff');
   });

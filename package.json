@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "concurrently -k -n api,web -c blue,magenta \"npm run dev -w @hipmaster/api\" \"npm start -w @hipmaster/web\"",
     "build": "npm run build -w @hipmaster/web",
+    "start:en": "npm run start:en -w @hipmaster/web",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
@@ -17,6 +18,8 @@
     "test:e2e:production": "npm run build && playwright test -c playwright.production.config.ts",
     "simuler": "node scripts/simuler.ts",
     "fiches:liens": "node scripts/verifier-liens-fiches.ts",
+    "i18n:extraire": "npm run i18n:extraire -w @hipmaster/web",
+    "i18n:verifier": "node scripts/langues/verifier-traductions.ts",
     "check": "npm run lint && npm run format:check && npm run typecheck && npm test",
     "db:up": "docker compose up -d --wait",
     "db:down": "docker compose down",

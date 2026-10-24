@@ -6,15 +6,8 @@
       "name": "application",
       "installMode": "prefetch",
       "resources": {
-        "files": [
-          "/index.html",
-          "/manifest.webmanifest",
-          "/favicon.ico",
-          "/logo.svg",
-          "/*.css",
-          "/*.js",
-          "/polices/*.woff2"
-        ]
+        "files": ["/index.html", "/manifest.webmanifest", "/*.css", "/*.js"],
+        "urls": ["/polices/*.woff2", "/logo.svg", "/favicon.ico"]
       }
     },
     {
@@ -22,7 +15,7 @@
       "installMode": "lazy",
       "updateMode": "prefetch",
       "resources": {
-        "files": ["/cartes/**", "/icones/**", "/*.png", "/*.jpg"]
+        "urls": ["/cartes/**", "/icones/**", "/*.png", "/*.jpg"]
       }
     }
   ],

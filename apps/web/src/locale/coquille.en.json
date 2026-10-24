@@ -1,0 +1,28 @@
+{
+  "manifeste": {
+    "name": "HIPMaster — the integration card game",
+    "description": "From FTP to AI agents: open boosters, collect the building blocks of integration and challenge your colleagues."
+  },
+  "index": [
+    [
+      "Le jeu de cartes de l’intégration : du FTP aux agents d’IA, ouvre des boosters, complète ta collection et défie tes collègues.",
+      "The integration card game: from FTP to AI agents, open boosters, complete your collection and challenge your colleagues."
+    ],
+    ["fr_FR", "en_GB"],
+    ["https://hipmaster.web.app/\"", "https://hipmaster.web.app/en/\""],
+    ["HIPMaster — le jeu de cartes de l’intégration", "HIPMaster — the integration card game"],
+    [
+      "Du FTP aux agents d’IA : ouvre des boosters, collectionne les briques de l’intégration et défie tes collègues.",
+      "From FTP to AI agents: open boosters, collect the building blocks of integration and challenge your colleagues."
+    ],
+    [
+      "Le logo HIPMaster et trois cartes du jeu en éventail sur un fond bleu nuit",
+      "The HIPMaster logo and three game cards fanned out on a midnight-blue background"
+    ],
+    ["Chargement de HIPMaster…", "Loading HIPMaster…"],
+    [
+      "HIPMaster a besoin de JavaScript : activez-le dans votre navigateur pour jouer.",
+      "HIPMaster needs JavaScript: turn it on in your browser to play."
+    ]
+  ]
+}

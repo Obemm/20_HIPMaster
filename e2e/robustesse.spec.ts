@@ -123,13 +123,14 @@ test('avant le démarrage du jeu, la page dit qu’elle charge ; sans JavaScript
   page,
   browser,
 }) => {
-  const html = await (await page.request.get('/')).text();
+  // La page du jeu en français (en production, `/` est la page qui choisit la langue, US-079).
+  const html = await (await page.request.get('/fr/')).text();
   expect(html).toContain('<meta name="color-scheme" content="light dark"');
   expect(html).toContain('Chargement de HIPMaster…');
 
   const sansScript = await browser.newContext({ javaScriptEnabled: false });
   const pageSansScript = await sansScript.newPage();
-  await pageSansScript.goto('/');
+  await pageSansScript.goto('/fr/');
   // Le texte d'un <noscript> échappe à getByText : on le cherche par son rôle.
   await expect(pageSansScript.getByRole('paragraph')).toHaveText(
     'HIPMaster a besoin de JavaScript : activez-le dans votre navigateur pour jouer.',

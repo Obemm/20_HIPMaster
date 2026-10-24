@@ -418,13 +418,13 @@ etape_trafic() {
 etape_front() {
   exiger_public front
   titre "Front : publication sur Firebase Hosting (site $SITE)"
-  [[ -f $BUILD_FRONT/index.html ]] || arret "le front n'est pas construit : npm run build, puis relancer."
+  [[ -f $BUILD_FRONT/index.html && -f $BUILD_FRONT/fr/index.html ]] || arret "le front n'est pas construit : npm run build, puis relancer."
   jeton_acces | node scripts/gcp/publier-front.ts --commit "$COMMIT"
 }
 
 # verifier_site : une passe de vérification du site public ; renvoie une erreur décrite sur la sortie standard.
 verifier_site() {
-  local url=https://$SITE.web.app attendu servi entetes sante
+  local url=https://$SITE.web.app attendu servi entetes sante langue bundles=""
   entetes=$(curl -fsS -D - -o "$TEMPORAIRE/index.html" "$url/") || {
     echo "$url/ ne répond pas"
     return 1
@@ -437,21 +437,29 @@ verifier_site() {
     echo "la page d'accueil n'a pas « Cache-Control: no-cache »"
     return 1
   }
-  attendu=$(grep -o 'main-[0-9A-Z]*\.js' "$BUILD_FRONT/index.html")
-  servi=$(grep -o 'main-[0-9A-Z]*\.js' "$TEMPORAIRE/index.html" || true)
-  [[ $servi == "$attendu" ]] || {
-    echo "le site sert ${servi:-autre chose} au lieu de $attendu"
+  grep -q 'src="/langue.js"' "$TEMPORAIRE/index.html" || {
+    echo "la page d'accueil ne choisit pas la langue (US-079)"
     return 1
   }
-  curl -fsS -I "$url/$attendu" | grep -qi '^cache-control: .*immutable' || {
-    echo "$attendu n'est pas servi avec un cache immuable"
-    return 1
-  }
+  # Une version par langue (US-079, ADR 0042), chacune avec le bundle de ce build et son cache immuable.
+  for langue in fr en; do
+    attendu=$(grep -o 'main-[0-9A-Z]*\.js' "$BUILD_FRONT/$langue/index.html")
+    servi=$(curl -fsS "$url/$langue/" | grep -o 'main-[0-9A-Z]*\.js' || true)
+    [[ $servi == "$attendu" ]] || {
+      echo "/$langue/ sert ${servi:-autre chose} au lieu de $attendu"
+      return 1
+    }
+    curl -fsS -I "$url/$langue/$attendu" | grep -qi '^cache-control: .*immutable' || {
+      echo "/$langue/$attendu n'est pas servi avec un cache immuable"
+      return 1
+    }
+    bundles+=" /$langue/$attendu"
+  done
   sante=$(curl -fsS "$url/api/v1/sante") && [[ $sante == *'"statut":"ok"'* ]] || {
     echo "/api/v1/sante ne répond pas à travers Firebase Hosting (réécriture vers Cloud Run, accès public ?)"
     return 1
   }
-  echo "CSP et cache en place, $attendu servi, /api/v1/sante relayé vers Cloud Run"
+  echo "CSP et cache en place,$bundles servis, /api/v1/sante relayé vers Cloud Run"
 }
 
 etape_site() {

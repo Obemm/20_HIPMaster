@@ -18,6 +18,8 @@ test('une erreur non gérée est signalée à l’API, sans les paramètres de l
   const reponse = await signalement;
   expect(reponse.status()).toBe(204);
   const corps = reponse.request().postDataJSON() as Record<string, unknown>;
-  expect(corps).toMatchObject({ message: 'Erreur d’essai du parcours e2e', page: '/compte' });
+  // La page telle que le joueur l'a ouverte, langue comprise en production (/fr/compte, US-079).
+  expect(corps).toMatchObject({ message: 'Erreur d’essai du parcours e2e' });
+  expect(corps['page']).toMatch(/^(?:\/fr)?\/compte$/);
   expect(JSON.stringify(corps)).not.toContain('ABCD-EFGH-JKLM');
 });

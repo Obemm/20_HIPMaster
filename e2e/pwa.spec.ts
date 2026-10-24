@@ -18,11 +18,16 @@ test('le manifeste rend le jeu installable : nom, couleurs, icônes, affichage a
     'href',
     'manifest.webmanifest',
   );
-  const manifeste = (await (await request.get('/manifest.webmanifest')).json()) as Manifeste;
+  // Chaque langue a son manifeste, à côté de sa page (US-079) : /fr/manifest.webmanifest en production, et
+  // /manifest.webmanifest sur le serveur de développement, sans préfixe de langue.
+  const base = new URL(await page.evaluate(() => document.baseURI)).pathname;
+  const manifeste = (await (await request.get(`${base}manifest.webmanifest`)).json()) as Manifeste;
   expect(manifeste).toMatchObject({
     short_name: 'HIPMaster',
     lang: 'fr',
-    start_url: '/',
+    id: '/',
+    scope: '/',
+    start_url: base,
     display: 'standalone',
     theme_color: '#0b1029',
     background_color: '#0b1029',
@@ -33,7 +38,7 @@ test('le manifeste rend le jeu installable : nom, couleurs, icônes, affichage a
     '512x512 maskable',
   ]);
   for (const icone of manifeste.icons) {
-    const reponse = await request.get(`/${icone.src}`);
+    const reponse = await request.get(icone.src);
     expect(reponse.ok(), icone.src).toBe(true);
     expect(reponse.headers()['content-type']).toContain('image/png');
   }
@@ -48,7 +53,8 @@ test('en production, l’interface s’ouvre hors ligne et dit que le jeu se jou
   page,
   request,
 }) => {
-  const ngsw = await request.get('/ngsw.json');
+  // Un service worker par langue, chacun dans son dossier (US-079).
+  const ngsw = await request.get('/fr/ngsw.json');
   if (!(ngsw.headers()['content-type'] ?? '').includes('json')) {
     // Serveur de développement : pas de service worker, rien à vérifier ici (la CI passe par la production).
     test.info().annotations.push({ type: 'hors production', description: 'sans service worker' });
@@ -69,7 +75,7 @@ test('en production, l’interface s’ouvre hors ligne et dit que le jeu se jou
     const enregistrement = await navigator.serviceWorker.ready;
     return enregistrement.active?.scriptURL ?? '';
   });
-  expect(script).toMatch(/\/ngsw-worker\.js$/);
+  expect(script).toMatch(/\/fr\/ngsw-worker\.js$/);
   // La page suivante est servie par le service worker, une fois l'interface entière dans son cache.
   await page.reload();
   await expect
@@ -78,7 +84,7 @@ test('en production, l’interface s’ouvre hors ligne et dit que le jeu se jou
         page.evaluate(async () => {
           if (!navigator.serviceWorker.controller) return false;
           for (const nom of await caches.keys()) {
-            if (await (await caches.open(nom)).match('/index.html')) return true;
+            if (await (await caches.open(nom)).match('/fr/index.html')) return true;
           }
           return false;
         }),

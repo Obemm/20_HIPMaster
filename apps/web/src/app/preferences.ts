@@ -1,9 +1,12 @@
 import { Injectable, signal } from '@angular/core';
+import type { Langue } from './langue';
 
 const CLE_AIDE_VUE = 'hipmaster.aide-vue';
 const CLE_COUPS_DE_POUCE = 'hipmaster.coups-de-pouce';
 const CLE_CONSEIL_CHAQUE_COUP = 'hipmaster.conseil-chaque-coup';
 const CLE_GUIDE_FINI = 'hipmaster.partie-guidee-finie';
+/** Relue aussi par la page d'accueil du site (`/`, apps/web/racine/langue.js), avant la langue du navigateur. */
+const CLE_LANGUE = 'hipmaster.langue';
 
 /** Lecture du stockage du navigateur ; un stockage refusé (navigation privée stricte) vaut « rien de retenu ». */
 function lire(cle: string): string | null {
@@ -58,5 +61,10 @@ export class PreferencesService {
   marquerGuideFini(): void {
     this.guideFini.set(true);
     ecrire(CLE_GUIDE_FINI, 'oui');
+  }
+
+  /** La langue choisie dans le sélecteur (US-079) : la page d'accueil du site y ramène le joueur. */
+  choisirLangue(langue: Langue): void {
+    ecrire(CLE_LANGUE, langue);
   }
 }

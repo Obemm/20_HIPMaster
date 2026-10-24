@@ -1,6 +1,6 @@
 # EPIC-07 — Vie sociale
 
-- **Statut** : En cours
+- **Statut** : Terminé
 - **Priorité** : Could
 
 ## Objectif

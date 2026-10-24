@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <title>HIPMaster</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#0b1029" />
+    <meta name="robots" content="noindex" />
+    <!-- Un lien partagé vers le site garde son aperçu : celui de la version française, recopié au build. -->
+    <!-- aperçu des liens partagés -->
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="icon" href="/logo.svg" type="image/svg+xml" />
+    <!--
+      Page d'accueil du site (US-079, ADR 0042) : chaque langue a sa version, sous /fr/ et /en/. Ce script, servi par
+      le site (la CSP interdit tout script en ligne), choisit la langue et y emmène le joueur, sur la même page.
+    -->
+    <script src="/langue.js"></script>
+  </head>
+  <body>
+    <main>
+      <h1>HIPMaster</h1>
+      <ul>
+        <li><a href="/fr/" hreflang="fr">Jouer en français</a></li>
+        <li lang="en"><a href="/en/" hreflang="en">Play in English</a></li>
+      </ul>
+    </main>
+  </body>
+</html>

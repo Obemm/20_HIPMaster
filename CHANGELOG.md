@@ -7,6 +7,11 @@ Toutes les évolutions notables du projet sont consignées ici
 
 ### Ajouté
 
+- Le jeu existe en deux versions, française (`/fr/`) et anglaise (`/en/`), compilées par l'i18n d'Angular. La racine
+  du site emmène chaque joueur dans sa langue (celle choisie, puis celle du navigateur, l'anglais à défaut), anciens
+  liens compris ; un sélecteur FR / EN dans le bandeau bascule sur la même page dans l'autre langue et retient le
+  choix. Chaque langue a son manifeste et son service worker ; la CI échoue si une traduction manque (US-079,
+  ADR 0042).
 - Des boosters offerts par code, pour récompenser une réussite de l'équipe (« 1re API publiée ») : le porteur du
   projet crée un code (libellé, boosters par joueur, nombre de joueurs, date limite) sur la page « Offrir des
   boosters », réservée aux administrateurs, ou par `npm run code-boosters` ; le code et son lien

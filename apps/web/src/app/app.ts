@@ -18,6 +18,7 @@ import {
 } from '@angular/router';
 import { filter } from 'rxjs';
 import { StockBoostersService } from './boosters/stock-boosters.service';
+import { ChoixLangue } from './choix-langue';
 import { CompteService } from './compte/compte.service';
 import { MesDuelsService } from './duels/mes-duels.service';
 import { Icone, type NomIcone } from './icone';
@@ -45,7 +46,7 @@ const ONGLETS: readonly Onglet[] = [
  */
 @Component({
   selector: 'hip-root',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, Icone, EtatApplication],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, Icone, EtatApplication, ChoixLangue],
   templateUrl: './app.html',
 })
 export class App {
@@ -56,7 +57,7 @@ export class App {
 
   private readonly router = inject(Router);
   private readonly injecteur = inject(Injector);
-  private readonly url = signal(this.router.url);
+  protected readonly url = signal(this.router.url);
   protected readonly enPartie = computed(() => EN_PARTIE.test(this.url()));
 
   constructor() {

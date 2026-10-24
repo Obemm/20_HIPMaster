@@ -21,6 +21,8 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run check
+      # Chaque texte de l'interface a sa traduction dans chaque langue, extraction à jour (US-079, ADR 0042).
+      - run: npm run i18n:verifier
       - run: npm run build
 
   api-postgresql:

@@ -50,6 +50,7 @@ référence the company.
 | [0039](0039-requetes-legeres-cache-compression.md)     | Requêtes légères : index mesurés, catalogue en cache public, compression   | [ref] retenu                  | Acceptée                      |
 | [0040](0040-conseil-serveur-contre-bot.md)             | Conseil calculé par le serveur, contre le bot seulement                    | [ref] retenu                  | Acceptée                      |
 | [0041](0041-partie-guidee-graine-fixe.md)              | Partie guidée : une graine fixe et des étapes servies par l'API            | [ref] retenu                  | Acceptée                      |
+| [0042](0042-site-bilingue-i18n-angular.md)             | Un site par langue : i18n d'Angular, `/fr/` et `/en/`, la racine choisit   | [ref] (adapté) ; 005 retenu   | Proposée                      |
 | [0044](0044-score-et-cote-de-duel.md)                  | Score cumulé et cote de duel, comptés par le serveur, sans remise à zéro   | [ref] retenu                  | Acceptée                      |
 | [0045](0045-boosters-offerts-par-code.md)              | Boosters offerts par code : usages comptés sous HMAC, un par joueur, tracé | [ref] ; 032, 010, 034 écartés | Acceptée                      |
 

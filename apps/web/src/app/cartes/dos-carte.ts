@@ -6,7 +6,7 @@ import { Component } from '@angular/core';
  */
 @Component({
   selector: 'hip-dos-carte',
-  template: `<img src="logo.svg" alt="" width="64" height="64" class="w-2/5 drop-shadow-lg" />`,
+  template: `<img src="/logo.svg" alt="" width="64" height="64" class="w-2/5 drop-shadow-lg" />`,
   host: { class: 'dos-carte', 'aria-hidden': 'true' },
 })
 export class DosCarte {}

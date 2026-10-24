@@ -1,6 +1,6 @@
 # EPIC-14 — Un jeu en français et en anglais
 
-- **Statut** : À affiner
+- **Statut** : En cours
 - **Priorité** : Should
 
 ## Objectif
@@ -32,7 +32,7 @@ the company (ADR 0005) :
 
 ## Stories
 
-- [ ] US-079 — Le socle bilingue : i18n d'Angular, deux versions du site et un sélecteur de langue
+- [x] US-079 — Le socle bilingue : i18n d'Angular, deux versions du site et un sélecteur de langue
 - [ ] US-080 — Toute l'interface en anglais
 - [ ] US-081 — Les cartes, les capacités, les fiches et la règle en anglais
 - [ ] US-082 — Des messages d'erreur traduits et des parcours vérifiés dans les deux langues

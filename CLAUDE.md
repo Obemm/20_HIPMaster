@@ -40,6 +40,10 @@ pure en TypeScript, PostgreSQL + Drizzle. TypeScript strict, Node ≥ 24.15.
   la base. Le serveur fait foi : jamais de tirage ni de résolution de combat dans le front.
 - L'API s'exécute en TypeScript natif (Node, sans compilation) : imports relatifs avec l'extension `.ts`, pas d'`enum`
   ni de `namespace` (`erasableSyntaxOnly`). Erreurs au format Problem Details ; contrat OpenAPI avant chaque ressource.
+- **Jeu bilingue** (ADR 0042) : tout texte d'interface porte `i18n` (gabarits) ou `$localize` (code) ;
+  `npm run i18n:extraire` après chaque texte ajouté ou retouché, puis le traduire dans
+  `apps/web/src/locale/messages.en.json` (`npm run i18n:verifier` le contrôle, la CI aussi). Le build sert `/fr/` et
+  `/en/` ; `npm run dev` sert le français seul, `npm run start:en` l'anglais.
 - Variables d'environnement : `.env` unique à la racine (modèle `.env.example`) ; l'API lit `API_HOST`/`API_PORT`.
 - Tests : Vitest à côté du code (`*.test.ts` pour domain/api, `*.spec.ts` pour Angular via `ng test`) ;
   `npm run test:e2e` avant de clore une story qui touche un parcours (la CI lance `test:e2e:production` : build de

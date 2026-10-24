@@ -45,6 +45,11 @@ export default defineConfig([
     },
   },
   {
+    // Page d'accueil du site, qui choisit la langue (US-079) : un script de navigateur, hors d'Angular.
+    files: ['apps/web/racine/*.js'],
+    languageOptions: { globals: { ...globals.browser } },
+  },
+  {
     files: ['apps/web/**/*.html'],
     extends: [angular.configs.templateRecommended, angular.configs.templateAccessibility],
   },
