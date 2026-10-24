@@ -21,6 +21,7 @@ import { StockBoostersService } from './boosters/stock-boosters.service';
 import { CompteService } from './compte/compte.service';
 import { MesDuelsService } from './duels/mes-duels.service';
 import { Icone, type NomIcone } from './icone';
+import { EtatApplication } from './pwa/etat-application';
 
 /** Une partie ou un duel ouvert : la barre d'onglets s'efface sur téléphone pour laisser l'écran au plateau. */
 const EN_PARTIE = /^\/(jouer|duels)\/(?!nouveau|hasard)[^/?#]+/;
@@ -44,7 +45,7 @@ const ONGLETS: readonly Onglet[] = [
  */
 @Component({
   selector: 'hip-root',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, Icone],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, Icone, EtatApplication],
   templateUrl: './app.html',
 })
 export class App {

@@ -874,6 +874,24 @@
   }
 }
 
+/* Bandeaux du jeu installé (US-063) : hors ligne, nouvelle version prête. */
+@layer components {
+  .bandeau-etat {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem 1rem;
+    border-bottom: 2px solid #fbbf24;
+    background-color: var(--hip-surface);
+    padding: 0.5rem 1rem;
+    padding-top: max(0.5rem, env(safe-area-inset-top));
+    color: var(--hip-texte);
+    font-size: 0.875rem;
+    text-align: center;
+  }
+}
+
 /* Téléphones à encoche (viewport-fit=cover) : rien ne passe sous l'encoche en paysage. */
 body {
   padding-right: env(safe-area-inset-right);

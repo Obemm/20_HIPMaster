@@ -2,9 +2,11 @@ import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/
 import {
   type ApplicationConfig,
   ErrorHandler,
+  isDevMode,
   provideBrowserGlobalErrorListeners,
 } from '@angular/core';
 import { provideRouter, TitleStrategy, withComponentInputBinding } from '@angular/router';
+import { provideServiceWorker } from '@angular/service-worker';
 import { routes } from './app.routes';
 import { intercepteurJeton } from './compte/compte.service';
 import { RapporteurErreurs } from './erreurs/rapporteur-erreurs';
@@ -21,5 +23,11 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(withFetch(), withInterceptors([intercepteurJeton, intercepteurReseau])),
     // Le titre de l'onglet compte les duels qui attendent le joueur (US-035).
     { provide: TitleStrategy, useClass: TitreAvecDuels },
+    // Jeu installable (US-063, ADR 0038) : l'interface et les illustrations en cache, jamais l'API. Seulement en
+    // production ; enregistré une fois l'application stable, ou au bout de 30 s.
+    provideServiceWorker('ngsw-worker.js', {
+      enabled: !isDevMode(),
+      registrationStrategy: 'registerWhenStable:30000',
+    }),
   ],
 };
