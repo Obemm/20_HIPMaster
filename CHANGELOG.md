@@ -7,6 +7,8 @@ Toutes les évolutions notables du projet sont consignées ici
 
 ### Ajouté
 
+- Choix du générateur d'illustrations consigné : Gemini, une créature par carte, relue par le porteur (US-016,
+  ADR 0047).
 - Les textes alternatifs des 71 illustrations en anglais : la version `/en/` décrit chaque image aux lecteurs d'écran
   dans sa langue ; `set-1.json` porte un `altEn` obligatoire à côté de l'`alt` français et le manifeste généré range
   les textes par langue (US-081).

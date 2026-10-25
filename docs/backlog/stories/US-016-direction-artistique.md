@@ -1,7 +1,7 @@
 # US-016 — Direction artistique et choix du générateur d'images
 
 - **Epic** : EPIC-05
-- **Statut** : En cours
+- **Statut** : Faite
 - **Priorité** : Should
 - **Taille** : M
 - **Branche** : `us-016-direction-artistique`
@@ -13,13 +13,13 @@ les images** afin que **les 71 cartes forment un set cohérent, sans risque sur 
 
 ## Critères d'acceptation
 
-- [ ] Un ADR tranche l'outil de génération : **Recraft** (piste de départ) ou une autre solution, avec l'offre
+- [x] Un ADR tranche l'outil de génération : **Recraft** (piste de départ) ou une autre solution, avec l'offre
       retenue, son coût et la **propriété des images**.
-- [ ] La direction artistique tient sur une page (`docs/produit/direction-artistique.md`) : style, palette par
+- [x] La direction artistique tient sur une page (`docs/produit/direction-artistique.md`) : style, palette par
       famille (cohérente avec les couleurs d'accent d'US-009), cadrage 4:3, ce qu'on montre ou non (pas de logo de
       produit, pas de personne réelle reconnaissable, pas de texte dans l'image).
-- [ ] Une consigne de génération type par famille, et la règle pour écrire le texte alternatif d'une carte.
-- [ ] Un essai sur **4 cartes de familles différentes** (par exemple FTP, webMethods IS, Apigee, Solace Agent Mesh),
+- [x] Une consigne de génération type par famille, et la règle pour écrire le texte alternatif d'une carte.
+- [x] Un essai sur **4 cartes de familles différentes** (par exemple FTP, webMethods IS, Apigee, Solace Agent Mesh),
       validé par le porteur du projet, passé par la chaîne d'US-015.
 
 ## Notes
@@ -60,3 +60,4 @@ les images** afin que **les 71 cartes forment un set cohérent, sans risque sur 
 - 2026-10-18 — décision du porteur du projet : l'offre Recraft attend ; **pour le moment**, des illustrations simples
   générées par le code (US-018, ADR 0016). Les images de l'essai sont rangées hors du dépôt
   (`packages/illustrations/sources/recraft-essai/`).
+- 2026-10-25 — livrée : générateur retenu : Gemini (ADR 0047) ; direction artistique et consignes d'une créature par carte dans docs/produit ; 71 cartes illustrées par US-017
