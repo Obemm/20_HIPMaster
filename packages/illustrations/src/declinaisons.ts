@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import sharp from 'sharp';
 
 /** Largeurs servies au front, au format 4:3 (ADR 0015). */
@@ -15,14 +16,41 @@ const QUALITES: Record<Format, readonly number[]> = {
 };
 
 export interface Declinaison {
+  numero: number;
+  /** Nom du fichier servi, empreinte de son contenu comprise (US-078). */
   nomFichier: string;
   largeur: number;
   format: Format;
   donnees: Buffer;
 }
 
-export const nomDeclinaison = (numero: number, largeur: number, format: Format) =>
-  `${numero}-${largeur}.${format}`;
+/** Empreinte du contenu d'un fichier servi : 8 caractères hexadécimaux de son SHA-256 (US-078, ADR 0046). */
+export const empreinte = (donnees: Buffer) =>
+  createHash('sha256').update(donnees).digest('hex').slice(0, 8);
+
+/**
+ * Nom d'un fichier servi : `<numero>-<largeur>.<empreinte>.<format>`. L'empreinte change avec le contenu : une image
+ * refaite prend une autre adresse, et le cache d'un an des navigateurs ne garde jamais l'ancienne (US-078).
+ */
+export const nomDeclinaison = (
+  numero: number,
+  largeur: number,
+  format: Format,
+  empreinteContenu: string,
+) => `${numero}-${largeur}.${empreinteContenu}.${format}`;
+
+const NOM_DECLINAISON = /^(\d+)-(\d+)\.([0-9a-f]{8})\.(avif|webp)$/;
+
+/** Relit un nom de fichier servi ; `undefined` s'il n'a pas la forme de `nomDeclinaison`. */
+export function lireNomDeclinaison(
+  nomFichier: string,
+): { numero: number; largeur: number; format: Format; empreinte: string } | undefined {
+  const [, numero, largeur, empreinteContenu, format] = NOM_DECLINAISON.exec(nomFichier) ?? [];
+  if (!numero || !largeur || !empreinteContenu || (format !== 'avif' && format !== 'webp')) {
+    return undefined;
+  }
+  return { numero: Number(numero), largeur: Number(largeur), format, empreinte: empreinteContenu };
+}
 
 /** Refuse un original trop petit pour la plus grande largeur servie. */
 export async function verifierOriginal(original: Buffer): Promise<string | undefined> {
@@ -56,7 +84,8 @@ export async function declinerIllustration(
         if (donnees.length < POIDS_MAX) break;
       }
       declinaisons.push({
-        nomFichier: nomDeclinaison(numero, largeur, format),
+        numero,
+        nomFichier: nomDeclinaison(numero, largeur, format, empreinte(donnees)),
         largeur,
         format,
         donnees,

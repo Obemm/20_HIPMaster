@@ -54,5 +54,6 @@ référence the company.
 | [0043](0043-contenu-traduit-domaine-langue-api.md)     | Contenu traduit dans le domaine, servi selon le paramètre `langue`         | [ref] (adapté) ; 007/020      | Proposée                      |
 | [0044](0044-score-et-cote-de-duel.md)                  | Score cumulé et cote de duel, comptés par le serveur, sans remise à zéro   | [ref] retenu                  | Acceptée                      |
 | [0045](0045-boosters-offerts-par-code.md)              | Boosters offerts par code : usages comptés sous HMAC, un par joueur, tracé | [ref] ; 032, 010, 034 écartés | Acceptée                      |
+| [0046](0046-illustrations-a-empreinte-cache-long.md)   | Illustrations à empreinte sous `/illustrations/`, un an en cache, 404      | aucune ; 012 via 0015           | Acceptée                      |
 
 Modèle : [template.md](template.md).

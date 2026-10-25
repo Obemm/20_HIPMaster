@@ -34,12 +34,12 @@ export function cartesPhares(
       <div class="mini-eventail" aria-hidden="true">
         @for (phare of phares(); track phare.numero) {
           <div [class]="'cadre-' + phare.rarete">
-            @if (phare.illustree) {
+            @if (phare.sources; as sources) {
               <picture>
-                <source type="image/avif" [attr.srcset]="phare.sources.avif" sizes="5rem" />
-                <source type="image/webp" [attr.srcset]="phare.sources.webp" sizes="5rem" />
+                <source type="image/avif" [attr.srcset]="sources.avif" sizes="5rem" />
+                <source type="image/webp" [attr.srcset]="sources.webp" sizes="5rem" />
                 <img
-                  [src]="phare.sources.defaut"
+                  [src]="sources.defaut"
                   alt=""
                   width="320"
                   height="240"
@@ -78,8 +78,8 @@ export class BoiteDeck {
       return {
         numero,
         rarete: typeof carte === 'number' ? 'commune' : carte.rarete,
-        illustree: this.illustrations[numero] !== undefined,
-        sources: sourcesIllustration(numero),
+        // L'image, si la carte en a une : texte alternatif et fichiers viennent du même manifeste.
+        sources: this.illustrations[numero] === undefined ? undefined : sourcesIllustration(numero),
       };
     }),
   );

@@ -16,7 +16,6 @@ const RACINE = join(import.meta.dirname, '..', '..');
 const { projet, hosting } = lireConfiguration(RACINE);
 
 const IMMUABLE = 'public, max-age=31536000, immutable';
-const UN_JOUR = 'public, max-age=86400';
 
 describe('globs de Firebase Hosting', () => {
   const teste = (glob: string, chemin: string) => correspond({ source: glob }, chemin);
@@ -94,9 +93,23 @@ describe('firebase.json', () => {
   });
 
   it('renvoie vers la page qui choisit la langue tout chemin sans langue, anciens liens compris', () => {
-    for (const route of ['/', '/collection', '/cartes/12', '/duels/abc', '/fr', '/de/x']) {
+    for (const route of [
+      '/',
+      '/collection',
+      '/cartes/12',
+      '/cartes/set-1/1-320.avif',
+      '/duels/abc',
+      '/fr',
+      '/de/x',
+      '/illustrations',
+    ]) {
       expect(reecriturePour(hosting, route)?.destination).toBe('/index.html');
     }
+  });
+
+  it('laisse une illustration absente répondre 404, sans réécriture vers une page (US-078)', () => {
+    expect(reecriturePour(hosting, '/illustrations/set-1/1-320.00000000.avif')).toBeUndefined();
+    expect(reecriturePour(hosting, '/illustrations/')).toBeUndefined();
   });
 
   it('pose une CSP stricte, sans unsafe-inline ni unsafe-eval', () => {
@@ -119,7 +132,7 @@ describe('firebase.json', () => {
       '/',
       '/collection',
       '/fr/main-HIUHHL6L.js',
-      '/cartes/set-1/1-320.avif',
+      '/illustrations/set-1/1-320.06b57c93.avif',
       '/api/v1/sante',
     ]) {
       expect(entetesPour(hosting, chemin)).toMatchObject({
@@ -142,7 +155,7 @@ describe('firebase.json', () => {
     ['/', 'no-cache'],
     ['/index.html', 'no-cache'],
     ['/collection', 'no-cache'],
-    // Route Angular sous le même préfixe que les illustrations (US-057) : c'est index.html, jamais en cache.
+    // Route Angular du catalogue : c'est index.html, jamais en cache.
     ['/cartes/12', 'no-cache'],
     ['/robots.txt', 'no-cache'],
     ['/favicon.ico', 'no-cache'],
@@ -156,8 +169,9 @@ describe('firebase.json', () => {
     ['/fr/main-HIUHHL6L.js', IMMUABLE],
     ['/en/chunk-AB12CD34.js', IMMUABLE],
     ['/fr/styles-7UTGZTYA.css', IMMUABLE],
-    ['/cartes/set-1/1-320.avif', UN_JOUR],
-    ['/cartes/set-1/71-640.webp', UN_JOUR],
+    // Illustrations à empreinte dans leur nom, sous leur propre préfixe (US-078, ADR 0046).
+    ['/illustrations/set-1/1-320.06b57c93.avif', IMMUABLE],
+    ['/illustrations/set-1/71-640.0a1b2c3d.webp', IMMUABLE],
   ])('cache de %s : %s', (chemin, attendu) => {
     expect(entetesPour(hosting, chemin)['cache-control']).toBe(attendu);
   });
@@ -173,13 +187,13 @@ describe('firebase.json', () => {
       { glob: '/api/**', run: { serviceId: 'hipmaster-api', region: 'europe-west3' } },
       { glob: '/fr/**', path: '/fr/index.html' },
       { glob: '/en/**', path: '/en/index.html' },
-      { glob: '**', path: '/index.html' },
+      { glob: '!/illustrations/**', path: '/index.html' },
     ]);
     expect(configuration.headers.map((regle) => regle.glob)).toEqual([
       '**',
       '!/api/**',
-      '/cartes/**/*.@(avif|webp)',
       '/**/*-+([0-9A-Z]).@(css|js)',
+      '/illustrations/**',
     ]);
     expect(configuration.headers[0]?.headers['X-Content-Type-Options']).toBe('nosniff');
   });

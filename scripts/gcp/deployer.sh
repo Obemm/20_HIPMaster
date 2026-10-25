@@ -424,7 +424,7 @@ etape_front() {
 
 # verifier_site : une passe de vérification du site public ; renvoie une erreur décrite sur la sortie standard.
 verifier_site() {
-  local url=https://$SITE.web.app attendu servi entetes sante langue bundles=""
+  local url=https://$SITE.web.app attendu servi entetes sante langue bundles="" illustration code
   entetes=$(curl -fsS -D - -o "$TEMPORAIRE/index.html" "$url/") || {
     echo "$url/ ne répond pas"
     return 1
@@ -455,11 +455,26 @@ verifier_site() {
     }
     bundles+=" /$langue/$attendu"
   done
+  # Illustrations à empreinte, communes aux deux langues (US-078, ADR 0046) : un an en cache, 404 si absente.
+  illustration=$(cd "$BUILD_FRONT" && find illustrations -name '*.avif' -print -quit)
+  [[ -n $illustration ]] || {
+    echo "le build n'a aucune illustration sous illustrations/"
+    return 1
+  }
+  curl -fsS -I "$url/$illustration" | grep -qi '^cache-control: public, max-age=31536000, immutable' || {
+    echo "/$illustration n'est pas servie avec un cache d'un an immuable"
+    return 1
+  }
+  code=$(curl -sS -o /dev/null -w '%{http_code}' "$url/illustrations/set-1/absente.00000000.avif")
+  [[ $code == 404 ]] || {
+    echo "une illustration absente répond $code au lieu de 404"
+    return 1
+  }
   sante=$(curl -fsS "$url/api/v1/sante") && [[ $sante == *'"statut":"ok"'* ]] || {
     echo "/api/v1/sante ne répond pas à travers Firebase Hosting (réécriture vers Cloud Run, accès public ?)"
     return 1
   }
-  echo "CSP et cache en place,$bundles servis, /api/v1/sante relayé vers Cloud Run"
+  echo "CSP et cache en place,$bundles et /$illustration servis, /api/v1/sante relayé vers Cloud Run"
 }
 
 etape_site() {

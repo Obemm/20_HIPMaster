@@ -29,15 +29,26 @@ Chaîne d'import et d'optimisation des illustrations des cartes (US-015,
    npm run illustrations
    ```
 
-   Le script produit `apps/web/public/cartes/set-1/<numero>-{320,640}.{avif,webp}` et régénère le manifeste
-   `apps/web/src/app/cartes/illustrations.generated.ts` (langue → numéro → texte alternatif : chaque version du site lit
-   les textes de sa langue). Il **n'écrit rien** si une erreur subsiste (original absent
-   ou trop petit, texte alternatif manquant, numéro de carte inconnu, fichier de 100 Ko ou plus).
+   Le script produit `apps/web/public/illustrations/set-1/<numero>-{320,640}.<empreinte>.{avif,webp}` et régénère le
+   manifeste `apps/web/src/app/cartes/illustrations.generated.ts` : les textes alternatifs (langue → numéro → texte,
+   chaque version du site lit ceux de sa langue) et les noms des fichiers de chaque carte. Il **n'écrit rien** si une
+   erreur subsiste (original absent ou trop petit, texte alternatif manquant, numéro de carte inconnu, fichier de
+   100 Ko ou plus).
 
 4. Commiter `set-1.json`, les images produites et le manifeste. **Pas les originaux** : `sources/` est ignoré par Git ;
    les archiver à part (ils seront rangés dans un Azure Storage Account à la mise en ligne).
 
 Retirer une carte de `set-1.json` puis relancer le script supprime ses images servies.
+
+## Empreinte et cache (US-078)
+
+L'**empreinte** est faite des 8 premiers caractères hexadécimaux du SHA-256 du fichier
+([ADR 0046](../../docs/decisions/0046-illustrations-a-empreinte-cache-long.md)) : une image refaite change de nom, une
+image inchangée garde le sien. C'est ce qui permet à Firebase Hosting de servir `/illustrations/**` avec
+`Cache-Control: public, max-age=31536000, immutable` : un joueur ne retélécharge jamais une image déjà vue, et voit la
+nouvelle dès la version suivante du site. Le script supprime les fichiers d'une ancienne empreinte ; le front ne lit
+que les noms du manifeste. Ne jamais renommer ni retoucher un fichier à la main : le test des fichiers versionnés
+refuse un nom dont l'empreinte ne correspond pas au contenu.
 
 ## Illustrations provisoires (US-018)
 

@@ -15,7 +15,7 @@
       "installMode": "lazy",
       "updateMode": "prefetch",
       "resources": {
-        "urls": ["/cartes/**", "/icones/**", "/*.png", "/*.jpg"]
+        "urls": ["/illustrations/**", "/icones/**", "/*.png", "/*.jpg"]
       }
     }
   ],

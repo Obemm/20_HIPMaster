@@ -9,7 +9,7 @@ const { erreurs, fichiers } = await produireIllustrations(
   {
     metadonnees: depuisPaquet('set-1.json'),
     sources: depuisPaquet('sources/set-1'),
-    sortie: depuisPaquet('../../apps/web/public/cartes/set-1'),
+    sortie: depuisPaquet('../../apps/web/public/illustrations/set-1'),
     manifeste: depuisPaquet('../../apps/web/src/app/cartes/illustrations.generated.ts'),
   },
   new Set(SET_1.map((carte) => carte.numero)),
@@ -21,6 +21,6 @@ if (erreurs.length) {
   process.exitCode = 1;
 } else {
   console.log(
-    `${fichiers.length / 4} illustration(s), ${fichiers.length} fichier(s) dans apps/web/public/cartes/set-1.`,
+    `${fichiers.length / 4} illustration(s), ${fichiers.length} fichier(s) dans apps/web/public/illustrations/set-1.`,
   );
 }

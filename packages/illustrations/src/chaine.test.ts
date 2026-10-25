@@ -4,7 +4,10 @@ import { join } from 'node:path';
 import sharp from 'sharp';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { produireIllustrations, type Chemins } from './chaine.ts';
-import { POIDS_MAX } from './declinaisons.ts';
+import { empreinte, POIDS_MAX } from './declinaisons.ts';
+
+/** `2-320.a1b2c3d4.avif` → `2-320.avif` : les empreintes changent avec l'encodeur, pas la liste attendue. */
+const sansEmpreinte = (nom: string) => nom.replace(/\.[0-9a-f]{8}\./, '.');
 
 /** Un original de synthèse, assez riche pour que la compression ait du travail. */
 async function original(largeur: number): Promise<Buffer> {
@@ -53,7 +56,12 @@ describe('produireIllustrations', () => {
     const { erreurs, fichiers } = await produireIllustrations(chemins, cartes);
 
     expect(erreurs).toEqual([]);
-    expect(fichiers).toEqual(['2-320.avif', '2-320.webp', '2-640.avif', '2-640.webp']);
+    expect(fichiers.map(sansEmpreinte).sort()).toEqual([
+      '2-320.avif',
+      '2-320.webp',
+      '2-640.avif',
+      '2-640.webp',
+    ]);
     for (const nom of fichiers) {
       const donnees = await readFile(join(chemins.sortie, nom));
       const { width, height } = await sharp(donnees).metadata();
@@ -87,12 +95,40 @@ describe('produireIllustrations', () => {
     await ecrireMetadonnees([entree(2)]);
     await produireIllustrations(chemins, cartes);
 
-    expect((await readdir(chemins.sortie)).sort()).toEqual([
+    expect((await readdir(chemins.sortie)).map(sansEmpreinte).sort()).toEqual([
       '2-320.avif',
       '2-320.webp',
       '2-640.avif',
       '2-640.webp',
     ]);
+  });
+
+  it('nomme chaque fichier par l’empreinte de son contenu, reprise par le manifeste (US-078)', async () => {
+    await writeFile(join(dossier, '1.png'), await original(800));
+    await ecrireMetadonnees([entree(1)]);
+
+    const { fichiers } = await produireIllustrations(chemins, cartes);
+
+    const manifeste = await readFile(chemins.manifeste, 'utf8');
+    expect(manifeste).toContain('FICHIERS_SET_1');
+    for (const nom of fichiers) {
+      expect(nom).toMatch(/^1-(320|640)\.[0-9a-f]{8}\.(avif|webp)$/);
+      const donnees = await readFile(join(chemins.sortie, nom));
+      expect(nom).toContain(`.${empreinte(donnees)}.`);
+      expect(manifeste).toContain(`'${nom}'`);
+    }
+  });
+
+  it('une image refaite change de nom, et l’ancienne n’est plus servie', async () => {
+    await writeFile(join(dossier, '1.png'), await original(800));
+    await ecrireMetadonnees([entree(1)]);
+    const avant = (await produireIllustrations(chemins, cartes)).fichiers;
+
+    await writeFile(join(dossier, '1.png'), await original(1000));
+    const apres = (await produireIllustrations(chemins, cartes)).fichiers;
+
+    expect(apres.filter((nom) => avant.includes(nom))).toEqual([]);
+    expect((await readdir(chemins.sortie)).sort()).toEqual(apres);
   });
 
   it('refuse un original absent ou trop petit, et n’écrit alors rien', async () => {

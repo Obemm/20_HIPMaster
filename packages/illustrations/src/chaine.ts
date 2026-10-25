@@ -14,7 +14,7 @@ export interface Chemins {
   metadonnees: string;
   /** Dossier des originaux `<numero>.png`. */
   sources: string;
-  /** Dossier des déclinaisons servies par le front. */
+  /** Dossier des déclinaisons servies par le front (`apps/web/public/illustrations/set-1`, US-078). */
   sortie: string;
   /** Manifeste TypeScript importé par le front. */
   manifeste: string;
@@ -76,7 +76,7 @@ export async function produireIllustrations(
   if (erreurs.length) return { erreurs, fichiers: [] };
 
   await mkdir(chemins.sortie, { recursive: true });
-  // Les images d'une carte retirée de set-1.json ne doivent pas rester servies.
+  // Les images d'une carte retirée de set-1.json, et celles d'avant une nouvelle empreinte, ne restent pas servies.
   const attendus = new Set(declinaisons.map((d) => d.nomFichier));
   for (const nom of await readdir(chemins.sortie)) {
     if (EXTENSIONS_SERVIES.test(nom) && !attendus.has(nom)) await rm(join(chemins.sortie, nom));
@@ -84,7 +84,7 @@ export async function produireIllustrations(
   for (const { nomFichier, donnees } of declinaisons) {
     await writeFile(join(chemins.sortie, nomFichier), donnees);
   }
-  await writeFile(chemins.manifeste, await genererManifeste(illustrations));
+  await writeFile(chemins.manifeste, await genererManifeste(illustrations, declinaisons));
 
   return { erreurs: [], fichiers: [...attendus].sort() };
 }

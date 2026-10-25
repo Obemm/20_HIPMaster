@@ -243,6 +243,11 @@ Toutes les évolutions notables du projet sont consignées ici
 
 ### Modifié
 
+- Les illustrations portent l'empreinte de leur contenu dans leur nom (`/illustrations/set-1/53-640.a1b2c3d4.avif`) :
+  une image refaite s'affiche dès la version suivante du site, au lieu de rester bloquée par le cache, et une image
+  déjà vue n'est plus jamais retéléchargée (cache d'un an, `immutable`). Une illustration absente répond 404, le
+  service worker suit le nouveau préfixe dans les deux langues, et l'étape `site` du déploiement comme les e2e de
+  production vérifient l'en-tête (US-078, ADR 0046).
 - Des requêtes plus légères (US-057, ADR 0039) : index sur les duels, les récompenses, les sessions et les parties
   d'un joueur (migration `0013`) ; « Mes duels » ne lit plus que les duels qu'il renvoie (40 ms → 2,6 ms pour un
   joueur de 400 duels) ; un duel inchangé répond 304 après la seule lecture de sa version ; le catalogue (cartes,

@@ -1,6 +1,6 @@
 # Tableau de suivi
 
-_Dernière mise à jour : 2026-10-24_
+_Dernière mise à jour : 2026-10-25_
 
 ## Epics
 
@@ -11,7 +11,7 @@ _Dernière mise à jour : 2026-10-24_
 | [EPIC-02 — Comptes joueurs](epics/EPIC-02-comptes-joueurs.md)                                     | Must     | Terminé   | 1/1        |
 | [EPIC-03 — Boosters et collection](epics/EPIC-03-boosters-collection.md)                          | Must     | Terminé   | 3/3        |
 | [EPIC-04 — Combat contre le bot](epics/EPIC-04-combat-bot.md)                                     | Must     | Terminé   | 15/15      |
-| [EPIC-05 — Illustrations des cartes](epics/EPIC-05-illustrations.md)                              | Should   | En cours  | 4/6        |
+| [EPIC-05 — Illustrations des cartes](epics/EPIC-05-illustrations.md)                              | Should   | En cours  | 5/6        |
 | [EPIC-06 — Duels entre joueurs](epics/EPIC-06-duels-joueurs.md)                                   | Should   | Terminé   | 8/8        |
 | [EPIC-07 — Vie sociale](epics/EPIC-07-vie-sociale.md)                                             | Could    | Terminé   | 1/1        |
 | [EPIC-08 — Cartes proposées par la communauté IT](epics/EPIC-08-cartes-communaute.md)             | Should   | À affiner | 0/5        |
@@ -48,14 +48,14 @@ Objectif : un socle outillé, vérifié automatiquement, et une méthode de trav
 
 ## Itération 2 (à venir) — donner envie de jouer
 
-| Story                                                                                                             | Epic    | Priorité | Taille | Statut    |
-| ----------------------------------------------------------------------------------------------------------------- | ------- | -------- | ------ | --------- |
-| [US-009 — Design des cartes façon carte à jouer](stories/US-009-design-cartes.md)                                 | EPIC-05 | Should   | L      | Faite     |
-| [US-015 — Chaîne d'import et d'optimisation des illustrations](stories/US-015-chaine-illustrations.md)            | EPIC-05 | Should   | M      | Faite     |
-| [US-016 — Direction artistique et choix du générateur d'images](stories/US-016-direction-artistique.md)           | EPIC-05 | Should   | M      | En cours  |
-| [US-017 — Illustrations des 71 cartes du set 1](stories/US-017-illustrations-set-1.md)                            | EPIC-05 | Should   | L      | Faite     |
-| [US-018 — Illustrations provisoires générées par le code](stories/US-018-illustrations-provisoires.md)            | EPIC-05 | Should   | M      | Faite     |
-| [US-078 — Des illustrations à empreinte, gardées un an en cache](stories/US-078-illustrations-empreinte-cache.md) | EPIC-05 | Should   | S      | À affiner |
+| Story                                                                                                             | Epic    | Priorité | Taille | Statut   |
+| ----------------------------------------------------------------------------------------------------------------- | ------- | -------- | ------ | -------- |
+| [US-009 — Design des cartes façon carte à jouer](stories/US-009-design-cartes.md)                                 | EPIC-05 | Should   | L      | Faite    |
+| [US-015 — Chaîne d'import et d'optimisation des illustrations](stories/US-015-chaine-illustrations.md)            | EPIC-05 | Should   | M      | Faite    |
+| [US-016 — Direction artistique et choix du générateur d'images](stories/US-016-direction-artistique.md)           | EPIC-05 | Should   | M      | En cours |
+| [US-017 — Illustrations des 71 cartes du set 1](stories/US-017-illustrations-set-1.md)                            | EPIC-05 | Should   | L      | Faite    |
+| [US-018 — Illustrations provisoires générées par le code](stories/US-018-illustrations-provisoires.md)            | EPIC-05 | Should   | M      | Faite    |
+| [US-078 — Des illustrations à empreinte, gardées un an en cache](stories/US-078-illustrations-empreinte-cache.md) | EPIC-05 | Should   | S      | Faite    |
 
 ## Itération 3 (à venir) — jouer contre le bot
 

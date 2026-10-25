@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import type { Carte } from './carte';
 import { ILLUSTRATIONS_CARTES } from './illustrations';
+import { FICHIERS_SET_1 } from './illustrations.generated';
 import { VignetteCarte } from './vignette-carte';
 
 const FTP: Carte = {
@@ -105,12 +106,17 @@ describe('VignetteCarte avec une illustration', () => {
     const carte = afficher(FTP);
     const sources = [...carte.querySelectorAll('picture source')];
     expect(sources.map((s) => s.getAttribute('type'))).toEqual(['image/avif', 'image/webp']);
+    // Noms à empreinte, sous le préfixe gardé un an en cache (US-078).
+    const fichiers = FICHIERS_SET_1[1];
+    if (!fichiers) throw new Error('la carte 1 n’a pas de fichiers dans le manifeste');
+    const { avif, webp } = fichiers;
     expect(sources[0]?.getAttribute('srcset')).toBe(
-      '/cartes/set-1/1-320.avif 320w, /cartes/set-1/1-640.avif 640w',
+      `/illustrations/set-1/${avif[320]} 320w, /illustrations/set-1/${avif[640]} 640w`,
     );
+    expect(avif[320]).toMatch(/^1-320\.[0-9a-f]{8}\.avif$/);
     const image = carte.querySelector('img');
     expect(image?.getAttribute('alt')).toBe('Un vieux serveur de fichiers');
-    expect(image?.getAttribute('src')).toBe('/cartes/set-1/1-640.webp');
+    expect(image?.getAttribute('src')).toBe(`/illustrations/set-1/${webp[640]}`);
     expect(image?.getAttribute('loading')).toBe('lazy');
     expect(image?.getAttribute('width')).toBe('640');
     expect(image?.getAttribute('height')).toBe('480');

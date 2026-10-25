@@ -38,8 +38,9 @@ export class VignetteCarte {
   protected readonly illustration = computed(() => {
     const { numero } = this.carte();
     const alt = this.illustrations[numero];
-    if (alt === undefined) return undefined;
-    return { alt: this.titre() ? alt : '', sources: sourcesIllustration(numero) };
+    const sources = sourcesIllustration(numero);
+    if (alt === undefined || !sources) return undefined;
+    return { alt: this.titre() ? alt : '', sources };
   });
   /** Largeur affichée : moitié d'écran dans la grille d'un téléphone, 18 rem au plus dans le détail. */
   protected readonly tailles = '(min-width: 40rem) 18rem, 50vw';
