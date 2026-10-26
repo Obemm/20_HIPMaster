@@ -65,7 +65,7 @@
   @if (compte.joueur()) {
     <section aria-labelledby="titre-jeu" class="flex flex-col gap-4">
       <h2 id="titre-jeu" class="text-2xl font-extrabold" i18n>Votre jeu</h2>
-      <ul class="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-5">
+      <ul class="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-6">
         <li class="col-span-2 md:col-span-1">
           <a routerLink="/duels" class="tuile">
             <span class="tuile-icone bg-linear-to-br from-rose-500 to-red-800"
@@ -109,7 +109,16 @@
             </span>
           </a>
         </li>
-        <li class="col-span-2 md:col-span-1">
+        <li>
+          <a routerLink="/decks" class="tuile">
+            <span class="tuile-icone bg-linear-to-br from-fuchsia-400 to-purple-700"
+              ><hip-icone nom="decks" class="size-6"
+            /></span>
+            <span class="tuile-titre" i18n>Mes decks</span>
+            <span class="text-sm text-texte-doux" i18n>Vos cartes, votre stratégie</span>
+          </a>
+        </li>
+        <li>
           <a routerLink="/duels/hasard" class="tuile">
             <span class="tuile-icone bg-linear-to-br from-cyan-400 to-sky-700"
               ><hip-icone nom="jouer" class="size-6"

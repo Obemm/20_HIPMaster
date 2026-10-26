@@ -56,5 +56,6 @@ référence the company.
 | [0045](0045-boosters-offerts-par-code.md)              | Boosters offerts par code : usages comptés sous HMAC, un par joueur, tracé        | [ref] ; 032, 010, 034 écartés | Acceptée                      |
 | [0046](0046-illustrations-a-empreinte-cache-long.md)   | Illustrations à empreinte sous `/illustrations/`, un an en cache, 404             | aucune ; 012 via 0015           | Acceptée                      |
 | [0047](0047-illustrations-generees-par-gemini.md)      | Illustrations générées par Gemini : une créature par carte, relues par le porteur | aucune ; [ref] par analogie   | Acceptée                      |
+| [0048](0048-decks-des-joueurs.md)                      | Decks des joueurs : 5 par compte, vérifiés par le serveur, places libérées        | [ref], 007 retenus            | Acceptée                      |
 
 Modèle : [template.md](template.md).

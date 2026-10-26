@@ -104,3 +104,28 @@ test('la partie guidée parle anglais, bulles du serveur comprises', async ({ pa
   await expect(page.getByText('Throughput pays for your cards')).toBeVisible();
   await auditer(page);
 });
+
+test('construire un deck en anglais, sur un téléphone (US-083)', async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 667 });
+  const jeton = await creerCompteParApi(page, 'Builder e2e');
+  await page.request.post('/api/v1/moi/boosters/ouvertures', {
+    headers: { authorization: `Bearer ${jeton}` },
+  });
+  await page.goto('/en/decks');
+  await expect(page.getByRole('heading', { level: 1, name: 'My decks' })).toBeVisible();
+  await page.getByRole('link', { name: 'New deck' }).click();
+  await expect(page.getByText('20 cards missing to play.')).toBeVisible();
+  await page.getByLabel('Deck name').fill('My API deck');
+  await page
+    .getByRole('button', { name: /^Add a copy of / })
+    .first()
+    .click();
+  await expect(page.getByText('19 cards missing to play.')).toBeVisible();
+  await auditer(page);
+
+  await page.getByRole('button', { name: 'Save' }).click();
+  await expect(page.getByText('Deck “My API deck” saved, still incomplete.')).toBeVisible();
+  await page.getByRole('link', { name: '← My decks' }).click();
+  await expect(page.getByText('1 / 20 cards.')).toBeVisible();
+  await auditer(page);
+});

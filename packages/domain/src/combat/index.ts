@@ -48,13 +48,18 @@ export {
 export { choisirActionBatchDeNuit } from './bot.ts';
 export { choisirActionDebutant, choisirActionStagiaire } from './bot-stagiaire.ts';
 export {
+  DECKS_MAX,
   DECKS_PRETES,
   EXEMPLAIRES_MAX,
   EXEMPLAIRES_MAX_LEGENDAIRE,
+  exemplairesMax,
+  libererPlaces,
+  problemesDeck,
   TAILLE_DECK,
   trouverDeckPrete,
   validerDeck,
   type DeckPrete,
+  type ProblemeDeck,
 } from './decks.ts';
 export {
   jouerPartie,

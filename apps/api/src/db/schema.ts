@@ -288,3 +288,24 @@ export const boostersOfferts = pgTable(
     index('boosters_offerts_joueur').on(table.joueurId),
   ],
 );
+
+/**
+ * Decks des joueurs (US-083, ADR 0048) : 5 au plus par joueur, la composition telle qu'il l'a enregistrée (un numéro
+ * par exemplaire). Chaque lecture la confronte à la collection et au catalogue : une carte disparue libère sa place.
+ * Supprimés avec le compte (ADR 0031).
+ */
+export const decks = pgTable(
+  'decks',
+  {
+    id: uuid().primaryKey().defaultRandom(),
+    joueurId: uuid()
+      .notNull()
+      .references(() => joueurs.id, { onDelete: 'cascade' }),
+    nom: text().notNull(),
+    cartes: integer().array().notNull(),
+    creeLe: timestamp({ withTimezone: true }).notNull().defaultNow(),
+    majLe: timestamp({ withTimezone: true }).notNull().defaultNow(),
+  },
+  // La liste « Mes decks » et la suppression du compte (cascade), sans balayer la table (ADR 0039).
+  (table) => [index('decks_joueur').on(table.joueurId, table.creeLe)],
+);

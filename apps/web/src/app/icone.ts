@@ -28,6 +28,8 @@ const TRACES = {
     'M4 4l10 10 M4 4h4 M4 4v4 M20 4L10 14 M20 4h-4 M20 4v4 M8 14l-3 3 M16 14l3 3 M4 20l2-2 M20 20l-2-2',
   boosters: 'M12 3l8 4.5v9L12 21l-8-4.5v-9z M4 7.5l8 4.5 8-4.5 M12 12v9',
   collection: 'M4 4h7v7H4z M13 4h7v7h-7z M4 13h7v7H4z M13 13h7v7h-7z',
+  // Mes decks (US-083) : des cartes empilées.
+  decks: 'M8 3h11v15H8z M5 6v14a1 1 0 0 0 1 1h10',
   compte: 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8z M4 21a8 8 0 0 1 16 0',
   // Score et classement (US-069) : un podium.
   classement: 'M3 20h18 M4 20v-6h5v6 M9 20V8h6v12 M15 20v-9h5v9',

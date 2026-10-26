@@ -1,0 +1,163 @@
+<main class="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 py-8 sm:px-6">
+  <div class="flex flex-col gap-2">
+    <p class="surtitre" i18n>Votre stratégie, vos cartes</p>
+    <h1 class="titre-page" i18n>Mes decks</h1>
+    <p class="text-texte-doux" i18n>
+      Composez vos decks avec les cartes de votre collection : 20 cartes, 2 exemplaires au plus
+      d’une même carte, 1 seul pour une légendaire.
+    </p>
+  </div>
+
+  @if (!compte.joueur()) {
+    @if (compte.pret()) {
+      <p i18n>
+        Vos decks se construisent avec votre collection : il faut un compte pour les garder.
+        <a routerLink="/compte" class="lien">Créer un compte</a>
+        en un clic (un pseudo suffit) : 5 boosters vous sont offerts.
+      </p>
+    } @else {
+      <hip-etat-session />
+    }
+  } @else if (mesDecks.decks(); as decks) {
+    <p role="status" class="sr-only">{{ annonce() }}</p>
+    @if (erreur()) {
+      <p role="alert" class="text-alerte">{{ erreur() }}</p>
+    }
+
+    <section aria-labelledby="titre-mes-decks" class="flex flex-col gap-3">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <h2 id="titre-mes-decks" class="text-xl font-extrabold" i18n>
+          Vos decks ({{ decks.length }} / {{ plafond() }})
+        </h2>
+        @if (plein()) {
+          <p class="text-sm text-texte-doux" i18n>
+            {{ plafond() }} decks au plus : supprimez-en un pour en créer un autre.
+          </p>
+        } @else {
+          <a routerLink="/decks/nouveau" class="bouton bouton-jeu" i18n>Nouveau deck</a>
+        }
+      </div>
+
+      @if (decks.length === 0) {
+        <p class="text-texte-doux" i18n>
+          Aucun deck pour l’instant : créez-en un, ou partez d’un deck prêté ci-dessous.
+        </p>
+      }
+
+      <ul class="flex flex-col gap-3">
+        @for (b of boites(); track b.deck.id) {
+          <li>
+            <hip-boite-deck [deck]="b.boite" [catalogue]="catalogue.value()" [niveauTitre]="3">
+              <p class="flex flex-wrap gap-2">
+                @if (b.deck.complet) {
+                  <span class="statut statut-victoire" i18n>Prêt à jouer</span>
+                } @else {
+                  <span class="statut statut-attente" i18n>Incomplet</span>
+                }
+              </p>
+              @if (b.deck.liberees > 0) {
+                <!-- prettier-ignore -->
+                <p class="text-sm" i18n>{b.deck.liberees, plural, =1 {Une carte a quitté votre collection : sa place est libre.} other {{{ b.deck.liberees }} cartes ont quitté votre collection : leur place est libre.}}</p>
+              }
+              <div class="flex flex-wrap gap-2">
+                <a
+                  class="bouton bouton-contour bouton-petit"
+                  [routerLink]="['/decks', b.deck.id]"
+                  i18n
+                  >Modifier<span class="sr-only"> {{ b.deck.nom }}</span></a
+                >
+                <button
+                  type="button"
+                  class="bouton bouton-contour bouton-petit"
+                  [disabled]="plein() || enCours() !== null"
+                  (click)="dupliquer(b.deck)"
+                  i18n
+                >
+                  Dupliquer<span class="sr-only"> {{ b.deck.nom }}</span>
+                </button>
+                @if (aConfirmer() === b.deck.id) {
+                  <button
+                    type="button"
+                    class="bouton bouton-danger bouton-petit"
+                    [disabled]="enCours() !== null"
+                    (click)="supprimer(b.deck)"
+                    i18n
+                  >
+                    Confirmer la suppression<span class="sr-only"> de {{ b.deck.nom }}</span>
+                  </button>
+                  <button
+                    type="button"
+                    class="bouton bouton-contour bouton-petit"
+                    (click)="aConfirmer.set(null)"
+                    i18n
+                  >
+                    Garder
+                  </button>
+                } @else {
+                  <button
+                    type="button"
+                    class="bouton bouton-danger bouton-petit"
+                    [disabled]="enCours() !== null"
+                    (click)="aConfirmer.set(b.deck.id)"
+                    i18n
+                  >
+                    Supprimer<span class="sr-only"> {{ b.deck.nom }}</span>
+                  </button>
+                }
+              </div>
+            </hip-boite-deck>
+          </li>
+        }
+      </ul>
+    </section>
+
+    <section aria-labelledby="titre-prets" class="flex flex-col gap-3">
+      <h2 id="titre-prets" class="text-xl font-extrabold" i18n>Partir d’un deck prêté</h2>
+      <p class="text-texte-doux" i18n>
+        La copie ne garde que les cartes de votre collection : complétez-la ensuite avec les vôtres.
+      </p>
+      @if (prets.hasValue()) {
+        <ul class="flex flex-col gap-3">
+          @for (c of copies(); track c.pret.id) {
+            <li>
+              <hip-boite-deck [deck]="c.pret" [catalogue]="catalogue.value()" [niveauTitre]="3">
+                <p class="text-sm" i18n>
+                  Vous possédez {{ c.cartes.length }} de ses {{ c.pret.cartes.length }} cartes.
+                </p>
+                <button
+                  type="button"
+                  class="bouton bouton-contour self-stretch sm:self-end"
+                  [disabled]="plein() || enCours() !== null"
+                  (click)="copier(c.pret, c.cartes)"
+                  i18n
+                >
+                  Copier {{ c.pret.nom }}
+                </button>
+              </hip-boite-deck>
+            </li>
+          }
+        </ul>
+      } @else if (prets.error()) {
+        <hip-erreur-chargement
+          i18n-quoi
+          quoi="Les decks prêtés n’ont pas pu être chargés."
+          [erreur]="prets.error()"
+          [enCours]="prets.isLoading()"
+          (reessayer)="prets.reload()"
+        />
+      } @else {
+        <p i18n>Chargement des decks prêtés…</p>
+      }
+    </section>
+  } @else if (mesDecks.erreur(); as e) {
+    <hip-erreur-chargement
+      i18n-quoi
+      quoi="Vos decks n’ont pas pu être chargés."
+      [erreur]="e"
+      [enCours]="mesDecks.enCours()"
+      (reessayer)="mesDecks.charger()"
+    />
+  } @else {
+    <p i18n>Chargement de vos decks…</p>
+  }
+</main>

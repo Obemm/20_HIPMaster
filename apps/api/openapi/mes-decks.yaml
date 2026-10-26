@@ -1,0 +1,190 @@
+openapi: 3.1.0
+info:
+  title: HIPMaster — mes decks
+  version: 1.0.0
+  description: >
+    Decks du joueur connecté (US-083, ADR 0048) : 5 au plus, composés avec les cartes de sa collection, nommés,
+    modifiables et supprimables ; supprimés avec le compte. Les règles (20 cartes, 2 exemplaires au plus, 1 pour une
+    légendaire) sont vérifiées par le serveur. Un deck de moins de 20 cartes s'enregistre comme brouillon, mais ne sert
+    pas à jouer. Chaque lecture confronte le deck à la collection et au catalogue : un exemplaire disparu libère sa
+    place, et le deck redevient incomplet. Les decks prêtés restent au catalogue (`GET /decks`, parties.yaml).
+    Compte requis (`Authorization: Bearer <jeton>`, voir comptes.yaml) ; aucune réponse en cache (`no-store`).
+servers:
+  - url: /api/v1
+security: [{ jeton: [] }]
+paths:
+  /moi/decks:
+    get:
+      operationId: lireMesDecks
+      summary: Mes decks, du plus ancien au plus récent, et les règles du deck
+      responses:
+        '200':
+          description: Les decks et les règles à rappeler pendant la construction.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [regles, decks]
+                properties:
+                  regles: { $ref: '#/components/schemas/Regles' }
+                  decks:
+                    type: array
+                    maxItems: 5
+                    items: { $ref: '#/components/schemas/Deck' }
+        '401': { $ref: '#/components/responses/Probleme' }
+    post:
+      operationId: creerDeck
+      summary: Enregistre un nouveau deck
+      description: >
+        Dupliquer un deck ou partir d'un deck prêté, c'est créer un deck avec sa composition (limitée aux cartes
+        possédées).
+      requestBody: { $ref: '#/components/requestBodies/Deck' }
+      responses:
+        '201':
+          description: Le deck enregistré.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Deck' }
+        '400': { $ref: '#/components/responses/Probleme' }
+        '401': { $ref: '#/components/responses/Probleme' }
+        '409':
+          description: Déjà 5 decks (`decks-plafond`, Problem Details) ; rien n'est enregistré.
+          content:
+            application/problem+json:
+              schema: { $ref: '#/components/schemas/Probleme' }
+        '422': { $ref: '#/components/responses/DeckInvalide' }
+  /moi/decks/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: { type: string, format: uuid }
+    put:
+      operationId: modifierDeck
+      summary: Remplace le nom et la composition d'un de mes decks
+      requestBody: { $ref: '#/components/requestBodies/Deck' }
+      responses:
+        '200':
+          description: Le deck enregistré.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Deck' }
+        '400': { $ref: '#/components/responses/Probleme' }
+        '401': { $ref: '#/components/responses/Probleme' }
+        '404': { $ref: '#/components/responses/Introuvable' }
+        '422': { $ref: '#/components/responses/DeckInvalide' }
+    delete:
+      operationId: supprimerDeck
+      summary: Supprime un de mes decks
+      responses:
+        '204': { description: Deck supprimé. }
+        '401': { $ref: '#/components/responses/Probleme' }
+        '404': { $ref: '#/components/responses/Introuvable' }
+components:
+  securitySchemes:
+    jeton:
+      type: http
+      scheme: bearer
+  requestBodies:
+    Deck:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [nom, cartes]
+            properties:
+              nom:
+                type: string
+                minLength: 1
+                maxLength: 30
+                description: Espaces de début et de fin retirés.
+                examples: [Tout API]
+              cartes:
+                type: array
+                maxItems: 40
+                description: >
+                  Un numéro de carte par exemplaire (catalogue, cartes.yaml), 20 au plus. Chaque carte doit être
+                  possédée en assez d'exemplaires.
+                items: { type: integer }
+  responses:
+    Probleme:
+      description: Erreur au format Problem Details (RFC 9457).
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Probleme' }
+    Introuvable:
+      description: Aucun deck de ce joueur ne porte cet identifiant (`deck-introuvable`).
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Probleme' }
+    DeckInvalide:
+      description: >
+        Le deck ne respecte pas les règles : `code` est celui du premier problème (`deck-taille`,
+        `deck-carte-inconnue`, `deck-exemplaires`, `deck-carte-non-possedee`) et `problemes` les donne tous. Rien n'est
+        enregistré.
+      content:
+        application/problem+json:
+          schema:
+            allOf:
+              - { $ref: '#/components/schemas/Probleme' }
+              - type: object
+                required: [problemes]
+                properties:
+                  problemes:
+                    type: array
+                    minItems: 1
+                    items: { $ref: '#/components/schemas/ProblemeDeck' }
+  schemas:
+    Regles:
+      type: object
+      required: [taille, exemplairesMax, exemplairesMaxLegendaire, decksMax]
+      properties:
+        taille: { type: integer, examples: [20], description: Cartes d'un deck complet. }
+        exemplairesMax: { type: integer, examples: [2] }
+        exemplairesMaxLegendaire: { type: integer, examples: [1] }
+        decksMax: { type: integer, examples: [5], description: Decks qu'un joueur peut garder. }
+    Deck:
+      type: object
+      required: [id, nom, cartes, complet, liberees, majLe]
+      properties:
+        id: { type: string, format: uuid }
+        nom: { type: string }
+        cartes:
+          type: array
+          description: >
+            Le deck effectif : la composition enregistrée, sans les exemplaires sortis de la collection ou du
+            catalogue.
+          items: { type: integer }
+        complet:
+          type: boolean
+          description: Vrai si le deck compte 20 cartes et respecte les règles ; seul un deck complet sert à jouer.
+        liberees:
+          type: integer
+          minimum: 0
+          description: Places libérées par des cartes disparues depuis le dernier enregistrement.
+        majLe: { type: string, format: date-time }
+    ProblemeDeck:
+      type: object
+      required: [code]
+      properties:
+        code: { type: string, enum: [taille, carte-inconnue, exemplaires, non-possedee] }
+        numero: { type: integer, description: La carte en cause (sauf pour `taille`). }
+        cartes: { type: integer, description: 'Pour `taille` : les cartes du deck.' }
+        nombre: { type: integer, description: Les exemplaires de la carte dans le deck. }
+        max: { type: integer, description: 'Pour `exemplaires` : le maximum permis.' }
+        possedes:
+          type: integer
+          description: 'Pour `non-possedee` : les exemplaires de la collection.'
+    Probleme:
+      type: object
+      required: [type, title, status, code]
+      properties:
+        type: { type: string }
+        title: { type: string }
+        status: { type: integer }
+        code:
+          type: string
+          description: >
+            Code stable de l'erreur (US-082), que le client traduit ; `title` (en français) sert de repli.
+        detail: { type: string }

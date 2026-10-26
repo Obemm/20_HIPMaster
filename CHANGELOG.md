@@ -7,6 +7,12 @@ Toutes les évolutions notables du projet sont consignées ici
 
 ### Ajouté
 
+- Des decks à soi : chaque joueur compose jusqu'à 5 decks avec les cartes de sa collection, les nomme, les modifie,
+  les duplique, les supprime ou part d'un deck prêté (limité aux cartes possédées). L'écran de construction, pensé pour
+  le téléphone, filtre les cartes par famille, rareté et coût, montre la courbe de coût et la répartition par famille,
+  et dit pendant la construction ce qui manque ou dépasse ; le serveur vérifie chaque deck (règles et cartes
+  possédées), garde les decks avec le compte et les supprime avec lui. Une carte sortie de la collection ou du
+  catalogue libère sa place : le deck redevient incomplet et le dit. En français et en anglais (US-083, ADR 0048).
 - Trois nouvelles cartes au set 1, numérotées 72 à 74 : **API First** (sort rare : piochez deux cartes API, puis un
   composant API gagne +1 attaque), **EDA** (sort épique : chacun de vos composants EDA blesse un composant adverse au
   hasard) et **API GraphQL** (composant rare qui pioche une carte par autre composant en jeu, 2 au plus). Chacune a sa

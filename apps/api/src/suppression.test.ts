@@ -5,7 +5,7 @@ import { construireApp } from './app.ts';
 import { ouvrirUnBooster, recompenserVictoire } from './comptes/boosters.ts';
 import { CLE_CODES_DEVELOPPEMENT, connecterParCode, creerJoueur } from './comptes/comptes.ts';
 import { baseDeTest } from './db/base-de-test.ts';
-import { collection, duels, joueurs, parties, recompenses, sessions } from './db/schema.ts';
+import { collection, decks, duels, joueurs, parties, recompenses, sessions } from './db/schema.ts';
 import { COMPTE_SUPPRIME, type DuelVisible, type ResumeDuel } from './duels/duels.ts';
 
 /** Suppression de son compte (US-053, ADR 0031). */
@@ -50,13 +50,15 @@ describe('suppression de son compte', () => {
     expect((await supprimer({})).statusCode).toBe(401);
   });
 
-  it('supprime le compte, ses sessions, sa collection, ses récompenses et ses parties, et rien d’autre', async () => {
+  it('supprime le compte, ses sessions, sa collection, ses récompenses, ses parties et ses decks, et rien d’autre', async () => {
     const ada = await joueur('Ada');
     const bob = await joueur('Bob');
     for (const j of [ada, bob]) {
       await ouvrirUnBooster(ouverte.base, j.id);
       await recompenserVictoire(ouverte.base, randomUUID(), j.id);
       await requete('POST', '/parties', j.entetes, { deck: 'moderne' });
+      // Un deck (US-083) : un brouillon vide suffit.
+      await requete('POST', '/moi/decks', j.entetes, { nom: 'Brouillon', cartes: [] });
     }
     // Bob est aussi connecté sur un autre appareil : il y sera déconnecté.
     const ailleurs = await connecterParCode(ouverte.base, bob.code, CLE_CODES_DEVELOPPEMENT);
@@ -79,6 +81,7 @@ describe('suppression de son compte', () => {
         await ouverte.base.select().from(recompenses).where(eq(recompenses.joueurId, id))
       ).length,
       parties: (await ouverte.base.select().from(parties).where(eq(parties.joueurId, id))).length,
+      decks: (await ouverte.base.select().from(decks).where(eq(decks.joueurId, id))).length,
     });
     expect(await de(bob.id)).toEqual({
       joueurs: 0,
@@ -86,6 +89,7 @@ describe('suppression de son compte', () => {
       collection: 0,
       recompenses: 0,
       parties: 0,
+      decks: 0,
     });
     const chezAda = await de(ada.id);
     expect(chezAda.joueurs).toBe(1);
@@ -93,6 +97,7 @@ describe('suppression de son compte', () => {
     expect(chezAda.collection).toBeGreaterThan(0);
     expect(chezAda.recompenses).toBe(1);
     expect(chezAda.parties).toBe(1);
+    expect(chezAda.decks).toBe(1);
   });
 
   it('un duel en cours se termine par forfait : l’adversaire le voit gagné, au lieu d’une erreur', async () => {

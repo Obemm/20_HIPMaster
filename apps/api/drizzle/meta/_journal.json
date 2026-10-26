@@ -113,6 +113,13 @@
       "when": 1792864266525,
       "tag": "0015_codes_boosters",
       "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "7",
+      "when": 1793038458845,
+      "tag": "0016_decks_joueurs",
+      "breakpoints": true
     }
   ]
 }

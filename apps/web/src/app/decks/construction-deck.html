@@ -1,0 +1,311 @@
+<main class="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 py-6 sm:px-6">
+  <div class="flex flex-col gap-2">
+    <p><a routerLink="/decks" class="lien" i18n>← Mes decks</a></p>
+    <h1 class="titre-page">
+      @if (idDeck()) {
+        <ng-container i18n>Modifier le deck</ng-container>
+      } @else {
+        <ng-container i18n>Nouveau deck</ng-container>
+      }
+    </h1>
+  </div>
+
+  @if (!compte.joueur()) {
+    @if (compte.pret()) {
+      <p i18n>
+        Vos decks se construisent avec votre collection : il faut un compte pour les garder.
+        <a routerLink="/compte" class="lien">Créer un compte</a>
+        en un clic (un pseudo suffit) : 5 boosters vous sont offerts.
+      </p>
+    } @else {
+      <hip-etat-session />
+    }
+  } @else if (existant() === null) {
+    <p role="alert" i18n>
+      Ce deck n’existe pas ou plus. <a routerLink="/decks" class="lien">Retour à mes decks</a>.
+    </p>
+  } @else if (pret()) {
+    <!-- Le compte des cartes et l'enregistrement restent sous le pouce, en haut de l'écran. -->
+    <div
+      class="panneau sticky top-0 z-20 flex flex-col gap-2 p-3"
+      role="group"
+      i18n-aria-label
+      aria-label="Progression du deck"
+    >
+      <div class="flex items-center justify-between gap-3">
+        <p class="font-titre text-lg font-extrabold">
+          <ng-container i18n>{{ cartes().length }} / {{ regles().taille }} cartes</ng-container>
+          @if (complet()) {
+            <span class="statut statut-victoire ml-2" i18n>Prêt à jouer</span>
+          } @else {
+            <span class="statut statut-attente ml-2" i18n>Incomplet</span>
+          }
+        </p>
+        <button
+          type="button"
+          class="bouton bouton-jeu bouton-petit"
+          [disabled]="enregistrement()"
+          (click)="enregistrer()"
+        >
+          @if (enregistrement()) {
+            <ng-container i18n>Enregistrement…</ng-container>
+          } @else {
+            <ng-container i18n>Enregistrer</ng-container>
+          }
+        </button>
+      </div>
+      <div
+        role="progressbar"
+        class="jauge"
+        i18n-aria-label
+        aria-label="Cartes du deck"
+        [attr.aria-valuenow]="cartes().length"
+        aria-valuemin="0"
+        [attr.aria-valuemax]="regles().taille"
+      >
+        <div [style.width.%]="(cartes().length / regles().taille) * 100"></div>
+      </div>
+    </div>
+
+    <p role="status" class="font-semibold empty:hidden">{{ annonce() }}</p>
+    @if (erreur()) {
+      <div role="alert" class="text-alerte">
+        <p>{{ erreur() }}</p>
+        @if (problemes().length) {
+          <ul class="list-disc pl-5">
+            @for (p of problemes(); track $index) {
+              <li>{{ p }}</li>
+            }
+          </ul>
+        }
+      </div>
+    }
+
+    <div class="flex flex-col gap-1">
+      <label for="nom-deck" class="etiquette" i18n>Nom du deck</label>
+      <input
+        id="nom-deck"
+        class="champ"
+        autocomplete="off"
+        [attr.maxlength]="nomMax"
+        [value]="nom()"
+        (input)="saisirNom($event)"
+        i18n-placeholder
+        placeholder="Tout API, Héritage revisité…"
+      />
+    </div>
+
+    <section aria-labelledby="titre-regles" class="panneau flex flex-col gap-2 p-4">
+      <h2 id="titre-regles" class="text-lg font-extrabold" i18n>Les règles du deck</h2>
+      <p class="text-sm text-texte-doux" i18n>
+        {{ regles().taille }} cartes exactement, {{ regles().exemplairesMax }} exemplaires au plus
+        d’une même carte, {{ regles().exemplairesMaxLegendaire }} seul pour une légendaire, et
+        seulement des cartes de votre collection.
+      </p>
+      @if (avertissements().length) {
+        <ul class="flex flex-col gap-1" aria-live="polite">
+          @for (a of avertissements(); track a) {
+            <li class="font-semibold">{{ a }}</li>
+          }
+        </ul>
+      } @else {
+        <p class="font-semibold text-succes" aria-live="polite" i18n>
+          Le deck respecte les règles : il est prêt à jouer.
+        </p>
+      }
+    </section>
+
+    <section aria-labelledby="titre-forme" class="panneau grid gap-4 p-4 sm:grid-cols-2">
+      <h2 id="titre-forme" class="sr-only" i18n>La forme du deck</h2>
+      <div class="flex flex-col gap-2">
+        <h3 class="font-titre font-bold" i18n>Courbe de coût</h3>
+        <ul class="flex h-28 items-end gap-2" i18n-aria-label aria-label="Cartes par coût">
+          @for (c of courbe(); track c.cout) {
+            <li class="flex h-full flex-1 flex-col items-center justify-end gap-1">
+              <span class="sr-only" i18n
+                >Coût {{ c.libelle }} :
+                {c.nombre, plural,
+                  =0 {aucune carte}
+                  =1 {1 carte}
+                  other {{{ c.nombre }} cartes}
+                }</span
+              >
+              <span aria-hidden="true" class="text-xs font-semibold">{{ c.nombre }}</span>
+              <span
+                aria-hidden="true"
+                class="w-full rounded-t-md bg-accent"
+                [style.height.%]="(c.nombre / hauteurCourbe()) * 70"
+              ></span>
+              <span aria-hidden="true" class="flex items-center text-xs text-texte-doux"
+                ><hip-icone nom="debit" class="size-3" />{{ c.libelle }}</span
+              >
+            </li>
+          }
+        </ul>
+      </div>
+      <div class="flex flex-col gap-2">
+        <h3 class="font-titre font-bold" i18n>Familles</h3>
+        @if (repartition().length) {
+          <ul class="flex flex-col gap-1 text-sm">
+            @for (f of repartition(); track f.famille) {
+              <li class="flex items-center gap-2">
+                <hip-icone [nom]="f.famille" class="size-4" />
+                <span class="flex-1">{{ f.libelle }}</span>
+                <span class="font-semibold">{{ f.nombre }}</span>
+              </li>
+            }
+          </ul>
+        } @else {
+          <p class="text-sm text-texte-doux" i18n>Aucune carte pour l’instant.</p>
+        }
+      </div>
+    </section>
+
+    <details class="panneau group p-4" open>
+      <summary class="cursor-pointer font-titre text-lg font-extrabold" i18n>
+        Le deck ({{ cartes().length }})
+      </summary>
+      @if (contenu().length) {
+        <ul class="mt-3 flex flex-col gap-2">
+          @for (l of contenu(); track l.carte.numero) {
+            <li class="flex items-center gap-2">
+              <span class="puce" [class]="'cadre-' + l.carte.rarete"
+                ><hip-icone nom="debit" class="size-3" />{{ l.carte.cout }}</span
+              >
+              <span class="min-w-0 flex-1 leading-tight font-semibold">{{ l.carte.nom }}</span>
+              <span class="font-semibold">× {{ l.nombre }}</span>
+              <button
+                type="button"
+                class="bouton bouton-contour bouton-petit"
+                (click)="retirer(l.carte.numero)"
+              >
+                <span aria-hidden="true" class="text-lg">−</span
+                ><span class="sr-only" i18n>Retirer un exemplaire de {{ l.carte.nom }}</span>
+              </button>
+            </li>
+          }
+        </ul>
+      } @else {
+        <p class="mt-3 text-texte-doux" i18n>
+          Le deck est vide : ajoutez des cartes de votre collection ci-dessous.
+        </p>
+      }
+    </details>
+
+    <section aria-labelledby="titre-mes-cartes" class="flex flex-col gap-3">
+      <h2 id="titre-mes-cartes" class="text-xl font-extrabold" i18n>Mes cartes</h2>
+      <form
+        class="panneau grid grid-cols-3 gap-2 p-3"
+        i18n-aria-label
+        aria-label="Filtrer mes cartes"
+      >
+        <div class="flex flex-col gap-1">
+          <label for="filtre-famille" class="etiquette" i18n>Famille</label>
+          <select id="filtre-famille" class="champ" (change)="choisirFamille($event)">
+            <option value="" i18n>Toutes</option>
+            @for (f of familles; track f[0]) {
+              <option [value]="f[0]">{{ f[1] }}</option>
+            }
+          </select>
+        </div>
+        <div class="flex flex-col gap-1">
+          <label for="filtre-rarete" class="etiquette" i18n>Rareté</label>
+          <select id="filtre-rarete" class="champ" (change)="choisirRarete($event)">
+            <option value="" i18n>Toutes</option>
+            @for (r of raretes; track r[0]) {
+              <option [value]="r[0]">{{ symbolesRarete[r[0]] }} {{ r[1] }}</option>
+            }
+          </select>
+        </div>
+        <div class="flex flex-col gap-1">
+          <label for="filtre-cout" class="etiquette" i18n>Coût</label>
+          <select id="filtre-cout" class="champ" (change)="choisirCout($event)">
+            <option value="0" i18n>Tous</option>
+            @for (c of couts; track c) {
+              <option [value]="c">{{ c === coutMax ? c + '+' : c }}</option>
+            }
+          </select>
+        </div>
+      </form>
+
+      <p role="status" class="font-semibold" i18n>
+        {disponibles().length, plural,
+          =0 {Aucune carte de votre collection ne correspond à ces filtres.}
+          =1 {1 carte de votre collection}
+          other {{{ disponibles().length }} cartes de votre collection}
+        }
+      </p>
+
+      <ul class="flex flex-col gap-2">
+        @for (d of disponibles(); track d.carte.numero) {
+          <li
+            class="flex items-center gap-2 rounded-xl border-2 border-cadre bg-fond-carte p-2"
+            [class]="'cadre-' + d.carte.rarete"
+          >
+            <span class="puce"><hip-icone nom="debit" class="size-3" />{{ d.carte.cout }}</span>
+            <div class="min-w-0 flex-1">
+              <p class="leading-tight font-semibold">{{ d.carte.nom }}</p>
+              <p class="text-xs text-texte-doux">
+                {{ symbolesRarete[d.carte.rarete] }} {{ libellesRarete[d.carte.rarete] }} ·
+                {{ libellesFamille[d.carte.famille] }}
+              </p>
+              <p class="text-xs" i18n>
+                Dans le deck : <strong>{{ d.dansDeck }} / {{ d.max }}</strong> ·
+                {{ d.enCollection }} en collection
+              </p>
+            </div>
+            <button
+              type="button"
+              class="bouton bouton-contour bouton-petit"
+              [disabled]="d.dansDeck === 0"
+              (click)="retirer(d.carte.numero)"
+            >
+              <span aria-hidden="true" class="text-lg">−</span
+              ><span class="sr-only" i18n>Retirer un exemplaire de {{ d.carte.nom }}</span>
+            </button>
+            <button
+              type="button"
+              class="bouton bouton-plein bouton-petit"
+              [disabled]="!d.peutAjouter"
+              (click)="ajouter(d.carte.numero)"
+            >
+              <span aria-hidden="true" class="text-lg">+</span
+              ><span class="sr-only" i18n>Ajouter un exemplaire de {{ d.carte.nom }}</span>
+            </button>
+          </li>
+        }
+      </ul>
+      @if (collection.exemplaires()?.size === 0) {
+        <p i18n>
+          Votre collection est vide : <a routerLink="/boosters" class="lien">ouvrez un booster</a>.
+        </p>
+      }
+    </section>
+  } @else if (catalogue.error(); as e) {
+    <hip-erreur-chargement
+      i18n-quoi
+      quoi="Le catalogue n’a pas pu être chargé."
+      [erreur]="e"
+      [enCours]="catalogue.isLoading()"
+      (reessayer)="catalogue.reload()"
+    />
+  } @else if (collection.erreur() && !collection.exemplaires()) {
+    <hip-erreur-chargement
+      i18n-quoi
+      quoi="La collection n’a pas pu être chargée."
+      [erreur]="collection.erreur()"
+      [enCours]="collection.enCours()"
+      (reessayer)="collection.charger()"
+    />
+  } @else if (mesDecks.erreur() && !mesDecks.decks()) {
+    <hip-erreur-chargement
+      i18n-quoi
+      quoi="Vos decks n’ont pas pu être chargés."
+      [erreur]="mesDecks.erreur()"
+      [enCours]="mesDecks.enCours()"
+      (reessayer)="mesDecks.charger()"
+    />
+  } @else {
+    <p i18n>Chargement…</p>
+  }
+</main>

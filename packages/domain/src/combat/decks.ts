@@ -12,24 +12,95 @@ export interface DeckPrete {
   cartes: readonly number[];
 }
 
-/** Vérifie un deck ; renvoie la liste des problèmes (vide si le deck est valide). */
-export function validerDeck(cartes: readonly number[]): string[] {
-  const problemes: string[] = [];
-  if (cartes.length !== TAILLE_DECK) {
-    problemes.push(`Un deck compte ${TAILLE_DECK} cartes (celui-ci en a ${cartes.length}).`);
-  }
+/** Decks qu'un joueur peut garder (US-083, ADR 0048, décision du porteur du projet du 2026-10-26). */
+export const DECKS_MAX = 5;
+
+/**
+ * Un problème d'un deck, par code stable (US-083, ADR 0048) : l'API le renvoie, le front le traduit. `taille` donne le
+ * nombre de cartes du deck ; `exemplaires`, le nombre d'exemplaires et le maximum permis ; `non-possedee`, le nombre
+ * d'exemplaires du deck et ceux de la collection.
+ */
+export type ProblemeDeck =
+  | { code: 'taille'; cartes: number }
+  | { code: 'carte-inconnue'; numero: number }
+  | { code: 'exemplaires'; numero: number; nombre: number; max: number }
+  | { code: 'non-possedee'; numero: number; nombre: number; possedes: number };
+
+/** Les exemplaires d'une même carte permis dans un deck : 1 pour une légendaire, 2 sinon. */
+export function exemplairesMax(numero: number): number {
+  return trouverCarte(numero)?.rarete === 'legendaire'
+    ? EXEMPLAIRES_MAX_LEGENDAIRE
+    : EXEMPLAIRES_MAX;
+}
+
+/** Le nombre d'exemplaires de chaque carte d'un deck, dans l'ordre de première apparition. */
+function compter(cartes: readonly number[]): Map<number, number> {
   const exemplaires = new Map<number, number>();
   for (const numero of cartes) exemplaires.set(numero, (exemplaires.get(numero) ?? 0) + 1);
-  for (const [numero, nombre] of exemplaires) {
-    const carte = trouverCarte(numero);
-    if (!carte) {
-      problemes.push(`La carte n° ${numero} n’existe pas.`);
+  return exemplaires;
+}
+
+/**
+ * Les problèmes d'un deck (vide s'il est valide). Avec une collection (`possedes` : exemplaires par numéro), chaque
+ * carte doit aussi y figurer en assez d'exemplaires (US-083). `incompletPermis` accepte un deck de moins de
+ * 20 cartes : un brouillon s'enregistre, mais ne sert pas à jouer (ADR 0048).
+ */
+export function problemesDeck(
+  cartes: readonly number[],
+  possedes?: ReadonlyMap<number, number>,
+  { incompletPermis = false }: { incompletPermis?: boolean } = {},
+): ProblemeDeck[] {
+  const problemes: ProblemeDeck[] = [];
+  if (cartes.length > TAILLE_DECK || (cartes.length < TAILLE_DECK && !incompletPermis)) {
+    problemes.push({ code: 'taille', cartes: cartes.length });
+  }
+  for (const [numero, nombre] of compter(cartes)) {
+    if (!trouverCarte(numero)) {
+      problemes.push({ code: 'carte-inconnue', numero });
       continue;
     }
-    const max = carte.rarete === 'legendaire' ? EXEMPLAIRES_MAX_LEGENDAIRE : EXEMPLAIRES_MAX;
-    if (nombre > max) problemes.push(`${carte.nom} : ${nombre} exemplaires, ${max} au plus.`);
+    const max = exemplairesMax(numero);
+    if (nombre > max) problemes.push({ code: 'exemplaires', numero, nombre, max });
+    const enCollection = possedes?.get(numero) ?? 0;
+    if (possedes && nombre > enCollection) {
+      problemes.push({ code: 'non-possedee', numero, nombre, possedes: enCollection });
+    }
   }
   return problemes;
+}
+
+/** Vérifie un deck ; renvoie la liste des problèmes en français (vide si le deck est valide). */
+export function validerDeck(cartes: readonly number[]): string[] {
+  return problemesDeck(cartes).map((probleme) => {
+    switch (probleme.code) {
+      case 'taille':
+        return `Un deck compte ${TAILLE_DECK} cartes (celui-ci en a ${probleme.cartes}).`;
+      case 'carte-inconnue':
+        return `La carte n° ${probleme.numero} n’existe pas.`;
+      case 'exemplaires':
+        return `${trouverCarte(probleme.numero)?.nom ?? probleme.numero} : ${probleme.nombre} exemplaires, ${probleme.max} au plus.`;
+      case 'non-possedee':
+        return `${trouverCarte(probleme.numero)?.nom ?? probleme.numero} : ${probleme.nombre} exemplaires, ${probleme.possedes} en collection.`;
+    }
+  });
+}
+
+/**
+ * Le deck effectif d'un joueur (US-083, ADR 0048) : la composition enregistrée, sans les exemplaires qui ont disparu
+ * de sa collection ou du catalogue. Leur place se libère : le deck redevient incomplet. L'ordre est conservé.
+ */
+export function libererPlaces(
+  cartes: readonly number[],
+  possedes: ReadonlyMap<number, number>,
+): { cartes: number[]; liberees: number } {
+  const gardes = new Map<number, number>();
+  const effectif = cartes.filter((numero) => {
+    const deja = gardes.get(numero) ?? 0;
+    if (!trouverCarte(numero) || deja >= (possedes.get(numero) ?? 0)) return false;
+    gardes.set(numero, deja + 1);
+    return true;
+  });
+  return { cartes: effectif, liberees: cartes.length - effectif.length };
 }
 
 /** Écrit un deck sous la forme « numéro × nombre » pour rester lisible. */

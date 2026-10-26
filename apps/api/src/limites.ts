@@ -39,6 +39,8 @@ export const LIMITES_DEBIT = {
    * l'adresse de son bureau.
    */
   codeBoosters: { max: 60, fenetreMs: HEURE },
+  /** `POST`, `PUT` et `DELETE` de `/moi/decks` (US-083) : chaque enregistrement lit la collection. */
+  ecritureDeck: { max: 120, fenetreMs: MINUTE },
   /** Routes d'administration (US-072, ADR 0029), comptées une fois l'administrateur reconnu. */
   administration: { max: 60, fenetreMs: MINUTE },
   /** `POST /erreurs` : erreurs JavaScript des navigateurs (US-051), que le front plafonne déjà à 5 par page. */

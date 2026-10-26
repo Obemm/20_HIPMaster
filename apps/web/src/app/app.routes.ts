@@ -45,6 +45,19 @@ export const routes: Routes = [
       },
     ],
   },
+  // Mes decks (US-083) : la liste, puis l'écran de construction d'un nouveau deck ou d'un deck existant.
+  {
+    path: 'decks',
+    loadComponent: () => import('./decks/mes-decks').then((m) => m.MesDecksEcran),
+    title: $localize`Mes decks — HIPMaster`,
+  },
+  // `nouveau` pour un deck à créer : une seule route, pour que l'écran reste en place quand il passe à l'adresse du
+  // deck qu'il vient d'enregistrer.
+  {
+    path: 'decks/:id',
+    loadComponent: () => import('./decks/construction-deck').then((m) => m.ConstructionDeck),
+    title: $localize`Construire un deck — HIPMaster`,
+  },
   {
     path: 'duels',
     loadComponent: () => import('./duels/mes-duels').then((m) => m.MesDuels),

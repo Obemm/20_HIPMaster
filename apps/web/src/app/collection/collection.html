@@ -2,6 +2,9 @@
   <div class="flex flex-col gap-2">
     <p class="surtitre" i18n>Set 1 · De FTP aux agents</p>
     <h1 class="titre-page" i18n>Ma collection</h1>
+    @if (compte.joueur()) {
+      <p><a routerLink="/decks" class="lien" i18n>Construire mes decks avec ces cartes</a></p>
+    }
   </div>
 
   @if (!compte.joueur()) {

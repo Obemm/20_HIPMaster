@@ -26,6 +26,7 @@ import { routesErreurs } from './routes/erreurs.ts';
 import { routesCartes } from './routes/cartes.ts';
 import { routesClassement } from './routes/classement.ts';
 import { routesComptes } from './routes/comptes.ts';
+import { routesDecks } from './routes/decks.ts';
 import { routesParties } from './routes/parties.ts';
 import { routesRaretes } from './routes/raretes.ts';
 import { routesSante } from './routes/sante.ts';
@@ -196,6 +197,8 @@ export function construireApp(
       ...avecLimites,
     });
     app.register(routesCollection, { prefix: '/api/v1', base: options.base });
+    // Mes decks (US-083, ADR 0048).
+    app.register(routesDecks, { prefix: '/api/v1', base: options.base, ...avecLimites });
     app.register(routesDuels, {
       prefix: '/api/v1',
       base: options.base,
