@@ -47,7 +47,7 @@ npm run dev          # migrations appliquées au démarrage ; API sur localhost:
 | `npm run db:studio`                 | Explore la base PostgreSQL (`DATABASE_URL`) dans le navigateur        |
 | `npm run invitation`                | Crée, liste ou révoque les invitations (PostgreSQL, voir `--aide`)    |
 | `npm run illustrations`             | Décline les illustrations des cartes (voir `packages/illustrations`)  |
-| `npm run illustrations:provisoires` | Dessine les illustrations provisoires des 71 cartes, puis les décline |
+| `npm run illustrations:provisoires` | Dessine les illustrations provisoires des 74 cartes, puis les décline |
 
 Les tests de l'API tournent sur PGlite, qui exécute les requêtes une par une. La CI les fait aussi passer sur
 PostgreSQL 18, où les opérations simultanées se chevauchent vraiment (US-056) ; en local, avec Docker :

@@ -145,4 +145,36 @@ export const FICHES_API_EN: Readonly<Record<number, Fiche>> = {
       { titre: 'Standard Webhooks', url: 'https://www.standardwebhooks.com/', langue: 'en' },
     ],
   },
+  72: {
+    definition:
+      'An approach that designs an API’s contract (often in OpenAPI) before writing the code, and treats the API as a product in its own right.',
+    usage:
+      'The contract is discussed and agreed with consumers, then serves as the shared reference: the provider codes the API, consumers build against a mock derived from the contract, and documentation and tests follow from it.',
+    exemple:
+      'For a “delivery rounds” API, the team first writes the OpenAPI specification with the mobile app team; while the service is being coded, the app moves forward against a mock server built from the same contract.',
+    aRetenir:
+      'The contract is the reference: the code follows the specification, not the other way round. A specification generated afterwards from the code is just well-documented “code first”.',
+    liens: [
+      {
+        titre: 'Understanding the API-First Approach (Swagger)',
+        url: 'https://swagger.io/blog/understanding-the-api-first-approach-to-building-products/',
+        langue: 'en',
+      },
+      { titre: 'Learn OpenAPI', url: 'https://learn.openapis.org/', langue: 'en' },
+    ],
+  },
+  74: {
+    definition:
+      'A query language for APIs, open-sourced by Facebook in 2015: the client sends a single endpoint a query that describes exactly the data it wants, following a typed schema.',
+    usage:
+      'Serving varied screens (mobile, web) without multiplying calls: one query gathers data from several sources, and the response has the shape of the query, nothing more, nothing less.',
+    exemple:
+      'A customer page shows their contracts, latest deliveries and invoices: a single GraphQL query instead of three REST calls, each field being supplied by the service that owns it.',
+    aRetenir:
+      'Client flexibility is paid for on the server: limit query depth and cost, avoid cascading calls (the N+1 problem); HTTP caching is also less straightforward than with REST.',
+    liens: [
+      { titre: 'GraphQL', url: 'https://en.wikipedia.org/wiki/GraphQL', langue: 'en' },
+      { titre: 'Learn GraphQL', url: 'https://graphql.org/learn/', langue: 'en' },
+    ],
+  },
 };

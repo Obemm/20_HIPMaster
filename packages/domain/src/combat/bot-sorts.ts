@@ -47,6 +47,11 @@ const SCORES: Record<number, (l: Lecture, jeu: Jeu) => number> = {
   },
   57: (l) => (l.vue.moi.plateau.some((c) => c.doublon) ? 60 : 20),
   58: (l) => (l.allie && l.allie.attaque >= 3 && l.allie.pv > 1 ? 30 + l.allie.attaque : 0),
+  72: (l) => (l.allie ? 35 : 25),
+  73: (l) => {
+    const abonnes = l.vue.moi.plateau.filter((c) => carteDe(c.numero).famille === 'eda').length;
+    return l.vue.adversaire.plateau.length > 0 ? abonnes * 20 : 0;
+  },
   // Incidents
   59: (_l, jeu) => (jeu.cibles[1] === 'si' ? 50 : 30),
   60: (l) => (l.adverse?.numero === 1 ? 90 : scoreDegats(l.adverse, 2)),

@@ -41,12 +41,12 @@ describe('ouvrirBooster', () => {
     }
   });
 
-  it('donne chaque carte du set 1 sur un grand nombre de boosters', () => {
+  it('donne chaque carte du set 1, extension d’US-077 comprise, sur un grand nombre de boosters', () => {
     const aleatoire = hasard(7);
     const vues = new Set<number>();
     for (let i = 0; i < 20_000; i++)
       for (const numero of ouvrirBooster(aleatoire)) vues.add(numero);
-    expect(vues.size).toBe(71);
+    expect(vues.size).toBe(74);
   });
 });
 

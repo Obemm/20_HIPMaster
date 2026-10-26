@@ -7,6 +7,9 @@ import type { ComposantEnJeu, EtatPartie, IdJoueur } from './types.ts';
 /** Effets propres des composants (US-019), déclenchés à la pose ou valables tant que la carte est en jeu. */
 
 const CDC = 34;
+const API_GRAPHQL = 74;
+/** Au plus 2 cartes piochées par API GraphQL. */
+const PIOCHE_GRAPHQL_MAX = 2;
 const BASE_VECTORIELLE = 49;
 
 /** Pose : piochez la première carte de ces familles dans votre pioche (Designer, API Hub, Event Portal). */
@@ -33,7 +36,11 @@ export function ciblesDeRenfort(etat: EtatPartie, joueur: IdJoueur, numero: numb
     .map((c) => c.id);
 }
 
-function piocherFamille(etat: EtatPartie, joueur: IdJoueur, familles: readonly Famille[]): void {
+export function piocherFamille(
+  etat: EtatPartie,
+  joueur: IdJoueur,
+  familles: readonly Famille[],
+): void {
   const pioche = etat.joueurs[joueur].pioche;
   const index = pioche.findIndex((c) => familles.includes(carteDe(c.numero).famille));
   const [carte] = index >= 0 ? pioche.splice(index, 1) : [];
@@ -63,6 +70,10 @@ export function effetsALaPose(
   if (pose.numero === CDC) {
     const fichiers = plateau.filter((c) => carteDe(c.numero).famille === 'fichiers').length;
     piocher(etat, joueur, fichiers);
+  }
+
+  if (pose.numero === API_GRAPHQL) {
+    piocher(etat, joueur, Math.min(plateau.length - 1, PIOCHE_GRAPHQL_MAX));
   }
 
   // Base vectorielle : vos agents ont +1 PV, à sa pose comme pour les agents posés ensuite.

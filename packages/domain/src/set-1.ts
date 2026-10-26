@@ -879,6 +879,47 @@ export const SET_1: readonly Carte[] = [
     effet: 'L’adversaire a 2 Débit de moins à son prochain tour.',
     enVrai: 'Chaque appel au modèle se paie au nombre de tokens.',
   },
+  // Extension (US-077) : trois cartes ajoutées après la publication, numérotées à la suite (ADR 0011)
+  {
+    numero: 72,
+    nom: 'API First',
+    famille: 'api',
+    type: 'sort',
+    rarete: 'rare',
+    cout: 3,
+    capacites: [],
+    effet:
+      'Piochez les deux premières cartes API de votre pioche, puis un de vos composants API gagne +1 attaque.',
+    enVrai:
+      'Concevoir le contrat de l’API avant le code : fournisseur et consommateurs avancent en parallèle.',
+  },
+  {
+    numero: 73,
+    nom: 'EDA',
+    famille: 'eda',
+    type: 'sort',
+    rarete: 'epique',
+    cout: 3,
+    capacites: [],
+    effet: 'Chacun de vos composants EDA inflige 1 dégât à un composant adverse tiré au hasard.',
+    enVrai:
+      'Architecture pilotée par les événements : un fait est publié, chaque abonné y réagit sans attendre les autres.',
+  },
+  {
+    numero: 74,
+    nom: 'API GraphQL',
+    famille: 'api',
+    type: 'composant',
+    rarete: 'rare',
+    cout: 3,
+    attaque: 2,
+    pv: 3,
+    capacites: [],
+    effet:
+      'Quand elle est posée, piochez une carte par autre composant en jeu chez vous (2 au plus).',
+    enVrai:
+      'Un seul point d’entrée : le client demande exactement les champs voulus, en une requête sur plusieurs sources.',
+  },
 ];
 
 /** Retrouve une carte du set 1 par son numéro. */

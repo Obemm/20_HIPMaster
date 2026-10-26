@@ -9,19 +9,19 @@ const compter = <T extends string>(valeurs: readonly T[]) =>
   ) as Record<T, number>;
 
 describe('set 1', () => {
-  it('numérote les 71 cartes de 1 à 71, sans trou ni doublon', () => {
-    expect(SET_1.map((carte) => carte.numero)).toEqual(Array.from({ length: 71 }, (_, i) => i + 1));
+  it('numérote les 74 cartes de 1 à 74, sans trou ni doublon (72 à 74 : extension d’US-077)', () => {
+    expect(SET_1.map((carte) => carte.numero)).toEqual(Array.from({ length: 74 }, (_, i) => i + 1));
   });
 
   it('ne donne jamais deux fois le même nom', () => {
     expect(new Set(SET_1.map((carte) => carte.nom)).size).toBe(SET_1.length);
   });
 
-  it('compte 4 légendaires, 6 épiques, 25 rares et 36 communes', () => {
+  it('compte 4 légendaires, 7 épiques, 27 rares et 36 communes', () => {
     expect(compter(SET_1.map((carte) => carte.rarete))).toEqual({
       legendaire: 4,
-      epique: 6,
-      rare: 25,
+      epique: 7,
+      rare: 27,
       commune: 36,
     });
   });
@@ -93,6 +93,6 @@ describe('detaillerCapacites', () => {
 describe('trouverCarte', () => {
   it('ne trouve rien pour un numéro inconnu', () => {
     expect(trouverCarte(0)).toBeUndefined();
-    expect(trouverCarte(72)).toBeUndefined();
+    expect(trouverCarte(75)).toBeUndefined();
   });
 });

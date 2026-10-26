@@ -77,6 +77,9 @@ export const ILLUSTRATIONS_SET_1: Readonly<Record<'fr' | 'en', TextesAlternatifs
     69: "Un sac de toile bourré de parchemins qui en perd par le fond, sur le pont d'un vieux voilier la nuit",
     70: "Deux petits renards qui se poursuivent sans fin dans un anneau lumineux, au centre d'un labyrinthe de haies",
     71: 'Un cochon-tirelire monstrueux qui engloutit des pièces lumineuses et recrache un long ticket, dans une salle des coffres',
+    72: 'Un tisserin perché dans la fourche d’un arbre au-dessus d’une rivière déploie le plan lumineux d’un nid, que deux petits groupes de tisserins tissent chacun par une moitié',
+    73: 'Un loup hurle sur un rocher sous un croissant de lune, son cri part en ondes violettes à travers la vallée et les loups des crêtes voisines y réagissent',
+    74: 'Un tamanoir étire sa longue langue lumineuse vers trois buissons différents d’un jardin en terrasses et réunit leurs baies dans une seule assiette',
   },
   en: {
     1: 'An old mechanical pelican gliding above stacks of cardboard boxes, its beak pouch wide open and full of folders, an open padlock dangling',
@@ -150,6 +153,9 @@ export const ILLUSTRATIONS_SET_1: Readonly<Record<'fr' | 'en', TextesAlternatifs
     69: 'A canvas sack stuffed with scrolls losing them through its bottom, on the deck of an old sailing ship at night',
     70: 'Two small foxes chasing each other endlessly in a glowing ring, at the centre of a hedge maze',
     71: 'A monstrous piggy bank swallowing glowing coins and spitting out a long receipt, in a vault room',
+    72: 'A weaver bird perched in the fork of a tree above a river spreads the glowing blueprint of a nest, while two small groups of weaver birds each weave one half of it',
+    73: 'A wolf howls from a rock under a crescent moon, its call spreading as violet waves across the valley while the wolves on the nearby ridges react to it',
+    74: 'An anteater stretches its long glowing tongue towards three different bushes in a terraced garden and gathers their berries on a single plate',
   },
 };
 
@@ -441,5 +447,17 @@ export const FICHIERS_SET_1: Readonly<Record<number, Fichiers>> = {
   71: {
     avif: { 320: '71-320.f787f10b.avif', 640: '71-640.a6235582.avif' },
     webp: { 320: '71-320.bd44ca7e.webp', 640: '71-640.c439402c.webp' },
+  },
+  72: {
+    avif: { 320: '72-320.f385bb07.avif', 640: '72-640.d61a0e40.avif' },
+    webp: { 320: '72-320.d57f7d96.webp', 640: '72-640.9b1058fe.webp' },
+  },
+  73: {
+    avif: { 320: '73-320.fd45ddd3.avif', 640: '73-640.ed60963c.avif' },
+    webp: { 320: '73-320.6ec3e414.webp', 640: '73-640.689424c4.webp' },
+  },
+  74: {
+    avif: { 320: '74-320.ef072ce6.avif', 640: '74-640.06a0304b.avif' },
+    webp: { 320: '74-320.5f9627f4.webp', 640: '74-640.cd4f4597.webp' },
   },
 };

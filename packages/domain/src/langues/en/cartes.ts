@@ -1,7 +1,7 @@
 import type { TexteCarte } from '../textes.ts';
 
 /**
- * Les textes des 71 cartes du set 1 en anglais britannique (US-081), par numéro de carte. Traduction de `set-1.ts`,
+ * Les textes des 74 cartes du set 1 en anglais britannique (US-081), par numéro de carte. Traduction de `set-1.ts`,
  * qui fait foi, selon le glossaire de l'EPIC-14 : SI → System, Débit → Throughput, PV → HP, poser → deploy,
  * « adverse » → « opposing ». Les noms de produits ne se traduisent pas. Un effet n'existe que si la carte française
  * en a un, avec les mêmes valeurs chiffrées.
@@ -416,5 +416,28 @@ export const TEXTES_CARTES_EN: Readonly<Record<number, TexteCarte>> = {
     nom: 'Token bill',
     effet: 'Your opponent has 2 less Throughput on their next turn.',
     enVrai: 'Every call to the model is billed by the token.',
+  },
+  // Extension (US-077)
+  // 72 — API First
+  72: {
+    nom: 'API First',
+    effet:
+      'Draw the first two API cards from your deck, then one of your API components gains +1 attack.',
+    enVrai:
+      'Designing the API contract before the code: provider and consumers move forward in parallel.',
+  },
+  // 73 — EDA
+  73: {
+    nom: 'EDA',
+    effet: 'Each of your EDA components deals 1 damage to a random opposing component.',
+    enVrai:
+      'Event-driven architecture: a fact is published, and each subscriber reacts to it without waiting for the others.',
+  },
+  // 74 — API GraphQL
+  74: {
+    nom: 'GraphQL API',
+    effet: 'When deployed, draw one card for each other component you have in play (2 at most).',
+    enVrai:
+      'A single endpoint: the client asks for exactly the fields it needs, in one query across several sources.',
   },
 };

@@ -39,15 +39,16 @@ const idCapacite = (capacite: CapaciteCarte): IdCapacite =>
 /** Sorts et incidents dont l'effet est appliqué (US-014) : voir `EFFETS` dans effets.ts. */
 export const SORTS_ET_INCIDENTS_PRIS_EN_CHARGE: ReadonlySet<number> = new Set([
   21, 30, 47, 48, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70,
-  71,
+  71, 72, 73,
 ]);
 
 /**
  * Composants dont l'effet propre est appliqué : les parades d'US-014 (Fichier .ok témoin, OAuth2) et les effets
- * d'US-019 (Cron, Designer, API Hub, OpenAPI, Event Portal, CDC, AsyncAPI, Base vectorielle).
+ * d'US-019 (Cron, Designer, API Hub, OpenAPI, Event Portal, CDC, AsyncAPI, Base vectorielle) et API GraphQL
+ * (US-077).
  */
 export const COMPOSANTS_A_EFFET: ReadonlySet<number> = new Set([
-  6, 8, 14, 19, 20, 23, 32, 34, 38, 39, 49,
+  6, 8, 14, 19, 20, 23, 32, 34, 38, 39, 49, 74,
 ]);
 
 /** Une carte est jouable entièrement : ses capacités et son effet éventuel sont tous appliqués par le moteur. */

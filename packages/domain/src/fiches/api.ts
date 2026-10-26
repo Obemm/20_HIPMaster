@@ -149,4 +149,36 @@ export const FICHES_API: Readonly<Record<number, Fiche>> = {
       { titre: 'Standard Webhooks', url: 'https://www.standardwebhooks.com/', langue: 'en' },
     ],
   },
+  72: {
+    definition:
+      'Une démarche qui conçoit le contrat d’une API (souvent en OpenAPI) avant d’écrire le code, et traite l’API comme un produit à part entière.',
+    usage:
+      'Le contrat est discuté et validé avec les consommateurs, puis sert de référence commune : le fournisseur code l’API, les consommateurs développent contre un bouchon tiré du contrat, documentation et tests en découlent.',
+    exemple:
+      'Pour une API « tournées », l’équipe rédige d’abord la spécification OpenAPI avec l’équipe de l’application mobile ; pendant que le service se code, l’application avance contre un serveur fictif tiré du même contrat.',
+    aRetenir:
+      'Le contrat fait foi : le code suit la spécification, pas l’inverse. Une spécification générée après coup à partir du code, c’est du « code first » bien documenté.',
+    liens: [
+      {
+        titre: 'Comprendre l’approche API First (Swagger)',
+        url: 'https://swagger.io/blog/understanding-the-api-first-approach-to-building-products/',
+        langue: 'en',
+      },
+      { titre: 'Apprendre OpenAPI', url: 'https://learn.openapis.org/', langue: 'en' },
+    ],
+  },
+  74: {
+    definition:
+      'Un langage de requête pour les API, ouvert par Facebook en 2015 : le client envoie à un point d’entrée unique une requête qui décrit exactement les données voulues, selon un schéma typé.',
+    usage:
+      'Servir des écrans variés (mobile, web) sans multiplier les appels : une requête rassemble des données de plusieurs sources, et la réponse a la forme de la requête, ni plus ni moins.',
+    exemple:
+      'La fiche d’un client affiche ses contrats, ses dernières livraisons et ses factures : une seule requête GraphQL au lieu de trois appels REST, chaque champ étant fourni par le service qui le possède.',
+    aRetenir:
+      'La souplesse du client se paie côté serveur : limiter la profondeur et le coût des requêtes, éviter les appels en cascade (le problème N+1) ; le cache HTTP est aussi moins simple qu’en REST.',
+    liens: [
+      { titre: 'GraphQL', url: 'https://fr.wikipedia.org/wiki/GraphQL', langue: 'fr' },
+      { titre: 'Apprendre GraphQL', url: 'https://graphql.org/learn/', langue: 'en' },
+    ],
+  },
 };

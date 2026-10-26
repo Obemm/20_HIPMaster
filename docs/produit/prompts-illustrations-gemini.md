@@ -1,6 +1,6 @@
 # Prompts d'illustration pour Gemini — set 1
 
-Une **créature à elle** pour chacune des 71 cartes (US-017), générée par Gemini (application web). Le fichier est
+Une **créature à elle** pour chacune des 74 cartes (US-017, puis US-077 pour les cartes 72 à 74), générée par Gemini (application web). Le fichier est
 produit à partir du catalogue (`packages/domain/src/set-1.ts`) et de la
 [direction artistique](direction-artistique.md) ; les prompts sont en anglais, la langue que les générateurs suivent le
 mieux.
@@ -767,4 +767,36 @@ Bestiaire · incident · Commune
 
 ```text
 Generate a new image. From the reference image, keep ONLY the rendering style: line quality, soft cel shading, lighting and dark navy background treatment. Do NOT reuse its character, pose or composition: no robot standing in a doorway, no circular halo behind it, no frontal symmetric framing. Invent a creature with a clearly different body shape, size and pose, built from its own motifs, in a dynamic three-quarter view, in its own small scene. Do NOT reuse its setting either: no cable-covered floor, no punched tapes hanging on the sides, no server racks framing the picture; give the scene its own place and camera angle, drawn from the subject. Subject: a monstrous hungry piggy bank gulping down glowing coins, an endless blank receipt ribbon spilling from its mouth. It embodies "Facture de tokens" (enterprise integration, Bestiaire). What it means (French, for context only): « Chaque appel au modèle se paie au nombre de tokens. ». Rarity: common card: sober, minimal light effects. Digital illustration for a collectible card game, landscape 4:3, one single main creature readable at small size, clean bold shapes, soft cel shading, dark navy blue background with a subtle crimson glow, limited palette dominated by red and dark pink, motifs: cracks, smoke, menacing creatures. Strictly no text, no letters, no numbers, no logos, no brand marks, no watermark, no real people.
+```
+
+## Extension du set 1 (US-077)
+
+### 72 — API First
+
+API · sort · Rare
+
+**Créature** : un tisserin architecte qui tend d'abord, entre deux branches, le plan lumineux de son nid ; de part et d'autre, deux petites équipes de tisserins en tissent chacune une moitié en même temps.
+
+```text
+Generate a new image. From the reference image, keep ONLY the rendering style: line quality, soft cel shading, lighting and dark navy background treatment. Do NOT reuse its character, pose or composition: no robot standing in a doorway, no circular halo behind it, no frontal symmetric framing. Invent a creature with a clearly different body shape, size and pose, built from its own motifs, in a dynamic three-quarter view, in its own small scene. Do NOT reuse its setting either: no cable-covered floor, no punched tapes hanging on the sides, no server racks framing the picture; give the scene its own place and camera angle, drawn from the subject. Subject: a weaver bird architect stretching, between two branches, the glowing blueprint of its future nest before anything is built; on each side of the blueprint, two small teams of weaver birds weave one half of the nest each, at the same time, following the plan. It embodies "API First" (enterprise integration, API). What it means (French, for context only): « Concevoir le contrat de l’API avant le code : fournisseur et consommateurs avancent en parallèle. ». Rarity: rare card: a few subtle glints and light effects. Digital illustration for a collectible card game, landscape 4:3, one single main creature readable at small size, clean bold shapes, soft cel shading, dark navy blue background with a subtle emerald glow, limited palette dominated by emerald and dark green, motifs: gates, ramparts, access badges. Strictly no text, no letters, no numbers, no logos, no brand marks, no watermark, no real people.
+```
+
+### 73 — EDA
+
+Événementiel (EDA) · sort · Épique
+
+**Créature** : un loup sur un rocher qui lance un hurlement en ondes violettes ; sur les crêtes alentour, d'autres loups dressent l'oreille et réagissent chacun à sa façon.
+
+```text
+Generate a new image. From the reference image, keep ONLY the rendering style: line quality, soft cel shading, lighting and dark navy background treatment. Do NOT reuse its character, pose or composition: no robot standing in a doorway, no circular halo behind it, no frontal symmetric framing. Invent a creature with a clearly different body shape, size and pose, built from its own motifs, in a dynamic three-quarter view, in its own small scene. Do NOT reuse its setting either: no cable-covered floor, no punched tapes hanging on the sides, no server racks framing the picture; give the scene its own place and camera angle, drawn from the subject. Subject: a wolf standing on a rock under the night sky, howling a call that spreads as violet waves; on the surrounding ridges, several other wolves prick up their ears and each reacts in its own way (one runs off, one howls back, one turns towards a valley). It embodies "EDA" (enterprise integration, Événementiel (EDA)). What it means (French, for context only): « Architecture pilotée par les événements : un fait est publié, chaque abonné y réagit sans attendre les autres. ». Rarity: epic card: a bright aura around the creature and sparkling particles. Digital illustration for a collectible card game, landscape 4:3, one single main creature readable at small size, clean bold shapes, soft cel shading, dark navy blue background with a subtle violet glow, limited palette dominated by violet and indigo, motifs: waves, glowing threads, mesh. Strictly no text, no letters, no numbers, no logos, no brand marks, no watermark, no real people.
+```
+
+### 74 — API GraphQL
+
+API · composant · Rare
+
+**Créature** : un tamanoir gourmet qui, d'une seule longue langue, pique trois baies lumineuses dans trois buissons différents et les réunit sur une même assiette.
+
+```text
+Generate a new image. From the reference image, keep ONLY the rendering style: line quality, soft cel shading, lighting and dark navy background treatment. Do NOT reuse its character, pose or composition: no robot standing in a doorway, no circular halo behind it, no frontal symmetric framing. Invent a creature with a clearly different body shape, size and pose, built from its own motifs, in a dynamic three-quarter view, in its own small scene. Do NOT reuse its setting either: no cable-covered floor, no punched tapes hanging on the sides, no server racks framing the picture; give the scene its own place and camera angle, drawn from the subject. Subject: a gourmet anteater whose single long tongue picks exactly three glowing berries from three different bushes and gathers them on one single plate in front of it. It embodies "API GraphQL" (enterprise integration, API). What it means (French, for context only): « Un seul point d’entrée : le client demande exactement les champs voulus, en une requête sur plusieurs sources. ». Rarity: rare card: a few subtle glints and light effects. Digital illustration for a collectible card game, landscape 4:3, one single main creature readable at small size, clean bold shapes, soft cel shading, dark navy blue background with a subtle emerald glow, limited palette dominated by emerald and dark green, motifs: gates, ramparts, access badges. Strictly no text, no letters, no numbers, no logos, no brand marks, no watermark, no real people.
 ```

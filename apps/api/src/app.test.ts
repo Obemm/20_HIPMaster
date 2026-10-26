@@ -18,12 +18,12 @@ describe('API v1', () => {
     expect(raretes.reduce((somme, r) => somme + r.chance, 0)).toBeCloseTo(1);
   });
 
-  it('GET /api/v1/cartes liste les 71 cartes du set 1, triées par numéro, capacités détaillées', async () => {
+  it('GET /api/v1/cartes liste les 74 cartes du set 1, triées par numéro, capacités détaillées', async () => {
     const reponse = await app.inject({ method: 'GET', url: '/api/v1/cartes' });
     expect(reponse.statusCode).toBe(200);
     const cartes = reponse.json<{ numero: number; capacites: { nom: string }[] }[]>();
-    expect(cartes).toHaveLength(71);
-    expect(cartes.map((c) => c.numero)).toEqual(Array.from({ length: 71 }, (_, i) => i + 1));
+    expect(cartes).toHaveLength(74);
+    expect(cartes.map((c) => c.numero)).toEqual(Array.from({ length: 74 }, (_, i) => i + 1));
     expect(cartes[0]?.capacites.map((c) => c.nom)).toEqual(['Batch', 'Vétéran', 'Non conforme']);
   });
 
@@ -55,7 +55,7 @@ describe('API v1', () => {
   });
 
   it('GET /api/v1/cartes/{numero} répond 404 au format Problem Details pour un numéro inconnu', async () => {
-    const reponse = await app.inject({ method: 'GET', url: '/api/v1/cartes/72' });
+    const reponse = await app.inject({ method: 'GET', url: '/api/v1/cartes/999' });
     expect(reponse.statusCode).toBe(404);
     expect(reponse.headers['content-type']).toContain('application/problem+json');
     expect(reponse.json()).toEqual({

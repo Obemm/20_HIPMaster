@@ -10,6 +10,7 @@ import {
   possede,
 } from './outils.ts';
 import { aCapacite, estPriseEnCharge } from './prise-en-charge.ts';
+import { piocherFamille } from './effets-composants.ts';
 import { coutEffectif, consommerCache } from './ia.ts';
 import { piocher } from './tour.ts';
 import type {
@@ -121,6 +122,36 @@ export const EFFETS: ReadonlyMap<number, Effet> = new Map<number, Effet>([
       appliquer: (ctx, cibles) => {
         composantDe(ctx, ctx.joueur, premiere(cibles)).pv += 1;
         annoncer(ctx, ctx.joueur, premiere(cibles), 'bonus-pv');
+      },
+    },
+  ],
+  // API First : piochez les deux premières cartes API de votre pioche, puis un de vos composants API gagne +1 attaque.
+  [
+    72,
+    {
+      cibles: [{ zone: 'allie', filtre: (_ctx, c) => famille(c, 'api'), facultative: true }],
+      appliquer: (ctx, [cible]) => {
+        piocherFamille(ctx.etat, ctx.joueur, ['api']);
+        piocherFamille(ctx.etat, ctx.joueur, ['api']);
+        if (cible === undefined) return;
+        composantDe(ctx, ctx.joueur, cible).bonusAttaque += 1;
+        annoncer(ctx, ctx.joueur, cible, 'bonus-attaque');
+      },
+    },
+  ],
+  // EDA : chacun de vos composants EDA inflige 1 dégât à un composant adverse tiré au hasard.
+  [
+    73,
+    {
+      cibles: RIEN,
+      appliquer: (ctx) => {
+        const abonnes = ctx.etat.joueurs[ctx.joueur].plateau.filter((c) => famille(c, 'eda'));
+        for (let reactions = abonnes.length; reactions > 0; reactions--) {
+          const intacts = ctx.etat.joueurs[ctx.adverse].plateau.filter((c) => c.pv > 0);
+          if (intacts.length === 0) return;
+          const cible = intacts[tirerIndex(ctx.etat, intacts.length)];
+          if (cible) infliger(ctx, ctx.adverse, cible.id, 1);
+        }
       },
     },
   ],

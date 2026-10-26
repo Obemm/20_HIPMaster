@@ -179,4 +179,27 @@ export const FICHES_EDA: Readonly<Record<number, Fiche>> = {
       },
     ],
   },
+  73: {
+    definition:
+      'Une architecture où les applications communiquent en publiant des événements, des faits survenus (« commande validée »), auxquels d’autres réagissent sans être appelées directement.',
+    usage:
+      'Découpler les systèmes : le producteur publie sur un broker sans savoir qui écoute, chaque abonné traite l’événement à son rythme, et l’on ajoute un consommateur sans toucher au producteur.',
+    exemple:
+      'Quand une commande est validée, l’ERP publie l’événement ; la facturation, l’entrepôt et l’envoi d’e-mails le reçoivent et agissent chacun de leur côté, même si l’un d’eux est momentanément arrêté.',
+    aRetenir:
+      'Un événement dit ce qui s’est passé, pas ce qu’il faut faire. Accepter la cohérence à terme, rendre les consommateurs idempotents et décrire les événements (AsyncAPI, catalogue).',
+    enInterne: 'Solace Event Mesh est le maillage d’événements d’the company.',
+    liens: [
+      {
+        titre: 'Architecture orientée événements',
+        url: 'https://fr.wikipedia.org/wiki/Architecture_orient%C3%A9e_%C3%A9v%C3%A9nements',
+        langue: 'fr',
+      },
+      {
+        titre: 'Event-driven architecture',
+        url: 'https://en.wikipedia.org/wiki/Event-driven_architecture',
+        langue: 'en',
+      },
+    ],
+  },
 };

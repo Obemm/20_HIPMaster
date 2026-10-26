@@ -14,18 +14,18 @@ const sansDefilementHorizontal = async (page: Page) => {
   expect(debord).toBeLessThanOrEqual(0);
 };
 
-test('depuis l’accueil, le catalogue liste les 71 cartes et se filtre', async ({ page }) => {
+test('depuis l’accueil, le catalogue liste les 74 cartes et se filtre', async ({ page }) => {
   await page.goto('/');
   await page.getByRole('link', { name: 'Découvrir les cartes' }).click();
   await expect(page).toHaveURL(/\/cartes$/);
   await expect(page.getByRole('heading', { level: 1, name: 'Catalogue du set 1' })).toBeVisible();
 
   const compteur = page.getByRole('status');
-  await expect(compteur).toHaveText('71 cartes affichées');
-  await expect(page.getByRole('heading', { level: 2 })).toHaveCount(71);
+  await expect(compteur).toHaveText('74 cartes affichées');
+  await expect(page.getByRole('heading', { level: 2 })).toHaveCount(74);
 
   await page.getByLabel('Famille').selectOption({ label: 'API' });
-  await expect(compteur).toHaveText('8 cartes affichées');
+  await expect(compteur).toHaveText('10 cartes affichées');
 
   await page.getByLabel('Famille').selectOption({ label: 'Toutes les familles' });
   await page.getByLabel('Rareté').selectOption('legendaire');
@@ -112,7 +112,7 @@ for (const theme of ['light', 'dark'] as const) {
   }) => {
     await page.emulateMedia({ colorScheme: theme });
     await page.goto('/cartes');
-    await expect(page.getByRole('status')).toHaveText('71 cartes affichées');
+    await expect(page.getByRole('status')).toHaveText('74 cartes affichées');
     await auditer(page);
 
     await page.goto('/cartes/40');

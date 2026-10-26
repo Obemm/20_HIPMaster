@@ -107,6 +107,33 @@ describe('sorts', () => {
     ]);
   });
 
+  it('API First (US-077) : pioche les deux premières cartes API, puis renforce un composant API', () => {
+    const etat = scenario({ main: [72], plateau: [22, 17], pioche: [4, 25, 41, 18, 22] });
+    expect(combinaisonsCibles(etat, 'j1', 72)).toEqual([[], ['a1']]);
+    const apres = jouer(etat, { type: 'jouer', carte: 'm1', cibles: ['a1'] });
+    expect(apres.joueurs.j1.main.map((c) => c.id)).toEqual(['p2', 'p4']);
+    expect(apres.joueurs.j1.pioche.map((c) => c.id)).toEqual(['p1', 'p3', 'p5']);
+    expect(vueDe(apres, 'j1').moi.plateau[0]?.attaque).toBe(4);
+    const sansCible = lancer({ main: [72], pioche: [4, 22] });
+    expect(sansCible.joueurs.j1.main.map((c) => c.id)).toEqual(['p2']);
+  });
+
+  it('EDA (US-077) : chaque composant EDA allié inflige 1 dégât à un composant adverse au hasard', () => {
+    const apres = lancer({ main: [73], plateau: [35, 36, 22], plateauAdverse: [17, 16] });
+    const pvAdverses = apres.joueurs.j2.plateau.reduce((total, c) => total + c.pv, 0);
+    expect(pvAdverses).toBe(4 + 3 - 2);
+    const sansAbonne = lancer({ main: [73], plateau: [22], plateauAdverse: [17] });
+    expect(pv(sansAbonne, 'j2', 'b1')).toBe(4);
+    const rienAToucher = lancer({ main: [73], plateau: [35] });
+    expect(rienAToucher.joueurs.j1.defausse.map((c) => c.id)).toEqual(['m1']);
+  });
+
+  it('EDA ne vise pas un composant déjà détruit par une réaction précédente', () => {
+    const apres = lancer({ main: [73], plateau: [35, 36, 37], plateauAdverse: [4] });
+    expect(apres.joueurs.j2.plateau).toEqual([]);
+    expect(apres.journal.filter((e) => e.type === 'degats')).toHaveLength(1);
+  });
+
   it('Idempotent Consumer : annule Doublon, sinon fait piocher', () => {
     const annule = lancer({ main: [57], plateau: [22] }, [], (e) => {
       const composant = e.joueurs.j1.plateau[0];

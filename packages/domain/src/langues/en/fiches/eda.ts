@@ -179,4 +179,27 @@ export const FICHES_EDA_EN: Readonly<Record<number, Fiche>> = {
       },
     ],
   },
+  73: {
+    definition:
+      'An architecture in which applications communicate by publishing events, facts that have happened (“order validated”), to which others react without being called directly.',
+    usage:
+      'Decoupling systems: the producer publishes to a broker without knowing who is listening, each subscriber handles the event at its own pace, and a new consumer is added without touching the producer.',
+    exemple:
+      'When an order is validated, the ERP publishes the event; invoicing, the warehouse and the e-mail service each receive it and act on their own, even if one of them is briefly down.',
+    aRetenir:
+      'An event says what happened, not what to do. Accept eventual consistency, make consumers idempotent and describe the events (AsyncAPI, catalogue).',
+    enInterne: 'Solace Event Mesh is the company’s event mesh.',
+    liens: [
+      {
+        titre: 'Event-driven architecture',
+        url: 'https://en.wikipedia.org/wiki/Event-driven_architecture',
+        langue: 'en',
+      },
+      {
+        titre: 'What is an event-driven architecture? (AWS)',
+        url: 'https://aws.amazon.com/event-driven-architecture/',
+        langue: 'en',
+      },
+    ],
+  },
 };

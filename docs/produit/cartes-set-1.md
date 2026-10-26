@@ -7,8 +7,8 @@ Règles et capacités : [regles.md](regles.md).
 **Repère d'équilibrage** : un composant commun sans capacité vaut environ `attaque + PV = 2 × coût + 1` ; chaque
 capacité retire 1 à 2 points.
 
-**Composition** : 71 cartes — 4 légendaires, 6 épiques, 25 rares, 36 communes (64 dans les tableaux, plus 7 incidents
-complémentaires).
+**Composition** : 74 cartes — 4 légendaires, 7 épiques, 27 rares, 36 communes (64 dans les tableaux, plus 7 incidents
+complémentaires, plus les 3 cartes de l'extension d'US-077).
 
 ## Fichiers & Batch (8)
 
@@ -121,6 +121,39 @@ Batch adverse n'inflige rien), **Encodage cassé** (1 — 2 dégâts à un compo
 **Contexte saturé** (1 — un composant IA adverse perd ses capacités jusqu'à la fin de son prochain tour),
 **Boucle d'agents** (2 — un ou deux agents adverses ne peuvent pas attaquer à leur prochain tour) et **Facture de tokens**
 (1 — l'adversaire a 2 Débit de moins à son prochain tour).
+
+## Extension : API First, EDA et API GraphQL (US-077, 2026-10-25)
+
+Trois cartes demandées par le porteur du projet, ajoutées au set 1 plutôt qu'en ouverture d'un set 2 : elles
+relèvent des familles API et Événementiel du set 1, alors que le set 2 (EPIC-13, US-076) portera sur le DDD, les
+microservices et le DevOps. Elles prennent les numéros 72 à 74, à la suite, sans renuméroter (ADR 0011). Les deux
+« façons de concevoir » sont des sorts, la technologie un composant ; aucune capacité nouvelle.
+
+| N°  | Carte       | Famille      | Type      | Rareté | Coût | Att/PV | Capacités / effet                                                                                     | En vrai                                                             |
+| --- | ----------- | ------------ | --------- | ------ | ---- | ------ | ----------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| 72  | API First   | API          | Sort      | Rare   | 3    | —      | Piochez les deux premières cartes API de votre pioche, puis un de vos composants API gagne +1 attaque | Le contrat avant le code, fournisseur et consommateurs en parallèle |
+| 73  | EDA         | Événementiel | Sort      | Épique | 3    | —      | Chacun de vos composants EDA inflige 1 dégât à un composant adverse tiré au hasard                    | Un fait publié, chaque abonné y réagit sans attendre                |
+| 74  | API GraphQL | API          | Composant | Rare   | 3    | 2/3    | Quand elle est posée, piochez une carte par autre composant en jeu chez vous (2 au plus)              | Une requête, exactement les champs voulus, plusieurs sources        |
+
+**Équilibrage.** Les decks prêtés ne changent pas. Pour mesurer chaque carte, le deck Moderne en reçoit deux
+exemplaires (à la place de Workflow low-code et d'une File d'attente pour API First, des deux Connecteur SaaS pour
+GraphQL, des deux Topic pour EDA), puis affronte les trois decks prêtés : 400 parties par duel, Batch de nuit des deux
+côtés, graine 1 puis graine 2. Repères : les mêmes remplacements par deux Chain of thought ou deux Splitter.
+
+| Deck A                    | contre Héritage | contre Moderne | contre Hybride |
+| ------------------------- | --------------- | -------------- | -------------- |
+| Moderne (inchangé)        | 46 % / 47 %     | 49 % / 49 %    | 48 % / 44 %    |
+| + API First × 2           | 46 % / 43 %     | 50 % / 49 %    | 47 % / 46 %    |
+| + API GraphQL × 2         | 46 % / 46 %     | 55 % / 54 %    | 48 % / 46 %    |
+| + EDA × 2                 | 47 % / 40 %     | 59 % / 56 %    | 48 % / 46 %    |
+| + une de chaque           | 54 % / 51 %     | 55 % / 55 %    | 49 % / 50 %    |
+| Repère : Chain of thought | 51 % / 52 %     | 53 % / 57 %    | 52 % / 51 %    |
+| Repère : Splitter         | 52 % / 46 %     | 62 % / 56 %    | 48 % / 48 %    |
+
+Réglages faits en chemin : API First à 2 de Débit et une seule carte API piochée restait sous Moderne (44 à 48 %) ;
+avec deux cartes à 2 de Débit, elle passait au-dessus (53 à 59 %), d'où le coût de 3. API GraphQL ne comptait d'abord
+que les composants API : peu nombreux dans un deck, elle faisait tomber Moderne à 37–41 %. EDA reste un peu forte dans
+le miroir Moderne (56–59 %), sans dépasser le Splitter. Toutes les mesures restent entre 40 et 59 %.
 
 ## Points à trancher pendant l'équilibrage
 

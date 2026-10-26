@@ -1,6 +1,6 @@
 # EPIC-13 — Un set 2 : architecture et pratiques
 
-- **Statut** : À affiner
+- **Statut** : En cours
 - **Priorité** : Could
 
 ## Objectif
@@ -19,7 +19,7 @@ de date.
 ## Stories
 
 - [ ] US-076 — Concevoir le set 2 : DDD, microservices, DevOps
-- [ ] US-077 — Trois nouvelles cartes : API First, EDA et API GraphQL
+- [x] US-077 — Trois nouvelles cartes : API First, EDA et API GraphQL
 
 ## Pistes de contenu (à trier)
 

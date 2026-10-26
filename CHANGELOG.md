@@ -7,6 +7,12 @@ Toutes les évolutions notables du projet sont consignées ici
 
 ### Ajouté
 
+- Trois nouvelles cartes au set 1, numérotées 72 à 74 : **API First** (sort rare : piochez deux cartes API, puis un
+  composant API gagne +1 attaque), **EDA** (sort épique : chacun de vos composants EDA blesse un composant adverse au
+  hasard) et **API GraphQL** (composant rare qui pioche une carte par autre composant en jeu, 2 au plus). Chacune a sa
+  fiche « En savoir plus » et ses textes en français et en anglais, sa créature dessinée avec Gemini (un tisserin
+  architecte, un loup qui hurle, un tamanoir gourmet) et entre dans le tirage des boosters ; les collections et les
+  decks prêtés ne changent pas, et l'équilibre est vérifié par simulation sur deux graines (US-077).
 - Choix du générateur d'illustrations consigné : Gemini, une créature par carte, relue par le porteur (US-016,
   ADR 0047).
 - Les textes alternatifs des 71 illustrations en anglais : la version `/en/` décrit chaque image aux lecteurs d'écran

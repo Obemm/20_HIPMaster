@@ -122,9 +122,9 @@ describe('DetailCarte', () => {
   });
 
   it('annonce une carte introuvable quand l’API répond 404', async () => {
-    const fixture = creer('72');
+    const fixture = creer('999');
     TestBed.inject(HttpTestingController)
-      .expectOne('/api/v1/cartes/72')
+      .expectOne('/api/v1/cartes/999')
       .flush(
         { type: 'about:blank', title: 'Carte introuvable', status: 404 },
         { status: 404, statusText: 'Not Found' },
@@ -132,6 +132,6 @@ describe('DetailCarte', () => {
     await fixture.whenStable();
     const page = fixture.nativeElement as HTMLElement;
     expect(page.querySelector('#titre-detail')?.textContent).toContain('Carte introuvable');
-    expect(page.querySelector('[role="alert"]')?.textContent).toContain('« 72 »');
+    expect(page.querySelector('[role="alert"]')?.textContent).toContain('« 999 »');
   });
 });

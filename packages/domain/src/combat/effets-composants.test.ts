@@ -43,6 +43,19 @@ describe('effets à la pose : pioche ciblée', () => {
     });
     expect(idsMain(apres)).toEqual(['p1', 'p2']);
   });
+
+  it('API GraphQL (US-077) pioche une carte par autre composant en jeu chez vous, 2 au plus', () => {
+    const pose = (plateau: number[]) =>
+      idsMain(
+        jouer(scenario({ main: [74], plateau, pioche: [4, 4, 4] }), {
+          type: 'poser',
+          carte: 'm1',
+        }),
+      );
+    expect(pose([])).toEqual([]);
+    expect(pose([12])).toEqual(['p1']);
+    expect(pose([4, 31, 22])).toEqual(['p1', 'p2']);
+  });
 });
 
 describe('effets à la pose : renfort', () => {
@@ -106,7 +119,7 @@ describe('effets permanents', () => {
 });
 
 describe('cartes prises en charge', () => {
-  it('couvre les 71 cartes du set 1 depuis US-020', () => {
-    expect(CARTES_PRISES_EN_CHARGE).toEqual(Array.from({ length: 71 }, (_, i) => i + 1));
+  it('couvre les 74 cartes du set 1 (71 depuis US-020, 72 à 74 depuis US-077)', () => {
+    expect(CARTES_PRISES_EN_CHARGE).toEqual(Array.from({ length: 74 }, (_, i) => i + 1));
   });
 });

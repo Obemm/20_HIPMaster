@@ -70,7 +70,7 @@ test('session expirée : « Mon compte » le dit, puis ramène le joueur à sa p
   await page.getByLabel('Code de récupération').fill(codeRecuperation);
   await page.getByRole('button', { name: 'Retrouver mon compte' }).click();
   await expect(page).toHaveURL(/\/collection$/);
-  await expect(page.getByRole('heading', { name: 'Set 1 : 0 / 71 cartes' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Set 1 : 0 / 74 cartes' })).toBeVisible();
 });
 
 test('trop de demandes (429) : le message dit combien de temps patienter, puis on réessaie', async ({
@@ -93,7 +93,7 @@ test('trop de demandes (429) : le message dit combien de temps patienter, puis o
   );
   limite = false;
   await page.getByRole('button', { name: 'Réessayer' }).click();
-  await expect(page.getByRole('status')).toContainText('71 cartes affichées');
+  await expect(page.getByRole('status')).toContainText('74 cartes affichées');
 });
 
 test('un lien de partie ou de duel piégé n’appelle aucune autre route de l’API', async ({

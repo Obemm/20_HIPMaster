@@ -14,7 +14,7 @@ test('la collection montre la progression, les cartes possédées et leur détai
 }) => {
   await creerCompte(page, 'Collectionneuse e2e');
   await page.getByRole('link', { name: 'Collection', exact: true }).click();
-  await expect(page.getByRole('heading', { name: 'Set 1 : 0 / 71 cartes' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Set 1 : 0 / 74 cartes' })).toBeVisible();
 
   await page.getByRole('link', { name: 'ouvrez un booster' }).click();
   await page.getByRole('button', { name: 'Ouvrir un booster' }).click();
@@ -22,7 +22,7 @@ test('la collection montre la progression, les cartes possédées et leur détai
   await expect(page.locator('hip-vignette-carte')).toHaveCount(5);
 
   await page.getByRole('link', { name: 'Collection', exact: true }).click();
-  await expect(page.getByRole('heading', { name: /Set 1 : [1-5] \/ 71 cartes/ })).toBeVisible();
+  await expect(page.getByRole('heading', { name: /Set 1 : [1-5] \/ 74 cartes/ })).toBeVisible();
   await page.getByLabel('Possession').selectOption('possedees');
   await expect(page.getByRole('status')).toHaveText(/[1-5] cartes? affichées?/);
 
