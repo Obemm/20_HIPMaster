@@ -1,9 +1,11 @@
 import { HttpClient, httpResource } from '@angular/common/http';
 import { NgTemplateOutlet } from '@angular/common';
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import type { Carte } from '../cartes/carte';
+import { AvisMesDecks } from '../decks/avis-mes-decks';
+import { MesDecksService } from '../decks/mes-decks.service';
 import { ErreurChargement } from '../reseau/erreur-chargement';
 import { PreferencesService } from '../preferences';
 import { expliquer } from '../reseau/reseau';
@@ -17,7 +19,7 @@ import { RegleCourte } from './regle-courte';
  */
 @Component({
   selector: 'hip-choix-deck',
-  imports: [NgTemplateOutlet, RouterLink, RegleCourte, ErreurChargement, BoiteDeck],
+  imports: [NgTemplateOutlet, RouterLink, RegleCourte, ErreurChargement, BoiteDeck, AvisMesDecks],
   templateUrl: './choix-deck.html',
 })
 export class ChoixDeck {
@@ -26,6 +28,12 @@ export class ChoixDeck {
   protected readonly preferences = inject(PreferencesService);
 
   protected readonly decks = httpResource<Deck[]>(() => '/api/v1/decks');
+  private readonly mesDecks = inject(MesDecksService);
+  /** Mes decks complets d'abord, puis les decks prêtés (US-084). */
+  protected readonly proposes = computed(() => [
+    ...this.mesDecks.jouables(),
+    ...(this.decks.hasValue() ? this.decks.value() : []),
+  ]);
   protected readonly catalogue = httpResource<Carte[]>(() => '/api/v1/cartes');
   protected readonly niveaux = httpResource<Niveau[]>(() => '/api/v1/niveaux');
   /** Niveau du bot choisi (Stagiaire par défaut, le plus simple : US-064). */

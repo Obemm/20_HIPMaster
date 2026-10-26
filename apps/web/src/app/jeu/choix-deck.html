@@ -50,7 +50,7 @@
   <section aria-labelledby="titre-deck" class="flex flex-col gap-3">
     <h2 id="titre-deck" class="text-xl font-extrabold" i18n>2. Votre deck</h2>
     <p class="text-texte-doux" i18n>
-      Choisissez un deck prêté. Le bot joue avec un deck tiré au sort.
+      Choisissez un de vos decks ou un deck prêté. Le bot joue avec un deck prêté tiré au sort.
     </p>
 
     @if (erreur()) {
@@ -59,7 +59,7 @@
 
     @if (decks.hasValue()) {
       <ul class="flex flex-col gap-3">
-        @for (deck of decks.value(); track deck.id) {
+        @for (deck of proposes(); track deck.id) {
           <li>
             <hip-boite-deck [deck]="deck" [catalogue]="catalogue.value()" [niveauTitre]="3">
               <button
@@ -78,6 +78,7 @@
           </li>
         }
       </ul>
+      <hip-avis-mes-decks />
     } @else if (decks.error()) {
       <hip-erreur-chargement
         i18n-quoi

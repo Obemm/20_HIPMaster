@@ -30,6 +30,7 @@ const schemaDuel = z.object({
   version: z.int(),
   createur: z.object({ pseudo: z.string() }),
   deckCreateur: z.string(),
+  nomDeckCreateur: z.string().optional(),
   ouvert: z.boolean(),
   adversaire: z.object({ pseudo: z.string() }).nullable(),
   moi: z.enum(['j1', 'j2']).nullable(),
@@ -59,6 +60,8 @@ function refuser(reponse: FastifyReply, resultat: Exclude<ResultatDuel<unknown>,
       return corps(404, 'Duel introuvable');
     case 'deck-inconnu':
       return corps(422, 'Deck inconnu');
+    case 'deck-incomplet':
+      return corps(422, 'Ce deck est incomplet : complétez-le pour jouer');
     case 'deja-commence':
       return corps(409, 'Ce duel a déjà commencé');
     case 'son-propre-duel':

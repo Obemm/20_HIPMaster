@@ -33,7 +33,13 @@ paths:
               type: object
               required: [deck]
               properties:
-                deck: { type: string, description: Identifiant d'un deck prêté (voir GET /decks). }
+                deck:
+                  type: string
+                  description: >
+                    Identifiant d'un deck prêté (voir GET /decks) ou d'un des decks du joueur (mes-decks.yaml,
+                    US-084), revérifié (complet, cartes possédées) puis figé dans le duel dès sa création : le
+                    modifier ensuite ne change rien au duel (ADR 0049). 422 `deck-inconnu` ou `deck-incomplet`
+                    sinon.
       responses:
         '201':
           description: Le duel, en attente d'adversaire.
@@ -65,7 +71,11 @@ paths:
               type: object
               required: [deck]
               properties:
-                deck: { type: string }
+                deck:
+                  {
+                    type: string,
+                    description: 'Deck prêté ou un de ses decks, comme pour POST /duels.',
+                  }
       responses:
         '200':
           description: Duel rejoint, il commence.
@@ -149,7 +159,11 @@ paths:
               type: object
               required: [deck]
               properties:
-                deck: { type: string }
+                deck:
+                  {
+                    type: string,
+                    description: 'Deck prêté ou un de ses decks, comme pour POST /duels.',
+                  }
       responses:
         '200':
           description: Le duel commencé.
@@ -307,7 +321,16 @@ components:
         statut: { type: string, enum: [attente, en-cours, termine] }
         version: { type: integer }
         createur: { $ref: '#/components/schemas/Participant' }
-        deckCreateur: { type: string }
+        deckCreateur:
+          {
+            type: string,
+            description: 'Identifiant du deck du créateur : prêté, ou un de ses decks (UUID).',
+          }
+        nomDeckCreateur:
+          type: string
+          description: >
+            Le nom du deck du créateur quand c'est un de ses decks (US-084) ; absent pour un deck prêté, dont le nom
+            vient de GET /decks.
         ouvert:
           type: boolean
           description: Duel ouvert à tous (adversaire au hasard, US-037) ; sinon défi privé, rejoint par son lien.

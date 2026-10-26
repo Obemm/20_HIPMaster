@@ -151,6 +151,13 @@ export const duels = pgTable(
     /** Vide une fois son compte supprimé (US-053). */
     createurId: uuid().references(() => joueurs.id, { onDelete: 'set null' }),
     deckCreateur: text().notNull(),
+    /**
+     * La composition du deck du créateur quand c'est un des siens (US-084, ADR 0049), figée dès la création : la
+     * modifier ensuite ne change rien au duel. Vide pour un deck prêté, retrouvé par son identifiant.
+     */
+    cartesCreateur: integer().array(),
+    /** Le nom de ce deck, montré à l'adversaire ; vide pour un deck prêté. */
+    nomDeckCreateur: text(),
     /** Duel ouvert à tous (adversaire au hasard, US-037) ; sinon défi privé, rejoint par son lien (US-033). */
     ouvert: boolean().notNull().default(false),
     /** Vide tant que personne n'a rejoint le duel, ou une fois son compte supprimé (US-053). */

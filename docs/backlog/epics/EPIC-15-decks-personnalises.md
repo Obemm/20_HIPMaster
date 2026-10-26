@@ -1,6 +1,6 @@
 # EPIC-15 — Des decks à soi
 
-- **Statut** : En cours
+- **Statut** : Terminé
 - **Priorité** : Should
 
 ## Objectif
@@ -21,7 +21,7 @@ enfin un sens à la collection et aux boosters.
 ## Stories
 
 - [x] US-083 — Construire, nommer et garder ses decks à partir de sa collection
-- [ ] US-084 — Jouer avec son deck contre le bot et en duel
+- [x] US-084 — Jouer avec son deck contre le bot et en duel
 
 Ordre : US-083, puis US-084.
 

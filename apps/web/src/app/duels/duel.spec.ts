@@ -129,6 +129,8 @@ describe('DuelEcran', () => {
     fixture.detectChanges();
     const http = TestBed.inject(HttpTestingController);
     http.expectOne('/api/v1/decks').flush(DECKS);
+    // Mes decks (US-084), lus à la connexion : une route de l'API attendue, pas l'identifiant piégé.
+    http.expectOne('/api/v1/moi/decks').flush({ regles: {}, decks: [] });
     await fixture.whenStable();
     fixture.detectChanges();
     http.verify();

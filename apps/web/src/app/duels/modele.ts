@@ -7,6 +7,8 @@ export interface Duel {
   version: number;
   createur: { pseudo: string };
   deckCreateur: string;
+  /** Le nom du deck du créateur quand c'est un des siens (US-084) ; absent pour un deck prêté. */
+  nomDeckCreateur?: string;
   /** Duel ouvert à tous (adversaire au hasard, US-037) ; sinon défi privé, rejoint par son lien. */
   ouvert: boolean;
   adversaire: { pseudo: string } | null;

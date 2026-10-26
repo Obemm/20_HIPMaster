@@ -1,6 +1,7 @@
 import AxeBuilder from '@axe-core/playwright';
 import { type APIRequestContext, expect, type Page, test } from '@playwright/test';
 import { REGLES_WCAG } from './axe';
+import { deckCompletParApi } from './decks-api';
 import { creerCompteParApi } from './duel-api';
 
 // US-082 : les parcours principaux dans la version anglaise (`/en/`), audit d'accessibilité compris ; les parcours
@@ -128,4 +129,14 @@ test('construire un deck en anglais, sur un téléphone (US-083)', async ({ page
   await page.getByRole('link', { name: '← My decks' }).click();
   await expect(page.getByText('1 / 20 cards.')).toBeVisible();
   await auditer(page);
+});
+
+test('jouer contre le bot avec son deck, en anglais (US-084)', async ({ page }) => {
+  const jeton = await creerCompteParApi(page, 'Strategist e2e');
+  await deckCompletParApi(page, jeton, 'My own deck');
+  await page.goto('/en/jouer');
+  await expect(page.getByText('Your deck, 20 cards.')).toBeVisible();
+  await auditer(page);
+  await page.getByRole('button', { name: 'Play with My own deck' }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Game against the bot' })).toBeVisible();
 });

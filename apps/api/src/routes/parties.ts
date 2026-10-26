@@ -69,6 +69,8 @@ function refuser(reponse: FastifyReply, resultat: Exclude<ResultatPartie<unknown
       return corps(404, 'Partie introuvable ou expirée');
     case 'deck-inconnu':
       return corps(422, 'Deck inconnu');
+    case 'deck-incomplet':
+      return corps(422, 'Ce deck est incomplet : complétez-le pour jouer');
     case 'niveau-inconnu':
       return corps(422, 'Niveau de bot inconnu');
     case 'version-perimee':

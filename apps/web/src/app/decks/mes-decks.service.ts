@@ -1,7 +1,8 @@
 import { HttpClient } from '@angular/common/http';
-import { effect, inject, Injectable, signal } from '@angular/core';
+import { computed, effect, inject, Injectable, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { CompteService } from '../compte/compte.service';
+import type { Deck } from '../jeu/modele';
 
 // Contrat : apps/api/openapi/mes-decks.yaml (US-083, ADR 0048).
 
@@ -52,6 +53,27 @@ export class MesDecksService {
   readonly enCours = signal(false);
   /** L'échec de la dernière lecture ; `null` si elle a réussi. */
   readonly erreur = signal<unknown>(null);
+
+  /**
+   * Mes decks complets, à proposer pour jouer (US-084) sous la forme d'un deck prêté : le serveur les revérifie au
+   * lancement. Vide sans compte.
+   */
+  readonly jouables = computed<Deck[]>(() =>
+    this.compte.joueur()
+      ? (this.decks() ?? [])
+          .filter((d) => d.complet)
+          .map((d) => ({
+            id: d.id,
+            nom: d.nom,
+            description: $localize`Votre deck, ${d.cartes.length}:nombre: cartes.`,
+            cartes: d.cartes,
+          }))
+      : [],
+  );
+  /** Mes decks incomplets, qui ne se proposent pas pour jouer tant qu'ils ne sont pas complétés. */
+  readonly incomplets = computed(() =>
+    this.compte.joueur() ? (this.decks() ?? []).filter((d) => !d.complet).length : 0,
+  );
 
   constructor() {
     effect(() => {

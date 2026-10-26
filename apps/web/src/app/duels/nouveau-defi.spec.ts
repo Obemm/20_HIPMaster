@@ -53,4 +53,34 @@ describe('NouveauDefi', () => {
     await fixture.whenStable();
     expect(naviguer).toHaveBeenCalledWith(['/duels', 'd2']);
   });
+
+  it('propose mes decks complets avant les decks prêtés, jamais les incomplets (US-084)', async () => {
+    const fixture = TestBed.createComponent(NouveauDefi);
+    fixture.detectChanges();
+    const http = TestBed.inject(HttpTestingController);
+    http.expectOne('/api/v1/decks').flush(DECKS);
+    http.expectOne('/api/v1/cartes').flush([]);
+    const mien = (id: string, nom: string, complet: boolean) => ({
+      id,
+      nom,
+      cartes: [],
+      complet,
+      liberees: 0,
+      majLe: '2026-10-26T00:00:00Z',
+    });
+    http.expectOne('/api/v1/moi/decks').flush({
+      regles: {},
+      decks: [mien('a1', 'Tout API', true), mien('b2', 'Brouillon', false)],
+    });
+    await fixture.whenStable();
+    fixture.detectChanges();
+    const page = fixture.nativeElement as HTMLElement;
+    const boutons = [...page.querySelectorAll('li button')].map((b) => b.textContent?.trim());
+    expect(boutons).toEqual(['Défier avec Tout API', 'Défier avec Hybride']);
+    expect(page.textContent).toContain('Un de vos decks est incomplet : il n’est pas proposé.');
+
+    vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+    page.querySelector<HTMLButtonElement>('li button')?.click();
+    expect(http.expectOne('/api/v1/duels').request.body).toEqual({ deck: 'a1' });
+  });
 });

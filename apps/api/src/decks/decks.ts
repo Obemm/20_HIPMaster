@@ -6,6 +6,7 @@ import {
   problemesDeck,
   type ProblemeDeck,
   TAILLE_DECK,
+  trouverDeckPrete,
 } from '@hipmaster/domain';
 import { and, asc, count, eq, sql } from 'drizzle-orm';
 import type { Base } from '../db/index.ts';
@@ -160,4 +161,36 @@ export async function supprimerDeck(base: Base, joueurId: string, id: string): P
     .where(and(eq(decks.id, id), eq(decks.joueurId, joueurId)))
     .returning({ id: decks.id });
   return supprimes.length > 0;
+}
+
+/** Un deck prêt à servir dans une partie : un deck prêté, ou un deck complet du joueur (US-084, ADR 0049). */
+export interface DeckDeJeu {
+  id: string;
+  nom: string;
+  cartes: readonly number[];
+  /** Un deck du joueur (sa composition est à figer), plutôt qu'un deck prêté. */
+  aSoi: boolean;
+}
+
+const FORME_UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/**
+ * Le deck choisi pour jouer, revérifié au lancement (ADR 0049) : un deck prêté, ou un des decks du joueur connecté,
+ * qui doit être complet pour sa collection du moment. `deck-inconnu` : ni prêté, ni à ce joueur ; `deck-incomplet` :
+ * le deck existe mais ne peut pas servir (moins de 20 cartes, place libérée…).
+ */
+export async function deckDeJeu(
+  base: Lecteur,
+  idDeck: string,
+  joueurId: string | null,
+): Promise<
+  { ok: true; deck: DeckDeJeu } | { ok: false; raison: 'deck-inconnu' | 'deck-incomplet' }
+> {
+  const prete = trouverDeckPrete(idDeck);
+  if (prete) return { ok: true, deck: { ...prete, aSoi: false } };
+  if (!joueurId || !FORME_UUID.test(idDeck)) return { ok: false, raison: 'deck-inconnu' };
+  const deck = await lireDeck(base, joueurId, idDeck);
+  if (!deck) return { ok: false, raison: 'deck-inconnu' };
+  if (!deck.complet) return { ok: false, raison: 'deck-incomplet' };
+  return { ok: true, deck: { id: deck.id, nom: deck.nom, cartes: deck.cartes, aSoi: true } };
 }

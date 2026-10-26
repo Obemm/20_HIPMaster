@@ -345,7 +345,7 @@
     "1202954858609790918": "1. Bot difficulty",
     "7751924937697028344": "The bot’s levels couldn’t be loaded: with no choice, it will play at its simplest.",
     "2101845589774284156": "2. Your deck",
-    "576082936422653161": "Choose a loaned deck. The bot plays with a randomly drawn deck.",
+    "2560571174863490988": "Choose one of your decks or a loaned deck. The bot plays with a randomly drawn loaned deck.",
     "4855731032222992541": "Creating…",
     "4481303882954921092": "Fancy taking on a human?",
     "3626416183397480701": "Duels are turn-based, each player at their own pace.",
@@ -767,6 +767,10 @@
     "8867436545681325988": "You already have {$plafond} decks: delete one to create another.",
     "2320333228094294629": "Build a deck — HIPMaster",
     "4806604738670669808": " In the deck: {$START_TAG_STRONG}{$INTERPOLATION} / {$INTERPOLATION_1}{$CLOSE_TAG_STRONG} · {$INTERPOLATION_2} in collection ",
-    "7135154705996149544": "{$nombre} / {$taille} cards."
+    "7135154705996149544": "{$nombre} / {$taille} cards.",
+    "5771082855276359989": "{VAR_PLURAL, plural, =1 {One of your decks is incomplete: it is not offered.} other {{INTERPOLATION} of your decks are incomplete: they are not offered.}}",
+    "1393435339889796554": "{$ICU} {$START_LINK}Complete them in “My decks”{$CLOSE_LINK}",
+    "1934657749316210449": "{$START_LINK}Build your decks{$CLOSE_LINK} with the cards of your collection to play with them. ",
+    "1965971765770831841": "Your deck, {$nombre} cards."
   }
 }

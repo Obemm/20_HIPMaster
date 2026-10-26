@@ -120,6 +120,13 @@
       "when": 1793038458845,
       "tag": "0016_decks_joueurs",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1793040436156,
+      "tag": "0017_decks_figes_duels",
+      "breakpoints": true
     }
   ]
 }

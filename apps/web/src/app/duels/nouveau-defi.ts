@@ -1,10 +1,12 @@
 import { HttpClient, httpResource } from '@angular/common/http';
-import { Component, inject, input, signal } from '@angular/core';
+import { Component, computed, inject, input, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import type { Carte } from '../cartes/carte';
 import { CompteService } from '../compte/compte.service';
 import { EtatSession } from '../compte/etat-session';
+import { AvisMesDecks } from '../decks/avis-mes-decks';
+import { MesDecksService } from '../decks/mes-decks.service';
 import { BoiteDeck } from '../jeu/boite-deck';
 import type { Deck } from '../jeu/modele';
 import { ErreurChargement } from '../reseau/erreur-chargement';
@@ -17,7 +19,7 @@ import type { Duel } from './modele';
  */
 @Component({
   selector: 'hip-nouveau-defi',
-  imports: [RouterLink, ErreurChargement, EtatSession, BoiteDeck],
+  imports: [RouterLink, ErreurChargement, EtatSession, BoiteDeck, AvisMesDecks],
   template: `
     <main class="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 py-8 sm:px-6">
       <div class="flex flex-col gap-2">
@@ -50,7 +52,7 @@ import type { Duel } from './modele';
         }
         @if (decks.hasValue()) {
           <ul class="flex flex-col gap-3">
-            @for (deck of decks.value(); track deck.id) {
+            @for (deck of proposes(); track deck.id) {
               <li>
                 <hip-boite-deck [deck]="deck" [catalogue]="catalogue.value()">
                   <button
@@ -71,6 +73,7 @@ import type { Duel } from './modele';
               </li>
             }
           </ul>
+          <hip-avis-mes-decks />
         } @else if (decks.error()) {
           <hip-erreur-chargement
             i18n-quoi
@@ -110,6 +113,12 @@ export class NouveauDefi {
   });
 
   protected readonly decks = httpResource<Deck[]>(() => '/api/v1/decks');
+  private readonly mesDecks = inject(MesDecksService);
+  /** Mes decks complets d'abord, puis les decks prêtés (US-084). */
+  protected readonly proposes = computed(() => [
+    ...this.mesDecks.jouables(),
+    ...(this.decks.hasValue() ? this.decks.value() : []),
+  ]);
   protected readonly catalogue = httpResource<Carte[]>(() => '/api/v1/cartes');
   protected readonly enCours = signal<string | null>(null);
   protected readonly erreur = signal<string | null>(null);

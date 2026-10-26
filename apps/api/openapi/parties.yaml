@@ -72,7 +72,7 @@ paths:
   /parties:
     post:
       operationId: creerPartie
-      summary: Crée une partie contre le bot avec un deck prêté
+      summary: Crée une partie contre le bot avec un deck prêté ou un de ses decks
       description: >
         Si le bot commence, son premier tour est déjà joué dans la réponse. Au-delà de 1 000 parties gardées, la
         création supprime la partie sans compte la moins récemment jouée, et seulement à défaut celle d'un compte
@@ -92,7 +92,10 @@ paths:
               properties:
                 deck:
                   type: string
-                  description: Deck prêté (voir /decks) ; obligatoire, sauf pour la partie guidée.
+                  description: >
+                    Deck prêté (voir /decks), ou identifiant d'un des decks du joueur connecté (mes-decks.yaml,
+                    US-084) : revérifié au lancement (complet, cartes possédées) puis figé dans la partie (ADR 0049) ;
+                    `deck-incomplet` sinon. Obligatoire, sauf pour la partie guidée.
                   examples: [moderne]
                 guidee:
                   type: boolean
@@ -253,7 +256,11 @@ components:
         version:
           type: integer
           description: Change à chaque action ; à renvoyer dans `If-Match` (voir l'en-tête `ETag`).
-        deck: { type: string, description: Identifiant du deck du joueur. }
+        deck:
+          {
+            type: string,
+            description: 'Identifiant du deck du joueur : prêté, ou un de ses decks (UUID).',
+          }
         deckAdversaire: { type: string, description: Identifiant du deck du bot. }
         niveau: { type: string, description: Niveau du bot adverse. }
         vue: { $ref: '#/components/schemas/Vue' }

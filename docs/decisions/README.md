@@ -57,5 +57,6 @@ référence the company.
 | [0046](0046-illustrations-a-empreinte-cache-long.md)   | Illustrations à empreinte sous `/illustrations/`, un an en cache, 404             | aucune ; 012 via 0015           | Acceptée                      |
 | [0047](0047-illustrations-generees-par-gemini.md)      | Illustrations générées par Gemini : une créature par carte, relues par le porteur | aucune ; [ref] par analogie   | Acceptée                      |
 | [0048](0048-decks-des-joueurs.md)                      | Decks des joueurs : 5 par compte, vérifiés par le serveur, places libérées        | [ref], 007 retenus            | Acceptée                      |
+| [0049](0049-jouer-avec-son-deck.md)                    | Jouer avec son deck : revérifié au lancement, figé dans la partie                 | [ref] retenu                  | Acceptée                      |
 
 Modèle : [template.md](template.md).

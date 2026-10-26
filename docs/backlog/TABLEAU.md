@@ -21,7 +21,7 @@ _Dernière mise à jour : 2026-10-26_
 | [EPIC-12 — Des cartes qui enseignent](epics/EPIC-12-cartes-qui-enseignent.md)                     | Must     | Terminé   | 2/2        |
 | [EPIC-13 — Un set 2 : architecture et pratiques](epics/EPIC-13-set-2-architecture-pratiques.md)   | Could    | En cours  | 1/2        |
 | [EPIC-14 — Un jeu en français et en anglais](epics/EPIC-14-multilingue.md)                        | Should   | Terminé   | 4/4        |
-| [EPIC-15 — Des decks à soi](epics/EPIC-15-decks-personnalises.md)                                 | Should   | En cours  | 1/2        |
+| [EPIC-15 — Des decks à soi](epics/EPIC-15-decks-personnalises.md)                                 | Should   | Terminé   | 2/2        |
 
 ## Itération 0 (en cours) — fondations
 
@@ -194,4 +194,4 @@ catalogue, set d'accueil).
 | [US-081 — Les cartes, les capacités, les fiches et la règle en anglais](stories/US-081-contenu-anglais.md)                             | EPIC-14 | Should   | L      | Faite     |
 | [US-082 — Des messages d'erreur traduits et des parcours vérifiés dans les deux langues](stories/US-082-erreurs-parcours-bilingues.md) | EPIC-14 | Should   | S      | Faite     |
 | [US-083 — Construire, nommer et garder ses decks à partir de sa collection](stories/US-083-construire-ses-decks.md)                    | EPIC-15 | Should   | L      | Faite     |
-| [US-084 — Jouer avec son deck contre le bot et en duel](stories/US-084-jouer-avec-son-deck.md)                                         | EPIC-15 | Should   | M      | À affiner |
+| [US-084 — Jouer avec son deck contre le bot et en duel](stories/US-084-jouer-avec-son-deck.md)                                         | EPIC-15 | Should   | M      | Faite     |

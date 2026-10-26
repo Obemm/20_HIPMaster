@@ -20,7 +20,6 @@ import {
   NIVEAU_PAR_DEFAUT,
   NIVEAU_PARTIE_GUIDEE,
   type NiveauBot,
-  trouverDeckPrete,
   trouverNiveau,
   vueDe,
   type VueJoueur,
@@ -28,6 +27,7 @@ import {
 import { and, asc, eq, inArray, lt, sql } from 'drizzle-orm';
 import type { Base } from '../db/index.ts';
 import { parties } from '../db/schema.ts';
+import { deckDeJeu } from '../decks/decks.ts';
 import { premierMot, tirerGraine } from '../hasard.ts';
 
 /** Parties contre le bot (US-052, ADR 0030) : l'état vit en base, le joueur ne reçoit que sa vue. */
@@ -117,6 +117,7 @@ export type ResultatPartie<T> =
       raison:
         | 'partie-inconnue'
         | 'deck-inconnu'
+        | 'deck-incomplet'
         | 'niveau-inconnu'
         | 'version-perimee'
         | 'pas-votre-tour';
@@ -208,8 +209,12 @@ export async function lancerPartie(
   options: OptionsParties = {},
   guidee = false,
 ): Promise<ResultatPartie<PartieVisible>> {
-  const deck = guidee ? DECK_INITIATION : trouverDeckPrete(idDeck);
-  if (!deck) return echec('deck-inconnu');
+  // Un deck prêté, ou un des decks du joueur connecté, revérifié et figé dans l'état du moteur (US-084, ADR 0049).
+  const choisi = guidee
+    ? ({ ok: true, deck: DECK_INITIATION } as const)
+    : await deckDeJeu(base, idDeck, proprietaire?.joueurId ?? null);
+  if (!choisi.ok) return echec(choisi.raison);
+  const { deck } = choisi;
   const niveau = trouverNiveau(guidee ? NIVEAU_PARTIE_GUIDEE : idNiveau);
   if (!niveau) return echec('niveau-inconnu');
   // La partie guidée rejoue toujours la même partie (ADR 0041) ; les autres reçoivent une clé tirée (ADR 0034).

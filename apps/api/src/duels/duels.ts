@@ -8,7 +8,6 @@ import {
   type Graine,
   type IdJoueur,
   journalDe,
-  type DeckPrete,
   trouverDeckPrete,
   vueDe,
   type VueJoueur,
@@ -33,6 +32,7 @@ import { alias } from 'drizzle-orm/pg-core';
 import { type OptionsBoosters, type Recompense, recompenserVictoire } from '../comptes/boosters.ts';
 import type { Base } from '../db/index.ts';
 import { duels, joueurs } from '../db/schema.ts';
+import { type DeckDeJeu, deckDeJeu } from '../decks/decks.ts';
 import { tirerGraine } from '../hasard.ts';
 import { compterDuel, type OptionsScores } from '../scores/scores.ts';
 
@@ -49,6 +49,8 @@ export interface DuelVisible {
   version: number;
   createur: { pseudo: string };
   deckCreateur: string;
+  /** Le nom du deck du créateur quand c'est un des siens (US-084) ; absent pour un deck prêté. */
+  nomDeckCreateur?: string;
   /** Duel ouvert à tous (adversaire au hasard, US-037) ; sinon défi privé, rejoint par son lien. */
   ouvert: boolean;
   adversaire: { pseudo: string } | null;
@@ -71,6 +73,7 @@ export type ResultatDuel<T> =
       raison:
         | 'introuvable'
         | 'deck-inconnu'
+        | 'deck-incomplet'
         | 'deja-commence'
         | 'son-propre-duel'
         | 'pas-commence'
@@ -242,6 +245,7 @@ async function visible(
     version: ligne.version,
     createur: { pseudo: (ligne.createurId && noms.get(ligne.createurId)) || COMPTE_SUPPRIME },
     deckCreateur: ligne.deckCreateur,
+    ...(ligne.nomDeckCreateur !== null && { nomDeckCreateur: ligne.nomDeckCreateur }),
     ouvert: ligne.ouvert,
     adversaire: adversaireVisible(ligne, noms),
     moi,
@@ -253,15 +257,25 @@ async function visible(
   };
 }
 
+/** Le deck du créateur, figé dès la création du duel quand c'est un des siens (US-084, ADR 0049). */
+function deckDuCreateur(deck: DeckDeJeu) {
+  return {
+    deckCreateur: deck.id,
+    cartesCreateur: deck.aSoi ? [...deck.cartes] : null,
+    nomDeckCreateur: deck.aSoi ? deck.nom : null,
+  };
+}
+
 export async function creerDuel(
   base: Base,
   joueurId: string,
   idDeck: string,
 ): Promise<ResultatDuel<DuelVisible>> {
-  if (!trouverDeckPrete(idDeck)) return echec('deck-inconnu');
+  const choisi = await deckDeJeu(base, idDeck, joueurId);
+  if (!choisi.ok) return echec(choisi.raison);
   const [ligne] = await base
     .insert(duels)
-    .values({ createurId: joueurId, deckCreateur: idDeck })
+    .values({ createurId: joueurId, ...deckDuCreateur(choisi.deck) })
     .returning();
   if (!ligne) throw new Error('Création du duel impossible.');
   return { ok: true, valeur: await visible(base, ligne, joueurId, 0) };
@@ -321,13 +335,14 @@ async function lancer(
   tx: Transaction,
   ligne: LigneDuel,
   joueurId: string,
-  deck: DeckPrete,
+  deck: DeckDeJeu,
   options: OptionsDuels,
 ): Promise<LigneDuel> {
-  const deckCreateur = trouverDeckPrete(ligne.deckCreateur);
-  if (!deckCreateur) throw new Error(`Deck du créateur inconnu : ${ligne.deckCreateur}`);
+  // Le deck du créateur, figé à la création ; un deck prêté se retrouve par son identifiant.
+  const cartesCreateur = ligne.cartesCreateur ?? trouverDeckPrete(ligne.deckCreateur)?.cartes;
+  if (!cartesCreateur) throw new Error(`Deck du créateur inconnu : ${ligne.deckCreateur}`);
   const graine = (options.tirerGraine ?? tirerGraine)();
-  const etat = creerPartie({ j1: deckCreateur.cartes, j2: deck.cartes }, graine);
+  const etat = creerPartie({ j1: cartesCreateur, j2: deck.cartes }, graine);
   const [maj] = await tx
     .update(duels)
     .set({
@@ -375,8 +390,9 @@ export async function chercherAdversaire(
   idDeck: string,
   options: OptionsDuels = {},
 ): Promise<ResultatDuel<{ duel: DuelVisible; enAttente: boolean }>> {
-  const deck = trouverDeckPrete(idDeck);
-  if (!deck) return echec('deck-inconnu');
+  const choisi = await deckDeJeu(base, idDeck, joueurId);
+  if (!choisi.ok) return echec(choisi.raison);
+  const { deck } = choisi;
   const limite = new Date(horloge(options) - (options.expirationDefiMs ?? SEPT_JOURS));
   const ligne = await base.transaction(async (tx) => {
     await tx.execute(sql`select pg_advisory_xact_lock(hashtext('hipmaster:appariement'))`);
@@ -413,7 +429,7 @@ export async function chercherAdversaire(
     if (choisi) return lancer(tx, choisi, joueurId, deck, options);
     const [ouvert] = await tx
       .insert(duels)
-      .values({ createurId: joueurId, deckCreateur: deck.id, ouvert: true })
+      .values({ createurId: joueurId, ...deckDuCreateur(deck), ouvert: true })
       .returning();
     if (!ouvert) throw new Error('Création du duel impossible.');
     return ouvert;
@@ -435,8 +451,9 @@ export async function rejoindreDuel(
   idDeck: string,
   options: OptionsDuels = {},
 ): Promise<ResultatDuel<DuelVisible>> {
-  const deck = trouverDeckPrete(idDeck);
-  if (!deck) return echec('deck-inconnu');
+  const choisi = await deckDeJeu(base, idDeck, joueurId);
+  if (!choisi.ok) return echec(choisi.raison);
+  const { deck } = choisi;
   const resultat = await base.transaction(async (tx) => {
     const [ligne] = await tx.select().from(duels).where(eq(duels.id, id)).for('update');
     if (!ligne) return echec('introuvable');

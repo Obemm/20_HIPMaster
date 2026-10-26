@@ -6,6 +6,8 @@ import { firstValueFrom } from 'rxjs';
 import type { Carte } from '../cartes/carte';
 import { CompteService } from '../compte/compte.service';
 import { EtatSession } from '../compte/etat-session';
+import { AvisMesDecks } from '../decks/avis-mes-decks';
+import { MesDecksService } from '../decks/mes-decks.service';
 import { estUuid } from '../identifiant';
 import { BoiteDeck } from '../jeu/boite-deck';
 import { PartieEcran } from '../jeu/partie';
@@ -24,7 +26,7 @@ const ATTENTE_MS = 5000;
  */
 @Component({
   selector: 'hip-duel',
-  imports: [RouterLink, PartieEcran, ErreurChargement, EtatSession, BoiteDeck],
+  imports: [RouterLink, PartieEcran, ErreurChargement, EtatSession, BoiteDeck, AvisMesDecks],
   templateUrl: './duel.html',
 })
 export class DuelEcran {
@@ -37,6 +39,12 @@ export class DuelEcran {
   private readonly origine = inject(DOCUMENT).location.origin;
 
   protected readonly decks = httpResource<Deck[]>(() => '/api/v1/decks');
+  private readonly mesDecks = inject(MesDecksService);
+  /** Mes decks complets d'abord, puis les decks prêtés (US-084). */
+  protected readonly proposes = computed(() => [
+    ...this.mesDecks.jouables(),
+    ...(this.decks.hasValue() ? this.decks.value() : []),
+  ]);
   protected readonly duel = signal<Duel | null>(null);
   /** Le catalogue, pour les cartes phares des decks, seulement quand on choisit le sien pour relever (US-068). */
   protected readonly catalogue = httpResource<Carte[]>(() => {
@@ -57,8 +65,12 @@ export class DuelEcran {
   protected readonly lien = computed(
     () => `${this.origine}/duels/${encodeURIComponent(this.id())}`,
   );
-  protected readonly nomDeck = (id: string) =>
-    (this.decks.hasValue() ? this.decks.value() : []).find((d) => d.id === id)?.nom ?? id;
+  /** Le nom du deck du créateur : le sien (US-084), ou un deck prêté retrouvé dans le catalogue. */
+  protected readonly nomDeck = (duel: Duel) =>
+    duel.nomDeckCreateur ??
+    (this.decks.hasValue() ? this.decks.value() : []).find((d) => d.id === duel.deckCreateur)
+      ?.nom ??
+    duel.deckCreateur;
   /** Le créateur attend qu'un collègue relève son défi. */
   protected readonly enAttente = computed(() => {
     const duel = this.duel();

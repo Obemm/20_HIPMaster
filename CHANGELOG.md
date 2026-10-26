@@ -7,6 +7,11 @@ Toutes les évolutions notables du projet sont consignées ici
 
 ### Ajouté
 
+- Jouer avec ses decks : contre le bot, en défi et contre un adversaire au hasard, ses decks complets se proposent
+  avant les decks prêtés (toujours là), avec leur nom et leurs cartes phares ; les decks incomplets ne sont pas
+  proposés et l'écran le dit. Le serveur revérifie le deck au lancement et le fige dans la partie : le modifier ou le
+  supprimer ensuite ne change rien, même à un défi qui attend encore son adversaire, qui voit le nom du deck. En
+  français et en anglais (US-084, ADR 0049).
 - Des decks à soi : chaque joueur compose jusqu'à 5 decks avec les cartes de sa collection, les nomme, les modifie,
   les duplique, les supprime ou part d'un deck prêté (limité aux cartes possédées). L'écran de construction, pensé pour
   le téléphone, filtre les cartes par famille, rareté et coût, montre la courbe de coût et la répartition par famille,
