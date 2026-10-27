@@ -7,6 +7,11 @@ Toutes les évolutions notables du projet sont consignées ici
 
 ### Ajouté
 
+- Proposer une carte : un `CONTRIBUTING.md` et un guide, « Concevoir une carte » (`docs/contribuer/regles-cartes.md`),
+  pour les architectes et tech leads qui veulent proposer leurs cartes par pull request depuis un fork : familles,
+  types, raretés, ordres de grandeur relevés sur les 74 cartes, capacités, texte « En vrai », fiche « En savoir
+  plus », règles de contenu (le dépôt est public dès l'ouverture d'une PR), gabarit de proposition et deux exemples
+  commentés (US-027, ADR 0050).
 - Jouer avec ses decks : contre le bot, en défi et contre un adversaire au hasard, ses decks complets se proposent
   avant les decks prêtés (toujours là), avec leur nom et leurs cartes phares ; les decks incomplets ne sont pas
   proposés et l'écran le dit. Le serveur revérifie le deck au lancement et le fige dans la partie : le modifier ou le

@@ -7,6 +7,9 @@ Stack, alignée sur le référentiel technologique the company ([ADR 0005](docs/
 [Angular 22](https://angular.dev) + [Tailwind CSS 4](https://tailwindcss.com), API [Fastify 5](https://fastify.dev),
 PostgreSQL + [Drizzle ORM](https://orm.drizzle.team), TypeScript strict, monorepo npm workspaces.
 
+**Proposer une carte** : les architectes et tech leads peuvent proposer leurs propres cartes par pull request, voir
+[CONTRIBUTING.md](CONTRIBUTING.md).
+
 ## Prérequis
 
 - Node.js 24.15 ou plus (voir `.nvmrc`) et npm

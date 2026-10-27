@@ -1,6 +1,6 @@
 # Tableau de suivi
 
-_Dernière mise à jour : 2026-10-26_
+_Dernière mise à jour : 2026-10-27_
 
 ## Epics
 
@@ -14,7 +14,7 @@ _Dernière mise à jour : 2026-10-26_
 | [EPIC-05 — Illustrations des cartes](epics/EPIC-05-illustrations.md)                              | Should   | Terminé  | 6/6        |
 | [EPIC-06 — Duels entre joueurs](epics/EPIC-06-duels-joueurs.md)                                   | Should   | Terminé  | 8/8        |
 | [EPIC-07 — Vie sociale](epics/EPIC-07-vie-sociale.md)                                             | Could    | Terminé  | 1/1        |
-| [EPIC-08 — Cartes proposées par la communauté IT](epics/EPIC-08-cartes-communaute.md)             | Should   | En cours | 0/5        |
+| [EPIC-08 — Cartes proposées par la communauté IT](epics/EPIC-08-cartes-communaute.md)             | Should   | En cours | 1/5        |
 | [EPIC-09 — Mise en ligne sur Google Cloud](epics/EPIC-09-mise-en-ligne-gcp.md)                    | Must     | Terminé  | 14/14      |
 | [EPIC-10 — Identité visuelle et confort sur téléphone](epics/EPIC-10-identite-visuelle-mobile.md) | Should   | Terminé  | 6/6        |
 | [EPIC-11 — Apprendre à jouer](epics/EPIC-11-apprendre-a-jouer.md)                                 | Should   | Terminé  | 3/3        |
@@ -182,7 +182,7 @@ catalogue, set d'accueil).
 
 | Story                                                                                                                                  | Epic    | Priorité | Taille | Statut    |
 | -------------------------------------------------------------------------------------------------------------------------------------- | ------- | -------- | ------ | --------- |
-| [US-027 — Guide du contributeur : règles de création](stories/US-027-guide-contributeur.md)                                            | EPIC-08 | Should   | S      | Prête     |
+| [US-027 — Guide du contributeur : règles de création](stories/US-027-guide-contributeur.md)                                            | EPIC-08 | Should   | S      | Faite     |
 | [US-028 — Kit pour l'IA du contributeur](stories/US-028-proposer-carte.md)                                                             | EPIC-08 | Should   | M      | À affiner |
 | [US-029 — Relire une carte dans sa pull request](stories/US-029-relire-propositions.md)                                                | EPIC-08 | Should   | S      | À affiner |
 | [US-030 — L'auteur d'une carte, première carte de la communauté](stories/US-030-integrer-carte-acceptee.md)                            | EPIC-08 | Should   | M      | À affiner |
