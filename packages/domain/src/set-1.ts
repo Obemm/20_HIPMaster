@@ -911,7 +911,7 @@ export const SET_1: readonly Carte[] = [
     famille: 'api',
     type: 'composant',
     rarete: 'rare',
-    cout: 3,
+    cout: 4,
     attaque: 2,
     pv: 3,
     capacites: [],

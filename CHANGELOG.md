@@ -280,6 +280,9 @@ Toutes les évolutions notables du projet sont consignées ici
 
 ### Modifié
 
+- API GraphQL (n° 74) coûte 4 de Débit au lieu de 3, statistiques et effet inchangés : mise dans chaque deck prêté
+  par la mesure d'US-029, elle faisait gagner 13 à 18 points au deck Héritage, et sa pioche valait à elle seule 18 à
+  20 points à corps égal. À 4, aucun deck ne bouge de plus de 6 points sur deux graines (US-085).
 - Les illustrations portent l'empreinte de leur contenu dans leur nom (`/illustrations/set-1/53-640.a1b2c3d4.avif`) :
   une image refaite s'affiche dès la version suivante du site, au lieu de rester bloquée par le cache, et une image
   déjà vue n'est plus jamais retéléchargée (cache d'un an, `immutable`). Une illustration absente répond 404, le

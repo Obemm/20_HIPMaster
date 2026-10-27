@@ -19,7 +19,7 @@ _Dernière mise à jour : 2026-10-27_
 | [EPIC-10 — Identité visuelle et confort sur téléphone](epics/EPIC-10-identite-visuelle-mobile.md) | Should   | Terminé  | 6/6        |
 | [EPIC-11 — Apprendre à jouer](epics/EPIC-11-apprendre-a-jouer.md)                                 | Should   | Terminé  | 3/3        |
 | [EPIC-12 — Des cartes qui enseignent](epics/EPIC-12-cartes-qui-enseignent.md)                     | Must     | Terminé  | 2/2        |
-| [EPIC-13 — Un set 2 : architecture et pratiques](epics/EPIC-13-set-2-architecture-pratiques.md)   | Could    | En cours | 1/2        |
+| [EPIC-13 — Un set 2 : architecture et pratiques](epics/EPIC-13-set-2-architecture-pratiques.md)   | Could    | En cours | 2/3        |
 | [EPIC-14 — Un jeu en français et en anglais](epics/EPIC-14-multilingue.md)                        | Should   | Terminé  | 4/4        |
 | [EPIC-15 — Des decks à soi](epics/EPIC-15-decks-personnalises.md)                                 | Should   | Terminé  | 2/2        |
 
@@ -190,6 +190,7 @@ catalogue, set d'accueil).
 | [US-086 — Le kit du contributeur en anglais](stories/US-086-kit-contributeur-anglais.md)                                               | EPIC-08 | Should   | S      | Faite     |
 | [US-076 — Concevoir le set 2 : DDD, microservices, DevOps](stories/US-076-concevoir-set-2.md)                                          | EPIC-13 | Could    | L      | À affiner |
 | [US-077 — Trois nouvelles cartes : API First, EDA et API GraphQL](stories/US-077-api-first-eda-graphql.md)                             | EPIC-13 | Should   | M      | Faite     |
+| [US-085 — Rééquilibrer la carte API GraphQL](stories/US-085-reequilibrer-api-graphql.md)                                               | EPIC-13 | Should   | S      | Faite     |
 | [US-079 — Le socle bilingue : i18n d'Angular, deux versions du site et un sélecteur de langue](stories/US-079-socle-bilingue.md)       | EPIC-14 | Should   | M      | Faite     |
 | [US-080 — Toute l'interface en anglais](stories/US-080-interface-anglais.md)                                                           | EPIC-14 | Should   | L      | Faite     |
 | [US-081 — Les cartes, les capacités, les fiches et la règle en anglais](stories/US-081-contenu-anglais.md)                             | EPIC-14 | Should   | L      | Faite     |

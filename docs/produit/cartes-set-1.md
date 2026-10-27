@@ -133,7 +133,7 @@ microservices et le DevOps. Elles prennent les numéros 72 à 74, à la suite, s
 | --- | ----------- | ------------ | --------- | ------ | ---- | ------ | ----------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
 | 72  | API First   | API          | Sort      | Rare   | 3    | —      | Piochez les deux premières cartes API de votre pioche, puis un de vos composants API gagne +1 attaque | Le contrat avant le code, fournisseur et consommateurs en parallèle |
 | 73  | EDA         | Événementiel | Sort      | Épique | 3    | —      | Chacun de vos composants EDA inflige 1 dégât à un composant adverse tiré au hasard                    | Un fait publié, chaque abonné y réagit sans attendre                |
-| 74  | API GraphQL | API          | Composant | Rare   | 3    | 2/3    | Quand elle est posée, piochez une carte par autre composant en jeu chez vous (2 au plus)              | Une requête, exactement les champs voulus, plusieurs sources        |
+| 74  | API GraphQL | API          | Composant | Rare   | 4    | 2/3    | Quand elle est posée, piochez une carte par autre composant en jeu chez vous (2 au plus)              | Une requête, exactement les champs voulus, plusieurs sources        |
 
 **Équilibrage.** Les decks prêtés ne changent pas. Pour mesurer chaque carte, le deck Moderne en reçoit deux
 exemplaires (à la place de Workflow low-code et d'une File d'attente pour API First, des deux Connecteur SaaS pour
@@ -154,6 +154,47 @@ Réglages faits en chemin : API First à 2 de Débit et une seule carte API pioc
 avec deux cartes à 2 de Débit, elle passait au-dessus (53 à 59 %), d'où le coût de 3. API GraphQL ne comptait d'abord
 que les composants API : peu nombreux dans un deck, elle faisait tomber Moderne à 37–41 %. EDA reste un peu forte dans
 le miroir Moderne (56–59 %), sans dépasser le Splitter. Toutes les mesures restent entre 40 et 59 %.
+
+### API GraphQL passe à 4 de Débit (US-085, 2026-10-27)
+
+La mesure d'US-029 (`npm run simuler:carte -- 74`) met la carte dans **chaque** deck prêté, et non plus dans le seul
+Moderne : à 3 de Débit, Héritage gagnait 13 à 18 points contre chacun des trois decks. Deux causes se cumulaient,
+démêlées par des témoins (400 parties par duel, Batch de nuit des deux côtés ; victoires contre Héritage / Moderne /
+Hybride) :
+
+| Deck et remplacement (graine 1, sauf mention)          | Victoires      | Écart à l'inchangé |
+| ------------------------------------------------------ | -------------- | ------------------ |
+| Héritage inchangé                                      | 48 / 51 / 49 % | —                  |
+| Héritage, API GraphQL (3) pour Universal Messaging+MWS | 65 / 69 / 66 % | +16 à +18          |
+| Héritage, SOAP / WSDL (3/4 sans effet) pour les mêmes  | 58 / 62 / 56 % | +7 à +11           |
+| Héritage, API GraphQL (3) pour deux MQSeries           | 56 / 58 / 50 % | +1 à +8            |
+| Moderne inchangé                                       | 46 / 49 / 48 % | —                  |
+| Moderne, API GraphQL (3) pour deux Pub/Sub             | 64 / 68 / 68 % | +18 à +20          |
+| Moderne, Webhook (2/3 sans effet) pour deux Pub/Sub    | 45 / 50 / 46 % | −2 à +1            |
+| Moderne, idem graine 2 (inchangé : 47 / 49 / 44 %)     | 42 / 48 / 47 % | −5 à +3            |
+
+- **L'outil** choisit, à coût égal, les premières cartes du deck : dans Héritage, Universal Messaging et MWS, deux
+  exemplaires uniques et faibles (Supervision ne sert pas au bot). Même une commune 3/4 sans effet y gagne 7 à 11
+  points. Départager en faveur d'une paire du deck (deux MQSeries) apaisait Héritage, mais déplaçait le problème :
+  Moderne perdait alors ses deux Pub/Sub et gagnait 18 à 20 points, et les mesures d'API First et d'EDA bougeaient
+  aussi (jusqu'à −12 points). La règle de l'outil reste donc celle d'US-029.
+- **La carte** : à corps égal (Webhook, 2/3 sans effet, à la place des mêmes Pub/Sub), Moderne ne bouge pas ; avec
+  API GraphQL, il gagne 18 à 20 points. La pioche de deux cartes vaut à elle seule plus que l'écart toléré.
+
+Réglages essayés avec la règle de l'outil (graine 1, écart d'Héritage contre les trois decks) : 1/3 à 3 de Débit,
++10 à +14 ; 2/2 à 3 de Débit, +13 à +15 ; une seule carte piochée, +13 à +14 ; **4 de Débit, 2/3, deux cartes au
+plus : −2 à +3**. La carte passe à 4 de Débit, sans autre changement. `npm run simuler:carte -- 74` sur deux graines :
+
+| Deck avec la carte | contre Héritage     | contre Moderne      | contre Hybride      |
+| ------------------ | ------------------- | ------------------- | ------------------- |
+| Héritage           | 48 → 50 / 50 → 47 % | 51 → 49 / 53 → 52 % | 49 → 52 / 47 → 47 % |
+| Moderne            | 46 → 49 / 47 → 45 % | 49 → 48 / 49 → 45 % | 48 → 44 / 44 → 43 % |
+| Hybride            | 51 → 49 / 50 → 45 % | 55 → 52 / 51 → 48 % | 49 → 45 / 50 → 48 % |
+
+Aucun écart de 10 points ou plus (de −6 à +3). Repères à 4 de Débit : à la place de deux Pub/Sub (coût 3), Moderne
+monte encore à 57–63 % (graine 1) et 57–59 % (graine 2), soit 4 à 6 points au-dessus de deux SOAP / WSDL, communes
+3/4 à 3 de Débit ; à la place de deux Connecteur SaaS (mesure d'US-077), 45 / 49 / 46 % puis 41 / 49 / 38 %. Les
+decks prêtés ne contiennent pas la carte : `npm run simuler` est inchangé (45 à 54 % de victoires).
 
 ## Points à trancher pendant l'équilibrage
 

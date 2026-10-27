@@ -20,6 +20,7 @@ de date.
 
 - [ ] US-076 — Concevoir le set 2 : DDD, microservices, DevOps
 - [x] US-077 — Trois nouvelles cartes : API First, EDA et API GraphQL
+- [x] US-085 — Rééquilibrer la carte API GraphQL
 
 ## Pistes de contenu (à trier)
 

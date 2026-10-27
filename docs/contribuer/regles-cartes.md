@@ -162,14 +162,16 @@ Fill it in first, then give it to your AI and paste it into the pull request des
 
 | Family | Type      | Rarity | Cost | Attack / HP | Effect                                                                             |
 | ------ | --------- | ------ | ---- | ----------- | ---------------------------------------------------------------------------------- |
-| API    | Component | Rare   | 3    | 2 / 3       | When deployed, draw one card for each other component you have in play (2 at most) |
+| API    | Component | Rare   | 4    | 2 / 3       | When deployed, draw one card for each other component you have in play (2 at most) |
 
 In real life: "A single endpoint: the client asks for exactly the fields it needs, in one query across several
 sources."
 
 - **The mechanics tell the technology's story**: one query that gathers several sources becomes a draw that grows with
   the components already in play.
-- **The stats are modest** (2 / 3 for 3 Throughput, below the benchmark) because the effect brings cards.
+- **The stats are modest** (2 / 3 for 4 Throughput, well below the benchmark) because the effect brings cards. First
+  published at 3 Throughput, it made the Héritage deck win 13 to 18 points more: drawing cards is worth a lot
+  (US-085).
 - **No new ability**: a short effect, of the same kind as Apigee API Hub's targeted draw.
 
 ### A reworked card: API First (no. 72)
