@@ -58,5 +58,6 @@ référence the company.
 | [0047](0047-illustrations-generees-par-gemini.md)      | Illustrations générées par Gemini : une créature par carte, relues par le porteur | aucune ; [ref] par analogie   | Acceptée                      |
 | [0048](0048-decks-des-joueurs.md)                      | Decks des joueurs : 5 par compte, vérifiés par le serveur, places libérées        | [ref], 007 retenus            | Acceptée                      |
 | [0049](0049-jouer-avec-son-deck.md)                    | Jouer avec son deck : revérifié au lancement, figé dans la partie                 | [ref] retenu                  | Acceptée                      |
+| [0050](0050-cartes-communaute-par-pull-request.md)     | Cartes de la communauté par PR depuis un fork, kit pour l'IA du contributeur      | [ref] écarté ; [ref] retenu | Acceptée                      |
 
 Modèle : [template.md](template.md).

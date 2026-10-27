@@ -4,24 +4,24 @@ _Dernière mise à jour : 2026-10-26_
 
 ## Epics
 
-| Epic                                                                                              | Priorité | Statut    | Avancement |
-| ------------------------------------------------------------------------------------------------- | -------- | --------- | ---------- |
-| [EPIC-00 — Fondations](epics/EPIC-00-fondations.md)                                               | Must     | Terminé   | 10/10      |
-| [EPIC-01 — Univers et modèle de carte](epics/EPIC-01-univers-cartes.md)                           | Must     | Terminé   | 2/2        |
-| [EPIC-02 — Comptes joueurs](epics/EPIC-02-comptes-joueurs.md)                                     | Must     | Terminé   | 1/1        |
-| [EPIC-03 — Boosters et collection](epics/EPIC-03-boosters-collection.md)                          | Must     | Terminé   | 3/3        |
-| [EPIC-04 — Combat contre le bot](epics/EPIC-04-combat-bot.md)                                     | Must     | Terminé   | 15/15      |
-| [EPIC-05 — Illustrations des cartes](epics/EPIC-05-illustrations.md)                              | Should   | Terminé   | 6/6        |
-| [EPIC-06 — Duels entre joueurs](epics/EPIC-06-duels-joueurs.md)                                   | Should   | Terminé   | 8/8        |
-| [EPIC-07 — Vie sociale](epics/EPIC-07-vie-sociale.md)                                             | Could    | Terminé   | 1/1        |
-| [EPIC-08 — Cartes proposées par la communauté IT](epics/EPIC-08-cartes-communaute.md)             | Should   | À affiner | 0/5        |
-| [EPIC-09 — Mise en ligne sur Google Cloud](epics/EPIC-09-mise-en-ligne-gcp.md)                    | Must     | Terminé   | 14/14      |
-| [EPIC-10 — Identité visuelle et confort sur téléphone](epics/EPIC-10-identite-visuelle-mobile.md) | Should   | Terminé   | 6/6        |
-| [EPIC-11 — Apprendre à jouer](epics/EPIC-11-apprendre-a-jouer.md)                                 | Should   | Terminé   | 3/3        |
-| [EPIC-12 — Des cartes qui enseignent](epics/EPIC-12-cartes-qui-enseignent.md)                     | Must     | Terminé   | 2/2        |
-| [EPIC-13 — Un set 2 : architecture et pratiques](epics/EPIC-13-set-2-architecture-pratiques.md)   | Could    | En cours  | 1/2        |
-| [EPIC-14 — Un jeu en français et en anglais](epics/EPIC-14-multilingue.md)                        | Should   | Terminé   | 4/4        |
-| [EPIC-15 — Des decks à soi](epics/EPIC-15-decks-personnalises.md)                                 | Should   | Terminé   | 2/2        |
+| Epic                                                                                              | Priorité | Statut   | Avancement |
+| ------------------------------------------------------------------------------------------------- | -------- | -------- | ---------- |
+| [EPIC-00 — Fondations](epics/EPIC-00-fondations.md)                                               | Must     | Terminé  | 10/10      |
+| [EPIC-01 — Univers et modèle de carte](epics/EPIC-01-univers-cartes.md)                           | Must     | Terminé  | 2/2        |
+| [EPIC-02 — Comptes joueurs](epics/EPIC-02-comptes-joueurs.md)                                     | Must     | Terminé  | 1/1        |
+| [EPIC-03 — Boosters et collection](epics/EPIC-03-boosters-collection.md)                          | Must     | Terminé  | 3/3        |
+| [EPIC-04 — Combat contre le bot](epics/EPIC-04-combat-bot.md)                                     | Must     | Terminé  | 15/15      |
+| [EPIC-05 — Illustrations des cartes](epics/EPIC-05-illustrations.md)                              | Should   | Terminé  | 6/6        |
+| [EPIC-06 — Duels entre joueurs](epics/EPIC-06-duels-joueurs.md)                                   | Should   | Terminé  | 8/8        |
+| [EPIC-07 — Vie sociale](epics/EPIC-07-vie-sociale.md)                                             | Could    | Terminé  | 1/1        |
+| [EPIC-08 — Cartes proposées par la communauté IT](epics/EPIC-08-cartes-communaute.md)             | Should   | En cours | 0/5        |
+| [EPIC-09 — Mise en ligne sur Google Cloud](epics/EPIC-09-mise-en-ligne-gcp.md)                    | Must     | Terminé  | 14/14      |
+| [EPIC-10 — Identité visuelle et confort sur téléphone](epics/EPIC-10-identite-visuelle-mobile.md) | Should   | Terminé  | 6/6        |
+| [EPIC-11 — Apprendre à jouer](epics/EPIC-11-apprendre-a-jouer.md)                                 | Should   | Terminé  | 3/3        |
+| [EPIC-12 — Des cartes qui enseignent](epics/EPIC-12-cartes-qui-enseignent.md)                     | Must     | Terminé  | 2/2        |
+| [EPIC-13 — Un set 2 : architecture et pratiques](epics/EPIC-13-set-2-architecture-pratiques.md)   | Could    | En cours | 1/2        |
+| [EPIC-14 — Un jeu en français et en anglais](epics/EPIC-14-multilingue.md)                        | Should   | Terminé  | 4/4        |
+| [EPIC-15 — Des decks à soi](epics/EPIC-15-decks-personnalises.md)                                 | Should   | Terminé  | 2/2        |
 
 ## Itération 0 (en cours) — fondations
 
@@ -182,10 +182,10 @@ catalogue, set d'accueil).
 
 | Story                                                                                                                                  | Epic    | Priorité | Taille | Statut    |
 | -------------------------------------------------------------------------------------------------------------------------------------- | ------- | -------- | ------ | --------- |
-| [US-027 — Guide du contributeur](stories/US-027-guide-contributeur.md)                                                                 | EPIC-08 | Should   | S      | À affiner |
-| [US-028 — Proposer une carte depuis le jeu](stories/US-028-proposer-carte.md)                                                          | EPIC-08 | Should   | L      | À affiner |
-| [US-029 — Relire et instruire les propositions](stories/US-029-relire-propositions.md)                                                 | EPIC-08 | Should   | M      | À affiner |
-| [US-030 — Intégrer une carte acceptée au catalogue](stories/US-030-integrer-carte-acceptee.md)                                         | EPIC-08 | Should   | M      | À affiner |
+| [US-027 — Guide du contributeur : règles de création](stories/US-027-guide-contributeur.md)                                            | EPIC-08 | Should   | S      | Prête     |
+| [US-028 — Kit pour l'IA du contributeur](stories/US-028-proposer-carte.md)                                                             | EPIC-08 | Should   | M      | À affiner |
+| [US-029 — Relire une carte dans sa pull request](stories/US-029-relire-propositions.md)                                                | EPIC-08 | Should   | S      | À affiner |
+| [US-030 — L'auteur d'une carte, première carte de la communauté](stories/US-030-integrer-carte-acceptee.md)                            | EPIC-08 | Should   | M      | À affiner |
 | [US-031 — Créditer les contributeurs](stories/US-031-crediter-contributeurs.md)                                                        | EPIC-08 | Could    | S      | À affiner |
 | [US-076 — Concevoir le set 2 : DDD, microservices, DevOps](stories/US-076-concevoir-set-2.md)                                          | EPIC-13 | Could    | L      | À affiner |
 | [US-077 — Trois nouvelles cartes : API First, EDA et API GraphQL](stories/US-077-api-first-eda-graphql.md)                             | EPIC-13 | Should   | M      | Faite     |

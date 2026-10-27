@@ -1,31 +1,32 @@
-# US-030 — Intégrer une carte acceptée au catalogue
+# US-030 — L'auteur d'une carte dans le catalogue, et une première carte de la communauté
 
 - **Epic** : EPIC-08
 - **Statut** : À affiner
 - **Priorité** : Should
 - **Taille** : M
-- **Branche** : `us-030-integrer-carte-acceptee`
+- **Branche** : `us-030-auteur-carte`
 
 ## Récit
 
-En tant que **mainteneur du jeu**, je veux **transformer une proposition acceptée en carte du catalogue en une
-commande** afin de **publier les cartes de la communauté sans ressaisie ni erreur**.
+En tant que **mainteneur du jeu**, je veux **qu'une carte du catalogue puisse porter son auteur** et **éprouver le kit
+avec un premier collègue** afin de **publier les cartes de la communauté sans ressaisie, avec leur crédit**.
 
 ## Critères d'acceptation
 
-- [ ] Un ADR précise le chemin d'une proposition vers le catalogue (ADR 0011 : le catalogue est du code) et le set
-      d'accueil (set 1 complété ou set 2 « communautaire »).
-- [ ] Une commande (ex. `npm run carte:integrer -- <id>`) écrit la carte en TypeScript dans `packages/domain` avec
-      un numéro jamais utilisé, son auteur et sa date ; les tests d'invariants du catalogue passent.
-- [ ] Une **simulation d'équilibrage** (decks prêtés et niveaux du bot) est lancée sur le catalogue enrichi ; le
-      résultat est joint à la PR, qui reste relue par un humain.
-- [ ] Une capacité nouvelle n'est jamais créée par la commande : elle fait l'objet de sa propre story.
-- [ ] La proposition passe au statut « publiée » une fois la PR fusionnée et déployée.
+- [ ] Une carte du domaine peut porter un **auteur** facultatif (nom affiché choisi par le contributeur) ; les cartes
+      existantes n'en ont pas ; l'API du catalogue l'expose (contrat OpenAPI mis à jour avant le code).
+- [ ] Les tests d'invariants du catalogue acceptent les cartes avec auteur, à la suite des numéros existants.
+- [ ] La consigne de carte (US-028) renseigne ce champ.
+- [ ] **Étant donné** un collègue architecte et le kit, **quand** il ouvre sa PR depuis un fork, **alors** elle est
+      relue, fusionnée et mise en ligne ; ce qui a coincé est corrigé dans le guide ou la consigne.
 
 ## Notes
 
-- Les cartes publiées utilisent l'illustration provisoire (US-018) en attendant EPIC-05.
+- ADR [0050](../../decisions/0050-cartes-communaute-par-pull-request.md). Remplace la commande d'intégration du plan
+  initial (`npm run carte:integrer`), devenue inutile : la PR du contributeur est l'intégration.
+- L'illustration suit la chaîne de l'ADR 0047 ; à défaut, l'illustration provisoire (ADR 0016).
 
 ## Journal
 
-- 2026-10-19 — création (EPIC-08, à traiter plus tard).
+- 2026-10-19 — création (EPIC-08, à traiter plus tard), sous le titre « Intégrer une carte acceptée au catalogue ».
+- 2026-10-27 — affinage (ADR 0050) : un champ auteur et un premier essai avec un collègue, plus de commande.

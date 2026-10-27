@@ -1,4 +1,4 @@
-# US-031 — Créditer les contributeurs
+# US-031 — Créditer les contributeurs dans le jeu
 
 - **Epic** : EPIC-08
 - **Statut** : À affiner
@@ -13,12 +13,18 @@ d'avoir envie d'en proposer d'autres**.
 
 ## Critères d'acceptation
 
-- [ ] Le détail d'une carte communautaire affiche « Proposée par … » (nom choisi par l'auteur, qu'il peut masquer).
+- [ ] Le détail d'une carte qui a un auteur (US-030) affiche « Proposée par … » ; le texte est traduit (ADR 0042).
 - [ ] Le catalogue peut se filtrer sur les cartes de la communauté.
 - [ ] Une page « Contributeurs » liste les auteurs et leurs cartes publiées.
-- [ ] L'auteur reçoit un exemplaire de sa carte dans sa collection à la publication.
-- [ ] Tests de l'écran ; audit axe-core au vert.
+- [ ] Tests de l'écran ; parcours e2e et audit axe-core au vert.
+
+## Notes
+
+- Le nom affiché vient de la PR (choisi par l'auteur) : il n'est lié à aucun compte du jeu (ADR 0050). Le plan
+  initial offrait un exemplaire de la carte dans la collection de l'auteur : écarté, faute de lien entre l'auteur et
+  un compte.
 
 ## Journal
 
 - 2026-10-19 — création (EPIC-08, à traiter plus tard).
+- 2026-10-27 — affinage (ADR 0050) : crédit tiré du champ auteur du catalogue.

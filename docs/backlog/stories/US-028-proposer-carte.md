@@ -1,34 +1,42 @@
-# US-028 — Proposer une carte depuis le jeu
+# US-028 — Kit pour l'IA du contributeur : consignes de carte et d'illustration
 
 - **Epic** : EPIC-08
 - **Statut** : À affiner
 - **Priorité** : Should
-- **Taille** : L
-- **Branche** : `us-028-proposer-carte`
+- **Taille** : M
+- **Branche** : `us-028-kit-ia-contributeur`
 
 ## Récit
 
-En tant que **tech lead ou architecte connecté**, je veux **proposer une carte depuis le jeu** afin de **partager ce
-que je connais du SI sous une forme ludique**.
+En tant qu'**architecte qui propose une carte**, je veux **donner à mon assistant IA une consigne prête à l'emploi**
+afin qu'**il écrive la carte et son illustration conformes au jeu, sans que j'aie à connaître tous les fichiers à
+toucher**.
 
 ## Critères d'acceptation
 
-- [ ] Un ADR tranche l'**identité des contributeurs** (compte invité ou identité vérifiée) et le stockage des
-      propositions.
-- [ ] Un formulaire reprend le gabarit du guide (US-027) ; un **aperçu** montre la carte telle qu'elle serait
-      affichée (composant de carte existant), avec un avertissement si les statistiques sortent des ordres de
-      grandeur de sa rareté.
-- [ ] **Étant donné** un formulaire valide, **quand** je l'envoie, **alors** la proposition est enregistrée avec le
-      statut « proposée », et je la retrouve dans « Mes propositions » avec son statut et les commentaires reçus.
-- [ ] Je peux modifier une proposition tant qu'elle n'est pas acceptée, ou la retirer.
-- [ ] Une case à cocher confirme que la carte ne contient rien de confidentiel (règles d'US-027).
-- [ ] Contrat OpenAPI avant le code ; tests de l'API et de l'écran ; parcours e2e et audit axe-core au vert.
+- [ ] Une **consigne de carte** (`docs/contribuer/consigne-carte.md`), à copier dans un assistant de code, part de la
+      proposition remplie selon le gabarit d'US-027 et liste tout ce qu'il faut écrire : la carte dans le catalogue
+      du domaine (numéro suivant), sa traduction anglaise, sa fiche « En savoir plus » en français et en anglais, les
+      tests et parcours e2e qui comptent les cartes, la documentation (`cartes-set-1.md`), le CHANGELOG.
+- [ ] Elle interdit d'ajouter une capacité de combat ou de toucher au moteur, et exige `npm run check` au vert avant
+      d'ouvrir la PR.
+- [ ] Une **consigne d'illustration** (`docs/contribuer/consigne-illustration.md`), tirée de l'ADR 0047 et de
+      [prompts-illustrations-gemini.md](../../produit/prompts-illustrations-gemini.md), donne l'image de référence
+      du rendu, les règles (une créature distincte, ni texte, ni logo, ni personne réelle ; palette de la famille,
+      intensité selon la rareté) et le format attendu de l'original (4:3).
+- [ ] Elle explique comment produire et commiter les déclinaisons (`npm run illustrations`) et joindre l'original à
+      la PR.
+- [ ] **Étant donné** une proposition remplie, **quand** le porteur du projet ou un collègue suit le kit avec un
+      assistant IA, **alors** la PR obtenue passe la CI sans retouche manuelle (essai consigné dans le journal).
 
 ## Notes
 
-- Les propositions sont des données de joueurs (base), pas le catalogue : celui-ci reste du code (ADR 0011).
-- Limite de propositions ouvertes par auteur (ex. 5) pour garder la relecture tenable.
+- ADR [0050](../../decisions/0050-cartes-communaute-par-pull-request.md). Remplace le formulaire de proposition dans
+  le jeu du plan initial (ADR, formulaire, aperçu, « Mes propositions »).
+- La consigne ne contient que des informations publiques du dépôt ([ref] the company).
+- À mettre à jour quand l'ajout d'une carte change (nouveau fichier, nouvelle langue).
 
 ## Journal
 
-- 2026-10-19 — création (EPIC-08, à traiter plus tard).
+- 2026-10-19 — création (EPIC-08, à traiter plus tard), sous le titre « Proposer une carte depuis le jeu ».
+- 2026-10-27 — affinage (ADR 0050) : le formulaire dans le jeu devient un kit de consignes pour l'IA du contributeur.
