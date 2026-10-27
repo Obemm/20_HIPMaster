@@ -1,25 +1,25 @@
-# 0002 — Backlog epics/stories en Markdown dans le dépôt
+# 0002 — Epic/story backlog in Markdown in the repository
 
-- **Date** : 2026-10-16
-- **Statut** : Acceptée
+- **Date**: 2026-10-16
+- **Status**: Accepted
 
-## Contexte
+## Context
 
-On veut travailler en mode epic / user story et garder une trace de tout ce qui est fait, comme sur les autres projets.
-Le projet n'est pas encore hébergé sur GitHub.
+We want to work with epics and user stories and keep a trace of everything that is done, as on the other projects. The
+project is not hosted on GitHub yet.
 
-## Décision
+## Decision
 
-Le backlog vit dans `docs/backlog/` : un fichier par epic et par story, un tableau de suivi,
-et les IDs de story dans les branches et les commits.
+The backlog lives in `docs/backlog/`: one file per epic and per story, a tracking board, and the story IDs in
+branches and commits.
 
-## Alternatives envisagées
+## Alternatives considered
 
-- **GitHub Issues + Projects** : tableau visuel et lien automatique avec les PR, mais nécessite d'héberger le dépôt.
-- **Jira / Trello** : outils externes, séparés du code, surdimensionnés pour un projet personnel.
+- **GitHub Issues + Projects**: visual board and automatic link with PRs, but requires hosting the repository.
+- **Jira / Trello**: external tools, separate from the code, oversized for a personal project.
 
-## Conséquences
+## Consequences
 
-- Fonctionne hors ligne, historique complet dans Git, lisible par tous (et par Claude).
-- Pas de vue « glisser-déposer » : le tableau est mis à jour à la main (ou par `scripts/cloturer-story.py`).
-- Migration possible vers GitHub Issues le jour où le dépôt est publié.
+- Works offline, full history in Git, readable by everyone (and by Claude).
+- No drag-and-drop view: the board is updated by hand (or by `scripts/cloturer-story.py`).
+- Can be migrated to GitHub Issues the day the repository is published.

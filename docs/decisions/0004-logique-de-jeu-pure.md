@@ -1,24 +1,25 @@
-# 0004 — Logique de jeu en TypeScript pur, autorité serveur
+# 0004 — Game logic in pure TypeScript, server authority
 
-- **Date** : 2026-10-16
-- **Statut** : Acceptée
+- **Date**: 2026-10-16
+- **Status**: Accepted
 
-## Contexte
+## Context
 
-Les règles (tirage des boosters, résolution d'un tour de combat, IA du bot) sont le cœur du jeu : elles doivent être
-testées finement et ne doivent pas pouvoir être truquées depuis le navigateur.
+The rules (booster draws, resolution of a combat turn, bot AI) are the heart of the game: they must be thoroughly tested
+and must not be tamperable from the browser.
 
-## Décision
+## Decision
 
-Toute la logique de jeu vit dans `src/domain/`, en fonctions TypeScript pures, sans dépendance à Next.js ni à la base
-(le hasard est injecté, ex. `tirerRarete(aleatoire)`). Le serveur l'exécute et fait foi ; le client ne fait qu'afficher.
+All the game logic lives in `src/domain/`, as pure TypeScript functions, with no dependency on Next.js or the database
+(randomness is injected, e.g. `tirerRarete(aleatoire)`). The server runs it and is authoritative; the client only
+displays.
 
-## Alternatives envisagées
+## Alternatives considered
 
-- **Logique dans les composants React** : rapide au début, mais difficile à tester et facile à tricher.
-- **Moteur de jeu externe** (boardgame.io…) : contraint le modèle de jeu avant qu'il soit défini.
+- **Logic in React components**: quick at first, but hard to test and easy to cheat.
+- **External game engine** (boardgame.io…): constrains the game model before it is defined.
 
-## Conséquences
+## Consequences
 
-- Tests unitaires rapides et exhaustifs avec Vitest, parties rejouables à partir d'une graine.
-- La même logique servira au bot et à des simulations « bot contre bot » pour équilibrer les cartes.
+- Fast, exhaustive unit tests with Vitest, games replayable from a seed.
+- The same logic will serve the bot and "bot versus bot" simulations to balance the cards.

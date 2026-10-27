@@ -1,21 +1,20 @@
-# NNNN — Titre de la décision
+# NNNN — Title of the decision
 
-- **Date** : AAAA-MM-JJ
-- **Statut** : Proposée | Acceptée | Remplacée par NNNN
-- **Référence the company** : ADR-0NN (ou « aucune » si le référentiel ne couvre pas le sujet)
+- **Date**: YYYY-MM-DD
+- **Status**: Proposed | Accepted | Superseded by NNNN
 
-## Contexte
+## Context
 
-Quel problème, quelles contraintes ?
+What problem, what constraints?
 
-## Décision
+## Decision
 
-Ce qu'on a choisi.
+What was chosen.
 
-## Alternatives envisagées
+## Alternatives considered
 
-Les autres options et pourquoi elles ont été écartées.
+The other options and why they were rejected.
 
-## Conséquences
+## Consequences
 
-Ce que ce choix implique (positif et négatif).
+What this choice implies (positive and negative).

@@ -1,26 +1,26 @@
-# 0003 — PostgreSQL + Drizzle ORM, Docker en développement
+# 0003 — PostgreSQL + Drizzle ORM, Docker in development
 
-- **Date** : 2026-10-16
-- **Statut** : Acceptée — la base de développement sous Docker est remplacée par PGlite ([0018](0018-pglite-developpement.md))
+- **Date**: 2026-10-16
+- **Status**: Accepted — the Docker development database is replaced by PGlite ([0018](0018-pglite-developpement.md))
 
-## Contexte
+## Context
 
-Il faut stocker joueurs, cartes, collections, boosters et parties, avec des transactions fiables
-(ouvrir un booster = débiter un booster et créditer 5 cartes, d'un seul bloc).
+Players, cards, collections, boosters and games must be stored, with reliable transactions (opening a booster = debiting
+one booster and crediting 5 cards, in a single block).
 
-## Décision
+## Decision
 
-PostgreSQL 18 ; Drizzle ORM (schéma en TypeScript dans `src/db/schema.ts`, migrations SQL versionnées dans `drizzle/`) ;
-base locale lancée par `docker compose` (port 5433).
+PostgreSQL 18; Drizzle ORM (schema in TypeScript in `src/db/schema.ts`, versioned SQL migrations in `drizzle/`);
+local database started by `docker compose` (port 5433).
 
-## Alternatives envisagées
+## Alternatives considered
 
-- **Prisma** : très populaire, mais plus lourd (génération de client) et moins proche du SQL.
-- **SQLite** : simple, mais moins adapté aux écritures concurrentes d'un jeu multijoueur.
-- **Supabase / Firebase** : rapide à démarrer, mais dépendance à un service et logique dispersée.
+- **Prisma**: very popular, but heavier (client generation) and further from SQL.
+- **SQLite**: simple, but less suited to the concurrent writes of a multiplayer game.
+- **Supabase / Firebase**: quick to start, but depends on a service and scatters the logic.
 
-## Conséquences
+## Consequences
 
-- Types partagés entre la base et le code, migrations relues dans les PR.
-- Docker Desktop doit être lancé pour développer avec la base.
-- Hébergement de production à choisir plus tard (Neon, Supabase Postgres, VPS…).
+- Types shared between the database and the code, migrations reviewed in PRs.
+- Docker Desktop must be running to develop with the database.
+- Production hosting to be chosen later (Neon, Supabase Postgres, VPS…).

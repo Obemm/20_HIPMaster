@@ -1,64 +1,63 @@
-# Décisions d'architecture (ADR)
+# Architecture decisions (ADR)
 
-Chaque décision structurante est notée ici pour se souvenir **pourquoi** on a fait un choix.
-Un ADR n'est jamais modifié après acceptation : s'il est remis en cause, un nouvel ADR le remplace.
+Every structuring decision is recorded here to remember **why** a choice was made.
+An ADR is never modified after acceptance: if it is challenged, a new ADR supersedes it.
 
-**Référentiel** : les ADR technologiques the company (espace [tool]) sont consultés avant toute décision, en
-inspiration et sans les obligations d'entreprise — voir [0005](0005-reference.local.md). Chaque ADR cite sa
-référence the company.
+**Reference**: the the company technology ADRs ([tool] space) are read before any decision, as inspiration and
+without the corporate obligations — see [0005](0005-reference.local.md). Each ADR cites its the company reference.
 
-| N°                                                     | Décision                                                                          | Référence the company                  | Statut                        |
-| ------------------------------------------------------ | --------------------------------------------------------------------------------- | ------------------------------- | ----------------------------- |
-| [0001](0001-nextjs-tailwind.md)                        | Next.js + React + Tailwind CSS, TypeScript strict                                 | —                               | Remplacée par 0006            |
-| [0002](0002-backlog-dans-le-depot.md)                  | Backlog epics/stories en Markdown dans le dépôt                                   | —                               | Acceptée                      |
-| [0003](0003-postgresql-drizzle.md)                     | PostgreSQL + Drizzle ORM, Docker en développement                                 | aucune                          | Acceptée (Docker : 0018)      |
-| [0004](0004-logique-de-jeu-pure.md)                    | Logique de jeu en TypeScript pur, autorité serveur                                | aucune                          | Acceptée (complétée par 0007) |
-| [0005](0005-reference.local.md)                   | Les ADR technologiques the company comme référentiel                                     | corpus [tool]                      | Acceptée                      |
-| [0006](0006-angular-pwa.md)                            | Angular pour le front, livré en PWA                                               | [ref], [ref]                | Acceptée                      |
-| [0007](0007-api-rest-monorepo.md)                      | API REST Fastify et monorepo npm workspaces                                       | [ref], [ref]                | Acceptée                      |
-| [0008](0008-hebergement-azure.md)                      | Azure comme hébergement cible                                                     | [ref], 006, 012, 004          | Remplacée par 0021            |
-| [0009](0009-qualite-sonarway.md)                       | Qualité de code : règles SonarWay, quality gate bloquant                          | [ref], 008, 040               | Acceptée (complétée par 0022) |
-| [0010](0010-combat-plateau.md)                         | Combat sur plateau : Débit, SLA, capacités thématiques                            | aucune                          | Acceptée (complétée par 0026) |
-| [0011](0011-catalogue-cartes-versionne.md)             | Catalogue des cartes versionné dans le domaine, pas en base                       | [ref] (écarté)                | Acceptée                      |
-| [0012](0012-theme-clair-sombre.md)                     | Thème clair ou sombre selon le système, jetons de couleur                         | [ref] (adapté)                | Acceptée                      |
-| [0013](0013-moteur-combat.md)                          | Moteur de combat : état sérialisable, actions, hasard à graine                    | aucune                          | Acceptée (générateur : 0034)  |
-| [0014](0014-parties-en-memoire.md)                     | État des parties en cours gardé en mémoire par l'API                              | [ref]                         | Remplacée par 0030            |
-| [0015](0015-illustrations-statiques-optimisees.md)     | Illustrations : fichiers statiques optimisés, originaux hors du dépôt             | [ref], [ref]                | Acceptée                      |
-| [0016](0016-illustrations-provisoires-vectorielles.md) | Illustrations provisoires vectorielles, générées par le code                      | aucune ([ref])                | Acceptée                      |
-| [0017](0017-compte-invite.md)                          | Compte invité : pseudo, jeton secret et code de récupération                      | [ref], 034 (écartés)          | Complétée (0025, 0027, 0029)  |
-| [0018](0018-pglite-developpement.md)                   | PGlite en développement et en tests, PostgreSQL en production                     | aucune                          | Acceptée (complétée par 0023) |
-| [0019](0019-boosters-recharge-a-la-lecture.md)         | Boosters : tirage serveur, recharge calculée à la lecture                         | aucune ([ref] écarté)         | Acceptée (complétée par 0045) |
-| [0020](0020-duels-asynchrones.md)                      | Duels entre joueurs : asynchrones, au tour par tour, état en base                 | [ref] ([ref], 029 écartés)  | Acceptée                      |
-| [0021](0021-hebergement-gcp.md)                        | Hébergement quasi gratuit : Firebase Hosting, Cloud Run, Neon                     | [ref] écarté, 006, 012, 004   | Acceptée                      |
-| [0022](0022-depot-public.md)                           | Dépôt GitHub public                                                               | [ref], 039, 033               | Acceptée                      |
-| [0023](0023-postgresql-production.md)                  | PostgreSQL en production : migrations dédiées, connexions courtes                 | aucune                          | Acceptée                      |
-| [0024](0024-infrastructure-script-gcloud.md)           | Infrastructure créée par un script `gcloud` idempotent, pas Terraform             | [ref] adapté, [ref] retenu  | Acceptée                      |
-| [0025](0025-protections-api.md)                        | Protections de l'API : débit limité, sessions révocables, codes HMAC              | [ref] retenu                  | Acceptée                      |
-| [0026](0026-debit-du-second-joueur.md)                 | Le second joueur reçoit +1 Débit à son premier tour                               | aucune                          | Acceptée                      |
-| [0027](0027-inscription-sur-invitation.md)             | Inscription sur invitation : codes à usages comptés, sous HMAC                    | [ref] ; 010, 034 écartés      | Acceptée (complétée par 0029) |
-| [0028](0028-deploiement-continu.md)                    | Déploiement continu : révision vérifiée avant bascule, front par API              | [ref], 032 écartés, 039, 033  | Acceptée                      |
-| [0029](0029-administrateurs-par-configuration.md)      | Administrateurs désignés par la configuration, routes cachées en 404              | [ref] ; 010, 034 écartés      | Acceptée                      |
-| [0030](0030-parties-bot-en-base.md)                    | Parties contre le bot en base : version, une écriture par action                  | [ref]                         | Acceptée                      |
-| [0031](0031-suppression-compte.md)                     | Suppression de son compte : forfait des duels, historique sans lui                | [ref] ; [ref] écarté        | Acceptée                      |
-| [0032](0032-preferences-interface-navigateur.md)       | Préférences d'interface gardées par le navigateur (`localStorage`)                | [ref] écarté                  | Acceptée                      |
-| [0033](0033-supervision-sauvegardes.md)                | Supervision, sauvegardes et erreurs : Cloud Monitoring, jobs, journal             | [ref], 012, 043 ; 009 écarté  | Proposée                      |
-| [0034](0034-hasard-et-appariement.md)                  | Hasard ChaCha20 à clé tirée par le serveur ; appariement sous verrou              | aucune ; [ref] retenu         | Acceptée                      |
-| [0035](0035-purge-donnees-techniques.md)               | Sessions qui expirent, purge nocturne des seules données techniques               | aucune ; [ref] (adapté)       | Acceptée                      |
-| [0036](0036-fiches-pedagogiques-cartes.md)             | Fiches « En savoir plus » versionnées avec le catalogue, dans le détail           | [ref], 026 écartés            | Acceptée                      |
-| [0037](0037-identite-visuelle-nuit-electrique.md)      | Identité « nuit électrique » : jetons de marque, police Exo 2, coquille           | [ref] (adapté)                | Acceptée                      |
-| [0038](0038-pwa-service-worker-angular.md)             | Jeu installable : manifeste, service worker d'Angular, API jamais en cache        | [ref] retenu               | Acceptée                      |
-| [0039](0039-requetes-legeres-cache-compression.md)     | Requêtes légères : index mesurés, catalogue en cache public, compression          | [ref] retenu                  | Acceptée                      |
-| [0040](0040-conseil-serveur-contre-bot.md)             | Conseil calculé par le serveur, contre le bot seulement                           | [ref] retenu                  | Acceptée                      |
-| [0041](0041-partie-guidee-graine-fixe.md)              | Partie guidée : une graine fixe et des étapes servies par l'API                   | [ref] retenu                  | Acceptée                      |
-| [0042](0042-site-bilingue-i18n-angular.md)             | Un site par langue : i18n d'Angular, `/fr/` et `/en/`, la racine choisit          | [ref] (adapté) ; 005 retenu   | Proposée                      |
-| [0043](0043-contenu-traduit-domaine-langue-api.md)     | Contenu traduit dans le domaine, servi selon le paramètre `langue`                | [ref] (adapté) ; 007/020      | Proposée                      |
-| [0044](0044-score-et-cote-de-duel.md)                  | Score cumulé et cote de duel, comptés par le serveur, sans remise à zéro          | [ref] retenu                  | Acceptée                      |
-| [0045](0045-boosters-offerts-par-code.md)              | Boosters offerts par code : usages comptés sous HMAC, un par joueur, tracé        | [ref] ; 032, 010, 034 écartés | Acceptée                      |
-| [0046](0046-illustrations-a-empreinte-cache-long.md)   | Illustrations à empreinte sous `/illustrations/`, un an en cache, 404             | aucune ; 012 via 0015           | Acceptée                      |
-| [0047](0047-illustrations-generees-par-gemini.md)      | Illustrations générées par Gemini : une créature par carte, relues par le porteur | aucune ; [ref] par analogie   | Acceptée                      |
-| [0048](0048-decks-des-joueurs.md)                      | Decks des joueurs : 5 par compte, vérifiés par le serveur, places libérées        | [ref], 007 retenus            | Acceptée                      |
-| [0049](0049-jouer-avec-son-deck.md)                    | Jouer avec son deck : revérifié au lancement, figé dans la partie                 | [ref] retenu                  | Acceptée                      |
-| [0050](0050-cartes-communaute-par-pull-request.md)     | Cartes de la communauté par PR depuis un fork, kit pour l'IA du contributeur      | [ref] écarté ; [ref] retenu | Acceptée                      |
-| [0051](0051-english-repository-language.md)            | English is the language of the repository                                         | [ref] adopted                 | Accepted                      |
+| No.                                                    | Decision                                                                              | the company reference                  | Status                       |
+| ------------------------------------------------------ | ------------------------------------------------------------------------------------- | ------------------------------- | ---------------------------- |
+| [0001](0001-nextjs-tailwind.md)                        | Next.js + React + Tailwind CSS, strict TypeScript                                     | —                               | Superseded by 0006           |
+| [0002](0002-backlog-dans-le-depot.md)                  | Epics/stories backlog in Markdown in the repository                                   | —                               | Accepted                     |
+| [0003](0003-postgresql-drizzle.md)                     | PostgreSQL + Drizzle ORM, Docker in development                                       | none                            | Accepted (Docker: 0018)      |
+| [0004](0004-logique-de-jeu-pure.md)                    | Game logic in pure TypeScript, server authority                                       | none                            | Accepted (completed by 0007) |
+| [0005](0005-reference.local.md)                   | The the company technology ADRs as the reference                                             | [tool] corpus                      | Accepted                     |
+| [0006](0006-angular-pwa.md)                            | Angular for the front end, delivered as a PWA                                         | [ref], [ref]                | Accepted                     |
+| [0007](0007-api-rest-monorepo.md)                      | Fastify REST API and npm workspaces monorepo                                          | [ref], [ref]                | Accepted                     |
+| [0008](0008-hebergement-azure.md)                      | Azure as the target hosting                                                           | [ref], 006, 012, 004          | Superseded by 0021           |
+| [0009](0009-qualite-sonarway.md)                       | Code quality: SonarWay rules, blocking quality gate                                   | [ref], 008, 040               | Accepted (completed by 0022) |
+| [0010](0010-combat-plateau.md)                         | Board combat: Throughput, SLA, themed abilities                                       | none                            | Accepted (completed by 0026) |
+| [0011](0011-catalogue-cartes-versionne.md)             | Card catalogue versioned in the domain, not in the database                           | [ref] (rejected)              | Accepted                     |
+| [0012](0012-theme-clair-sombre.md)                     | Light or dark theme following the system, colour tokens                               | [ref] (adapted)               | Accepted                     |
+| [0013](0013-moteur-combat.md)                          | Combat engine: serialisable state, actions, seeded randomness                         | none                            | Accepted (generator: 0034)   |
+| [0014](0014-parties-en-memoire.md)                     | State of ongoing games kept in memory by the API                                      | [ref]                         | Superseded by 0030           |
+| [0015](0015-illustrations-statiques-optimisees.md)     | Illustrations: optimised static files, originals outside the repository               | [ref], [ref]                | Accepted                     |
+| [0016](0016-illustrations-provisoires-vectorielles.md) | Provisional vector illustrations, generated by code                                   | none ([ref])                  | Accepted                     |
+| [0017](0017-compte-invite.md)                          | Guest account: nickname, secret token and recovery code                               | [ref], 034 (rejected)         | Completed (0025, 0027, 0029) |
+| [0018](0018-pglite-developpement.md)                   | PGlite in development and tests, PostgreSQL in production                             | none                            | Accepted (completed by 0023) |
+| [0019](0019-boosters-recharge-a-la-lecture.md)         | Boosters: server draw, refill computed on read                                        | none ([ref] rejected)         | Accepted (completed by 0045) |
+| [0020](0020-duels-asynchrones.md)                      | Player duels: asynchronous, turn-based, state in the database                         | [ref] ([ref], 029 rejected) | Accepted                     |
+| [0021](0021-hebergement-gcp.md)                        | Near-free hosting: Firebase Hosting, Cloud Run, Neon                                  | [ref] rejected, 006, 012, 004 | Accepted                     |
+| [0022](0022-depot-public.md)                           | Public GitHub repository                                                              | [ref], 039, 033               | Accepted                     |
+| [0023](0023-postgresql-production.md)                  | PostgreSQL in production: dedicated migrations, short connections                     | none                            | Accepted                     |
+| [0024](0024-infrastructure-script-gcloud.md)           | Infrastructure created by an idempotent `gcloud` script, not Terraform                | [ref] adapted, [ref] kept   | Accepted                     |
+| [0025](0025-protections-api.md)                        | API protections: rate limiting, revocable sessions, HMAC codes                        | [ref] kept                    | Accepted                     |
+| [0026](0026-debit-du-second-joueur.md)                 | The second player gets +1 Throughput on their first turn                              | none                            | Accepted                     |
+| [0027](0027-inscription-sur-invitation.md)             | Sign-up by invitation: counted-use codes, under HMAC                                  | [ref]; 010, 034 rejected      | Accepted (completed by 0029) |
+| [0028](0028-deploiement-continu.md)                    | Continuous deployment: revision checked before switch-over, front end through the API | [ref], 032 rejected, 039, 033 | Accepted                     |
+| [0029](0029-administrateurs-par-configuration.md)      | Administrators designated by configuration, routes hidden as 404                      | [ref]; 010, 034 rejected      | Accepted                     |
+| [0030](0030-parties-bot-en-base.md)                    | Bot games in the database: version, one write per action                              | [ref]                         | Accepted                     |
+| [0031](0031-suppression-compte.md)                     | Deleting one's account: duels forfeited, history kept without them                    | [ref]; [ref] rejected       | Accepted                     |
+| [0032](0032-preferences-interface-navigateur.md)       | Interface preferences kept by the browser (`localStorage`)                            | [ref] rejected                | Accepted                     |
+| [0033](0033-supervision-sauvegardes.md)                | Monitoring, backups and errors: Cloud Monitoring, jobs, log                           | [ref], 012, 043; 009 rejected | Proposed                     |
+| [0034](0034-hasard-et-appariement.md)                  | ChaCha20 randomness with a server-drawn key; matchmaking under lock                   | none; [ref] kept              | Accepted                     |
+| [0035](0035-purge-donnees-techniques.md)               | Expiring sessions, nightly purge of technical data only                               | none; [ref] (adapted)         | Accepted                     |
+| [0036](0036-fiches-pedagogiques-cartes.md)             | “Learn more” sheets versioned with the catalogue, in the detail view                  | [ref], 026 rejected           | Accepted                     |
+| [0037](0037-identite-visuelle-nuit-electrique.md)      | “Electric night” identity: brand tokens, Exo 2 font, shell                            | [ref] (adapted)               | Accepted                     |
+| [0038](0038-pwa-service-worker-angular.md)             | Installable game: manifest, Angular service worker, API never cached                  | [ref] kept                 | Accepted                     |
+| [0039](0039-requetes-legeres-cache-compression.md)     | Light requests: measured indexes, public catalogue cache, compression                 | [ref] kept                    | Accepted                     |
+| [0040](0040-conseil-serveur-contre-bot.md)             | Server-computed advice, against the bot only                                          | [ref] kept                    | Accepted                     |
+| [0041](0041-partie-guidee-graine-fixe.md)              | Guided game: a fixed seed and steps served by the API                                 | [ref] kept                    | Accepted                     |
+| [0042](0042-site-bilingue-i18n-angular.md)             | One site per language: Angular i18n, `/fr/` and `/en/`, the root chooses              | [ref] (adapted); 005 kept     | Proposed                     |
+| [0043](0043-contenu-traduit-domaine-langue-api.md)     | Translated content in the domain, served according to the `langue` parameter          | [ref] (adapted); 007/020      | Proposed                     |
+| [0044](0044-score-et-cote-de-duel.md)                  | Cumulative score and duel rating, counted by the server, never reset                  | [ref] kept                    | Accepted                     |
+| [0045](0045-boosters-offerts-par-code.md)              | Boosters given by code: counted uses under HMAC, one per player, traced               | [ref]; 032, 010, 034 rejected | Accepted                     |
+| [0046](0046-illustrations-a-empreinte-cache-long.md)   | Fingerprinted illustrations under `/illustrations/`, one year of cache, 404           | none; 012 via 0015              | Accepted                     |
+| [0047](0047-illustrations-generees-par-gemini.md)      | Illustrations generated by Gemini: one creature per card, reviewed by the owner       | none; [ref] by analogy        | Accepted                     |
+| [0048](0048-decks-des-joueurs.md)                      | Player decks: 5 per account, checked by the server, slots freed                       | [ref], 007 kept               | Accepted                     |
+| [0049](0049-jouer-avec-son-deck.md)                    | Playing with one's deck: rechecked at launch, frozen in the game                      | [ref] kept                    | Accepted                     |
+| [0050](0050-cartes-communaute-par-pull-request.md)     | Community cards by PR from a fork, kit for the contributor's AI                       | [ref] rejected; [ref] kept  | Accepted                     |
+| [0051](0051-english-repository-language.md)            | English is the language of the repository                                             | [ref] adopted                 | Accepted                     |
 
-Modèle : [template.md](template.md).
+Template: [template.md](template.md).
