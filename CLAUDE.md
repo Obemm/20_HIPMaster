@@ -1,64 +1,65 @@
 # HIPMaster
 
-Jeu de cartes à collectionner dans le navigateur (inspiré de WikiMasters et de l'Async TCG, voir
-`docs/produit/inspirations.md`). Monorepo npm : front **Angular 22** + Tailwind CSS 4, API **Fastify 5**, logique de jeu
-pure en TypeScript, PostgreSQL + Drizzle. TypeScript strict, Node ≥ 24.15.
+Collectible card game in the browser (inspired by WikiMasters and the Async TCG, see `docs/produit/inspirations.md`).
+npm monorepo: **Angular 22** front end + Tailwind CSS 4, **Fastify 5** API, pure TypeScript game logic, PostgreSQL +
+Drizzle. Strict TypeScript, Node ≥ 24.15.
 
-## Règles impératives du projet
+## Mandatory project rules
 
-1. **Toujours parler en français** à l'utilisateur (réponses, questions, récapitulatifs), ainsi que dans la
-   documentation, les messages de commit et les commentaires de code. Seule exception : le kit du contributeur
-   (`CONTRIBUTING.md`, `docs/contribuer/`, modèle de PR « carte ») est en anglais, pour des contributeurs anglophones
-   (ADR 0050).
-2. **Tout ce qui est codé est documenté dans une story et un epic.** Aucune ligne de code sans story `US-XXX`
-   rattachée à un epic `EPIC-XX`. Si aucune story ne couvre la demande, rédiger la story (et l'epic si besoin) dans
-   `docs/backlog/` **avant** de coder, et la tenir à jour pendant et après le travail (critères, journal, tableau).
-   Seule exception : une PR de carte proposée par un contributeur relève de l'EPIC-08, sans story (ADR 0050).
-3. **Toute décision d'architecture est consignée dans un ADR** (`docs/decisions/NNNN-titre.md`, à partir de
-   `template.md`, référencé dans `docs/decisions/README.md`). Les ADR acceptés font **référence** : les relire avant
-   de concevoir ou de coder, s'y conformer, et ne jamais les contredire en silence. Pour changer d'avis, écrire un
-   nouvel ADR qui remplace l'ancien (statut « Remplacée par NNNN »).
-4. **Les ADR technologiques the company sont le référentiel** (ADR 0005) : avant une décision, consulter le miroir
-   `(local mirror)` (source de vérité : [tool]),
-   puis retenir, adapter ou écarter en le disant, et citer la référence dans le champ « Référence the company » de l'ADR.
-   Inspiration seulement : pas d'[tool], d'[tool], de [tool] ni de [tool] imposés.
+1. **Talk to the user in French** (answers, questions, summaries). **Write the repository in English** (ADR 0051):
+   documentation, backlog (epics, stories), ADRs, CHANGELOG, new code comments and commit messages. The game itself
+   stays bilingual, French being its reference language (ADR 0043). Existing French code comments are translated
+   when a file is touched; files of the backlog and docs not translated yet (EPIC-16) are updated in their own
+   language until they are.
+2. **Everything that is coded is documented in a story and an epic.** No line of code without a `US-XXX` story
+   attached to an `EPIC-XX` epic. If no story covers the request, write the story (and the epic if needed) in
+   `docs/backlog/` **before** coding, and keep it up to date during and after the work (criteria, log, board). Only
+   exception: a card pull request proposed by a contributor belongs to EPIC-08, without a story (ADR 0050).
+3. **Every architecture decision is recorded in an ADR** (`docs/decisions/NNNN-title.md`, from `template.md`, listed
+   in `docs/decisions/README.md`). Accepted ADRs are **authoritative**: read them before designing or coding, follow
+   them, and never contradict them silently. To change your mind, write a new ADR that supersedes the old one (status
+   "Superseded by NNNN").
+4. **the company technology ADRs are the reference** (ADR 0005): before a decision, read the mirror
+   `(local mirror)` (source of truth: [tool]), then
+   keep, adapt or reject them, saying so, and cite the reference in the ADR's "the company reference" field. Inspiration
+   only: no [tool], [tool], [tool] or [tool] imposed.
 
-## Organisation et commandes
+## Layout and commands
 
-| Dossier                  | Contenu                                                                                          |
-| ------------------------ | ------------------------------------------------------------------------------------------------ |
-| `apps/web`               | Front Angular (standalone, signals, sans zone.js), préfixe de sélecteurs `hip-`                  |
-| `apps/api`               | API REST Fastify `/api/v1/…`, schéma Drizzle et migrations (`apps/api/drizzle`)                  |
-| `packages/domain`        | `@hipmaster/domain` : logique de jeu pure (ADR 0004)                                             |
-| `packages/illustrations` | Chaîne des illustrations : originaux → AVIF/WebP + manifeste (`npm run illustrations`, ADR 0015) |
-| `e2e`                    | Parcours Playwright avec audit axe-core                                                          |
+| Folder                   | Content                                                                                     |
+| ------------------------ | ------------------------------------------------------------------------------------------- |
+| `apps/web`               | Angular front end (standalone, signals, zoneless), selector prefix `hip-`                   |
+| `apps/api`               | Fastify REST API `/api/v1/…`, Drizzle schema and migrations (`apps/api/drizzle`)            |
+| `packages/domain`        | `@hipmaster/domain`: pure game logic (ADR 0004)                                             |
+| `packages/illustrations` | Illustration pipeline: originals → AVIF/WebP + manifest (`npm run illustrations`, ADR 0015) |
+| `e2e`                    | Playwright journeys with axe-core audit                                                     |
 
-- `npm run dev` : API (localhost:3000) + front (localhost:4200, qui relaie `/api` vers l'API). `npm run build`.
-- Vérification complète : `npm run check` (lint + format + typecheck + tests) — doit passer avant tout commit ; c'est
-  le quality gate (règles SonarJS incluses, ADR 0009).
-- Base locale : PGlite dans `.donnees/` par défaut (ADR 0018), migrations appliquées au démarrage de l'API ;
-  `DATABASE_URL` bascule sur PostgreSQL (`npm run db:up`, Docker). Toute modification de
-  `apps/api/src/db/schema.ts` passe par `npm run db:generate` (migration SQL commitée).
-- **Logique de jeu dans `packages/domain`** : fonctions pures, hasard injecté, aucune dépendance à Angular, Fastify ni
-  la base. Le serveur fait foi : jamais de tirage ni de résolution de combat dans le front.
-- L'API s'exécute en TypeScript natif (Node, sans compilation) : imports relatifs avec l'extension `.ts`, pas d'`enum`
-  ni de `namespace` (`erasableSyntaxOnly`). Erreurs au format Problem Details ; contrat OpenAPI avant chaque ressource.
-- **Jeu bilingue** (ADR 0042) : tout texte d'interface porte `i18n` (gabarits) ou `$localize` (code) ;
-  `npm run i18n:extraire` après chaque texte ajouté ou retouché, puis le traduire dans
-  `apps/web/src/locale/messages.en.json` (`npm run i18n:verifier` le contrôle, la CI aussi). Le build sert `/fr/` et
-  `/en/` ; `npm run dev` sert le français seul, `npm run start:en` l'anglais.
-- Variables d'environnement : `.env` unique à la racine (modèle `.env.example`) ; l'API lit `API_HOST`/`API_PORT`.
-- Tests : Vitest à côté du code (`*.test.ts` pour domain/api, `*.spec.ts` pour Angular via `ng test`) ;
-  `npm run test:e2e` avant de clore une story qui touche un parcours (la CI lance `test:e2e:production` : build de
-  production sous la CSP de `firebase.json`, aucun style ni script en ligne).
-- Mise en ligne : chaque merge sur `main` à CI verte est déployé par `.github/workflows/deploy.yml` (ADR 0028) ; une
-  migration reste compatible avec la version en ligne. Guide : `docs/exploitation/README.md` ; GCP toujours avec
+- `npm run dev`: API (localhost:3000) + front end (localhost:4200, which proxies `/api` to the API). `npm run build`.
+- Full check: `npm run check` (lint + format + typecheck + tests) — must pass before any commit; it is the quality
+  gate (SonarJS rules included, ADR 0009).
+- Local database: PGlite in `.donnees/` by default (ADR 0018), migrations applied when the API starts;
+  `DATABASE_URL` switches to PostgreSQL (`npm run db:up`, Docker). Any change to `apps/api/src/db/schema.ts` goes
+  through `npm run db:generate` (committed SQL migration).
+- **Game logic lives in `packages/domain`**: pure functions, injected randomness, no dependency on Angular, Fastify or
+  the database. The server is authoritative: never a draw or a combat resolution in the front end.
+- The API runs as native TypeScript (Node, no build step): relative imports with the `.ts` extension, no `enum` or
+  `namespace` (`erasableSyntaxOnly`). Errors as Problem Details; OpenAPI contract before each resource.
+- **Bilingual game** (ADR 0042): every interface text carries `i18n` (templates) or `$localize` (code); run
+  `npm run i18n:extraire` after each added or changed text, then translate it in
+  `apps/web/src/locale/messages.en.json` (`npm run i18n:verifier` checks it, so does the CI). The build serves `/fr/`
+  and `/en/`; `npm run dev` serves French only, `npm run start:en` English.
+- Environment variables: a single `.env` at the root (template `.env.example`); the API reads `API_HOST`/`API_PORT`.
+- Tests: Vitest next to the code (`*.test.ts` for domain/api, `*.spec.ts` for Angular through `ng test`);
+  `npm run test:e2e` before closing a story that touches a journey (the CI runs `test:e2e:production`: production
+  build under the CSP of `firebase.json`, no inline style or script).
+- Release: every merge into `main` with a green CI is deployed by `.github/workflows/deploy.yml` (ADR 0028); a
+  migration stays compatible with the live version. Guide: `docs/exploitation/README.md`; GCP always with
   `--configuration=hipmaster`.
-- Pensé d'abord pour le téléphone ; accessible (clavier, contrastes, `lang="fr"`, règles a11y d'angular-eslint).
-- Commits : Conventional Commits (commitlint via Husky).
+- Mobile first; accessible (keyboard, contrast, `lang`, angular-eslint a11y rules).
+- Commits: Conventional Commits (commitlint through Husky), lowercase subject.
 
-## Méthode de travail (voir `docs/backlog/README.md`)
+## Way of working (see `docs/backlog/README.md`)
 
-- Branche `us-xxx-titre`, commits `type(US-XXX): message`.
-- En fin de story : `python scripts/cloturer-story.py US-XXX "résumé"` (statut, critères, journal, tableau, epic),
-  puis compléter `CHANGELOG.md` à la main.
+- Branch `us-xxx-title`, commits `type(US-XXX): message`.
+- At the end of a story: `python scripts/close-story.py US-XXX "summary"` (status, criteria, log, board, epic), then
+  complete `CHANGELOG.md` by hand.

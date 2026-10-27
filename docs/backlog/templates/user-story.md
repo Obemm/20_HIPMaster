@@ -1,23 +1,23 @@
-# US-XXX — Titre
+# US-XXX — Title
 
-- **Epic** : EPIC-XX
-- **Statut** : À affiner | Prête | En cours | En revue | Faite
-- **Priorité** : Must | Should | Could | Won't
-- **Taille** : XS | S | M | L
-- **Branche** : `us-xxx-titre-court`
+- **Epic**: EPIC-XX
+- **Status**: To refine | Ready | In progress | In review | Done
+- **Priority**: Must | Should | Could | Won't
+- **Size**: XS | S | M | L
+- **Branch**: `us-xxx-short-title`
 
-## Récit
+## Story
 
-En tant que **[persona]**, je veux **[action]** afin de **[bénéfice]**.
+As a **[persona]**, I want **[action]** so that **[benefit]**.
 
-## Critères d'acceptation
+## Acceptance criteria
 
-- [ ] **Étant donné** … **quand** … **alors** …
+- [ ] **Given** … **when** … **then** …
 
 ## Notes
 
-Maquettes, questions ouvertes, décisions (lien ADR)…
+Mock-ups, open questions, decisions (ADR link)…
 
-## Journal
+## Log
 
-- AAAA-MM-JJ — création.
+- YYYY-MM-DD — created.

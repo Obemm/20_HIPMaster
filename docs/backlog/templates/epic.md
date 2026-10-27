@@ -1,20 +1,20 @@
-# EPIC-XX — Titre
+# EPIC-XX — Title
 
-- **Statut** : À affiner | En cours | Terminé
-- **Priorité** : Must | Should | Could | Won't
+- **Status**: To refine | In progress | Done
+- **Priority**: Must | Should | Could | Won't
 
-## Objectif
+## Goal
 
-Quel problème résout-on, pour qui ?
+Which problem do we solve, for whom?
 
-## Indicateur de réussite
+## Success indicator
 
-Comment saura-t-on que c'est réussi (ex. : « une démarche est trouvée en 3 clics maximum ») ?
+How will we know it worked (e.g. "a procedure is found in 3 clicks at most")?
 
 ## Stories
 
 - [ ] US-XXX — …
 
-## Hors périmètre
+## Out of scope
 
-Ce qu'on ne fait volontairement pas dans cet epic.
+What we deliberately leave out of this epic.

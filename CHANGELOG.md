@@ -7,6 +7,9 @@ Toutes les évolutions notables du projet sont consignées ici
 
 ### Ajouté
 
+- L'anglais devient la langue du dépôt (ADR 0051, EPIC-16) : `CLAUDE.md`, modèles de story et d'epic, nouvel epic et
+  ses stories en anglais ; `scripts/cloturer-story.py` devient `scripts/close-story.py` et lit chaque fichier dans sa
+  langue pendant la traduction (US-087).
 - Le kit du contributeur passe en anglais, pour des collègues anglophones : `CONTRIBUTING.md`, le guide « Designing
   a card », les consignes de carte et d'illustration et le modèle de PR « carte » ; une proposition peut s'écrire en
   anglais, l'IA du contributeur écrit les textes du jeu en français et en anglais (US-086, ADR 0050).
