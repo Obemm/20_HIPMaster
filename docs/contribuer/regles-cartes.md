@@ -154,7 +154,7 @@ avant d'ouvrir la PR, que la carte, sa fiche et son illustration ne contiennent 
 - Fiche « En savoir plus » : définition, usage, exemple, à retenir, en interne (facultatif), 1 à 3 liens
 - Idée d'illustration : (la créature, sa posture, son décor)
 - Sources : (où vérifier ce que dit la carte)
-- Auteur affiché : (le nom qui apparaîtra sur la carte)
+- Auteur affiché : (le nom qui apparaîtra sur la carte, 40 caractères au plus ; public, comme toute la PR)
 ```
 
 ## Deux exemples commentés

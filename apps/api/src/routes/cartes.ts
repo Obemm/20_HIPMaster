@@ -5,6 +5,7 @@ import {
   ficheDe,
   IDS_CAPACITE,
   LANGUES_LIEN,
+  LONGUEUR_MAX_AUTEUR,
   RARETES,
   type Langue,
   SET_1,
@@ -40,6 +41,7 @@ const schemaCarte = z.object({
   capacites: z.array(schemaCapacite),
   effet: z.string().optional(),
   enVrai: z.string(),
+  auteur: z.string().min(1).max(LONGUEUR_MAX_AUTEUR).optional(),
 });
 
 // Fiche « En savoir plus » (US-073, ADR 0036) : servie avec le détail d'une carte seulement.

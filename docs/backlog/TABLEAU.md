@@ -185,7 +185,7 @@ catalogue, set d'accueil).
 | [US-027 — Guide du contributeur : règles de création](stories/US-027-guide-contributeur.md)                                            | EPIC-08 | Should   | S      | Faite     |
 | [US-028 — Kit pour l'IA du contributeur](stories/US-028-proposer-carte.md)                                                             | EPIC-08 | Should   | M      | Faite     |
 | [US-029 — Relire une carte dans sa pull request](stories/US-029-relire-propositions.md)                                                | EPIC-08 | Should   | S      | Faite     |
-| [US-030 — L'auteur d'une carte, première carte de la communauté](stories/US-030-integrer-carte-acceptee.md)                            | EPIC-08 | Should   | M      | À affiner |
+| [US-030 — L'auteur d'une carte, première carte de la communauté](stories/US-030-integrer-carte-acceptee.md)                            | EPIC-08 | Should   | M      | En cours  |
 | [US-031 — Créditer les contributeurs](stories/US-031-crediter-contributeurs.md)                                                        | EPIC-08 | Could    | S      | À affiner |
 | [US-076 — Concevoir le set 2 : DDD, microservices, DevOps](stories/US-076-concevoir-set-2.md)                                          | EPIC-13 | Could    | L      | À affiner |
 | [US-077 — Trois nouvelles cartes : API First, EDA et API GraphQL](stories/US-077-api-first-eda-graphql.md)                             | EPIC-13 | Should   | M      | Faite     |

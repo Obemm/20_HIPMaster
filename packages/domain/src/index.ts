@@ -10,6 +10,7 @@ export { CAPACITES, IDS_CAPACITE, type Capacite, type IdCapacite } from './capac
 export {
   detaillerCapacites,
   FAMILLES,
+  LONGUEUR_MAX_AUTEUR,
   TYPES_CARTE,
   type CapaciteCarte,
   type CapaciteDetaillee,

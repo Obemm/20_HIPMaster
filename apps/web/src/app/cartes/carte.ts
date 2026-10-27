@@ -26,6 +26,8 @@ export interface Carte {
   capacites: Capacite[];
   effet?: string;
   enVrai: string;
+  /** Cartes de la communauté seulement (US-030) : nom affiché de la personne qui l'a proposée. */
+  auteur?: string;
 }
 
 /** Une ressource externe de la fiche « En savoir plus » (US-073). */

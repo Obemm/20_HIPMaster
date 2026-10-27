@@ -7,6 +7,8 @@ Toutes les évolutions notables du projet sont consignées ici
 
 ### Ajouté
 
+- Une carte peut porter le nom de la personne qui l'a proposée : champ `auteur` facultatif du catalogue, servi par
+  l'API (`GET /api/v1/cartes`), non traduit ; la consigne de carte le renseigne (US-030, ADR 0050).
 - Relecture des cartes proposées dans leur PR : un modèle de PR « carte » avec les vérifications du contributeur et la
   liste de contrôle du relecteur, un `CODEOWNERS`, et un job de CI « Équilibrage des cartes nouvelles » qui met deux
   exemplaires de chaque carte nouvelle dans les decks prêtés et affiche l'écart de victoires dans son résumé

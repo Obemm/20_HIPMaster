@@ -92,6 +92,13 @@ describe('les textes du catalogue dans la langue demandée', () => {
     expect(traduireCarte(sap, 'fr')).toBe(sap);
   });
 
+  it('le nom de l’auteur d’une carte de la communauté ne se traduit pas (US-030)', () => {
+    const sap = SET_1.find((carte) => carte.numero === 13);
+    expect(sap).toBeDefined();
+    if (!sap) return;
+    expect(traduireCarte({ ...sap, auteur: 'Camille D.' }, 'en').auteur).toBe('Camille D.');
+  });
+
   it('les capacités détaillées suivent la langue, valeur de Connecteur comprise', () => {
     const connecteur = SET_1.find((carte) =>
       carte.capacites.some((c) => typeof c !== 'string' && c.id === 'connecteur'),

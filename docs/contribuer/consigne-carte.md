@@ -44,7 +44,8 @@ apostrophe typographique ’, comme les cartes existantes.
 Fichiers à écrire ou modifier (prends pour modèle les cartes 72 à 74, ajoutées par le commit f189195) :
 1. packages/domain/src/set-1.ts : la carte, à la fin du tableau, avec le numéro qui suit le dernier (nom, famille,
    type, rareté, coût, attaque et PV pour un composant ou une évolution, capacités, effet éventuel, enVrai de 110
-   caractères au plus), sous un commentaire « // Cartes de la communauté (EPIC-08) » à créer s'il n'existe pas.
+   caractères au plus, et auteur : le nom affiché de la proposition, 40 caractères au plus), sous un commentaire
+   « // Cartes de la communauté (EPIC-08) » à créer s'il n'existe pas.
 2. packages/domain/src/langues/en/cartes.ts : son nom (les noms de produits ne se traduisent pas), son « En vrai »
    et son effet éventuel en anglais britannique, selon le glossaire en tête du fichier, sous le même commentaire ;
    mets à jour le nombre de cartes de l'en-tête.

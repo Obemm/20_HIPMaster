@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { detaillerCapacites, FAMILLES } from './carte.ts';
+import { detaillerCapacites, FAMILLES, LONGUEUR_MAX_AUTEUR } from './carte.ts';
 import { RARETES } from './rarete.ts';
 import { SET_1, trouverCarte } from './set-1.ts';
 
@@ -67,6 +67,17 @@ describe('set 1', () => {
 
   it('décrit chaque carte en vrai', () => {
     for (const carte of SET_1) expect(carte.enVrai.length, carte.nom).toBeGreaterThan(5);
+  });
+
+  it('ne crédite que les cartes de la communauté, d’un nom affiché court et sans blanc superflu (US-030)', () => {
+    // Les 74 premières cartes viennent du porteur du projet : elles n’ont pas d’auteur.
+    expect(SET_1.filter((carte) => carte.numero <= 74 && carte.auteur !== undefined)).toEqual([]);
+    for (const { nom, auteur } of SET_1) {
+      if (auteur === undefined) continue;
+      expect(auteur, nom).toBe(auteur.trim());
+      expect(auteur.length, nom).toBeGreaterThan(0);
+      expect(auteur.length, nom).toBeLessThanOrEqual(LONGUEUR_MAX_AUTEUR);
+    }
   });
 });
 

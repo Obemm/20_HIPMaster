@@ -148,6 +148,13 @@ components:
           items: { $ref: '#/components/schemas/Capacite' }
         effet: { type: string, description: Effet propre à la carte, s'il y en a un. }
         enVrai: { type: string, description: Explication pédagogique. }
+        auteur:
+          type: string
+          minLength: 1
+          maxLength: 40
+          description: >
+            Cartes de la communauté seulement (US-030, ADR 0050) — nom affiché de la personne qui l'a proposée, tel
+            qu'elle l'a choisi ; il ne se traduit pas.
     CarteDetaillee:
       description: Une carte, avec sa fiche « En savoir plus » quand elle est rédigée.
       allOf:

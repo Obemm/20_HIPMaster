@@ -17,6 +17,9 @@ export const FAMILLES = [
 export type Famille = (typeof FAMILLES)[number];
 
 export const TYPES_CARTE = ['composant', 'evolution', 'sort', 'incident'] as const;
+
+/** Longueur maximale du nom affiché de l'auteur d'une carte de la communauté (US-030). */
+export const LONGUEUR_MAX_AUTEUR = 40;
 export type TypeCarte = (typeof TYPES_CARTE)[number];
 
 /** Une capacité portée par une carte ; seule Connecteur prend une valeur (nombre de cartes piochées). */
@@ -36,6 +39,11 @@ interface BaseCarte {
   effet?: string;
   /** Explication pédagogique : ce que la technologie fait en vrai. */
   enVrai: string;
+  /**
+   * Cartes de la communauté seulement (US-030, ADR 0050) : le nom affiché de la personne qui l'a proposée, choisi par
+   * elle dans sa PR ; il ne se traduit pas et n'est lié à aucun compte du jeu.
+   */
+  auteur?: string;
 }
 
 export interface Composant extends BaseCarte {
