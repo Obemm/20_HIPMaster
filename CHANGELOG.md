@@ -1,444 +1,145 @@
 # Changelog
 
-Toutes les évolutions notables du projet sont consignées ici
-(format [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions [SemVer](https://semver.org/lang/fr/)).
+All notable changes to the project are recorded here
+(format [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), versions [SemVer](https://semver.org/)).
 
-## [Non publié]
+## [Unreleased]
 
-### Ajouté
+### Added
 
-- L'anglais devient la langue du dépôt (ADR 0051, EPIC-16) : `CLAUDE.md`, modèles de story et d'epic, nouvel epic et
-  ses stories en anglais ; `scripts/cloturer-story.py` devient `scripts/close-story.py` et lit chaque fichier dans sa
-  langue pendant la traduction (US-087).
-- Le kit du contributeur passe en anglais, pour des collègues anglophones : `CONTRIBUTING.md`, le guide « Designing
-  a card », les consignes de carte et d'illustration et le modèle de PR « carte » ; une proposition peut s'écrire en
-  anglais, l'IA du contributeur écrit les textes du jeu en français et en anglais (US-086, ADR 0050).
-- Une carte peut porter le nom de la personne qui l'a proposée : champ `auteur` facultatif du catalogue, servi par
-  l'API (`GET /api/v1/cartes`), non traduit ; la consigne de carte le renseigne (US-030, ADR 0050).
-- Relecture des cartes proposées dans leur PR : un modèle de PR « carte » avec les vérifications du contributeur et la
-  liste de contrôle du relecteur, un `CODEOWNERS`, et un job de CI « Équilibrage des cartes nouvelles » qui met deux
-  exemplaires de chaque carte nouvelle dans les decks prêtés et affiche l'écart de victoires dans son résumé
-  (`npm run simuler:carte`) (US-029, ADR 0050).
-- Kit pour l'IA du contributeur : une consigne de carte (`docs/contribuer/consigne-carte.md`) à donner à un assistant
-  de code, qui écrit la carte, sa traduction, sa fiche, son effet et ses tests sans mécanique nouvelle, éprouvée par
-  deux essais ; une consigne d'illustration (`consigne-illustration.md`) avec l'image de référence, les phrases de
-  rareté et les blocs de style par famille. Une carte proposée ne demande pas de story (US-028, ADR 0050).
-- Proposer une carte : un `CONTRIBUTING.md` et un guide, « Concevoir une carte » (`docs/contribuer/regles-cartes.md`),
-  pour les architectes et tech leads qui veulent proposer leurs cartes par pull request depuis un fork : familles,
-  types, raretés, ordres de grandeur relevés sur les 74 cartes, capacités, texte « En vrai », fiche « En savoir
-  plus », règles de contenu (le dépôt est public dès l'ouverture d'une PR), gabarit de proposition et deux exemples
-  commentés (US-027, ADR 0050).
-- Jouer avec ses decks : contre le bot, en défi et contre un adversaire au hasard, ses decks complets se proposent
-  avant les decks prêtés (toujours là), avec leur nom et leurs cartes phares ; les decks incomplets ne sont pas
-  proposés et l'écran le dit. Le serveur revérifie le deck au lancement et le fige dans la partie : le modifier ou le
-  supprimer ensuite ne change rien, même à un défi qui attend encore son adversaire, qui voit le nom du deck. En
-  français et en anglais (US-084, ADR 0049).
-- Des decks à soi : chaque joueur compose jusqu'à 5 decks avec les cartes de sa collection, les nomme, les modifie,
-  les duplique, les supprime ou part d'un deck prêté (limité aux cartes possédées). L'écran de construction, pensé pour
-  le téléphone, filtre les cartes par famille, rareté et coût, montre la courbe de coût et la répartition par famille,
-  et dit pendant la construction ce qui manque ou dépasse ; le serveur vérifie chaque deck (règles et cartes
-  possédées), garde les decks avec le compte et les supprime avec lui. Une carte sortie de la collection ou du
-  catalogue libère sa place : le deck redevient incomplet et le dit. En français et en anglais (US-083, ADR 0048).
-- Trois nouvelles cartes au set 1, numérotées 72 à 74 : **API First** (sort rare : piochez deux cartes API, puis un
-  composant API gagne +1 attaque), **EDA** (sort épique : chacun de vos composants EDA blesse un composant adverse au
-  hasard) et **API GraphQL** (composant rare qui pioche une carte par autre composant en jeu, 2 au plus). Chacune a sa
-  fiche « En savoir plus » et ses textes en français et en anglais, sa créature dessinée avec Gemini (un tisserin
-  architecte, un loup qui hurle, un tamanoir gourmet) et entre dans le tirage des boosters ; les collections et les
-  decks prêtés ne changent pas, et l'équilibre est vérifié par simulation sur deux graines (US-077).
-- Choix du générateur d'illustrations consigné : Gemini, une créature par carte, relue par le porteur (US-016,
-  ADR 0047).
-- Les textes alternatifs des 71 illustrations en anglais : la version `/en/` décrit chaque image aux lecteurs d'écran
-  dans sa langue ; `set-1.json` porte un `altEn` obligatoire à côté de l'`alt` français et le manifeste généré range
-  les textes par langue (US-081).
-- De vraies illustrations pour les 71 cartes du set 1, générées avec Gemini : chaque carte a une créature à elle
-  (pélican facteur pour FTP, griffon gardien pour Apigee, méduse-maillage pour Solace Event Mesh…), dans son propre
-  décor, avec le même rendu, la palette de sa famille et l'intensité de sa rareté ; les évolutions reprennent la
-  créature de leur carte d'origine. Chaque image a son texte alternatif et sa consigne de génération, les originaux
-  sont archivés hors du dépôt, et un test vérifie que les 71 cartes sont illustrées en moins de 100 Ko (US-017).
-- Des erreurs comprises dans les deux langues : chaque erreur de l'API porte un `code` stable, que le front traduit
-  (le texte français reste en repli) ; les parcours principaux sont vérifiés en anglais, audit d'accessibilité compris,
-  et le guide d'exploitation dit comment ajouter une langue (US-082).
-- Le contenu du jeu en anglais : noms, effets et « En vrai » des 71 cartes, capacités, fiches « En savoir plus » (liens
-  vers des ressources anglaises), decks prêtés, niveaux du bot, bulles de la partie guidée et phrases du conseil.
-  L'API sert la langue demandée (`?langue=en`), le français par défaut, avec un `ETag` par langue ; un test vérifie
-  que rien ne manque (US-081, ADR 0043).
-- Toute l'interface en anglais sous `/en/` : chaque écran, bouton, message, aide et texte réservé aux lecteurs d'écran
-  (642 messages), avec un glossaire du jeu constant (System, Throughput, HP, deploy…) ; dates, nombres et pluriels
-  suivent la langue, et le plateau tient toujours dans un téléphone de 375 × 667. Une règle ESLint interdit tout
-  texte en dur dans un gabarit (US-080).
-- Le jeu existe en deux versions, française (`/fr/`) et anglaise (`/en/`), compilées par l'i18n d'Angular. La racine
-  du site emmène chaque joueur dans sa langue (celle choisie, puis celle du navigateur, l'anglais à défaut), anciens
-  liens compris ; un sélecteur FR / EN dans le bandeau bascule sur la même page dans l'autre langue et retient le
-  choix. Chaque langue a son manifeste et son service worker ; la CI échoue si une traduction manque (US-079,
-  ADR 0042).
-- Des boosters offerts par code, pour récompenser une réussite de l'équipe (« 1re API publiée ») : le porteur du
-  projet crée un code (libellé, boosters par joueur, nombre de joueurs, date limite) sur la page « Offrir des
-  boosters », réservée aux administrateurs, ou par `npm run code-boosters` ; le code et son lien
-  `/boosters?code=…` ne s'affichent qu'une fois, la base n'en garde que l'empreinte HMAC. Le joueur le saisit dans
-  « Un code cadeau ? » sur « Mes boosters » (le lien remplit le champ) et reçoit les boosters, même au-delà du
-  plafond, une fois par code. Refus neutre (403) et 60 essais par heure et par adresse ; la base garde qui a utilisé
-  quel code, et un code qui a fui se révoque (US-070, ADR 0045).
-- Un score et un classement entre collègues : une victoire contre le bot rapporte 1, 2, 3 ou 5 points selon le
-  niveau, un duel gagné 5 points, un duel nul 2 points chacun, au plus 10 victoires comptées par jour, sans remise à
-  zéro ; une cote de duel à la manière d'Elo (départ 1000) suit chaque duel. Page « Classement » (mon score, mon rang,
-  ma cote, les joueurs classés) et tuile sur l'accueil ; chacun peut se retirer du classement, et la page de
-  confidentialité dit ce que les autres voient. Comptés par le serveur (`GET /api/v1/classement`,
-  `PUT /api/v1/moi/classement`) ; les victoires et duels d'avant le score sont rattrapés au déploiement
-  (US-069, ADR 0044).
-- Une première partie guidée : « Apprendre à jouer (5 min) », proposé sur l'accueil et l'écran « Jouer » tant qu'on
-  ne l'a pas fait, rejoue toujours la même partie (decks d'initiation et graine fixes, contre Stagiaire). Une bulle
-  par étape (poser, finir son tour, attaquer le SI, décommissionner, la Garde, la riposte) met en évidence le geste
-  attendu et refuse poliment les autres ; on peut la passer à tout moment. Elle se gagne en quelques minutes, ne
-  rapporte pas de booster et propose ensuite Stagiaire avec le conseil (US-067, ADR 0041).
-- Un conseil à la demande contre le bot : l'ampoule « Un conseil ? » met en évidence le meilleur coup du moment (la
-  carte, l'attaquant et sa cible, le SI ou « Finir mon tour ») et dit pourquoi en une phrase. Calculé par le serveur
-  depuis la seule vue du joueur (`GET /api/v1/parties/{id}/conseil`, limité en débit), sur les règles de Batch de
-  nuit : qui le suit bat Stagiaire 89 % du temps. Jamais en duel ; l'option « Un conseil à chaque coup » se règle
-  dans l'aide (US-066, ADR 0040).
-- Premières vraies illustrations, générées avec Gemini : FTP, Apigee API Gateway et Solace Agent Mesh (essai d'US-017).
-- Le jeu s'installe sur l'écran d'accueil d'un téléphone (PWA) : manifeste web (nom, couleurs de nuit, icônes 192 et
-  512 px et masquable, affichage autonome) et service worker d'Angular en production, qui garde l'interface et les
-  illustrations en cache mais jamais l'API ; un bandeau propose « Recharger » quand une nouvelle version est prête,
-  un autre dit, hors ligne, que le jeu se joue en ligne. Un parcours e2e vérifie l'installabilité selon Chrome et
-  l'ouverture hors ligne sur le build de production (US-063, ADR 0038).
-- Socle de développement : TypeScript strict, ESLint, Prettier, Vitest, Playwright + axe-core, Husky, commitlint,
-  CI GitHub Actions, Dependabot (US-001).
-- Next.js 16 + Tailwind CSS 4, page d'accueil provisoire en français (US-002, ADR 0001).
-- Organisation projet : backlog epics/stories, ADR, vision, inspirations, changelog (US-003, ADR 0002).
-- PostgreSQL via Docker et Drizzle ORM : configuration, schéma provisoire `cartes`, première migration (US-004, ADR 0003).
-- Premier module de logique de jeu : raretés et tirage d'un booster, testé (ADR 0004).
-- Référentiel : les ADR technologiques the company guident les choix techniques, en inspiration (US-006, ADR 0005).
-- Front Angular 22 + Tailwind CSS 4 : page d'accueil qui affiche les chances par booster calculées par l'API
-  (US-006, ADR 0006).
-- API REST Fastify 5 : `/api/v1/sante`, `/api/v1/raretes`, erreurs au format Problem Details, limites de taille et de
-  délai (US-006, ADR 0007).
-- Monorepo npm workspaces (`apps/web`, `apps/api`, `packages/domain`) ; règles SonarJS et Angular (accessibilité
-  comprise) dans ESLint, quality gate `npm run check` (US-006, ADR 0009).
-- Cible d'hébergement Azure documentée (US-006, ADR 0008).
-- Univers du jeu : la plateforme d'intégration hybride de l’entreprise, du FTP à l'IA agentique, avec ses lignées d'évolution
-  (webMethods, Apigee, Solace) ; règles du combat sur plateau (Débit, SLA, capacités) et brouillon d'un premier set
-  de 64 cartes (US-005, ADR 0010).
-- Catalogue du set 1 : 71 cartes et 23 capacités en données typées du domaine (ADR 0011), API
-  `GET /api/v1/cartes` et `/api/v1/cartes/{numero}` (contrat OpenAPI), pages Angular du catalogue filtrable par
-  famille et rareté et du détail d'une carte, accessibles sur mobile (US-008).
-- Cartes au design de carte à jouer : format portrait, cadre par rareté, illustration provisoire et pictogramme par
-  famille, Débit, Attaque et PV avec icônes ; catalogue en grille de 2 à 5 colonnes et détail en fenêtre modale qui
-  garde les filtres ; thème clair ou sombre selon le système, par jetons de couleur (US-009, ADR 0012).
-- Moteur de combat pur et rejouable dans `packages/domain` : création de partie à graine, actions (poser, évoluer,
-  décommissionner, attaquer, finir son tour), actions possibles, vue par joueur, 13 capacités et 28 cartes jouables
-  (US-010, ADR 0013).
-- Bot « Batch de nuit » qui joue sur sa seule vue de la partie, trois decks prêtés (Héritage, Moderne, Hybride)
-  équilibrés par simulation, validation des decks et simulation « bot contre bot » (`npm run simuler`) (US-011).
-- Parties contre le bot côté API : `GET /api/v1/decks`, création, lecture et actions d'une partie ; le bot joue dans
-  la requête, seule la vue du joueur est renvoyée ; parties gardées en mémoire avec expiration (US-012, ADR 0014).
-- **Premier jalon jouable** : écran de partie contre le bot (`/jouer`) — choix d'un deck prêté, plateau en jetons,
-  main en cartes, actions au toucher et au clavier, journal annoncé aux lecteurs d'écran, fin de partie ; règle
-  courte, objectif toujours visible et capacités expliquées en jeu (US-013).
-- Sorts et incidents jouables : 12 sorts et 13 incidents avec leurs cibles, statuts (immobilisé, Doublon…), parades
-  (Human-in-the-loop, OAuth2, Fichier `.ok` témoin, Vétéran) ; le bot les joue, les decks prêtés en contiennent ;
-  « Jouer sur … » à l'écran (US-014).
-- Effets propres des composants : pioche ciblée (Designer, API Hub, Event Portal), renfort à la pose (OpenAPI,
-  AsyncAPI), CDC, Cron et Base vectorielle ; 63 cartes sur 71 jouables (US-019).
-- **Les 71 cartes du set 1 sont jouables** : capacités IA (Autonome, Orchestration, Délégation, Contexte, Outillage,
-  Cache sémantique, Routage multi-modèles, Garde-fous, Asynchrone) et Migration ; Solace Agent Mesh et Apigee AI
-  Gateway jouables ; le bot et les decks prêtés les utilisent (US-020).
-- Trois niveaux de bot au choix : Batch de nuit (facile), Architecte ESB (moyen), Agent autonome (difficile), qui
-  évaluent leurs actions avec le moteur sans tricher ; `GET /api/v1/niveaux` et choix de la difficulté à l'écran
-  (US-021).
-- Compte invité sans mot de passe : un pseudo crée le compte, le navigateur garde la session et un code de
-  récupération le retrouve sur un autre appareil ; API `/joueurs`, `/sessions`, `/moi`, page « Mon compte » et
-  pseudo dans le bandeau (US-022, ADR 0017).
-- Base PGlite (PostgreSQL embarqué) en développement et en tests, sans Docker ; migrations appliquées au démarrage
-  de l'API (US-022, ADR 0018).
-- Boosters : 5 offerts à la création du compte, puis un toutes les 10 minutes (stock plafonné à 10) ; le serveur
-  tire 5 cartes qui rejoignent la collection, l'écran « Mes boosters » les révèle et signale les nouvelles ; la
-  table provisoire `cartes` est retirée (US-023, ADR 0019).
-- Ma collection : progression du set et par rareté, doubles, cartes manquantes visibles et grisées, filtre
-  « possédées / manquantes » ; le détail d'une carte indique les exemplaires possédés ; `GET /api/v1/moi/collection`
-  (US-024).
-- Un booster pour chaque victoire contre le bot, partie lancée en étant connecté : une seule récompense par partie,
-  au plus 3 par jour ; l'écran de fin l'annonce et mène à son ouverture (US-025).
-- Duels entre joueurs, côté serveur : créer un duel, le rejoindre, jouer à son tour ; l'état vit en base, chacun
-  ne reçoit que sa vue, l'ETag évite de recharger un duel inchangé ; API `/api/v1/duels` (US-032, ADR 0020).
-- Défier un collègue par lien : on lance un défi depuis « Jouer » et on partage son lien ; le collègue crée au
-  besoin son compte, revient au défi et le relève ; un défi sert une fois, s'annule et expire après 7 jours
-  (US-033).
-- Écran de duel : le défi relevé, chacun joue sur le plateau habituel, l'adversaire nommé par son pseudo ; pendant
-  son tour, l'écran se met à jour seul ; la fin du duel propose une revanche (US-034).
-- Mes duels : la liste des duels, ceux qui attendent le joueur en premier ; le bandeau compte les duels « à vous de
-  jouer » et le titre de l'onglet le reprend ; `GET /api/v1/moi/duels` (US-035).
-- Abandon et forfait des duels : on abandonne après confirmation ; sans coup pendant 72 heures, le joueur actif perd
-  par forfait ; l'échéance et la raison de la fin s'affichent sur le plateau et dans « Mes duels » (US-036).
-- Adversaire au hasard : on rejoint le plus ancien duel ouvert d'un autre joueur, ou on attend le suivant ; les
-  défis par lien restent privés (US-037).
-- Un booster pour une victoire en duel, dans le même plafond quotidien que contre le bot ; une victoire par abandon ou
-  forfait ne compte pas contre un adversaire déjà affronté le jour même (US-038).
-- Les attaques expliquées : les règles disent que rien n'attaque tout seul et détaillent la résolution d'un combat,
-  exemples chiffrés à l'appui ; la règle courte du jeu demande de sélectionner l'attaquant puis sa cible, avec un
-  exemple de riposte ; avant de finir son tour, le joueur est averti des composants qui peuvent encore attaquer
-  (US-039).
-- Le détail d'une carte de la main en partie : la toucher l'affiche en grand, avec son effet, ses capacités définies
-  sur place et son « En vrai », puis ses actions dessous ; elle se consulte aussi pendant le tour adverse (US-040).
-- Le détail des composants du plateau, les miens comme ceux de l'adversaire, et du SI adverse : les toucher les
-  affiche en grand avec leur état du moment (attaque, PV restants, statuts) et, pour les miens, pourquoi ils
-  n'attaquent pas ; la sélection ne joue jamais, l'attaque se confirme par « Attaquer avec… » sous le détail de la
-  cible (US-041).
-- Parcours e2e des duels fiables sous charge : le duel est préparé par l'API (comptes, défi lancé puis relevé) sauf
-  dans le parcours qui teste le défi par lien, les navigateurs demandent des animations réduites, trois travailleurs
-  Playwright en local pour ménager la mémoire, le seul parcours qui enchaîne plusieurs tours est déclaré lent, et
-  l'adversaire au hasard attend le nom de l'adversaire avant de lire le titre (US-042).
-- La CI fait aussi passer les tests de l'API sur PostgreSQL 18, la version de la base de production, chaque fichier
-  dans sa propre base ; de vrais tests concurrents (ouvertures de booster, récompenses, appariement, actions de duel)
-  y mettent les verrous à l'épreuve, ce que PGlite ne peut pas faire, et les migrations y sont vérifiées sur une base
-  vide puis relancées sans effet (US-056).
-- Chaîne des illustrations : un original déposé et décrit devient, en une commande (`npm run illustrations`), quatre
-  images AVIF et WebP de moins de 100 Ko et un manifeste ; la carte affiche son illustration, ou son pictogramme de
-  famille à défaut. EPIC-05 découpé en US-015 à US-017 (US-015, ADR 0015).
-- Illustrations provisoires des 71 cartes, dessinées par le code (`npm run illustrations:provisoires`) : un emblème
-  par famille, un motif par type, une intensité par rareté, sans texte ni logo, en attendant de vraies illustrations
-  (US-018, ADR 0016).
-- API prête pour Cloud Run : image Docker multi-étapes construite depuis la racine (API, domaine et migrations
-  seulement, ni PGlite ni `.env`, utilisateur non root), écoute `0.0.0.0:$PORT`, arrêt propre sur SIGTERM ; journaux
-  JSON au format Cloud Logging (`severity`, `message`, trace de la requête, `LOG_LEVEL`) qui gardent la trace des
-  erreurs 500, sans jeton ni corps de requête ; en production, PostgreSQL obligatoire, pool court qui laisse dormir la
-  base Neon, certificat vérifié, et migrations par une commande dédiée sous verrou (`node apps/api/src/migrer.ts`)
-  (US-046, ADR 0023).
-- Infrastructure de la mise en ligne, créée et vérifiée par un script idempotent qui dit ce qui existait déjà
-  (`scripts/gcp/infrastructure.sh`, mode `--simulation`) :
-  - un projet Google Cloud `hipmaster` relié à la facturation ;
-  - un dépôt d'images qui garde les 2 dernières versions ;
-  - un bucket de sauvegardes vidé après 30 jours ;
-  - les comptes de service de l'API et du déploiement, sans clé ;
-  - Workload Identity Federation, limitée au dépôt et à `main` ;
-  - un budget qui alerte dès 1 € ;
-  - Firebase et son site Hosting ;
-  - une base Neon PostgreSQL 18 plafonnée à 0,25 CU, dont l'URL est rangée dans Secret Manager.
+- English becomes the language of the repository (ADR 0051, EPIC-16): `CLAUDE.md`, the story and epic templates, and a new epic and its stories are in English; `scripts/cloturer-story.py` becomes `scripts/close-story.py` and reads each file in its own language during the translation (US-087).
+- The contributor kit moves to English, for English-speaking colleagues: `CONTRIBUTING.md`, the "Designing a card" guide, the card and illustration briefs and the "card" PR template; a proposal can be written in English, and the contributor's AI writes the game texts in French and English (US-086, ADR 0050).
+- A card can carry the name of the person who proposed it: an optional `auteur` field in the catalogue, served by the API (`GET /api/v1/cartes`), not translated; the card brief fills it in (US-030, ADR 0050).
+- Review of proposed cards in their PR: a "card" PR template with the contributor's checks and the reviewer's checklist, a `CODEOWNERS`, and a "New card balance" CI job that puts two copies of each new card into the loaner decks and shows the win-rate gap in its summary (`npm run simuler:carte`) (US-029, ADR 0050).
+- Kit for the contributor's AI: a card brief (`docs/contribuer/consigne-carte.md`) to give to a coding assistant, which writes the card, its translation, its sheet, its effect and its tests without any new mechanic, proven by two trials; an illustration brief (`consigne-illustration.md`) with the reference image, the rarity phrases and the style blocks per family. A proposed card does not need a story (US-028, ADR 0050).
+- Proposing a card: a `CONTRIBUTING.md` and a guide, "Designing a card" (`docs/contribuer/regles-cartes.md`), for architects and tech leads who want to propose their cards by pull request from a fork: families, types, rarities, orders of magnitude measured on the 74 cards, abilities, "In real life" text, "Learn more" sheet, content rules (the repository is public as soon as a PR is opened), proposal template and two annotated examples (US-027, ADR 0050).
+- Playing with your own decks: against the bot, in a challenge and against a random opponent, your complete decks are offered before the loaner decks (always there), with their name and their showcase cards; incomplete decks are not offered and the screen says so. The server re-checks the deck at launch and freezes it in the game: editing or deleting it afterwards changes nothing, even for a challenge still waiting for its opponent, who sees the deck's name. In French and English (US-084, ADR 0049).
+- Decks of your own: each player builds up to 5 decks from the cards in their collection, names them, edits them, duplicates them, deletes them or starts from a loaner deck (limited to the cards owned). The building screen, designed for the phone, filters cards by family, rarity and cost, shows the cost curve and the split by family, and says while building what is missing or over; the server checks each deck (rules and owned cards), keeps the decks with the account and deletes them with it. A card leaving the collection or the catalogue frees its slot: the deck becomes incomplete again and says so. In French and English (US-083, ADR 0048).
+- Three new cards in set 1, numbered 72 to 74: **API First** (rare spell: draw two API cards, then an API component gains +1 attack), **EDA** (epic spell: each of your EDA components hurts a random enemy component) and **API GraphQL** (rare component that draws a card per other component in play, 2 at most). Each has its "Learn more" sheet and its texts in French and English, its creature drawn with Gemini (an architect weaver bird, a howling wolf, a gourmet anteater) and joins the booster draw; collections and loaner decks do not change, and the balance is checked by simulation on two seeds (US-077).
+- Choice of the illustration generator recorded: Gemini, one creature per card, reviewed by the project owner (US-016, ADR 0047).
+- The alternative texts of the 71 illustrations in English: the `/en/` version describes each image to screen readers in their language; `set-1.json` carries a mandatory `altEn` next to the French `alt` and the generated manifest files the texts by language (US-081).
+- Real illustrations for the 71 cards of set 1, generated with Gemini: each card has a creature of its own (postman pelican for FTP, guardian griffin for Apigee, mesh jellyfish for Solace Event Mesh…), in its own setting, with the same rendering, the palette of its family and the intensity of its rarity; evolutions reuse the creature of their original card. Each image has its alternative text and its generation brief, the originals are archived outside the repository, and a test checks that the 71 cards are illustrated in under 100 KB (US-017).
+- Errors understood in both languages: each API error carries a stable `code`, which the front end translates (the French text remains as a fallback); the main journeys are checked in English, accessibility audit included, and the operations guide explains how to add a language (US-082).
+- The game content in English: names, effects and "In real life" texts of the 71 cards, abilities, "Learn more" sheets (links to English resources), loaner decks, bot levels, guided-game bubbles and hint phrases. The API serves the requested language (`?langue=en`), French by default, with an `ETag` per language; a test checks that nothing is missing (US-081, ADR 0043).
+- The whole interface in English under `/en/`: every screen, button, message, help text and screen-reader-only text (642 messages), with a constant game glossary (System, Throughput, HP, deploy…); dates, numbers and plurals follow the language, and the board still fits on a 375 × 667 phone. An ESLint rule forbids any hard-coded text in a template (US-080).
+- The game exists in two versions, French (`/fr/`) and English (`/en/`), compiled by Angular i18n. The site root takes each player to their language (the one chosen, then the browser's, English by default), old links included; an FR / EN selector in the banner switches to the same page in the other language and remembers the choice. Each language has its own manifest and service worker; the CI fails if a translation is missing (US-079, ADR 0042).
+- Boosters offered by code, to reward a team achievement ("1st API published"): the project owner creates a code (label, boosters per player, number of players, deadline) on the "Offer boosters" page, reserved for administrators, or with `npm run code-boosters`; the code and its `/boosters?code=…` link are shown only once, the database keeps only its HMAC fingerprint. The player enters it in "Got a gift code?" on "My boosters" (the link fills in the field) and receives the boosters, even beyond the cap, once per code. Neutral refusal (403) and 60 attempts per hour and per address; the database records who used which code, and a leaked code can be revoked (US-070, ADR 0045).
+- A score and a leaderboard among colleagues: a win against the bot earns 1, 2, 3 or 5 points depending on the level, a won duel 5 points, a drawn duel 2 points each, at most 10 wins counted per day, with no reset; an Elo-style duel rating (starting at 1000) tracks each duel. "Leaderboard" page (my score, my rank, my rating, the ranked players) and a tile on the home page; everyone can opt out of the leaderboard, and the privacy page says what others see. Counted by the server (`GET /api/v1/classement`, `PUT /api/v1/moi/classement`); wins and duels from before the score are caught up at deployment (US-069, ADR 0044).
+- A first guided game: "Learn to play (5 min)", offered on the home page and the "Play" screen until it has been done, always replays the same game (fixed starter decks and seed, against Intern). One bubble per step (deploy, end your turn, attack the System, decommission, the Guard, the counter-attack) highlights the expected gesture and politely refuses the others; it can be skipped at any time. It is won in a few minutes, earns no booster and then suggests Intern with hints (US-067, ADR 0041).
+- A hint on demand against the bot: the "A hint?" light bulb highlights the best move of the moment (the card, the attacker and its target, the System or "End my turn") and says why in one sentence. Computed by the server from the player's view alone (`GET /api/v1/parties/{id}/conseil`, rate-limited), on the rules of Nightly Batch: whoever follows it beats Intern 89% of the time. Never in a duel; the "A hint on every move" option is set in the help (US-066, ADR 0040).
+- First real illustrations, generated with Gemini: FTP, Apigee API Gateway and Solace Agent Mesh (trial for US-017).
+- The game installs on a phone's home screen (PWA): web manifest (name, night colours, 192 and 512 px icons and maskable, standalone display) and Angular's service worker in production, which caches the interface and the illustrations but never the API; a banner offers "Reload" when a new version is ready, another says, when offline, that the game is played online. An e2e journey checks installability according to Chrome and offline opening on the production build (US-063, ADR 0038).
+- Development foundation: strict TypeScript, ESLint, Prettier, Vitest, Playwright + axe-core, Husky, commitlint, GitHub Actions CI, Dependabot (US-001).
+- Next.js 16 + Tailwind CSS 4, provisional home page in French (US-002, ADR 0001).
+- Project organisation: epics/stories backlog, ADRs, vision, inspirations, changelog (US-003, ADR 0002).
+- PostgreSQL via Docker and Drizzle ORM: configuration, provisional `cartes` schema, first migration (US-004, ADR 0003).
+- First game logic module: rarities and booster draw, tested (ADR 0004).
+- Reference: the the company technology ADRs guide technical choices, as inspiration (US-006, ADR 0005).
+- Angular 22 + Tailwind CSS 4 front end: home page that shows the odds per booster computed by the API (US-006, ADR 0006).
+- Fastify 5 REST API: `/api/v1/sante`, `/api/v1/raretes`, errors in Problem Details format, size and time limits (US-006, ADR 0007).
+- npm workspaces monorepo (`apps/web`, `apps/api`, `packages/domain`); SonarJS and Angular rules (accessibility included) in ESLint, `npm run check` quality gate (US-006, ADR 0009).
+- Azure hosting target documented (US-006, ADR 0008).
+- Game universe: the company's hybrid integration platform, from FTP to agentic AI, with its evolution lines (webMethods, Apigee, Solace); board combat rules (Throughput, SLA, abilities) and a draft of a first set of 64 cards (US-005, ADR 0010).
+- Set 1 catalogue: 71 cards and 23 abilities as typed domain data (ADR 0011), API `GET /api/v1/cartes` and `/api/v1/cartes/{numero}` (OpenAPI contract), Angular pages for the catalogue filterable by family and rarity and for a card's detail, accessible on mobile (US-008).
+- Cards with a playing-card design: portrait format, frame per rarity, provisional illustration and pictogram per family, Throughput, Attack and HP with icons; catalogue as a grid of 2 to 5 columns and detail in a modal window that keeps the filters; light or dark theme following the system, through colour tokens (US-009, ADR 0012).
+- Pure, replayable combat engine in `packages/domain`: seeded game creation, actions (deploy, evolve, decommission, attack, end turn), possible actions, per-player view, 13 abilities and 28 playable cards (US-010, ADR 0013).
+- "Nightly Batch" bot that plays on its own view of the game alone, three loaner decks (Legacy, Modern, Hybrid) balanced by simulation, deck validation and "bot against bot" simulation (`npm run simuler`) (US-011).
+- Games against the bot on the API side: `GET /api/v1/decks`, creation, reading and actions of a game; the bot plays within the request, only the player's view is returned; games kept in memory with expiry (US-012, ADR 0014).
+- **First playable milestone**: game screen against the bot (`/jouer`) — choice of a loaner deck, board in tokens, hand as cards, actions by touch and keyboard, log announced to screen readers, end of game; short rule, objective always visible and abilities explained in play (US-013).
+- Playable spells and incidents: 12 spells and 13 incidents with their targets, statuses (immobilised, Duplicate…), parries (Human-in-the-loop, OAuth2, witness `.ok` file, Veteran); the bot plays them, the loaner decks contain them; "Play on …" on screen (US-014).
+- Components' own effects: targeted draw (Designer, API Hub, Event Portal), reinforcement on deployment (OpenAPI, AsyncAPI), CDC, Cron and Vector database; 63 cards out of 71 playable (US-019).
+- **The 71 cards of set 1 are playable**: AI abilities (Autonomous, Orchestration, Delegation, Context, Tooling, Semantic cache, Multi-model routing, Guardrails, Asynchronous) and Migration; Solace Agent Mesh and Apigee AI Gateway playable; the bot and the loaner decks use them (US-020).
+- Three bot levels to choose from: Nightly Batch (easy), ESB Architect (medium), Autonomous Agent (hard), which evaluate their actions with the engine without cheating; `GET /api/v1/niveaux` and difficulty choice on screen (US-021).
+- Guest account without a password: a username creates the account, the browser keeps the session and a recovery code restores it on another device; `/joueurs`, `/sessions`, `/moi` API, "My account" page and username in the banner (US-022, ADR 0017).
+- PGlite database (embedded PostgreSQL) in development and in tests, without Docker; migrations applied when the API starts (US-022, ADR 0018).
+- Boosters: 5 offered when the account is created, then one every 10 minutes (stock capped at 10); the server draws 5 cards that join the collection, the "My boosters" screen reveals them and flags the new ones; the provisional `cartes` table is removed (US-023, ADR 0019).
+- My collection: progress for the set and by rarity, duplicates, missing cards visible and greyed out, "owned / missing" filter; a card's detail shows the copies owned; `GET /api/v1/moi/collection` (US-024).
+- A booster for each victory against the bot, game started while logged in: a single reward per game, at most 3 per day; the end screen announces it and leads to opening it (US-025).
+- Duels between players, server side: create a duel, join it, play on your turn; the state lives in the database, each player receives only their view, the ETag avoids reloading an unchanged duel; `/api/v1/duels` API (US-032, ADR 0020).
+- Challenge a colleague by link: you start a challenge from "Play" and share its link; the colleague creates an account if needed, comes back to the challenge and accepts it; a challenge is used once, can be cancelled and expires after 7 days (US-033).
+- Duel screen: once the challenge is accepted, each player plays on the usual board, the opponent named by their username; during their turn, the screen updates by itself; the end of the duel offers a rematch (US-034).
+- My duels: the list of duels, those waiting for the player first; the banner counts the duels where it is "your turn" and the tab title repeats it; `GET /api/v1/moi/duels` (US-035).
+- Duel resignation and forfeit: you resign after confirmation; with no move for 72 hours, the active player loses by forfeit; the deadline and the reason for the end are shown on the board and in "My duels" (US-036).
+- Random opponent: you join the oldest open duel from another player, or wait for the next one; challenges by link stay private (US-037).
+- A booster for a duel victory, under the same daily cap as against the bot; a victory by resignation or forfeit does not count against an opponent already faced the same day (US-038).
+- Attacks explained: the rules say that nothing attacks on its own and detail how a combat is resolved, with worked examples; the game's short rule asks to select the attacker then its target, with a counter-attack example; before ending their turn, the player is warned of the components that can still attack (US-039).
+- The detail of a card in hand during a game: touching it shows it large, with its effect, its abilities defined on the spot and its "In real life", then its actions below; it can also be consulted during the opponent's turn (US-040).
+- The detail of board components, mine and the opponent's, and of the opponent's System: touching them shows them large with their current state (attack, remaining HP, statuses) and, for mine, why they are not attacking; selection never plays, the attack is confirmed by "Attack with…" under the target's detail (US-041).
+- Duel e2e journeys reliable under load: the duel is prepared through the API (accounts, challenge started then accepted) except in the journey that tests the challenge by link, browsers ask for reduced motion, three Playwright workers locally to spare memory, the only journey that chains several turns is declared slow, and the random opponent waits for the opponent's name before reading the title (US-042).
+- The CI also runs the API tests on PostgreSQL 18, the production database version, each file in its own database; real concurrent tests (booster openings, rewards, matchmaking, duel actions) put the locks to the test there, which PGlite cannot do, and the migrations are checked there on an empty database then re-run with no effect (US-056).
+- Illustration pipeline: a dropped and described original becomes, in one command (`npm run illustrations`), four AVIF and WebP images under 100 KB and a manifest; the card shows its illustration, or its family pictogram by default. EPIC-05 split into US-015 to US-017 (US-015, ADR 0015).
+- Provisional illustrations for the 71 cards, drawn by code (`npm run illustrations:provisoires`): one emblem per family, one pattern per type, one intensity per rarity, with no text or logo, while waiting for real illustrations (US-018, ADR 0016).
+- API ready for Cloud Run: multi-stage Docker image built from the root (API, domain and migrations only, no PGlite or `.env`, non-root user), listens on `0.0.0.0:$PORT`, graceful shutdown on SIGTERM; JSON logs in Cloud Logging format (`severity`, `message`, request trace, `LOG_LEVEL`) that keep the trace of 500 errors, without token or request body; in production, PostgreSQL mandatory, short pool that lets the Neon database sleep, verified certificate, and migrations through a dedicated command under lock (`node apps/api/src/migrer.ts`) (US-046, ADR 0023).
+- Go-live infrastructure, created and verified by an idempotent script that says what already existed (`scripts/gcp/infrastructure.sh`, `--simulation` mode):
+  - a Google Cloud project `hipmaster` linked to billing;
+  - an image repository that keeps the last 2 versions;
+  - a backup bucket emptied after 30 days;
+  - the API and deployment service accounts, without keys;
+  - Workload Identity Federation, limited to the repository and to `main`;
+  - a budget that alerts from €1;
+  - Firebase and its Hosting site;
+  - a Neon PostgreSQL 18 database capped at 0.25 CU, whose URL is stored in Secret Manager.
 
-  Le script n'utilise jamais la configuration `gcloud` du poste. Un guide d'exploitation l'accompagne (US-049,
-  ADR 0024).
+  The script never uses the workstation's `gcloud` configuration. An operations guide goes with it (US-049, ADR 0024).
 
-- Un niveau de bot facile, « Stagiaire », présélectionné : il ne pose qu'une carte par tour, la plus chère, et
-  attaque le SI dès qu'il peut, sans sort ni calcul ; un joueur débutant le bat plus d'une fois sur deux (54 à 56 %
-  en simulation, contre 14 % face à Batch de nuit). `npm run simuler` mesure aussi un profil débutant, la part de
-  victoires du joueur qui commence et du second, et chaque niveau contre un débutant et contre un joueur du niveau de
-  Batch de nuit (US-064).
-- Inscription sur invitation : en production, créer un compte demande un code d'invitation (16 caractères, gardé sous
-  HMAC), valable pour un nombre de comptes et jusqu'à une date ; chaque compte retient de quelle invitation il vient.
-  Un lien `/compte?invitation=…` remplit le code sur « Mon compte », et un code refusé reçoit un 403 qui ne dit pas
-  pourquoi. La commande `npm run invitation` crée une invitation (code affiché une seule fois, avec le lien à envoyer),
-  liste les invitations ou en révoque une ; en production, un Cloud Run Job l'exécute (guide d'exploitation). En
-  développement et dans les e2e, l'inscription reste libre (US-048, ADR 0027).
-- Déploiement continu : après chaque CI verte sur `main`, le workflow `deploy.yml` s'authentifie sans clé (Workload
-  Identity Federation), construit l'image de l'API étiquetée par le commit, exécute le job de migration, déploie une
-  révision Cloud Run sans trafic, la sonde (`/api/v1/sante`), lui bascule le trafic, puis publie le front sur
-  Firebase Hosting par son API REST et vérifie le site en ligne. Une étape en échec arrête tout ; avant la bascule,
-  l'ancienne révision continue de servir. `scripts/gcp/deployer.sh` lance les mêmes étapes depuis un poste, montre
-  l'état et fait le retour arrière de l'API et du front en une commande. `firebase.json` relaie `/api/**` vers
-  Cloud Run, renvoie `index.html` aux routes Angular, règle le cache (aucun pour `index.html`, un jour pour les
-  illustrations, un an pour les fichiers à empreinte) et pose une CSP stricte avec les en-têtes de sécurité ;
-  `robots.txt` et `noindex` tiennent les robots à l'écart. Guide d'exploitation complété : déploiement, retour
-  arrière, migrations compatibles Vérifié en production : retour arrière essayé (API en
-  32 s, front en 42 s), base Neon en veille 6 minutes au plus après la dernière requête (US-050, ADR 0028).
-- Page « Inviter », réservée au porteur du projet : créer une invitation (pour qui, nombre de comptes, date limite),
-  copier son lien en un geste ou le partager par le menu du téléphone, suivre les comptes créés par chaque invitation et
-  en révoquer une après confirmation. Les administrateurs sont désignés par le réglage `ADMINISTRATEURS` de l'API
-  (identifiants de joueur, variable GitHub `HIPMASTER_ADMINISTRATEURS` au déploiement), jamais par le front ; les
-  routes `/api/v1/admin/invitations` (contrat OpenAPI, débit limité) répondent 404 à tout autre appelant, comme une
-  route qui n'existe pas. Le lien « Inviter des collègues » n'apparaît dans « Mon compte » que pour un administrateur,
-  et « Mon compte » montre l'identifiant du compte. Une invitation révoquée se distingue désormais d'une invitation
-  expirée, dans la page comme dans `npm run invitation -- --lister` (US-072, ADR 0029).
-- Page « À propos et confidentialité », à laquelle mène un lien en pied de chaque page : qui édite et héberge le jeu
-  (Firebase Hosting, Cloud Run et Neon à Francfort), ce qu'il garde et pourquoi (pseudo, collection, duels, sessions,
-  adresses IP des journaux), combien de temps, et comment exercer ses droits ; le seul stockage du navigateur est le
-  jeton de session, strictement nécessaire : ni bandeau de consentement, ni traceur, ni mesure d'audience. Comptes, collections,
-  récompenses et résultats sont gardés sans limite, sauf suppression par le joueur ; seules des données techniques
-  expirent (sessions inutilisées 90 jours, journaux et sauvegardes 30 jours, parties abandonnées, défis jamais
-  acceptés) ; celles que la purge d'US-054 appliquera sont marquées « bientôt ». « Mon compte » permet de supprimer son
-  compte après confirmation (`DELETE /api/v1/moi`, contrat `comptes.yaml` 1.4.0) : compte, sessions sur tous les
-  appareils, collection, récompenses et parties disparaissent en une transaction ; ses duels en cours se terminent
-  par forfait au lieu de disparaître pour l'adversaire, qui garde ses duels terminés face à « Compte supprimé »
-  (`duels.yaml` 1.3.0) (US-053, ADR 0031).
-- Supervision du jeu en ligne : test de disponibilité de `/api/v1/sante` toutes les 15 minutes (sans réveiller la
-  base) et e-mail quand le site tombe ; sauvegarde de chaque nuit de la base Neon (`pg_dump` vérifié, 30 jours dans
-  Cloud Storage) et relevé quotidien de sa consommation, avec un e-mail au moindre échec ou au-delà de 70 % du quota ;
-  restauration essayée dans une branche Neon temporaire (`scripts/gcp/restaurer.sh`). Les erreurs JavaScript des
-  joueurs partent vers Error Reporting par `POST /api/v1/erreurs` (contrat OpenAPI, débit limité), sans jeton ni
-  paramètres d'adresse. Scan OWASP ZAP de base : aucune alerte élevée ni moyenne (US-051, ADR 0033).
-- Fiche « En savoir plus » des cartes : un bouton déplie, sous le texte « En vrai », ce qu'est la technologie, à quoi
-  elle sert (ou comment survient l'incident), un exemple, le piège à éviter, le lien avec the company quand il est public, et
-  de 1 à 3 ressources externes (Wikipédia, éditeurs, standards) qui s'ouvrent dans un nouvel onglet, site et langue
-  annoncés. Depuis le détail d'une carte (catalogue, collection, booster) et le panneau de la carte choisie en partie.
-  Fiches versionnées dans le domaine, format validé par les tests ; `GET /api/v1/cartes/{numero}` les renvoie
-  (`cartes.yaml` 1.1.0), la liste reste légère. Huit cartes pilotes, une par famille (US-073, ADR 0036).
-- Les 71 cartes du set 1 ont leur fiche « En savoir plus » : 127 liens vers Wikipédia, la documentation des éditeurs
-  (Apigee, Solace, IBM, Anthropic), des standards (RFC, OpenAPI, AsyncAPI, A2A) et les _Enterprise Integration
-  Patterns_, tous vérifiés ; `npm run fiches:liens` signale les liens morts. Le texte de SFTP, inexact, est corrigé
-  (US-074).
-- Coups de pouce au bon moment, contre le bot comme en duel : avant de finir son tour, un message non bloquant dit
-  ce qui reste possible (« 2 de vos composants peuvent encore attaquer », « Vous pouvez encore poser Pub/Sub »), avec
-  « Revenir au plateau » et « Finir quand même » ; quand un attaquant est choisi et que le SI adverse ne lui est pas
-  proposé, le SI est signalé « Indisponible : Garde » et le détail rappelle quel composant doit tomber d'abord. Tout
-  vient des actions proposées par le serveur. Une case de l'aide « Comment jouer ? » les désactive, réglage gardé par
-  le navigateur (US-065, ADR 0032).
+- An easy bot level, "Intern", preselected: it deploys only one card per turn, the most expensive one, and attacks the System whenever it can, with no spell or calculation; a beginner player beats it more than half the time (54 to 56% in simulation, against 14% facing Nightly Batch). `npm run simuler` also measures a beginner profile, the win share of the player who starts and of the second player, and each level against a beginner and against a Nightly Batch-level player (US-064).
+- Sign-up by invitation: in production, creating an account requires an invitation code (16 characters, kept under HMAC), valid for a number of accounts and until a date; each account remembers which invitation it came from. A `/compte?invitation=…` link fills in the code on "My account", and a refused code gets a 403 that does not say why. The `npm run invitation` command creates an invitation (code shown only once, with the link to send), lists invitations or revokes one; in production, a Cloud Run Job runs it (operations guide). In development and in e2e, sign-up remains free (US-048, ADR 0027).
+- Continuous deployment: after each green CI on `main`, the `deploy.yml` workflow authenticates without a key (Workload Identity Federation), builds the API image tagged with the commit, runs the migration job, deploys a Cloud Run revision with no traffic, probes it (`/api/v1/sante`), switches traffic to it, then publishes the front end to Firebase Hosting through its REST API and checks the live site. A failing step stops everything; before the switch, the old revision keeps serving. `scripts/gcp/deployer.sh` runs the same steps from a workstation, shows the state and rolls back the API and the front end in one command. `firebase.json` relays `/api/**` to Cloud Run, returns `index.html` for Angular routes, sets the cache (none for `index.html`, one day for illustrations, one year for fingerprinted files) and sets a strict CSP with the security headers; `robots.txt` and `noindex` keep robots away. Operations guide completed: deployment, rollback, compatible migrations. Verified in production: rollback tried (API in 32 s, front end in 42 s), Neon database asleep 6 minutes at most after the last request (US-050, ADR 0028).
+- "Invite" page, reserved for the project owner: create an invitation (for whom, number of accounts, deadline), copy its link in one gesture or share it through the phone's menu, follow the accounts created by each invitation and revoke one after confirmation. Administrators are designated by the API's `ADMINISTRATEURS` setting (player identifiers, GitHub variable `HIPMASTER_ADMINISTRATEURS` at deployment), never by the front end; the `/api/v1/admin/invitations` routes (OpenAPI contract, rate-limited) answer 404 to any other caller, like a route that does not exist. The "Invite colleagues" link appears in "My account" only for an administrator, and "My account" shows the account identifier. A revoked invitation is now distinguished from an expired one, in the page as in `npm run invitation -- --lister` (US-072, ADR 0029).
+- "About and privacy" page, reached by a link in the footer of every page: who publishes and hosts the game (Firebase Hosting, Cloud Run and Neon in Frankfurt), what it keeps and why (username, collection, duels, sessions, IP addresses in logs), for how long, and how to exercise your rights; the only browser storage is the session token, strictly necessary: no consent banner, no tracker, no audience measurement. Accounts, collections, rewards and results are kept without limit, unless deleted by the player; only technical data expires (sessions unused for 90 days, logs and backups 30 days, abandoned games, challenges never accepted); those that the purge of US-054 will apply are marked "soon". "My account" allows deleting your account after confirmation (`DELETE /api/v1/moi`, `comptes.yaml` contract 1.4.0): account, sessions on all devices, collection, rewards and games disappear in a single transaction; its ongoing duels end by forfeit instead of disappearing for the opponent, who keeps their finished duels against "Deleted account" (`duels.yaml` 1.3.0) (US-053, ADR 0031).
+- Monitoring of the online game: availability check of `/api/v1/sante` every 15 minutes (without waking the database) and an email when the site goes down; nightly backup of the Neon database (verified `pg_dump`, 30 days in Cloud Storage) and daily reading of its consumption, with an email at the slightest failure or beyond 70% of the quota; restore tried in a temporary Neon branch (`scripts/gcp/restaurer.sh`). Players' JavaScript errors go to Error Reporting through `POST /api/v1/erreurs` (OpenAPI contract, rate-limited), without token or address parameters. Baseline OWASP ZAP scan: no high or medium alert (US-051, ADR 0033).
+- "Learn more" sheet of the cards: a button unfolds, under the "In real life" text, what the technology is, what it is used for (or how the incident happens), an example, the pitfall to avoid, the link with the company when it is public, and 1 to 3 external resources (Wikipedia, vendors, standards) that open in a new tab, site and language announced. From a card's detail (catalogue, collection, booster) and from the chosen card's panel in a game. Sheets versioned in the domain, format validated by tests; `GET /api/v1/cartes/{numero}` returns them (`cartes.yaml` 1.1.0), the list stays light. Eight pilot cards, one per family (US-073, ADR 0036).
+- The 71 cards of set 1 have their "Learn more" sheet: 127 links to Wikipedia, vendor documentation (Apigee, Solace, IBM, Anthropic), standards (RFC, OpenAPI, AsyncAPI, A2A) and _Enterprise Integration Patterns_, all verified; `npm run fiches:liens` reports dead links. The inaccurate SFTP text is corrected (US-074).
+- Nudges at the right moment, against the bot as in duels: before ending their turn, a non-blocking message says what is still possible ("2 of your components can still attack", "You can still deploy Pub/Sub"), with "Back to the board" and "End anyway"; when an attacker is chosen and the opponent's System is not offered to it, the System is flagged "Unavailable: Guard" and the detail recalls which component must fall first. Everything comes from the actions offered by the server. A checkbox in the "How to play?" help turns them off, a setting kept by the browser (US-065, ADR 0032).
 
-### Modifié
+### Changed
 
-- API GraphQL (n° 74) coûte 4 de Débit au lieu de 3, statistiques et effet inchangés : mise dans chaque deck prêté
-  par la mesure d'US-029, elle faisait gagner 13 à 18 points au deck Héritage, et sa pioche valait à elle seule 18 à
-  20 points à corps égal. À 4, aucun deck ne bouge de plus de 6 points sur deux graines (US-085).
-- Les illustrations portent l'empreinte de leur contenu dans leur nom (`/illustrations/set-1/53-640.a1b2c3d4.avif`) :
-  une image refaite s'affiche dès la version suivante du site, au lieu de rester bloquée par le cache, et une image
-  déjà vue n'est plus jamais retéléchargée (cache d'un an, `immutable`). Une illustration absente répond 404, le
-  service worker suit le nouveau préfixe dans les deux langues, et l'étape `site` du déploiement comme les e2e de
-  production vérifient l'en-tête (US-078, ADR 0046).
-- Des requêtes plus légères (US-057, ADR 0039) : index sur les duels, les récompenses, les sessions et les parties
-  d'un joueur (migration `0013`) ; « Mes duels » ne lit plus que les duels qu'il renvoie (40 ms → 2,6 ms pour un
-  joueur de 400 duels) ; un duel inchangé répond 304 après la seule lecture de sa version ; le catalogue (cartes,
-  decks, niveaux, raretés) part compressé (21,5 Ko → 5 Ko), en cache public de 5 minutes avec un `ETag`, et le front
-  ne le demande qu'une fois par session ; toutes les pages sauf l'accueil se chargent à la demande (bundle initial :
-  457 → 380 Ko). La mesure se rejoue avec `npm run mesurer -w @hipmaster/api`.
-- Ouvrir un booster devient un moment : les paquets en stock sont dessinés (feuille métallisée, logo) ; les cartes
-  arrivent face cachée, distribuées une à une, la rareté lisible sur leur dos (liseré, halo, nom) ; on les retourne
-  d'un appui, ou toutes avec « Tout révéler » ; une épique ou une légendaire jaillit d'un éclat de lumière. Chaque
-  retournement est annoncé aux lecteurs d'écran et le focus passe à la carte suivante. Aucune animation si le système
-  demande de les réduire ; le tirage reste fait par le serveur (US-062).
-- Revue visuelle de tout le site avec la nouvelle identité : sur « Jouer », la difficulté en tuiles et les decks en
-  boîtes de jeu (trois cartes phares en éventail, « Jouer avec… » en or), la règle en bref repliée ; « Mes duels »
-  en cartes avec l'initiale de l'adversaire et une pastille d'état (À vous, Son tour, Victoire…) ; « Finir mon tour »,
-  « Ouvrir un booster », « Relever le défi », « Créer mon compte » et « Créer l'invitation » en or ; collection avec
-  jauge dorée et raretés en cadres de carte ; filtres, champs, compte, confidentialité et invitations en panneaux ;
-  pied de page signé. Les liens « ← Accueil » qui restaient disparaissent. Charte graphique complétée des composants
-  d'écran et des gabarits (US-068).
-- Une identité de jeu : ambiance « nuit électrique » reprise des illustrations (fond bleu nuit, halos, trame de
-  points, thème clair conservé), bandeau et barre d'onglets de nuit dans les deux thèmes, indigo électrique pour les
-  liens et la sélection, boutons en relief et en or pour l'action principale de chaque écran, police de titres Exo 2
-  servie par le site, logo (deux cartes en éventail), favicon, icône d'écran d'accueil et aperçu des liens partagés
-  (Open Graph). Cartes avec gemme de Débit et chiffres en relief. L'accueil montre trois cartes en éventail dès le
-  premier écran du téléphone, la promesse du jeu et « Jouer contre le bot » ; un visiteur y lit comment on joue, un
-  joueur connecté retrouve ses duels, boosters et collection ; un lien d'invitation fait de « Créer mon compte »
-  l'action principale, et « Mon compte » accueille l'invité avec les cartes. Les chances par booster passent sur
-  l'écran des boosters ; « Projet en cours de construction » disparaît. Contrastes AA des jetons vérifiés par un test,
-  animations coupées si le système le demande ; charte graphique dans `docs/produit` (US-061, ADR 0037).
-- Les parties contre le bot sont gardées en base au lieu de la mémoire de l'API : elles survivent aux déploiements,
-  aux arrêts à zéro et aux redémarrages, et expirent après 24 heures sans coup joué (une lecture ne compte pas), ce
-  que dit désormais l'écran de partie. Chaque action, tour du bot compris, s'écrit en une seule fois à condition que
-  la partie n'ait pas changé : de deux actions simultanées, une seule passe, l'autre reçoit 409. Chaque partie porte
-  sa `version` (en-tête `ETag`), que `If-Match` peut exiger (contrat `parties.yaml` 1.3.0). Les parties expirées
-  sont purgées à chaque création ; au-delà de 1 000, la partie anonyme la moins récemment jouée part la première.
-  Fermer sa session supprime ses parties. Plus rien dans les parties n'impose une seule instance Cloud Run
-  (US-052, ADR 0030, qui remplace l'ADR 0014).
-- Navigation pensée pour le téléphone : sous 768 px, une barre d'onglets fixée en bas (Jouer, Duels avec la pastille
-  « à vous de jouer », Boosters avec le stock, Collection, Compte), au-delà les mêmes onglets dans le bandeau. Onglets
-  d'au moins 44 px, onglet courant signalé (trait, gras, `aria-current`), zone de sécurité des téléphones à encoche
-  respectée ; la barre s'efface pendant une partie sur téléphone. À chaque changement de page, le focus passe sur son
-  titre. Les liens « ← Accueil » disparaissent. L'audit axe des parcours e2e vérifie aussi WCAG 2.1 et 2.2 AA ; les
-  cartes de la main et les jetons du plateau respectent « Libellé dans le nom » (US-060).
-- L'écran de partie et de duel tient dans un écran de téléphone (375 × 667) sans faire défiler la page : en-tête
-  compact, camps et main en rangées qui défilent horizontalement, journal en bandeau de deux lignes qui se déplie à la
-  demande, détail d'une carte ou d'un composant en feuille au bas de l'écran, « Finir mon tour » collé au bas.
-  L'aide « Comment jouer ? » (objectif, règle, capacités en jeu) devient une fenêtre qui s'ouvre d'elle-même à la
-  première partie dans le navigateur, puis depuis le bouton « ? ». Au bureau, l'objectif, les capacités en jeu et le
-  journal passent sur le côté du plateau. Le texte des cartes et des jetons suit la taille de texte choisie sur le
-  téléphone (tailles en `rem`) (US-059, ADR 0032).
-- Les parcours e2e de la CI tournent sur le build de production, servi avec les en-têtes de `firebase.json` : la
-  moindre violation de la CSP fait échouer la série (`npm run test:e2e:production`). Le build de production
-  n'insère plus de CSS critique en ligne, que la CSP bloquerait. Le compte de déploiement lit les métadonnées des
-  secrets, jamais leur valeur (US-050).
-- `npm run db:migrate` passe par la commande de migration de l'API (verrou, bilan des migrations appliquées) au lieu de
-  `drizzle-kit migrate` ; PGlite devient une dépendance de développement ; Dependabot surveille l'image de base de
-  l'API (US-046).
-- Le joueur qui joue en second reçoit 1 Débit de plus à son premier tour (2 au lieu de 1), contre le bot comme en
-  duel : chacun contre lui-même, le joueur qui commençait gagnait de 62 à 73 % des parties ; le premier et le second
-  en gagnent désormais chacun entre 46 et 54 %. Le journal de partie l'annonce, les règles et l'aide « Comment
-  jouer ? » l'expliquent (US-064, ADR 0026).
-- Niveaux du bot : Batch de nuit devient Moyen, Architecte ESB Difficile et Agent autonome Expert, avec des
-  descriptions à jour ; Architecte ESB étudie 4 actions candidates au lieu de 3, sans quoi le joueur qui commence
-  gardait 56 % des parties en miroir (US-064).
-- Dependabot ne propose plus TypeScript 6.1 ou plus (incompatible avec Angular 22) ni de version majeure de
-  `@types/node` (qui suit Node 24) (US-007).
+- API GraphQL (no. 74) costs 4 Throughput instead of 3, statistics and effect unchanged: put in every loaner deck by the measurement of US-029, it gave the Legacy deck 13 to 18 points, and its draw alone was worth 18 to 20 points on equal stats. At 4, no deck moves by more than 6 points on two seeds (US-085).
+- Illustrations carry the fingerprint of their content in their name (`/illustrations/set-1/53-640.a1b2c3d4.avif`): a redone image shows from the next version of the site, instead of staying stuck behind the cache, and an image already seen is never downloaded again (one-year cache, `immutable`). A missing illustration answers 404, the service worker follows the new prefix in both languages, and the `site` step of the deployment as well as the production e2e check the header (US-078, ADR 0046).
+- Lighter requests (US-057, ADR 0039): indexes on a player's duels, rewards, sessions and games (migration `0013`); "My duels" now reads only the duels it returns (40 ms → 2.6 ms for a player with 400 duels); an unchanged duel answers 304 after reading its version alone; the catalogue (cards, decks, levels, rarities) is sent compressed (21.5 KB → 5 KB), in a 5-minute public cache with an `ETag`, and the front end requests it only once per session; all pages except the home page load on demand (initial bundle: 457 → 380 KB). The measurement can be replayed with `npm run mesurer -w @hipmaster/api`.
+- Opening a booster becomes a moment: the packs in stock are drawn (metallic foil, logo); the cards arrive face down, dealt one by one, the rarity readable on their back (border, halo, name); you flip them with a tap, or all of them with "Reveal all"; an epic or a legendary bursts out in a flash of light. Each flip is announced to screen readers and focus moves to the next card. No animation if the system asks to reduce them; the draw is still done by the server (US-062).
+- Visual review of the whole site with the new identity: on "Play", difficulty as tiles and decks as game boxes (three showcase cards fanned out, "Play with…" in gold), the short rule folded; "My duels" as cards with the opponent's initial and a status pill (Your turn, Their turn, Victory…); "End my turn", "Open a booster", "Accept the challenge", "Create my account" and "Create the invitation" in gold; collection with a golden gauge and rarities as card frames; filters, fields, account, privacy and invitations in panels; signed footer. The remaining "← Home" links disappear. Style guide completed with screen components and templates (US-068).
+- A game identity: "electric night" mood taken from the illustrations (midnight blue background, halos, dot pattern, light theme kept), night banner and tab bar in both themes, electric indigo for links and selection, raised buttons and gold for each screen's main action, Exo 2 title font served by the site, logo (two fanned cards), favicon, home-screen icon and preview of shared links (Open Graph). Cards with a Throughput gem and raised figures. The home page shows three fanned cards from the first phone screen, the game's promise and "Play against the bot"; a visitor reads there how to play, a logged-in player finds their duels, boosters and collection; an invitation link makes "Create my account" the main action, and "My account" welcomes the guest with the cards. The odds per booster move to the boosters screen; "Project under construction" disappears. AA contrasts of the tokens checked by a test, animations cut if the system asks; style guide in `docs/produit` (US-061, ADR 0037).
+- Games against the bot are kept in the database instead of the API's memory: they survive deployments, scale-to-zero and restarts, and expire after 24 hours without a move played (a read does not count), which the game screen now says. Each action, bot turn included, is written in one go on condition that the game has not changed: of two simultaneous actions, only one goes through, the other receives 409. Each game carries its `version` (`ETag` header), which `If-Match` can require (`parties.yaml` contract 1.3.0). Expired games are purged on every creation; beyond 1,000, the least recently played anonymous game goes first. Closing your session deletes your games. Nothing in games requires a single Cloud Run instance any more (US-052, ADR 0030, which supersedes ADR 0014).
+- Navigation designed for the phone: below 768 px, a tab bar fixed at the bottom (Play, Duels with the "your turn" pill, Boosters with the stock, Collection, Account), above it the same tabs in the banner. Tabs at least 44 px, current tab flagged (underline, bold, `aria-current`), safe area of notched phones respected; the bar disappears during a game on a phone. On every page change, focus moves to its title. The "← Home" links disappear. The axe audit of the e2e journeys also checks WCAG 2.1 and 2.2 AA; the cards in hand and the board tokens comply with "Label in name" (US-060).
+- The game and duel screen fits on a phone screen (375 × 667) without scrolling the page: compact header, sides and hand in horizontally scrolling rows, log as a two-line strip that unfolds on demand, detail of a card or a component as a sheet at the bottom of the screen, "End my turn" stuck to the bottom. The "How to play?" help (objective, rule, abilities in play) becomes a window that opens by itself on the first game in the browser, then from the "?" button. On desktop, the objective, the abilities in play and the log move to the side of the board. The text of cards and tokens follows the text size chosen on the phone (sizes in `rem`) (US-059, ADR 0032).
+- The CI e2e journeys run on the production build, served with the headers of `firebase.json`: the slightest CSP violation fails the run (`npm run test:e2e:production`). The production build no longer inlines critical CSS, which the CSP would block. The deployment account reads secrets' metadata, never their value (US-050).
+- `npm run db:migrate` goes through the API's migration command (lock, summary of applied migrations) instead of `drizzle-kit migrate`; PGlite becomes a development dependency; Dependabot watches the API's base image (US-046).
+- The player who plays second receives 1 more Throughput on their first turn (2 instead of 1), against the bot as in duels: each playing itself, the player who started won 62 to 73% of games; the first and second players now each win between 46 and 54%. The game log announces it, the rules and the "How to play?" help explain it (US-064, ADR 0026).
+- Bot levels: Nightly Batch becomes Medium, ESB Architect Hard and Autonomous Agent Expert, with updated descriptions; ESB Architect studies 4 candidate actions instead of 3, without which the player who starts kept 56% of games in the mirror match (US-064).
+- Dependabot no longer proposes TypeScript 6.1 or later (incompatible with Angular 22) or a major version of `@types/node` (which follows Node 24) (US-007).
 
-- Next.js remplacé par Angular (ADR 0001 remplacé par 0006) ; la logique de jeu passe de `src/domain` à
-  `packages/domain` ; Node 24.15 minimum (exigé par Angular 22) (US-006).
-- Base locale : US-004 close, satisfaite par PGlite (US-022, ADR 0018) ; le README précise que `db:up`,
-  `db:migrate` et `db:studio` concernent un vrai PostgreSQL (`DATABASE_URL`) (US-004).
+- Next.js replaced by Angular (ADR 0001 superseded by 0006); the game logic moves from `src/domain` to `packages/domain`; Node 24.15 minimum (required by Angular 22) (US-006).
+- Local database: US-004 closed, satisfied by PGlite (US-022, ADR 0018); the README specifies that `db:up`, `db:migrate` and `db:studio` concern a real PostgreSQL (`DATABASE_URL`) (US-004).
 
-### Corrigé
+### Fixed
 
-- Téléphone : les cartes de la main montrent toujours leur attaque et leurs PV ; sur une petite carte, l'illustration
-  rétrécit et la ligne type · famille s'efface, le nom tient sur deux lignes (US-068).
-- Partie : choisir une carte ou un composant pendant le message « Avant de finir votre tour » le referme ; la fiche
-  de détail se posait par-dessus et cachait ses boutons (US-065).
-- Scripts d'exploitation sous Windows : les corps JSON envoyés aux API Google passent par un fichier, car un argument
-  de `curl` y perdait ses lettres accentuées (message du retour arrière du front, noms des objets de supervision)
-  (US-051).
-- L'écran de partie et de duel dit pourquoi une carte de la main ne se joue pas, avec les mots du serveur : une
-  évolution sans sa carte d'origine (« Évolution d’Apigee API Gateway : posez d’abord Apigee API Gateway, puis
-  faites-la évoluer. »), le Débit qui manque (coût effectif, Cache sémantique compris), le plateau plein, un sort ou
-  un incident sans cible, une carte pas encore prise en charge, le tour de l'adversaire. Le message générique, qui
-  ne s'affichait même pas tant que « Décommissionner » restait proposé, disparaît. Une carte injouable reste lisible,
-  avec la mention « Pas jouable » sous sa vignette et la raison dans sa description accessible. La vue de l'API porte
-  `injouable` sur chaque carte de la main (contrats `parties.yaml` et `duels.yaml`, version 1.2.0) (US-071).
-- Le front tient au démarrage à froid et aux sessions expirées : une panne du serveur ne fait plus perdre son
-  compte (seul un 401 oublie la session, avec « Session expirée » puis retour à sa page après reconnexion, et aucun
-  écran ne propose de créer un compte tant qu'un jeton est gardé) ; une lecture en panne passagère est retentée deux
-  fois (après 1 s puis 3 s) et aucun « Chargement… » ne dure sans fin ; chaque écran en erreur dit pourquoi aux
-  joueurs (serveur injoignable, attente demandée par un 429) et propose « Réessayer », à la place du message de
-  développeur de l'accueil ; « Ouvrir un booster » attend le catalogue ; les identifiants de partie et de duel tirés
-  de l'URL sont vérifiés (UUID) et encodés ; les interrogations périodiques s'arrêtent quand l'onglet est caché ou
-  sans geste depuis 10 minutes ; `index.html` affiche un texte de chargement et un `<noscript>`, et déclare
-  `color-scheme` ; une déconnexion dans un autre onglet est suivie ; navigateurs pris en charge écrits dans le README
-  (US-055).
-- `npm run dev` ne fait plus redémarrer l'API en boucle sur un poste chargé : la surveillance se limite à
-  `apps/api/src`, `apps/api/drizzle` et `packages/domain/src` au lieu de tout le graphe des modules,
-  `node_modules` compris (3 redémarrages en 45 s sans modification avant, aucun après) (US-045).
-- Le quality gate ignore les worktrees Git que l'app Claude Desktop crée sous `.claude/worktrees/` : Prettier et
-  ESLint ne parcourent plus cette copie du dépôt (`prettier --check .` échouait sur ses migrations Drizzle, ESLint
-  lintait 286 fichiers au lieu de 149), et `.gitignore` l'exclut pour tout clone (US-044).
-- Tests de l'API : une seule base PGlite en mémoire par fichier (tables vidées avant chaque test) au lieu d'une
-  par test, car chaque ouverture charge ≈ 1,6 s de WASM et occupe ≈ 550 Mo ; fichiers de l'API exécutés l'un
-  après l'autre ; délais relevés et justifiés pour ce chargement et pour les deux tests qui simulent une dizaine
-  de parties. `npm run check` passe sur un poste saturé (US-043).
-- La vue de partie renvoyée par l'API perdait le bonus d'attaque des composants et les marqueurs du joueur : un bot
-  du domaine joué depuis l'API (Agent autonome) évaluait tout à `NaN` et ne gagnait plus aucune partie. Le schéma et
-  le contrat OpenAPI les exposent ; la vue de l'API suffit désormais à reconstituer la partie (US-026).
-- Statut des epics : `scripts/cloturer-story.py` déduit le statut et l'avancement de chaque epic de ses stories et
-  les écrit à l'identique dans le fichier de l'epic et le tableau ; `--recompter` les recalcule tous (EPIC-00,
-  EPIC-02 et EPIC-04 terminés mais restés « En cours », avancements faux après l'ajout de stories) (US-075).
+- Phone: the cards in hand always show their attack and HP; on a small card, the illustration shrinks and the type · family line fades out, the name fits on two lines (US-068).
+- Game: choosing a card or a component during the "Before ending your turn" message closes it; the detail sheet was laid over it and hid its buttons (US-065).
+- Operations scripts on Windows: the JSON bodies sent to Google APIs go through a file, because a `curl` argument lost its accented letters there (front-end rollback message, names of monitoring objects) (US-051).
+- The game and duel screen says why a card in hand cannot be played, in the server's words: an evolution without its original card ("Evolution of Apigee API Gateway: deploy Apigee API Gateway first, then evolve it."), the missing Throughput (effective cost, Semantic cache included), the full board, a spell or an incident without a target, a card not yet supported, the opponent's turn. The generic message, which was not even displayed as long as "Decommission" remained offered, disappears. An unplayable card stays readable, with the "Not playable" mention under its thumbnail and the reason in its accessible description. The API view carries `injouable` on each card in hand (`parties.yaml` and `duels.yaml` contracts, version 1.2.0) (US-071).
+- The front end holds up on cold start and expired sessions: a server outage no longer makes you lose your account (only a 401 forgets the session, with "Session expired" then return to your page after logging in again, and no screen offers to create an account as long as a token is kept); a read failing transiently is retried twice (after 1 s then 3 s) and no "Loading…" lasts forever; each screen in error tells players why (server unreachable, wait requested by a 429) and offers "Try again", in place of the home page's developer message; "Open a booster" waits for the catalogue; game and duel identifiers taken from the URL are checked (UUID) and encoded; periodic polling stops when the tab is hidden or after 10 minutes without a gesture; `index.html` displays a loading text and a `<noscript>`, and declares `color-scheme`; a logout in another tab is followed; supported browsers written in the README (US-055).
+- `npm run dev` no longer restarts the API in a loop on a busy workstation: watching is limited to `apps/api/src`, `apps/api/drizzle` and `packages/domain/src` instead of the whole module graph, `node_modules` included (3 restarts in 45 s with no change before, none after) (US-045).
+- The quality gate ignores the Git worktrees that the Claude Desktop app creates under `.claude/worktrees/`: Prettier and ESLint no longer walk that copy of the repository (`prettier --check .` failed on its Drizzle migrations, ESLint linted 286 files instead of 149), and `.gitignore` excludes it for any clone (US-044).
+- API tests: a single in-memory PGlite database per file (tables emptied before each test) instead of one per test, because each opening loads ≈ 1.6 s of WASM and takes ≈ 550 MB; API files run one after the other; timeouts raised and justified for this loading and for the two tests that simulate about ten games. `npm run check` passes on a saturated workstation (US-043).
+- The game view returned by the API lost the components' attack bonus and the player's markers: a domain bot played from the API (Autonomous Agent) evaluated everything to `NaN` and no longer won any game. The schema and the OpenAPI contract expose them; the API view is now enough to reconstitute the game (US-026).
+- Epic status: `scripts/cloturer-story.py` deduces each epic's status and progress from its stories and writes them identically in the epic file and the board; `--recompter` recomputes them all (EPIC-00, EPIC-02 and EPIC-04 finished but left "In progress", wrong progress after stories were added) (US-075).
 
-### Sécurité
+### Security
 
-- Protections de l'API avant l'ouverture (US-047, ADR 0025) :
-  - limitation de débit par adresse (IPv6 : par /64) sur la création de compte (30 par heure), la connexion par code
-    (10 par minute), les parties contre le bot (20 créations et 300 actions par minute) et chaque route de duel ;
-    au-delà, un 429 Problem Details avec `Retry-After`. Les limites, documentées dans les contrats OpenAPI, se règlent
-    par `LIMITES_DEBIT` (actives par défaut en production seulement) ;
-  - l'adresse du joueur est lue derrière Firebase Hosting et Cloud Run, sans qu'un `X-Forwarded-For` ajouté puisse la
-    fausser (`PROXYS_DE_CONFIANCE`, obligatoire en production) ;
-  - codes de récupération gardés sous HMAC-SHA-256, avec une clé tirée au hasard dans Secret Manager
-    (`cle-codes-recuperation`, créée par le script d'infrastructure) ; sans elle, l'API refuse de démarrer en
-    production ;
-  - un nouveau code de récupération ferme les autres sessions du compte, et « Mon compte » propose « Déconnecter mes
-    autres appareils » ;
-  - une partie contre le bot lancée par un joueur connecté n'est visible que de sa session ; au plafond, le dépôt en
-    mémoire évince d'abord les parties anonymes ;
-  - toutes les réponses portent `X-Content-Type-Options: nosniff` et, sauf politique propre à une route,
-    `Cache-Control: no-store` ; corps de requête limités à 16 Ko (413).
-- Des duels équitables (US-058, ADR 0034) :
-  - le hasard des duels et des parties contre le bot vient de ChaCha20, dont la clé de 256 bits est tirée par
-    `node:crypto` et ne quitte jamais le serveur : un joueur ne peut plus retrouver la graine à partir de sa main et
-    prévoir la main adverse ou les pioches. Les parties restent rejouables ; celles créées avant gardent leur
-    générateur et se terminent normalement ;
-  - deux joueurs qui cherchent un adversaire au même instant se retrouvent dans le même duel au lieu de s'attendre
-    l'un l'autre, et un double clic n'ouvre plus deux duels ;
-  - la règle « pas de booster contre un adversaire déjà affronté le même jour » vaut au jour de la fin du duel : lire
-    son résultat le lendemain ne la contourne plus.
-- Des sessions qui expirent et des données qui ne s'accumulent pas (US-054, ADR 0035) :
-  - une session inutilisée pendant 90 jours est refusée (401) ; chaque usage la prolonge, avec au plus une écriture par
-    jour. Le joueur se reconnecte avec son code de récupération (`SESSIONS_DUREE_JOURS`, contrat `comptes.yaml`
-    1.5.0) ;
-  - une purge (`npm run purge -w apps/api`) supprime les sessions expirées, les défis jamais acceptés depuis 7 jours et
-    les parties contre le bot abandonnées depuis 24 heures, et journalise ce qu'elle a supprimé ; elle ne touche jamais
-    un compte, une collection, une récompense ni un duel commencé ;
-  - en production, job Cloud Run `hipmaster-purge` lancé chaque nuit à 5 h 25 par Cloud Scheduler, ajouté aux scripts
-    `infrastructure.sh` et `deployer.sh` et au guide d'exploitation ; mise en service par le porteur du projet ;
-  - la page « À propos et confidentialité » ne marque plus ces durées « bientôt ».
+- API protections before opening (US-047, ADR 0025):
+  - rate limiting per address (IPv6: per /64) on account creation (30 per hour), login by code (10 per minute), games against the bot (20 creations and 300 actions per minute) and each duel route; beyond that, a 429 Problem Details with `Retry-After`. The limits, documented in the OpenAPI contracts, are set through `LIMITES_DEBIT` (active by default in production only);
+  - the player's address is read behind Firebase Hosting and Cloud Run, without an added `X-Forwarded-For` being able to forge it (`PROXYS_DE_CONFIANCE`, mandatory in production);
+  - recovery codes kept under HMAC-SHA-256, with a randomly generated key in Secret Manager (`cle-codes-recuperation`, created by the infrastructure script); without it, the API refuses to start in production;
+  - a new recovery code closes the account's other sessions, and "My account" offers "Sign out my other devices";
+  - a game against the bot started by a logged-in player is visible only to their session; at the cap, the in-memory store evicts anonymous games first;
+  - all responses carry `X-Content-Type-Options: nosniff` and, unless a route has its own policy, `Cache-Control: no-store`; request bodies limited to 16 KB (413).
+- Fair duels (US-058, ADR 0034):
+  - the randomness of duels and games against the bot comes from ChaCha20, whose 256-bit key is drawn by `node:crypto` and never leaves the server: a player can no longer recover the seed from their hand and predict the opponent's hand or the draws. Games remain replayable; those created before keep their generator and finish normally;
+  - two players looking for an opponent at the same moment end up in the same duel instead of waiting for each other, and a double click no longer opens two duels;
+  - the rule "no booster against an opponent already faced the same day" applies on the day the duel ends: reading its result the next day no longer circumvents it.
+- Sessions that expire and data that does not pile up (US-054, ADR 0035):
+  - a session unused for 90 days is refused (401); each use extends it, with at most one write per day. The player logs in again with their recovery code (`SESSIONS_DUREE_JOURS`, `comptes.yaml` contract 1.5.0);
+  - a purge (`npm run purge -w apps/api`) deletes expired sessions, challenges never accepted for 7 days and games against the bot abandoned for 24 hours, and logs what it deleted; it never touches an account, a collection, a reward or a started duel;
+  - in production, Cloud Run job `hipmaster-purge` launched every night at 5:25 am by Cloud Scheduler, added to the `infrastructure.sh` and `deployer.sh` scripts and to the operations guide; put into service by the project owner;
+  - the "About and privacy" page no longer marks these durations "soon".
