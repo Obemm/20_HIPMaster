@@ -21,5 +21,5 @@ branches and commits.
 ## Consequences
 
 - Works offline, full history in Git, readable by everyone (and by Claude).
-- No drag-and-drop view: the board is updated by hand (or by `scripts/cloturer-story.py`).
+- No drag-and-drop view: the board is updated by hand (or by `scripts/close-story.py`).
 - Can be migrated to GitHub Issues the day the repository is published.

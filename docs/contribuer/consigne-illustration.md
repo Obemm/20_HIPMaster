@@ -2,7 +2,7 @@
 
 Every card has **its own creature**: an animal or a chimera whose silhouette, pose and small setting tell what the card
 stands for (a postman pelican for FTP, a howling wolf for EDA). The rendering is shared by the whole game: it comes
-from a **reference image**. Rules and reasons (in French): [art direction](../produit/direction-artistique.md), ADR
+from a **reference image**. Rules and reasons: [art direction](../produit/direction-artistique.md), ADR
 [0047](../decisions/0047-illustrations-generees-par-gemini.md).
 
 The project owner uses Gemini (web app); any other generator that accepts a reference image will do, provided it lets
@@ -70,7 +70,7 @@ A setting sentence may follow ("Setting: …") if the generator copies the refer
 ## Adding the picture to the game
 
 Your AI coding assistant can do these steps for you ("add the illustration of card N following
-docs/contribuer/consigne-illustration.md"); the details (in French) are in the
+docs/contribuer/consigne-illustration.md"); the details are in the
 [illustrations README](../../packages/illustrations/README.md).
 
 1. Save the original as PNG, in 4:3 format and at least 640 px wide, in
@@ -83,7 +83,7 @@ docs/contribuer/consigne-illustration.md"); the details (in French) are in the
 4. Commit `set-1.json`, the produced images and the manifest, **not the original**; attach the original (the
    generator's file) to your pull request description, so that the project owner can archive it.
 5. Add the creature to [prompts-illustrations-gemini.md](../produit/prompts-illustrations-gemini.md), in its family's
-   section, modelled on the other cards (in French).
+   section, modelled on the other cards.
 
 The project owner validates the picture during the review, as for every card: they may ask for another creature or
 generate it again themselves.

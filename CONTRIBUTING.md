@@ -4,8 +4,9 @@ HIPMaster welcomes cards from the IT community: a technology, a pattern or an in
 short text that explains what it means in an information system. A proposed card is a **pull request**
 (ADR [0050](docs/decisions/0050-cartes-communaute-par-pull-request.md)).
 
-The contributor kit is in English; the rest of the project (backlog, decisions, code comments, product docs) is in
-French. You never need to read it: the guide below and your AI assistant are enough. The game itself is bilingual
+The repository is written in English (ADR [0051](docs/decisions/0051-english-repository-language.md)): rules,
+decisions, backlog and docs are open to you, and so are proposals of features, not only cards. Some older code
+comments are still in French. The game itself is bilingual, French being its reference language
 (<https://hipmaster.web.app/en/>, on invitation: ask the project owner).
 
 ## Before you start
@@ -20,7 +21,7 @@ your AI assistant and paste it into your pull request.
 ## Step by step
 
 1. **Fork** the repository on GitHub, then clone your fork. You need no rights on the original repository.
-2. **Install** the project: Node 24.15 or later, then `npm ci` (see the [README](README.md#démarrage)).
+2. **Install** the project: Node 24.15 or later, then `npm ci` (see the [README](README.md#getting-started)).
 3. **Create a branch** named `carte-<card-name>`.
 4. **Write the card with your AI coding assistant**, from your template: give it the
    [card prompt](docs/contribuer/consigne-carte.md) (the card, its French and English texts, its "Learn more" sheet,
@@ -43,5 +44,4 @@ weeks: merged, changes requested, or declined with a reason. Once merged, the ca
 name.
 
 Commits follow [Conventional Commits](https://www.conventionalcommits.org/), with a lowercase subject:
-`feat(carte): add the graphql api card`. The pull request is squash-merged with a French title, so the language of your
-commits does not matter.
+`feat(carte): add the graphql api card`. The pull request is squash-merged, so its title becomes the commit on `main`.

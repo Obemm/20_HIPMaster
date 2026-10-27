@@ -30,7 +30,7 @@ As a **player**, I want to **find the "API First", "EDA" and "GraphQL API" cards
   required an ADR and plumbing for no gain. The numbers follow the rule of ADR 0011 (never renumber): no new ADR.
 - **Types**: API First and EDA are ways of designing, hence **spells** applied at a given moment, like the Patterns;
   GraphQL is a technology, hence a **component**.
-- **Cards** (details and simulations: [cartes-set-1.md](../../produit/cartes-set-1.md#extension--api-first-eda-et-api-graphql-us-077-2026-10-25)):
+- **Cards** (details and simulations: [cartes-set-1.md](../../produit/cartes-set-1.md#extension-api-first-eda-and-graphql-api-us-077-2026-10-25)):
   - 72 **API First** — rare spell, cost 3: draw the first two API cards of your deck, then one of your API components
     gains +1 attack (the contract first, then provider and consumers in parallel).
   - 73 **EDA** — epic spell, cost 3: each of your EDA components deals 1 damage to a randomly drawn opposing component

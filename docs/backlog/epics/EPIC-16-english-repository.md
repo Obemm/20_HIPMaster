@@ -1,6 +1,6 @@
 # EPIC-16 — The repository in English
 
-- **Status**: In progress
+- **Status**: Done
 - **Priority**: Should
 
 ## Goal
@@ -20,10 +20,11 @@ Decision of the project owner, 2026-10-27.
 ## Stories
 
 - [x] US-087 — English as the repository language: ADR, CLAUDE.md, templates and closing script
-- [ ] US-088 — Translate the product docs, READMEs, operations guide and review
-- [ ] US-089 — Translate the ADRs
+- [x] US-088 — Translate the product docs, READMEs, operations guide and review
+- [x] US-089 — Translate the ADRs
 - [x] US-090 — Translate the backlog (method, board, epics, stories)
-- [ ] US-091 — Translate the CHANGELOG
+- [x] US-091 — Translate the CHANGELOG
+- [x] US-092 — Links across translated folders, and the contributor kit after the switch
 
 US-087 comes first (rules and tools); US-088 to US-091 then run in parallel, each on its own files.
 

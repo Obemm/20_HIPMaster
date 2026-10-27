@@ -20,9 +20,8 @@ itself (see the [illustration prompt](consigne-illustration.md)).
 ```text
 You are working in the HIPMaster repository, a collectible card game about enterprise integration and IT architecture.
 First read CLAUDE.md, docs/contribuer/regles-cartes.md and docs/produit/regles.md: they are authoritative.
-The project is written in French: code comments, documentation (docs/produit/cartes-set-1.md, CHANGELOG.md) and the
-French game texts are in French, even though the proposal below may be in English. The game texts exist in French
-(the reference language) and in British English.
+The repository is written in British English (ADR 0051): code comments, documentation and commits. The game texts
+exist in French (the reference language) and in British English: write both, even if the proposal is in English only.
 A proposed card belongs to EPIC-08 (ADR 0050): do not write any story or epic in docs/backlog.
 
 Your task: add to the catalogue the card described in the proposal below, and nothing else.
@@ -49,7 +48,7 @@ Files to write or change (use cards 72 to 74 as a model, added by commit f189195
 1. packages/domain/src/set-1.ts: the card, at the end of the array, with the number following the last one (French
    name, family, type, rarity, cost, attack and HP for a component or an evolution, abilities, optional effect in
    French, enVrai in French of 110 characters at most, and auteur: the displayed author of the proposal, 40 characters
-   at most), under a comment "// Cartes de la communauté (EPIC-08)" to create if missing.
+   at most), under a comment "// Community cards (EPIC-08)" to create if missing.
 2. packages/domain/src/langues/en/cartes.ts: its name (product names are not translated), its "In real life" text and
    optional effect in British English, following the glossary at the top of the file, under the same comment; update
    the number of cards in the header.
@@ -71,10 +70,10 @@ Files to write or change (use cards 72 to 74 as a model, added by commit f189195
    packages/domain/src/set-1.test.ts, packages/domain/src/booster.test.ts,
    packages/domain/src/combat/effets-composants.test.ts, apps/api/src/app.test.ts, e2e/catalogue.spec.ts (and the
    number of cards of the filtered family), e2e/collection.spec.ts and e2e/robustesse.spec.ts, and update them.
-6. docs/produit/cartes-set-1.md (in French): a row for the card in a section "Cartes de la communauté (EPIC-08)",
-   placed just before "Points à trancher pendant l'équilibrage" (create it if missing), as a table modelled on the
+6. docs/produit/cartes-set-1.md: a row for the card in a section "Community cards (EPIC-08)", placed just before
+   "Points to settle during balancing" (create it if missing), as a table modelled on the
    US-077 extension ("En vrai" shortened), with an Auteur column. Do not change the family headings.
-7. CHANGELOG.md (in French): one line under "Non publié", "Ajouté", naming the card and its author.
+7. CHANGELOG.md: one line under "Unreleased", "Added", naming the card and its author.
 
 If you had to add an interface text (which should not happen with the rules above), run `npm run i18n:extraire` and
 translate it in apps/web/src/locale/messages.en.json.

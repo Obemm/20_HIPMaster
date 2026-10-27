@@ -4,7 +4,7 @@ This guide is for architects and tech leads who want to propose a card: a techno
 lived through, with a short text that explains what it means in an information system. You only need to know what you
 want to tell: no need to read the game's code. The process (fork, prompts for your AI, pull request) is described in
 [CONTRIBUTING.md](../../CONTRIBUTING.md); the decision behind it is ADR
-[0050](../decisions/0050-cartes-communaute-par-pull-request.md) (in French, like the rest of the project's documents).
+[0050](../decisions/0050-cartes-communaute-par-pull-request.md).
 
 To play before proposing: the game in English at <https://hipmaster.web.app/en/> (on invitation), with its card
 catalogue and a guided first game.

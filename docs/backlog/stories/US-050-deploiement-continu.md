@@ -60,7 +60,7 @@ As the **project owner**, I want **a merge into `main` that passes the CI to be 
     secret in `DATABASE_URL`;
   - missing right: add it to the `scripts/gcp/infrastructure.sh` script, not by hand.
 - Implementation ([ADR 0028](../../decisions/0028-deploiement-continu.md),
-  [guide](../../exploitation/README.md#déployer)):
+  [guide](../../exploitation/README.md#deploy)):
   - `scripts/gcp/deployer.sh` carries each step, which the `deploy.yml` workflow chains and which a machine can run;
     nothing becomes public without `--public`;
   - the API goes through a revision with no traffic, tagged `essai` and probed, before the switch; the revision left

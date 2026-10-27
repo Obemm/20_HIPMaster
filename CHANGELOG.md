@@ -7,6 +7,9 @@ All notable changes to the project are recorded here
 
 ### Added
 
+- The whole repository in English (EPIC-16, ADR 0051): product docs, READMEs and operations guide (US-088), ADRs
+  (US-089), backlog (US-090) and CHANGELOG (US-091) translated, paths kept; links checked across folders and the
+  contributor kit updated for the English repository (US-092).
 - English becomes the language of the repository (ADR 0051, EPIC-16): `CLAUDE.md`, the story and epic templates, and a new epic and its stories are in English; `scripts/cloturer-story.py` becomes `scripts/close-story.py` and reads each file in its own language during the translation (US-087).
 - The contributor kit moves to English, for English-speaking colleagues: `CONTRIBUTING.md`, the "Designing a card" guide, the card and illustration briefs and the "card" PR template; a proposal can be written in English, and the contributor's AI writes the game texts in French and English (US-086, ADR 0050).
 - A card can carry the name of the person who proposed it: an optional `auteur` field in the catalogue, served by the API (`GET /api/v1/cartes`), not translated; the card brief fills it in (US-030, ADR 0050).

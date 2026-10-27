@@ -22,7 +22,7 @@ _Last updated: 2026-10-28_
 | [EPIC-13 — A set 2: architecture and practices](epics/EPIC-13-set-2-architecture-pratiques.md) | Could    | In progress | 2/3      |
 | [EPIC-14 — A game in French and English](epics/EPIC-14-multilingue.md)                         | Should   | Done        | 4/4      |
 | [EPIC-15 — Decks of your own](epics/EPIC-15-decks-personnalises.md)                            | Should   | Done        | 2/2      |
-| [EPIC-16 — The repository in English](epics/EPIC-16-english-repository.md)                     | Should   | In progress | 2/5      |
+| [EPIC-16 — The repository in English](epics/EPIC-16-english-repository.md)                     | Should   | Done        | 6/6      |
 
 ## Iteration 0 (in progress) — foundations
 
@@ -199,7 +199,8 @@ culture. To be handled later; ADR to plan (identity, reviewer role, path to the 
 | [US-083 — Build, name and keep your own decks from your collection](stories/US-083-construire-ses-decks.md)                                | EPIC-15 | Should   | L    | Done        |
 | [US-084 — Play with your deck against the bot and in duels](stories/US-084-jouer-avec-son-deck.md)                                         | EPIC-15 | Should   | M    | Done        |
 | [US-087 — English as the repository language: ADR, CLAUDE.md, templates and closing script](stories/US-087-english-repository-language.md) | EPIC-16 | Should   | S    | Done        |
-| [US-088 — Translate the product docs, READMEs, operations guide and review](stories/US-088-translate-product-docs.md)                      | EPIC-16 | Should   | M    | Ready       |
-| [US-089 — Translate the ADRs](stories/US-089-translate-adrs.md)                                                                            | EPIC-16 | Should   | M    | Ready       |
+| [US-088 — Translate the product docs, READMEs, operations guide and review](stories/US-088-translate-product-docs.md)                      | EPIC-16 | Should   | M    | Done        |
+| [US-089 — Translate the ADRs](stories/US-089-translate-adrs.md)                                                                            | EPIC-16 | Should   | M    | Done        |
 | [US-090 — Translate the backlog (method, board, epics, stories)](stories/US-090-translate-backlog.md)                                      | EPIC-16 | Should   | L    | Done        |
-| [US-091 — Translate the CHANGELOG](stories/US-091-translate-changelog.md)                                                                  | EPIC-16 | Could    | S    | Ready       |
+| [US-091 — Translate the CHANGELOG](stories/US-091-translate-changelog.md)                                                                  | EPIC-16 | Could    | S    | Done        |
+| [US-092 — Links across translated folders, and the contributor kit after the switch](stories/US-092-english-links-and-kit.md)              | EPIC-16 | Should   | XS   | Done        |
