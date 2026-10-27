@@ -7,6 +7,10 @@ Toutes les évolutions notables du projet sont consignées ici
 
 ### Ajouté
 
+- Relecture des cartes proposées dans leur PR : un modèle de PR « carte » avec les vérifications du contributeur et la
+  liste de contrôle du relecteur, un `CODEOWNERS`, et un job de CI « Équilibrage des cartes nouvelles » qui met deux
+  exemplaires de chaque carte nouvelle dans les decks prêtés et affiche l'écart de victoires dans son résumé
+  (`npm run simuler:carte`) (US-029, ADR 0050).
 - Kit pour l'IA du contributeur : une consigne de carte (`docs/contribuer/consigne-carte.md`) à donner à un assistant
   de code, qui écrit la carte, sa traduction, sa fiche, son effet et ses tests sans mécanique nouvelle, éprouvée par
   deux essais ; une consigne d'illustration (`consigne-illustration.md`) avec l'image de référence, les phrases de

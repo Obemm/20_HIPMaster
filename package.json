@@ -17,6 +17,7 @@
     "test:e2e": "playwright test",
     "test:e2e:production": "npm run build && playwright test -c playwright.production.config.ts",
     "simuler": "node scripts/simuler.ts",
+    "simuler:carte": "node scripts/simuler-carte.ts",
     "fiches:liens": "node scripts/verifier-liens-fiches.ts",
     "i18n:extraire": "npm run i18n:extraire -w @hipmaster/web",
     "i18n:verifier": "node scripts/langues/verifier-traductions.ts",

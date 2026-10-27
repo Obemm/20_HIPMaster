@@ -23,15 +23,18 @@ gabarit : c'est lui que vous donnerez à votre IA et que vous reprendrez dans la
    plus », les tests), puis dessinez la créature avec la [consigne d'illustration](docs/contribuer/consigne-illustration.md).
 5. **Vérifiez** : `npm run check` doit passer (lint, format, types, tests), et `npm run dev` vous montre la carte dans
    le catalogue (localhost:4200).
-6. **Ouvrez la PR** vers `main`, avec le gabarit rempli dans la description, l'original de l'illustration en pièce
-   jointe et votre nom d'auteur.
+6. **Ouvrez la PR** vers `main` avec le modèle « carte », en ajoutant `?expand=1&template=carte.md` à l'adresse de
+   comparaison : `https://github.com/Obemm/20_HIPMaster/compare/main...<votre-compte>:<votre-branche>?expand=1&template=carte.md`.
+   Collez-y votre gabarit, joignez l'original de l'illustration et cochez vos vérifications.
 
 Pas de compte GitHub, ou pas le temps ? Envoyez le gabarit rempli au porteur du projet : il intégrera la carte lui-même.
 
 ## Après la PR
 
-Le porteur du projet relit la carte (exactitude, clarté, confidentialité, doublons, illustration), mesure son
-équilibrage par simulation et répond dans la PR : fusionnée, à retravailler ou refusée avec un motif, en moins de deux
+Le porteur du projet relit la carte avec la liste de contrôle du modèle (exactitude, clarté, confidentialité,
+doublons, règles, équilibrage, illustration). La CI mesure l'équilibrage de votre carte : le job « Équilibrage des
+cartes nouvelles » affiche, dans son résumé, ce qu'elle change dans chaque deck prêté ; vous pouvez le mesurer
+vous-même avant, avec `npm run simuler:carte -- <numéro>` (une minute et demie environ). Il répond dans la PR : fusionnée, à retravailler ou refusée avec un motif, en moins de deux
 semaines. À la fusion, la carte est mise en ligne automatiquement, avec votre nom.
 
 Les commits suivent les [Conventional Commits](https://www.conventionalcommits.org/fr/) en français, sujet en

@@ -94,8 +94,8 @@ doutes (exactitude technique, équilibrage, traduction), et ce que tu as changé
   `npm run check` passe entièrement. Vous pouvez ouvrir la PR avant, en le disant : la CI restera rouge sur le seul
   test des illustrations.
 - **La PR** : commitez (par exemple `feat(carte): la carte circuit breaker`, sujet en minuscules), poussez sur votre
-  fork et ouvrez la PR vers `main` avec votre proposition dans la description (voir
-  [CONTRIBUTING.md](../../CONTRIBUTING.md)).
+  fork et ouvrez la PR vers `main` avec le modèle « carte » (voir [CONTRIBUTING.md](../../CONTRIBUTING.md)). La CI
+  mesure l'équilibrage de la carte ; vous pouvez le faire avant avec `npm run simuler:carte -- <numéro>`.
 
 Cette consigne suit le code du jeu : si elle oublie un fichier (un test qui échoue, une nouvelle langue), dites-le dans
 votre PR, elle sera corrigée.

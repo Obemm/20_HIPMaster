@@ -51,6 +51,7 @@ npm run dev          # migrations appliquées au démarrage ; API sur localhost:
 | `npm run invitation`                | Crée, liste ou révoque les invitations (PostgreSQL, voir `--aide`)           |
 | `npm run illustrations`             | Décline les illustrations des cartes (voir `packages/illustrations`)         |
 | `npm run illustrations:provisoires` | Dessine les illustrations provisoires de toutes les cartes, puis les décline |
+| `npm run simuler:carte -- <n°>`     | Mesure l'équilibrage d'une carte dans les decks prêtés (CI des PR, US-029)   |
 
 Les tests de l'API tournent sur PGlite, qui exécute les requêtes une par une. La CI les fait aussi passer sur
 PostgreSQL 18, où les opérations simultanées se chevauchent vraiment (US-056) ; en local, avec Docker :

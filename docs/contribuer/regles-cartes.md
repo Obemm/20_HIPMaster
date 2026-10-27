@@ -194,8 +194,10 @@ C'est le cas le plus courant : l'idée est bonne, la relecture ajuste un chiffre
 2. **Relecture** : le porteur du projet relit l'exactitude, le texte « En vrai », la confidentialité, l'absence de
    doublon et l'illustration. Réponse visée en moins de deux semaines : **fusionnée**, **à retravailler** (avec des
    commentaires dans la PR) ou **refusée** (avec un motif).
-3. **Équilibrage** : une simulation « bot contre bot » mesure la carte dans les decks prêtés ; le coût ou les
-   statistiques peuvent être ajustés, comme pour API First.
+3. **Équilibrage** : une simulation « bot contre bot » met deux exemplaires de la carte dans chaque deck prêté et
+   les fait jouer contre les trois decks ; la CI l'affiche dans le résumé du job « Équilibrage des cartes nouvelles »
+   (`npm run simuler:carte -- <numéro>` pour la lancer chez vous). Un deck qui gagne ou perd 10 points ou plus avec
+   la carte signale un déséquilibre : le coût ou les statistiques sont ajustés, comme pour API First.
 4. **Publication** : à la fusion, la carte est mise en ligne automatiquement. Elle prend le numéro suivant du
    catalogue et peut sortir des boosters.
 5. **Crédit** : votre nom figure dans le catalogue et le CHANGELOG ; il s'affichera sur la carte (« Proposée par … »)

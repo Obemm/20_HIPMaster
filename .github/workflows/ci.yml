@@ -77,3 +77,23 @@ jobs:
             playwright-report/
             test-results/
           retention-days: 7
+
+  equilibrage:
+    # Une carte proposée par PR (US-029, ADR 0050) est mesurée par simulation dans chaque deck prêté ; le résultat
+    # s'affiche dans le résumé du job, pour le relecteur. Informatif : il n'échoue que si le script plante.
+    name: Équilibrage des cartes nouvelles (simulation)
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+      # Le domaine n'a aucune dépendance : pas de npm ci. Le catalogue de la branche cible sert à trouver les cartes
+      # nouvelles (set-1.ts n'importe que des types, effacés à l'exécution).
+      - run: git show "origin/$BRANCHE_CIBLE:packages/domain/src/set-1.ts" > "$RUNNER_TEMP/set-1-cible.ts"
+        env:
+          BRANCHE_CIBLE: ${{ github.base_ref }}
+      - run: node scripts/simuler-carte.ts --base "$RUNNER_TEMP/set-1-cible.ts" | tee -a "$GITHUB_STEP_SUMMARY"
