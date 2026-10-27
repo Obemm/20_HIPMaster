@@ -1,201 +1,202 @@
-# Règles du jeu
+# Rules of the game
 
-Combat sur plateau, à deux (un joueur contre le bot, puis contre un autre joueur). Décision : [ADR 0010](../decisions/0010-combat-plateau.md).
-Univers : [univers.md](univers.md). Premier set : [cartes-set-1.md](cartes-set-1.md).
+Board combat, two players (one player against the bot, then against another player). Decision:
+[ADR 0010](../decisions/0010-combat-plateau.md). Universe: [univers.md](univers.md). First set:
+[cartes-set-1.md](cartes-set-1.md).
 
-## But
+## Goal
 
-Chaque joueur défend son **SI**, qui a **20 points de SLA**. Le premier qui ramène le SLA adverse à 0 gagne.
-Après 20 tours (10 pour chaque joueur), le joueur qui a le plus de SLA gagne (égalité : partie nulle).
+Each player defends their **System**, which has **20 SLA points**. The first to bring the opponent's SLA down to 0 wins.
+After 20 turns (10 for each player), the player with the most SLA wins (tie: the game is drawn).
 
-## Le deck
+## The deck
 
-- **20 cartes**, au plus 2 exemplaires d'une même carte, 1 seul par légendaire.
-- Tant que la collection est petite, un deck de départ est prêté.
+- **20 cards**, at most 2 copies of the same card, only 1 per legendary.
+- While the collection is small, a starter deck is lent.
 
-## La ressource : le Débit
+## The resource: Throughput
 
-- Au début de chacun de ses tours, le joueur reçoit du **Débit** : 1 au premier tour, puis +1 par tour (maximum 10).
-  Le Débit non dépensé est perdu.
-- Le joueur qui joue **en second** reçoit **1 Débit de plus à son premier tour seulement** : 2 au lieu de 1, puis 2,
-  3, 4… comme l'autre joueur. Commencer ne décide ainsi pas de la partie
+- At the start of each of their turns, the player receives **Throughput**: 1 on the first turn, then +1 per turn
+  (maximum 10). Unspent Throughput is lost.
+- The player who plays **second** receives **1 extra Throughput on their first turn only**: 2 instead of 1, then 2, 3,
+  4… like the other player. Going first therefore does not decide the game
   ([ADR 0026](../decisions/0026-debit-du-second-joueur.md)).
-- Une fois par tour, on peut **décommissionner** une carte de sa main : elle part à la défausse et rapporte du Débit
-  pour ce tour (+1 commune ou rare, +2 épique, +3 légendaire).
+- Once per turn, you can **decommission** a card from your hand: it goes to the discard pile and earns Throughput for
+  that turn (+1 common or rare, +2 epic, +3 legendary).
 
-## Déroulement d'un tour
+## How a turn runs
 
-1. **Pioche** d'une carte (le joueur qui commence ne pioche pas à son premier tour). Main de départ : 4 cartes, main
-   de 8 cartes au plus.
-2. **Débit** : recharge, puis effets « au début de votre tour ».
-3. **Jouer des cartes** en payant leur coût en Débit, dans l'ordre voulu :
-   - **Composant** : posé sur le plateau (5 emplacements). Il a une **attaque** et des **PV**.
-   - **Sort** (Patterns, prompting…) : effet immédiat, puis défausse.
-   - **Incident** (Bestiaire) : effet contre l'adversaire, puis défausse.
-   - **Évolution de X** : se pose **à la place** de X sur votre plateau, avec ses PV pleins ; elle peut attaquer ce
-     tour-ci si X le pouvait.
-4. **Attaquer** : chaque composant peut attaquer une fois, sauf le tour où il est posé.
-   - **Rien n'attaque tout seul** : à chaque tour, pour chaque composant qui doit attaquer, vous choisissez
-     l'**attaquant** (un de vos composants) puis sa **cible** (un composant adverse ou le SI adverse). Poser des
-     cartes ne suffit pas : un tour où vous ne faites que poser ne fait aucun dégât à l'adversaire. Seuls les agents
-     **Autonomes** attaquent sans ordre (voir plus bas).
-   - Contre un **composant** : chacun inflige son attaque à l'autre (riposte). À 0 PV, un composant est détruit.
-   - Contre le **SI** : le SLA adverse perd l'attaque du composant, sans riposte.
-   - Tant que l'adversaire a un composant avec **Garde**, il faut l'attaquer en premier.
-   - Attaquer avant ou après avoir posé des cartes : c'est vous qui choisissez l'ordre.
-5. **Finir le tour** : les composants qui n'ont pas attaqué perdent leur attaque de ce tour (elle ne se reporte pas).
+1. **Draw** a card (the player who goes first does not draw on their first turn). Starting hand: 4 cards, hand limit:
+   8 cards.
+2. **Throughput**: refill, then "at the start of your turn" effects.
+3. **Play cards** by paying their Throughput cost, in any order you like:
+   - **Component**: deployed on the board (5 slots). It has an **attack** and **HP**.
+   - **Spell** (Patterns, prompting…): immediate effect, then discard.
+   - **Incident** (Bestiary): effect against the opponent, then discard.
+   - **Evolution of X**: deployed **in place of** X on your board, with full HP; it can attack this turn if X could.
+4. **Attack**: each component can attack once, except on the turn it is deployed.
+   - **Nothing attacks on its own**: each turn, for each component that is to attack, you choose the **attacker** (one
+     of your components) then its **target** (an opposing component or the opposing System). Deploying cards is not
+     enough: a turn where you only deploy deals no damage to the opponent. Only **Autonomous** agents attack without
+     being ordered (see below).
+   - Against a **component**: each deals its attack to the other (counter-attack). At 0 HP, a component is destroyed.
+   - Against the **System**: the opposing SLA loses the component's attack, with no counter-attack.
+   - As long as the opponent has a component with **Guard**, it must be attacked first.
+   - Attacking before or after deploying cards: you choose the order.
+5. **End the turn**: components that have not attacked lose their attack for this turn (it does not carry over).
 
-Les dégâts restent d'un tour à l'autre. Tout le hasard (pioche, cibles au hasard) est tiré par le serveur (ADR 0004).
+Damage stays from one turn to the next. All the randomness (draws, random targets) is drawn by the server (ADR 0004).
 
-## Résoudre un combat
+## Resolving a combat
 
-Une attaque se résout toujours dans cet ordre :
+An attack is always resolved in this order:
 
-1. **Vérifier que l'attaque est permise.** L'attaquant n'a pas été posé ce tour, n'a pas déjà attaqué, a une attaque
-   supérieure à 0 et n'est pas bloqué (entretien Sur site impayé, immobilisation, Batch). La cible respecte Garde et
+1. **Check that the attack is allowed.** The attacker was not deployed this turn, has not already attacked, has an
+   attack above 0 and is not blocked (unpaid On-premises upkeep, immobilisation, Batch). The target respects Guard and
    Quotas.
-2. **Calculer les forces.** La force d'un composant est son attaque imprimée, plus +1 par **Hub** allié en jeu (le
-   Hub ne se compte pas lui-même), plus les bonus permanents (Renfort, Contexte…). La riposte du défenseur se calcule
-   de la même façon, avec les Hubs de **son** camp.
-3. **Échanger les coups, en même temps.** Le défenseur perd la force de l'attaquant, l'attaquant perd la force du
-   défenseur. Le défenseur riposte même s'il tombe à 0 PV : les deux peuvent être détruits ensemble.
-4. **Effets de l'attaque.** Diffusion de l'attaquant, puis un Réactif du défenseur encore en vie (+1 dégât à
-   l'attaquant).
-5. **Destructions.** Tout composant à 0 PV est détruit (Point unique et File durable se déclenchent alors).
+2. **Compute the strengths.** A component's strength is its printed attack, plus +1 per allied **Hub** in play (a Hub
+   does not count itself), plus permanent bonuses (Reinforcement, Context…). The defender's counter-attack is computed
+   the same way, with the Hubs of **its** side.
+3. **Trade blows, simultaneously.** The defender loses the attacker's strength, the attacker loses the defender's
+   strength. The defender counter-attacks even if it drops to 0 HP: both can be destroyed together.
+4. **Attack effects.** The attacker's Broadcast, then a Reactive from the defender that is still alive (+1 damage to the
+   attacker).
+5. **Destructions.** Any component at 0 HP is destroyed (Single point of failure and Durable queue then trigger).
 
-Contre le SI, seules les étapes 1 et 2 comptent : le SLA perd la force de l'attaquant, sans riposte ni Réactif.
+Against the System, only steps 1 and 2 count: the SLA loses the attacker's strength, with no counter-attack or
+Reactive.
 
-### Exemples
+### Examples
 
-**Échange qui détruit les deux cartes.** API REST (attaque 3, PV 2) attaque Adaptateur JDBC (attaque 2, PV 3).
-JDBC subit 3 dégâts : 3 − 3 = 0, il est détruit. API REST subit la riposte de 2 : 2 − 2 = 0, elle est détruite aussi.
+**A trade that destroys both cards.** REST API (attack 3, HP 2) attacks JDBC Adapter (attack 2, HP 3). JDBC takes 3
+damage: 3 − 3 = 0, it is destroyed. REST API takes the counter-attack of 2: 2 − 2 = 0, it is destroyed too.
 
-**Attaque du SI avec un Hub.** Vous avez Universal Messaging (attaque 2) et webMethods Integration Server 10.15
-(Hub) en jeu, posés aux tours précédents. Universal Messaging attaque le SI adverse avec une force de 2 + 1 = 3 :
-le SLA adverse perd 3. webMethods IS (attaque 4) attaque ensuite le SI : il ne profite pas de son propre Hub, le SLA
-perd encore 4. Total du tour : 7 SLA. Si vous vous contentez de poser des cartes, ce tour ne fait aucun dégât.
+**Attacking the System with a Hub.** You have Universal Messaging (attack 2) and webMethods Integration Server 10.15
+(Hub) in play, deployed on previous turns. Universal Messaging attacks the opposing System with a strength of 2 + 1 = 3:
+the opposing SLA loses 3. webMethods IS (attack 4) then attacks the System: it does not benefit from its own Hub, the
+SLA loses another 4. Total for the turn: 7 SLA. If you merely deploy cards, this turn deals no damage.
 
-**Garde, et dégâts qui restent.** L'adversaire a Adaptateur SAP (Garde, attaque 3, PV 5) : vous ne pouvez viser ni
-son SI ni ses autres composants. SOAP / WSDL (attaque 3, PV 4) attaque SAP : SAP passe à 2 PV, SOAP passe à 1 PV.
-Au tour suivant, SAP a toujours 2 PV : une attaque de 2 suffit à le détruire et à rouvrir l'accès au SI.
+**Guard, and damage that stays.** The opponent has SAP Adapter (Guard, attack 3, HP 5): you can aim at neither their
+System nor their other components. SOAP / WSDL (attack 3, HP 4) attacks SAP: SAP drops to 2 HP, SOAP drops to 1 HP. On
+the next turn, SAP still has 2 HP: an attack of 2 is enough to destroy it and reopen access to the System.
 
-**Réactif.** L'adversaire a Topic (Réactif, attaque 1, PV 2) et API REST (attaque 3, PV 2). SOAP / WSDL (attaque 3,
-PV 4) attaque API REST : API REST est détruite, SOAP subit 3 de riposte puis 1 de Réactif (Topic est en vie) et
-tombe à 0. Pour garder SOAP, il valait mieux détruire Topic d'abord.
+**Reactive.** The opponent has Topic (Reactive, attack 1, HP 2) and REST API (attack 3, HP 2). SOAP / WSDL (attack 3,
+HP 4) attacks REST API: REST API is destroyed, SOAP takes 3 from the counter-attack then 1 from Reactive (Topic is
+alive) and drops to 0. To keep SOAP, it was better to destroy Topic first.
 
-**Évolution.** webMethods IS 10.15, posé au tour précédent, évolue en webMethods.io : la nouvelle carte arrive avec
-ses 7 PV pleins et peut attaquer tout de suite, puisque webMethods IS le pouvait.
+**Evolution.** webMethods IS 10.15, deployed on the previous turn, evolves into webMethods.io: the new card arrives
+with its full 7 HP and can attack straight away, since webMethods IS could.
 
-## Précisions (tranchées en codant le moteur, US-010)
+## Clarifications (settled while coding the engine, US-010)
 
-- **Pioche vide** : le joueur ne pioche pas, sans autre pénalité.
-- **Main pleine** : une carte piochée en trop part à la défausse ; File durable ne peut pas ramener une carte dans
-  une main pleine (elle part à la défausse).
-- **Attaque nulle** : un composant dont l'attaque vaut 0 ne peut pas attaquer.
-- **Évolution** : la carte d'origine part à la défausse ; l'évolution arrive avec ses PV pleins et garde l'état
-  d'attaque de l'origine (posée depuis combien de temps, déjà attaqué ce tour ou non).
-- **Diffusion** : les 2 composants blessés en plus sont tirés au hasard parmi les autres composants adverses.
-- **Réactif** : le dégât est infligé à l'attaquant après l'échange de dégâts, s'il est encore en jeu ; un seul
-  Réactif se déclenche par attaque.
-- **Point unique** : les destructions qu'il provoque peuvent en entraîner d'autres, en cascade.
-- **Non conforme** se cumule (2 cartes : 2 SLA par tour) ; **Sur site** prélève l'entretien automatiquement, carte
-  par carte, tant qu'il reste du Débit.
+- **Empty draw pile**: the player does not draw, with no other penalty.
+- **Full hand**: a card drawn beyond the limit goes to the discard pile; Durable queue cannot bring a card back into a
+  full hand (it goes to the discard pile).
+- **Zero attack**: a component whose attack is 0 cannot attack.
+- **Evolution**: the original card goes to the discard pile; the evolution arrives with full HP and keeps the attack
+  state of the original (how long it has been deployed, whether it has already attacked this turn).
+- **Broadcast**: the 2 additional damaged components are drawn at random among the other opposing components.
+- **Reactive**: the damage is dealt to the attacker after the damage exchange, if it is still in play; only one
+  Reactive triggers per attack.
+- **Single point of failure**: the destructions it causes can lead to others, in a cascade.
+- **Non-compliant** stacks (2 cards: 2 SLA per turn); **On-premises** deducts the upkeep automatically, card by card, as
+  long as Throughput remains.
 
-## Sorts et incidents (US-014)
+## Spells and incidents (US-014)
 
-- Un sort ou un incident se joue en payant son coût, avec ses cibles éventuelles, puis part à la défausse.
-- « À son prochain tour » : l'effet dure jusqu'à la fin du prochain tour du propriétaire du composant visé.
-- Une **parade** annule l'effet mais pas le coût : la carte est quand même jouée et défaussée.
-- Les effets qui touchent « au hasard » (Hallucination) tirent leur cible dans les deux camps, SI compris, jamais un
-  composant Vétéran.
+- A spell or an incident is played by paying its cost, with its targets if any, then goes to the discard pile.
+- "On its next turn": the effect lasts until the end of the next turn of the owner of the targeted component.
+- A **parry** cancels the effect but not the cost: the card is still played and discarded.
+- Effects that hit "at random" (Hallucination) draw their target from both sides, System included, never a Veteran
+  component.
 
-## Effets propres des composants (US-019)
+## Components' own effects (US-019)
 
-- **Pioche ciblée** (webMethods Designer, Apigee API Hub, Solace Event Portal) : la première carte de la famille voulue
-  dans la pioche passe en main ; s'il n'y en a pas, rien ne se passe.
-- **Renfort** (OpenAPI, AsyncAPI) : la carte se pose sur un de vos composants de la famille (+1 attaque, permanent) ;
-  sans composant de la famille en jeu, elle se pose sans effet.
-- **Cron** : une fois par tour, un de vos composants Batch peut attaquer même s'il a attaqué au tour précédent.
-- **Base vectorielle** : vos agents en jeu gagnent 1 PV à sa pose, comme ceux posés ensuite tant qu'elle est en jeu.
-- Un composant dont les capacités sont suspendues (Certificat expiré, Contexte saturé) perd aussi son effet propre
-  permanent.
+- **Targeted draw** (webMethods Designer, Apigee API Hub, Solace Event Portal): the first card of the wanted family in
+  the draw pile goes to your hand; if there is none, nothing happens.
+- **Reinforcement** (OpenAPI, AsyncAPI): the card is placed on one of your components of the family (+1 attack,
+  permanent); with no component of the family in play, it is placed with no effect.
+- **Cron**: once per turn, one of your Batch components can attack even if it attacked on the previous turn.
+- **Vector database**: your agents in play gain 1 HP when it is deployed, as do those deployed afterwards while it is in
+  play.
+- A component whose abilities are suspended (Expired certificate, Context overflow) also loses its permanent own
+  effect.
 
-## Capacités IA et Migration (US-020)
+## AI abilities and Migration (US-020)
 
-- **Autonome** : sans Orchestration, un agent n'attaque jamais sur ordre ; au début de votre tour, il attaque une
-  cible valide tirée au hasard (Garde et Quotas respectés). Avec **Orchestration**, vous le faites attaquer vous-même.
-- **Délégation** : une fois par tour, un agent qui a déjà attaqué attaque une seconde fois (un agent autonome le fait
-  seul, au hasard) ; Solace Agent Mesh donne cet effet à vos agents.
-- **Outillage** (action « outiller », une fois par tour) : vos agents empruntent les capacités d'un de vos
-  composants non IA jusqu'à la fin du tour ; Solace Agent Mesh donne aussi cet effet.
-- **Routage multi-modèles** (action « router », une fois par tour) : un composant IA (autre que celui qui route)
-  revient en main, et un composant IA de la main, de coût inférieur ou égal, prend sa place gratuitement ; il ne peut
-  pas attaquer ce tour.
-- **Migration** (action « migrer ») : SFTP est remplacé par un composant API ou EDA de la main, qui coûte 2 de moins ;
-  SFTP part à la défausse et la nouvelle carte ne peut pas attaquer ce tour.
-- **Cache sémantique** : votre premier sort IA du tour ne coûte rien.
+- **Autonomous**: without Orchestration, an agent never attacks on command; at the start of your turn, it attacks a
+  random valid target (Guard and Quotas respected). With **Orchestration**, you make it attack yourself.
+- **Delegation**: once per turn, an agent that has already attacked attacks a second time (an autonomous agent does it
+  on its own, at random); Solace Agent Mesh gives this effect to your agents.
+- **Tooling** ("equip" action, once per turn): your agents borrow the abilities of one of your non-AI components until
+  the end of the turn; Solace Agent Mesh also gives this effect.
+- **Multi-model routing** ("route" action, once per turn): an AI component (other than the one routing) returns to
+  hand, and an AI component from your hand, of equal or lower cost, takes its place for free; it cannot attack this
+  turn.
+- **Migration** ("migrate" action): SFTP is replaced by an API or EDA component from your hand, which costs 2 less; SFTP
+  goes to the discard pile and the new card cannot attack this turn.
+- **Semantic cache**: your first AI spell of the turn costs nothing.
 
-## Capacités
+## Abilities
 
-| Capacité                  | Effet                                                                                                                                              |
-| ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Batch**                 | Ne peut pas attaquer deux tours de suite.                                                                                                          |
-| **Vétéran**               | Ne peut pas être ciblé par les cartes de la famille IA agentique ni par les incidents IA.                                                          |
-| **Non conforme**          | Au début de votre tour, votre SI perd 1 SLA tant que la carte est en jeu.                                                                          |
-| **Sur site**              | Au début de votre tour, payez 1 Débit d'entretien, sinon la carte ne peut pas attaquer ce tour.                                                    |
-| **Hub**                   | Vos autres composants ont +1 attaque.                                                                                                              |
-| **Point unique**          | Quand cette carte est détruite, vos autres composants subissent 1 dégât.                                                                           |
-| **Garde**                 | Doit être attaqué avant vos autres composants et votre SI.                                                                                         |
-| **Quotas**                | Ne peut pas être attaqué plus de 2 fois par tour.                                                                                                  |
-| **Connecteur (N)**        | Quand la carte est posée, piochez N cartes.                                                                                                        |
-| **Diffusion**             | Quand elle attaque un composant, inflige aussi 1 dégât à 2 autres composants adverses au plus.                                                     |
-| **Réactif**               | Une fois par tour, quand un de vos composants est attaqué, inflige 1 dégât à l'attaquant.                                                          |
-| **File durable**          | Une fois par partie, quand un de vos composants est détruit, il revient dans votre main.                                                           |
-| **Supervision**           | Au début de votre tour, regardez la carte du dessus de la pioche adverse.                                                                          |
-| **Migration**             | Une fois, remplacez cette carte par un composant API ou EDA de votre main, qui coûte alors 2 de moins.                                             |
-| **Autonome**              | N'attaque pas sur ordre : au début de votre tour, il attaque une cible valide tirée au hasard.                                                     |
-| **Orchestration**         | Vous choisissez la cible de vos composants Autonomes.                                                                                              |
-| **Outillage**             | Au début de votre tour, choisissez un de vos composants non IA : vos agents gagnent sa capacité jusqu'à la fin du tour.                            |
-| **Délégation**            | Une fois par tour, un autre de vos agents peut attaquer une seconde fois.                                                                          |
-| **Contexte**              | +1 attaque par tranche de 2 cartes dans votre défausse (+3 au plus).                                                                               |
-| **Garde-fous**            | Vos composants IA sont immunisés contre Hallucination et Prompt injection.                                                                         |
-| **Asynchrone**            | Vos composants IA sont immunisés contre Timeout et Boucle d'agents.                                                                                |
-| **Cache sémantique**      | Votre premier sort IA de chaque tour ne coûte rien.                                                                                                |
-| **Routage multi-modèles** | Une fois par tour, renvoyez un de vos composants IA dans votre main et posez gratuitement un composant IA de votre main de coût inférieur ou égal. |
+| Ability                     | Effect                                                                                                                                         |
+| --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Batch**                   | Cannot attack two turns in a row.                                                                                                              |
+| **Veteran**                 | Cannot be targeted by Agentic AI cards or by AI incidents.                                                                                     |
+| **Non-compliant**           | At the start of your turn, your System loses 1 SLA while this card is in play.                                                                 |
+| **On-premises**             | At the start of your turn, pay 1 Throughput for upkeep, or the card cannot attack this turn.                                                   |
+| **Hub**                     | Your other components have +1 attack.                                                                                                          |
+| **Single point of failure** | When this card is destroyed, your other components take 1 damage.                                                                              |
+| **Guard**                   | Must be attacked before your other components and your System.                                                                                 |
+| **Quotas**                  | Cannot be attacked more than twice per turn.                                                                                                   |
+| **Connector (N)**           | When the card is deployed, draw N cards.                                                                                                       |
+| **Broadcast**               | When it attacks a component, also deals 1 damage to up to 2 other opposing components.                                                         |
+| **Reactive**                | Once per turn, when one of your components is attacked, deals 1 damage to the attacker.                                                        |
+| **Durable queue**           | Once per game, when one of your components is destroyed, it returns to your hand.                                                              |
+| **Monitoring**              | At the start of your turn, look at the top card of your opponent's deck.                                                                       |
+| **Migration**               | Once, replace this card with an API or EDA component from your hand, which then costs 2 less.                                                  |
+| **Autonomous**              | Does not attack on command: at the start of your turn, it attacks a random valid target.                                                       |
+| **Orchestration**           | You choose the target of your Autonomous components.                                                                                           |
+| **Tooling**                 | At the start of your turn, choose one of your non-AI components: your agents gain its ability until the end of the turn.                       |
+| **Delegation**              | Once per turn, another of your agents can attack a second time.                                                                                |
+| **Context**                 | +1 attack for every 2 cards in your discard pile (up to +3).                                                                                   |
+| **Guardrails**              | Your AI components are immune to Hallucination and Prompt injection.                                                                           |
+| **Asynchronous**            | Your AI components are immune to Timeout and Agent loop.                                                                                       |
+| **Semantic cache**          | Your first AI spell each turn costs nothing.                                                                                                   |
+| **Multi-model routing**     | Once per turn, return one of your AI components to your hand and deploy, for free, an AI component from your hand with an equal or lower cost. |
 
-« Agent » désigne les composants IA qui ont la capacité Autonome.
+"Agent" means the AI components that have the Autonomous ability.
 
-## Le bot
+## The bot
 
-Quatre niveaux, du plus simple au plus fort : **Stagiaire** (facile : il joue comme un débutant), **Batch de nuit**
-(moyen), **Architecte ESB** (difficile) et le boss **Agent autonome** (expert). Un niveau **Architecte EDA** reste
-possible. Mode « bot contre bot » à regarder, qui sert aussi à équilibrer les cartes ([cartes-set-1.md](cartes-set-1.md)).
+Four levels, from simplest to strongest: **Intern** (easy: it plays like a beginner), **Nightly Batch** (medium),
+**ESB Architect** (hard) and the boss **Autonomous Agent** (expert). An **EDA Architect** level remains possible. A
+"bot against bot" mode to watch, which also serves to balance the cards ([cartes-set-1.md](cartes-set-1.md)).
 
-## Score et classement (US-069)
+## Score and leaderboard (US-069)
 
-Décision : [ADR 0044](../decisions/0044-score-et-cote-de-duel.md). Le serveur seul compte les points ; rien n'est
-jamais remis à zéro.
+Decision: [ADR 0044](../decisions/0044-score-et-cote-de-duel.md). Only the server counts points; nothing is ever reset.
 
-- **Points** (le score, qui ordonne le classement) :
+- **Points** (the score, which orders the leaderboard):
 
-  | Partie gagnée                | Points |
-  | ---------------------------- | ------ |
-  | Contre le bot Stagiaire      | 1      |
-  | Contre le bot Batch de nuit  | 2      |
-  | Contre le bot Architecte ESB | 3      |
-  | Contre le bot Agent autonome | 5      |
-  | Duel gagné                   | 5      |
-  | Duel nul (pour chacun)       | 2      |
+  | Game won                         | Points |
+  | -------------------------------- | ------ |
+  | Against the Intern bot           | 1      |
+  | Against the Nightly Batch bot    | 2      |
+  | Against the ESB Architect bot    | 3      |
+  | Against the Autonomous Agent bot | 5      |
+  | Duel won                         | 5      |
+  | Duel drawn (for each)            | 2      |
 
-  Une défaite, ou un nul contre le bot, ne rapporte rien ; la partie guidée non plus. Au plus **10 victoires
-  comptées par jour** (jour UTC, bot et duels confondus) : au-delà, une victoire ne rapporte plus de points jusqu'au
-  lendemain. Un duel gagné par abandon ou par forfait compte comme une victoire.
+  A defeat, or a draw against the bot, earns nothing; neither does the guided game. At most **10 wins count per day**
+  (UTC day, bot and duels combined): beyond that, a win earns no more points until the next day. A duel won by
+  concession or by forfeit counts as a win.
 
-- **Cote de duel**, à la manière d'Elo : chacun part de **1000** ; après chaque duel, le gagnant prend au perdant
-  entre 0 et 32 points de cote, d'autant plus que sa victoire était inattendue (16 entre deux cotes égales) ; un nul
-  rapproche les deux cotes. Un duel contre un compte supprimé ne change pas la cote.
-- **Classement** : les joueurs classés qui ont au moins un point, par points décroissants ; deux scores égaux
-  partagent le même rang. Chacun y figure par défaut, sous son pseudo, et peut s'en retirer : son score continue de
-  compter, et lui seul le voit.
-- **Historique** : à la mise en ligne du score, les duels déjà terminés ont été recomptés (points et cote), et les
-  victoires passées contre le bot comptées 1 point chacune (leur niveau n'était plus connu), plafond compris.
+- **Duel rating**, Elo-style: everyone starts at **1000**; after each duel, the winner takes from the loser between 0
+  and 32 rating points, more the less expected their win was (16 between two equal ratings); a draw brings the two
+  ratings closer. A duel against a deleted account does not change the rating.
+- **Leaderboard**: ranked players with at least one point, by decreasing points; two equal scores share the same rank.
+  Everyone appears there by default, under their username, and can withdraw: their score keeps counting, and only they
+  see it.
+- **History**: when the score went live, the duels already finished were recounted (points and rating), and past wins
+  against the bot were counted 1 point each (their level was no longer known), cap included.

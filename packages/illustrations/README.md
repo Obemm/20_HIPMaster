@@ -1,13 +1,13 @@
 # @hipmaster/illustrations
 
-Chaîne d'import et d'optimisation des illustrations des cartes (US-015,
+Import and optimisation pipeline for the card illustrations (US-015,
 [ADR 0015](../../docs/decisions/0015-illustrations-statiques-optimisees.md)).
 
-## Ajouter ou remplacer l'illustration d'une carte
+## Add or replace a card's illustration
 
-1. Déposer l'original en PNG dans `sources/set-1/<numero>.png` : au format **4:3** de préférence (il est recadré sur
-   la zone la plus intéressante sinon), **640 px de large au moins** (1365 × 1024 conseillé).
-2. Décrire l'image dans [`set-1.json`](set-1.json) :
+1. Drop the original as a PNG in `sources/set-1/<numero>.png`: preferably in **4:3** format (otherwise it is cropped
+   to the most interesting area), **at least 640 px wide** (1365 × 1024 recommended).
+2. Describe the image in [`set-1.json`](set-1.json):
 
    ```json
    {
@@ -19,41 +19,41 @@ Chaîne d'import et d'optimisation des illustrations des cartes (US-015,
    }
    ```
 
-   Le texte alternatif dit **ce que montre l'image**, en une phrase, sans répéter le nom de la carte (il est déjà lu).
-   Il s'écrit dans les deux langues du site (US-081) : `alt` en français, `altEn` en anglais (britannique, comme le
-   reste de la version `/en/`) ; les deux sont obligatoires.
+   The alternative text says **what the image shows**, in one sentence, without repeating the card's name (it is
+   already read). It is written in both languages of the site (US-081): `alt` in French, `altEn` in English (British,
+   like the rest of the `/en/` version); both are mandatory.
 
-3. Lancer, à la racine du dépôt :
+3. Run, at the root of the repository:
 
    ```bash
    npm run illustrations
    ```
 
-   Le script produit `apps/web/public/illustrations/set-1/<numero>-{320,640}.<empreinte>.{avif,webp}` et régénère le
-   manifeste `apps/web/src/app/cartes/illustrations.generated.ts` : les textes alternatifs (langue → numéro → texte,
-   chaque version du site lit ceux de sa langue) et les noms des fichiers de chaque carte. Il **n'écrit rien** si une
-   erreur subsiste (original absent ou trop petit, texte alternatif manquant, numéro de carte inconnu, fichier de
-   100 Ko ou plus).
+   The script produces `apps/web/public/illustrations/set-1/<numero>-{320,640}.<empreinte>.{avif,webp}` and
+   regenerates the manifest `apps/web/src/app/cartes/illustrations.generated.ts`: the alternative texts (language →
+   number → text, each version of the site reads those of its language) and the file names of each card. It **writes
+   nothing** if an error remains (original missing or too small, alternative text missing, unknown card number, file
+   of 100 KB or more).
 
-4. Commiter `set-1.json`, les images produites et le manifeste. **Pas les originaux** : `sources/` est ignoré par Git ;
-   les archiver à part (ils seront rangés dans un Azure Storage Account à la mise en ligne).
+4. Commit `set-1.json`, the produced images and the manifest. **Not the originals**: `sources/` is ignored by Git;
+   archive them separately (they will be stored in an Azure Storage Account at launch).
 
-Retirer une carte de `set-1.json` puis relancer le script supprime ses images servies.
+Removing a card from `set-1.json` and rerunning the script deletes its served images.
 
-## Empreinte et cache (US-078)
+## Fingerprint and cache (US-078)
 
-L'**empreinte** est faite des 8 premiers caractères hexadécimaux du SHA-256 du fichier
-([ADR 0046](../../docs/decisions/0046-illustrations-a-empreinte-cache-long.md)) : une image refaite change de nom, une
-image inchangée garde le sien. C'est ce qui permet à Firebase Hosting de servir `/illustrations/**` avec
-`Cache-Control: public, max-age=31536000, immutable` : un joueur ne retélécharge jamais une image déjà vue, et voit la
-nouvelle dès la version suivante du site. Le script supprime les fichiers d'une ancienne empreinte ; le front ne lit
-que les noms du manifeste. Ne jamais renommer ni retoucher un fichier à la main : le test des fichiers versionnés
-refuse un nom dont l'empreinte ne correspond pas au contenu.
+The **fingerprint** is made of the first 8 hexadecimal characters of the file's SHA-256
+([ADR 0046](../../docs/decisions/0046-illustrations-a-empreinte-cache-long.md)): a redone image changes name, an
+unchanged image keeps its own. This is what lets Firebase Hosting serve `/illustrations/**` with
+`Cache-Control: public, max-age=31536000, immutable`: a player never redownloads an image already seen, and sees the
+new one from the next version of the site. The script deletes the files of an old fingerprint; the front end only
+reads the names of the manifest. Never rename or touch up a file by hand: the versioned-files test rejects a name whose
+fingerprint does not match the content.
 
-## Illustrations provisoires (US-018)
+## Provisional illustrations (US-018)
 
-En attendant de vraies illustrations, `npm run illustrations:provisoires` dessine les 71 cartes par le code
-(`src/vectoriel/`, [ADR 0016](../../docs/decisions/0016-illustrations-provisoires-vectorielles.md)), réécrit
-`set-1.json` puis lance la déclinaison. Le générateur est déterministe : il fait foi, il n'y a pas d'original à
-archiver. Pour remplacer une carte par une vraie illustration, déposer son original et mettre à jour son entrée dans
-`set-1.json`, puis lancer `npm run illustrations` (et non plus `illustrations:provisoires`, qui écraserait l'entrée).
+While waiting for real illustrations, `npm run illustrations:provisoires` draws the 71 cards in code
+(`src/vectoriel/`, [ADR 0016](../../docs/decisions/0016-illustrations-provisoires-vectorielles.md)), rewrites
+`set-1.json` then runs the derivation. The generator is deterministic: it is authoritative, there is no original to
+archive. To replace a card with a real illustration, drop its original and update its entry in `set-1.json`, then
+run `npm run illustrations` (and no longer `illustrations:provisoires`, which would overwrite the entry).

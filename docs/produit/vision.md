@@ -1,38 +1,37 @@
-# Vision produit
+# Product vision
 
-## Idée
+## Idea
 
-**HIPMaster** est un jeu de cartes à collectionner (TCG) qui se joue dans le navigateur, sur le modèle de
-WikiMasters et de l'Async TCG présenté dans la vidéo « J'ai demandé à une IA de RECODER WikiMaster… »
-(voir [inspirations.md](inspirations.md)).
+**HIPMaster** is a collectible card game (TCG) played in the browser, modelled on WikiMasters and on the Async TCG
+shown in the video "J'ai demandé à une IA de RECODER WikiMaster…" (see [inspirations.md](inspirations.md)).
 
-## Boucle de jeu visée
+## Target game loop
 
-1. **Ouvrir** des boosters (gratuits à intervalle régulier, ou gagnés en combat).
-2. **Collectionner** : compléter un set de cartes de raretés différentes (commune, rare, épique, légendaire).
-3. **Jouer** : construire un deck et affronter un bot (plusieurs niveaux), puis d'autres joueurs.
-4. **Échanger** : troquer ses doubles, se comparer au classement.
+1. **Open** boosters (free at regular intervals, or won in combat).
+2. **Collect**: complete a set of cards of different rarities (common, rare, epic, legendary).
+3. **Play**: build a deck and face a bot (several levels), then other players.
+4. **Trade**: swap duplicates, compare yourself on the leaderboard.
 
-## Pour qui
+## Who it is for
 
-L'équipe d'intégration de l’entreprise et les collègues curieux de la plateforme : des joueurs occasionnels qui veulent une
-partie courte (moins de 5 minutes) sur téléphone ou ordinateur, et apprendre en jouant.
+the company's integration team and colleagues curious about the platform: casual players who want a short game (under
+5 minutes) on a phone or computer, and to learn while playing.
 
-## Objectifs
+## Goals
 
-1. **Rapide** : un booster s'ouvre en moins d'une seconde, une partie dure moins de 5 minutes.
-2. **Partout** : pensé d'abord pour le téléphone.
-3. **Juste** : la logique de jeu (tirages, combats) est calculée côté serveur, impossible à tricher.
-4. **Pour tous** : accessible (contrastes, clavier), sans achat obligatoire.
+1. **Fast**: a booster opens in under a second, a game lasts under 5 minutes.
+2. **Everywhere**: designed for the phone first.
+3. **Fair**: the game logic (draws, combat) is computed on the server, so it cannot be cheated.
+4. **For everyone**: accessible (contrast, keyboard), with no mandatory purchase.
 
-## Questions tranchées (US-005, 2026-10-16)
+## Questions settled (US-005, 2026-10-16)
 
-- **Univers** : HIP = la **plateforme d'intégration hybride** de l’entreprise, du FTP aux agents d'IA — voir [univers.md](univers.md).
-- **Origine des cartes** : écrites à la main, en données versionnées — brouillon : [cartes-set-1.md](cartes-set-1.md).
-- **Combat** : plateau Débit / attaque / PV contre le SLA du SI adverse — [regles.md](regles.md), ADR 0010.
-  Un mode QCM « Certification » est gardé pour plus tard.
-- **Monétisation** : aucune ; le jeu est d'abord interne, pour former et animer l'équipe d'intégration.
+- **Universe**: HIP = the company's **hybrid integration platform**, from FTP to AI agents — see [univers.md](univers.md).
+- **Origin of the cards**: written by hand, as versioned data — draft: [cartes-set-1.md](cartes-set-1.md).
+- **Combat**: board with Throughput / attack / HP against the opposing System's SLA — [regles.md](regles.md), ADR 0010.
+  A multiple-choice "Certification" mode is kept for later.
+- **Monetisation**: none; the game is first of all internal, to train and engage the integration team.
 
-## Hors périmètre (pour l'instant)
+## Out of scope (for now)
 
-Paiements réels, application mobile native, marché entre joueurs avec argent réel.
+Real payments, a native mobile app, a player market with real money.

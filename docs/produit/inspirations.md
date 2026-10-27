@@ -1,41 +1,41 @@
-# Inspirations et références
+# Inspirations and references
 
 ## WikiMasters (2026)
 
-Jeu de cartes à collectionner en ligne basé sur Wikipédia francophone, lancé en mars 2026 par un développeur québécois
-et popularisé par les streamers du ZEvent ([article Next](https://next.ink/258293/wikimasters-le-jeu-qui-voulait-changer-wikipedia-en-cartes-a-collectionner/)).
+Online collectible card game based on French-language Wikipedia, launched in March 2026 by a Quebec developer and
+popularised by ZEvent streamers ([Next article](https://next.ink/258293/wikimasters-le-jeu-qui-voulait-changer-wikipedia-en-cartes-a-collectionner/)).
 
-- Chaque article de Wikipédia devient une carte.
-- Rareté, attaque et défense dépendent de la **fréquentation** de la page.
-- Un booster de 5 cartes toutes les 10 minutes, stock de 10 boosters maximum.
-- Duels entre amis sous forme de **QCM** construits à partir du contenu des articles.
-- Échanges, enchères, guildes, classement.
-- À retenir : les serveurs ont saturé au moment du succès (ouvertures de boosters de plusieurs secondes).
+- Every Wikipedia article becomes a card.
+- Rarity, attack and defence depend on the page's **traffic**.
+- A 5-card booster every 10 minutes, with a stock of at most 10 boosters.
+- Duels between friends as **multiple-choice quizzes** built from the content of the articles.
+- Trades, auctions, guilds, leaderboard.
+- Worth remembering: the servers were overwhelmed when it took off (booster openings taking several seconds).
 
-Variante anglophone : **Wikipedia Gacha** (Harusugi, février 2026).
+English-language variant: **Wikipedia Gacha** (Harusugi, February 2026).
 
-## Async TCG (vidéo « J'ai demandé à une IA de RECODER WikiMaster… »)
+## Async TCG (video "J'ai demandé à une IA de RECODER WikiMaster…")
 
-- Vidéo : <https://www.youtube.com/watch?v=V_Ky5lJy8pA>
-- Démo jouable : <https://app.itsasync.fr/tcg>
+- Video: <https://www.youtube.com/watch?v=V_Ky5lJy8pA>
+- Playable demo: <https://app.itsasync.fr/tcg>
 
-Thème développement informatique, 200 cartes, combat de plateau contre un bot (niveaux Stagiaire, Senior, CTO)
-ou contre un autre joueur. Règles observées le 2026-10-16 :
+Software development theme, 200 cards, board combat against a bot (Intern, Senior and CTO levels) or against another
+player. Rules observed on 2026-10-16:
 
-- 20 PV par joueur ; la **RAM** (ressource) monte de 1 par tour.
-- On pose des cartes (coût en RAM, attaque, PV) et on attaque les cartes adverses ou le « serveur » ennemi.
-- Une fois par tour, on peut vendre une carte de sa main contre de la RAM : +1 commune ou rare, +2 épique, +3 légendaire.
-- Deck de 20 cartes prêtées tant que la collection est petite ; chaque victoire rapporte un booster (plafond quotidien).
-- Familles avec capacités : Langages (aucune, meilleures stats), Frameworks (Écosystème : +1 attaque aux alliés),
-  Outils (Garde), Concepts (Pioche), Bestiaire (Exploit, Vif), Légendes (Bouclier), Programmes (aucune).
-- 5 boosters offerts à l'inscription ; mode « bot contre bot » à regarder.
+- 20 HP per player; **RAM** (the resource) goes up by 1 each turn.
+- You play cards (RAM cost, attack, HP) and attack the opposing cards or the enemy "server".
+- Once per turn, you can sell a card from your hand for RAM: +1 for common or rare, +2 for epic, +3 for legendary.
+- A 20-card loaned deck while the collection is small; each victory earns a booster (daily cap).
+- Families with abilities: Languages (none, best stats), Frameworks (Ecosystem: +1 attack to allies), Tools (Guard),
+  Concepts (Draw), Bestiary (Exploit, Swift), Legends (Shield), Programs (none).
+- 5 boosters given at sign-up; a "bot against bot" mode to watch.
 
-## Outils
+## Tools
 
-- **[Recraft](https://www.recraft.ai)** : génération d'illustrations par IA, avec un style cohérent sur tout un set.
-  Vérifier les conditions de licence commerciale avant publication.
+- **[Recraft](https://www.recraft.ai)**: AI illustration generation, with a consistent style across a whole set.
+  Check the commercial licence terms before publication.
 
-## Points de vigilance
+## Points of caution
 
-- Contenus Wikipédia : licence CC BY-SA, attribution obligatoire et partage aux mêmes conditions des textes repris.
-- Mécanique de boosters (« loot boxes ») : rester sans achat, ou réservé aux adultes comme WikiMasters.
+- Wikipedia content: CC BY-SA licence, attribution mandatory and reused texts shared under the same terms.
+- Booster mechanics ("loot boxes"): stay purchase-free, or restricted to adults as WikiMasters does.

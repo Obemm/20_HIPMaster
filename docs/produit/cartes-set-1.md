@@ -1,383 +1,381 @@
-# Set 1 — « De FTP aux agents » (brouillon)
+# Set 1 — "From FTP to agents" (draft)
 
-Brouillon de travail : statistiques **provisoires**, à équilibrer par simulations « bot contre bot ». La version
-jouable est décrite en données versionnées dans `packages/domain/src/set-1.ts` (US-008, ADR 0011), qui fait foi.
-Règles et capacités : [regles.md](regles.md).
+Working draft: statistics are **provisional**, to be balanced through "bot against bot" simulations. The playable
+version is described in versioned data in `packages/domain/src/set-1.ts` (US-008, ADR 0011), which is authoritative.
+Rules and abilities: [regles.md](regles.md).
 
-**Repère d'équilibrage** : un composant commun sans capacité vaut environ `attaque + PV = 2 × coût + 1` ; chaque
-capacité retire 1 à 2 points.
+**Balancing guideline**: a common component with no ability is worth about `attack + HP = 2 × cost + 1`; each
+ability takes away 1 to 2 points.
 
-**Composition** : 74 cartes — 4 légendaires, 7 épiques, 27 rares, 36 communes (64 dans les tableaux, plus 7 incidents
-complémentaires, plus les 3 cartes de l'extension d'US-077).
+**Composition**: 74 cards — 4 legendary, 7 epic, 27 rare, 36 common (64 in the tables, plus 7 additional incidents,
+plus the 3 cards of the US-077 extension).
 
-## Fichiers & Batch (8)
+## Files & Batch (8)
 
-| N°  | Carte                     | Type      | Rareté     | Coût | Att/PV | Capacités / effet                                                                                      | En vrai                                       |
-| --- | ------------------------- | --------- | ---------- | ---- | ------ | ------------------------------------------------------------------------------------------------------ | --------------------------------------------- |
-| 1   | FTP                       | Composant | Légendaire | 3    | 5/4    | Batch, Vétéran, Non conforme                                                                           | Officiellement interdit. Officieusement…      |
-| 2   | SFTP                      | Composant | Rare       | 3    | 3/4    | Migration                                                                                              | Transfert chiffré par SSH, peu à peu remplacé |
-| 3   | EDI                       | Composant | Rare       | 4    | 5/5    | Batch                                                                                                  | Échanges normés entre partenaires             |
-| 4   | Fichier CSV               | Composant | Commune    | 1    | 2/1    | —                                                                                                      | Le format universel, séparateur variable      |
-| 5   | Fichier à positions fixes | Composant | Commune    | 2    | 2/3    | —                                                                                                      | « Le montant est en colonnes 47 à 52. »       |
-| 6   | Cron                      | Composant | Commune    | 2    | 1/3    | Au début de votre tour, un de vos composants Batch peut attaquer même s'il a attaqué au tour précédent | Planificateur des traitements de nuit         |
-| 7   | Répertoire de dépôt       | Composant | Commune    | 2    | 1/4    | Garde                                                                                                  | Là où les fichiers attendent                  |
-| 8   | Fichier `.ok` témoin      | Composant | Commune    | 1    | 1/2    | Vos cartes sont immunisées contre Fichier vide à 3 h du matin                                          | Prouve que le fichier est complet             |
+| No. | Card             | Type      | Rarity    | Cost | Att/HP | Abilities / effect                                                                                          | In real life                                                              |
+| --- | ---------------- | --------- | --------- | ---- | ------ | ----------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| 1   | FTP              | Component | Legendary | 3    | 5/4    | Batch, Veteran, Non-compliant                                                                               | Officially banned. Unofficially…                                          |
+| 2   | SFTP             | Component | Rare      | 3    | 3/4    | Migration                                                                                                   | File transfer encrypted over SSH, gradually giving way to APIs and events |
+| 3   | EDI              | Component | Rare      | 4    | 5/5    | Batch                                                                                                       | Standardised document exchange between partners                           |
+| 4   | CSV file         | Component | Common    | 1    | 2/1    | —                                                                                                           | The universal format. Separator may vary.                                 |
+| 5   | Fixed-width file | Component | Common    | 2    | 2/3    | —                                                                                                           | "The amount is in columns 47 to 52."                                      |
+| 6   | Cron             | Component | Common    | 2    | 1/3    | At the start of your turn, one of your Batch components can attack even if it attacked on the previous turn | The scheduler behind the nightly jobs                                     |
+| 7   | Drop folder      | Component | Common    | 2    | 1/4    | Guard                                                                                                       | Where files wait to be processed                                          |
+| 8   | `.ok` flag file  | Component | Common    | 1    | 1/2    | Your cards are immune to Empty file at 3 a.m.                                                               | Proves the file is complete                                               |
 
-## Messagerie & ESB (9)
+## Messaging & ESB (9)
 
-| N°  | Carte                               | Type      | Rareté  | Coût | Att/PV | Capacités / effet                             | En vrai                                            |
-| --- | ----------------------------------- | --------- | ------- | ---- | ------ | --------------------------------------------- | -------------------------------------------------- |
-| 9   | webMethods Integration Server 10.15 | Composant | Épique  | 5    | 4/7    | Hub, Point unique, Sur site                   | L'ESB historique de l’entreprise, sur site                  |
-| 10  | Universal Messaging                 | Composant | Rare    | 3    | 2/4    | File durable                                  | La messagerie de webMethods                        |
-| 11  | MWS – My webMethods Server          | Composant | Rare    | 3    | 1/4    | Supervision                                   | Administration et supervision. « La page charge… » |
-| 12  | MQSeries                            | Composant | Rare    | 3    | 3/4    | File durable                                  | L'ancêtre des files de messages                    |
-| 13  | Adaptateur SAP                      | Composant | Rare    | 4    | 3/5    | Garde                                         | Le passage obligé vers l'ERP                       |
-| 14  | webMethods Designer                 | Composant | Commune | 2    | 1/2    | Quand il est posé, piochez une carte Patterns | L'atelier de développement des flows               |
-| 15  | Flow service                        | Composant | Commune | 1    | 1/2    | —                                             | L'unité de traitement de webMethods                |
-| 16  | Adaptateur JDBC                     | Composant | Commune | 2    | 2/3    | —                                             | Lire et écrire en base                             |
-| 17  | SOAP / WSDL                         | Composant | Commune | 3    | 3/4    | —                                             | Le service web d'avant REST                        |
+| No. | Card                                | Type      | Rarity | Cost | Att/HP | Abilities / effect                        | In real life                                          |
+| --- | ----------------------------------- | --------- | ------ | ---- | ------ | ----------------------------------------- | ----------------------------------------------------- |
+| 9   | webMethods Integration Server 10.15 | Component | Epic   | 5    | 4/7    | Hub, Single point of failure, On-premises | the company's long-standing ESB, hosted on-premises          |
+| 10  | Universal Messaging                 | Component | Rare   | 3    | 2/4    | Durable queue                             | The messaging layer of webMethods                     |
+| 11  | MWS – My webMethods Server          | Component | Rare   | 3    | 1/4    | Monitoring                                | Administration and monitoring. "The page is loading…" |
+| 12  | MQSeries                            | Component | Rare   | 3    | 3/4    | Durable queue                             | The ancestor of message queues                        |
+| 13  | SAP Adapter                         | Component | Rare   | 4    | 3/5    | Guard                                     | The one and only way through to the ERP               |
+| 14  | webMethods Designer                 | Component | Common | 2    | 1/2    | When deployed, draw a Patterns card       | The workshop where webMethods flows are built         |
+| 15  | Flow service                        | Component | Common | 1    | 1/2    | —                                         | The processing unit of webMethods                     |
+| 16  | JDBC Adapter                        | Component | Common | 2    | 2/3    | —                                         | Reading from and writing to the database              |
+| 17  | SOAP / WSDL                         | Component | Common | 3    | 3/4    | —                                         | The web service from before REST                      |
 
 ## API (8)
 
-| N°  | Carte               | Type      | Rareté  | Coût | Att/PV | Capacités / effet                                             | En vrai                             |
-| --- | ------------------- | --------- | ------- | ---- | ------ | ------------------------------------------------------------- | ----------------------------------- |
-| 18  | Apigee API Gateway  | Composant | Épique  | 4    | 2/7    | Garde, Quotas                                                 | La passerelle API de l’entreprise            |
-| 19  | Apigee API Hub      | Composant | Rare    | 2    | 1/3    | Quand il est posé, piochez une carte API ou IA agentique      | Le catalogue des API                |
-| 20  | OAuth2              | Composant | Rare    | 2    | 1/3    | Vos composants API sont immunisés contre Certificat expiré    | Délégation d'autorisation par jeton |
-| 21  | Rate limiting       | Sort      | Rare    | 1    | —      | Un composant adverse ne peut pas attaquer à son prochain tour | Limiter le nombre d'appels          |
-| 22  | API REST            | Composant | Commune | 2    | 3/2    | —                                                             | Ressources, verbes HTTP, JSON       |
-| 23  | OpenAPI             | Composant | Commune | 1    | 1/2    | Quand il est posé, un de vos composants API gagne +1 attaque  | Le contrat d'une API REST           |
-| 24  | Portail développeur | Composant | Commune | 3    | 2/3    | Connecteur (1)                                                | Là où les consommateurs s'abonnent  |
-| 25  | Webhook             | Composant | Commune | 2    | 2/3    | —                                                             | L'API qui rappelle                  |
+| No. | Card               | Type      | Rarity | Cost | Att/HP | Abilities / effect                                        | In real life                      |
+| --- | ------------------ | --------- | ------ | ---- | ------ | --------------------------------------------------------- | --------------------------------- |
+| 18  | Apigee API Gateway | Component | Epic   | 4    | 2/7    | Guard, Quotas                                             | the company's API gateway                |
+| 19  | Apigee API Hub     | Component | Rare   | 2    | 1/3    | When deployed, draw an API or Agentic AI card             | The API catalogue                 |
+| 20  | OAuth2             | Component | Rare   | 2    | 1/3    | Your API components are immune to Expired certificate     | Delegated authorisation, by token |
+| 21  | Rate limiting      | Spell     | Rare   | 1    | —      | An opposing component cannot attack on its next turn      | Capping the number of calls       |
+| 22  | REST API           | Component | Common | 2    | 3/2    | —                                                         | Resources, HTTP verbs and JSON    |
+| 23  | OpenAPI            | Component | Common | 1    | 1/2    | When deployed, one of your API components gains +1 attack | The contract of a REST API        |
+| 24  | Developer portal   | Component | Common | 3    | 2/3    | Connector (1)                                             | Where consumers subscribe         |
+| 25  | Webhook            | Component | Common | 2    | 2/3    | —                                                         | The API that calls you back       |
 
 ## iPaaS (5)
 
-| N°  | Carte              | Type                                             | Rareté     | Coût | Att/PV | Capacités / effet                | En vrai                                               |
-| --- | ------------------ | ------------------------------------------------ | ---------- | ---- | ------ | -------------------------------- | ----------------------------------------------------- |
-| 26  | webMethods.io      | Évolution de webMethods Integration Server 10.15 | Légendaire | 5    | 5/7    | Hub, Connecteur (2)              | L'intégration en mode iPaaS, sans serveur à maintenir |
-| 27  | Connecteur ERP     | Composant                                        | Rare       | 3    | 2/4    | Connecteur (1)                   | Connecteur prêt à l'emploi                            |
-| 28  | Connecteur SaaS    | Composant                                        | Commune    | 2    | 2/2    | Connecteur (1)                   | Brancher une application cloud en minutes             |
-| 29  | Workflow low-code  | Composant                                        | Commune    | 2    | 2/3    | —                                | Un flux dessiné plutôt que codé                       |
-| 30  | Mapping de données | Sort                                             | Commune    | 1    | —      | Un de vos composants gagne +1 PV | Transformer un format en un autre                     |
+| No. | Card              | Type                                             | Rarity    | Cost | Att/HP | Abilities / effect                 | In real life                                          |
+| --- | ----------------- | ------------------------------------------------ | --------- | ---- | ------ | ---------------------------------- | ----------------------------------------------------- |
+| 26  | webMethods.io     | Evolution of webMethods Integration Server 10.15 | Legendary | 5    | 5/7    | Hub, Connector (2)                 | Integration as an iPaaS, with no server to look after |
+| 27  | ERP connector     | Component                                        | Rare      | 3    | 2/4    | Connector (1)                      | A ready-made connector                                |
+| 28  | SaaS connector    | Component                                        | Common    | 2    | 2/2    | Connector (1)                      | Plug in a cloud application in minutes                |
+| 29  | Low-code workflow | Component                                        | Common    | 2    | 2/3    | —                                  | A flow drawn rather than coded                        |
+| 30  | Data mapping      | Spell                                            | Common    | 1    | —      | One of your components gains +1 HP | Turning one format into another                       |
 
-## Événementiel (EDA) (8)
+## Event-driven (EDA) (8)
 
-| N°  | Carte               | Type      | Rareté  | Coût | Att/PV | Capacités / effet                                                            | En vrai                                              |
-| --- | ------------------- | --------- | ------- | ---- | ------ | ---------------------------------------------------------------------------- | ---------------------------------------------------- |
-| 31  | Solace Event Mesh   | Composant | Épique  | 5    | 3/6    | Diffusion                                                                    | Le maillage d'événements de l’entreprise                      |
-| 32  | Solace Event Portal | Composant | Rare    | 2    | 1/3    | Quand il est posé, piochez une carte EDA                                     | Le catalogue des événements                          |
-| 33  | Event broker        | Composant | Rare    | 4    | 3/5    | Réactif                                                                      | Reçoit, stocke et distribue les événements           |
-| 34  | CDC                 | Composant | Rare    | 3    | 2/3    | Quand il est posé, piochez une carte par composant Fichiers en jeu chez vous | Capturer les changements d'une base                  |
-| 35  | Pub/Sub             | Composant | Commune | 3    | 2/3    | Diffusion                                                                    | Un éditeur, plusieurs abonnés                        |
-| 36  | Topic               | Composant | Commune | 1    | 1/2    | Réactif                                                                      | L'adresse hiérarchique d'un événement                |
-| 37  | File d'attente      | Composant | Commune | 2    | 1/4    | File durable                                                                 | Garde les messages tant qu'ils ne sont pas consommés |
-| 38  | AsyncAPI            | Composant | Commune | 1    | 0/2    | Quand il est posé, un de vos composants EDA gagne +1 attaque                 | Le contrat d'une API événementielle                  |
+| No. | Card                | Type      | Rarity | Cost | Att/HP | Abilities / effect                                                     | In real life                            |
+| --- | ------------------- | --------- | ------ | ---- | ------ | ---------------------------------------------------------------------- | --------------------------------------- |
+| 31  | Solace Event Mesh   | Component | Epic   | 5    | 3/6    | Broadcast                                                              | the company's event mesh                       |
+| 32  | Solace Event Portal | Component | Rare   | 2    | 1/3    | When deployed, draw an EDA card                                        | The event catalogue                     |
+| 33  | Event broker        | Component | Rare   | 4    | 3/5    | Reactive                                                               | Receives, stores and distributes events |
+| 34  | CDC                 | Component | Rare   | 3    | 2/3    | When deployed, draw one card for each Files component you have in play | Capturing the changes of a database     |
+| 35  | Pub/Sub             | Component | Common | 3    | 2/3    | Broadcast                                                              | One publisher, many subscribers         |
+| 36  | Topic               | Component | Common | 1    | 1/2    | Reactive                                                               | The hierarchical address of an event    |
+| 37  | Queue               | Component | Common | 2    | 1/4    | Durable queue                                                          | Keeps messages until they are consumed  |
+| 38  | AsyncAPI            | Component | Common | 1    | 0/2    | When deployed, one of your EDA components gains +1 attack              | The contract of an event-driven API     |
 
-## IA agentique (14)
+## Agentic AI (14)
 
-| N°  | Carte                      | Type                           | Rareté     | Coût | Att/PV | Capacités / effet                                                                 | En vrai                                         |
-| --- | -------------------------- | ------------------------------ | ---------- | ---- | ------ | --------------------------------------------------------------------------------- | ----------------------------------------------- |
-| 39  | Solace Agent Mesh          | Évolution de Solace Event Mesh | Légendaire | 6    | 4/7    | Diffusion, Orchestration, Asynchrone ; vos agents gagnent Délégation et Outillage | Les agents branchés sur l'event mesh (A2A, MCP) |
-| 40  | Apigee AI Gateway          | Évolution d'Apigee API Gateway | Légendaire | 5    | 3/8    | Garde, Quotas, Garde-fous, Cache sémantique, Routage multi-modèles                | La future passerelle IA de l’entreprise                  |
-| 41  | LLM                        | Composant                      | Épique     | 5    | 6/4    | —                                                                                 | Le modèle de langage                            |
-| 42  | Agent                      | Composant                      | Rare       | 4    | 4/3    | Autonome                                                                          | Un LLM qui agit avec des outils                 |
-| 43  | Orchestrateur multi-agents | Composant                      | Rare       | 5    | 3/5    | Orchestration                                                                     | Répartit le travail entre agents                |
-| 44  | Serveur MCP                | Composant                      | Rare       | 3    | 2/3    | Outillage                                                                         | Expose des outils et des données aux IA         |
-| 45  | Agent Card (A2A)           | Composant                      | Rare       | 3    | 2/3    | Délégation                                                                        | Un agent se présente à un autre                 |
-| 46  | RAG                        | Composant                      | Rare       | 3    | 2/3    | Contexte                                                                          | Chercher avant de répondre                      |
-| 47  | Chain of thought           | Sort                           | Rare       | 2    | —      | Piochez 2 cartes                                                                  | Raisonner étape par étape                       |
-| 48  | Human-in-the-loop          | Sort                           | Rare       | 2    | —      | Le prochain incident joué contre vous n'a aucun effet                             | Un humain valide avant d'agir                   |
-| 49  | Base vectorielle           | Composant                      | Commune    | 2    | 1/4    | Vos agents ont +1 PV                                                              | Retrouver des textes par le sens                |
-| 50  | Fenêtre de contexte        | Composant                      | Commune    | 2    | 0/5    | Garde                                                                             | Ce que le modèle peut lire d'un coup            |
-| 51  | Prompt système             | Sort                           | Commune    | 2    | —      | Un de vos agents gagne +2 attaque                                                 | Les consignes permanentes du modèle             |
-| 52  | Few-shot                   | Sort                           | Commune    | 1    | —      | Un de vos composants IA gagne +1 attaque et +1 PV                                 | Apprendre par l'exemple                         |
+| No. | Card                     | Type                            | Rarity    | Cost | Att/HP | Abilities / effect                                                              | In real life                                      |
+| --- | ------------------------ | ------------------------------- | --------- | ---- | ------ | ------------------------------------------------------------------------------- | ------------------------------------------------- |
+| 39  | Solace Agent Mesh        | Evolution of Solace Event Mesh  | Legendary | 6    | 4/7    | Broadcast, Orchestration, Asynchronous; your agents gain Delegation and Tooling | The agents plugged into the event mesh (A2A, MCP) |
+| 40  | Apigee AI Gateway        | Evolution of Apigee API Gateway | Legendary | 5    | 3/8    | Guard, Quotas, Guardrails, Semantic cache, Multi-model routing                  | the company's upcoming AI gateway                        |
+| 41  | LLM                      | Component                       | Epic      | 5    | 6/4    | —                                                                               | The large language model                          |
+| 42  | Agent                    | Component                       | Rare      | 4    | 4/3    | Autonomous                                                                      | An LLM that acts with tools                       |
+| 43  | Multi-agent orchestrator | Component                       | Rare      | 5    | 3/5    | Orchestration                                                                   | Shares the work out between agents                |
+| 44  | MCP server               | Component                       | Rare      | 3    | 2/3    | Tooling                                                                         | Exposes tools and data to AI models               |
+| 45  | Agent Card (A2A)         | Component                       | Rare      | 3    | 2/3    | Delegation                                                                      | One agent introduces itself to another            |
+| 46  | RAG                      | Component                       | Rare      | 3    | 2/3    | Context                                                                         | Searching before answering                        |
+| 47  | Chain of thought         | Spell                           | Rare      | 2    | —      | Draw 2 cards                                                                    | Reasoning step by step                            |
+| 48  | Human-in-the-loop        | Spell                           | Rare      | 2    | —      | The next incident played against you has no effect                              | A human signs off before acting                   |
+| 49  | Vector database          | Component                       | Common    | 2    | 1/4    | Your agents have +1 HP                                                          | Finding texts by their meaning                    |
+| 50  | Context window           | Component                       | Common    | 2    | 0/5    | Guard                                                                           | What the model can read in one go                 |
+| 51  | System prompt            | Spell                           | Common    | 2    | —      | One of your agents gains +2 attack                                              | The standing instructions given to the model      |
+| 52  | Few-shot                 | Spell                           | Common    | 1    | —      | One of your AI components gains +1 attack and +1 HP                             | Learning from examples                            |
 
 ## Patterns (6)
 
-| N°  | Carte                | Type | Rareté  | Coût | Capacités / effet                                                         | En vrai                                    |
-| --- | -------------------- | ---- | ------- | ---- | ------------------------------------------------------------------------- | ------------------------------------------ |
-| 53  | Dead Letter Queue    | Sort | Épique  | 3    | Remettez en jeu un composant de votre défausse avec 1 PV                  | Là où vont les messages en échec           |
-| 54  | Circuit Breaker      | Sort | Rare    | 2    | Votre SI ne perd aucun SLA jusqu'à votre prochain tour                    | Couper les appels vers un service en panne |
-| 55  | Content-Based Router | Sort | Commune | 1    | Infligez 2 dégâts au composant adverse de votre choix                     | Router selon le contenu du message         |
-| 56  | Splitter             | Sort | Commune | 2    | Infligez 1 dégât à chaque composant adverse                               | Découper un message en plusieurs           |
-| 57  | Idempotent Consumer  | Sort | Commune | 1    | Annulez Doublon ; sinon piochez une carte                                 | Traiter deux fois sans effet de bord       |
-| 58  | Retry                | Sort | Commune | 1    | Un de vos composants qui a attaqué peut attaquer de nouveau, et perd 1 PV | Réessayer, avec modération                 |
+| No. | Card                 | Type  | Rarity | Cost | Abilities / effect                                                        | In real life                                           |
+| --- | -------------------- | ----- | ------ | ---- | ------------------------------------------------------------------------- | ------------------------------------------------------ |
+| 53  | Dead Letter Queue    | Spell | Epic   | 3    | Return a component from your discard pile to play with 1 HP               | The queue where failed messages wait to be replayed    |
+| 54  | Circuit Breaker      | Spell | Rare   | 2    | Your System loses no SLA until your next turn                             | Cutting off calls to a failing service                 |
+| 55  | Content-Based Router | Spell | Common | 1    | Deal 2 damage to the opposing component of your choice                    | Routing a message according to its content             |
+| 56  | Splitter             | Spell | Common | 2    | Deal 1 damage to each opposing component                                  | Cutting one message into several                       |
+| 57  | Idempotent Consumer  | Spell | Common | 1    | Cancel Duplicate; otherwise, draw a card                                  | Receiving the same message twice, with no side effects |
+| 58  | Retry                | Spell | Common | 1    | One of your components that has attacked can attack again, and loses 1 HP | Trying again, in moderation                            |
 
-## Bestiaire (6, plus 7 incidents à numéroter)
+## Bestiary (6, plus 7 incidents to be numbered)
 
-| N°  | Carte                 | Type     | Rareté  | Coût | Effet                                                                                                      |
-| --- | --------------------- | -------- | ------- | ---- | ---------------------------------------------------------------------------------------------------------- |
-| 59  | Prompt injection      | Incident | Épique  | 4    | **IA** — Un agent adverse attaque aussitôt une cible de votre choix dans son propre camp (composant ou SI) |
-| 60  | Mot de passe en clair | Incident | Rare    | 2    | Visez un composant Fichiers adverse : détruit si c'est FTP, sinon il subit 2 dégâts                        |
-| 61  | Certificat expiré     | Incident | Rare    | 2    | Un composant API adverse perd ses capacités et ne peut pas attaquer à son prochain tour                    |
-| 62  | Couplage fort         | Incident | Rare    | 3    | Liez deux composants adverses : quand l'un subit des dégâts, l'autre aussi                                 |
-| 63  | Hallucination         | Incident | Rare    | 2    | **IA** — Un composant IA adverse attaque une cible tirée au hasard, dans n'importe quel camp               |
-| 64  | Message poison        | Incident | Commune | 2    | Détruisez un composant adverse de coût 2 ou moins                                                          |
+| No. | Card                | Type     | Rarity | Cost | Effect                                                                                                       |
+| --- | ------------------- | -------- | ------ | ---- | ------------------------------------------------------------------------------------------------------------ |
+| 59  | Prompt injection    | Incident | Epic   | 4    | **AI** — An opposing agent immediately attacks a target of your choice on its own side (component or System) |
+| 60  | Plain-text password | Incident | Rare   | 2    | Target an opposing Files component: destroyed if it is FTP, otherwise it takes 2 damage                      |
+| 61  | Expired certificate | Incident | Rare   | 2    | An opposing API component loses its abilities and cannot attack on its next turn                             |
+| 62  | Tight coupling      | Incident | Rare   | 3    | Link two opposing components: when one takes damage, so does the other                                       |
+| 63  | Hallucination       | Incident | Rare   | 2    | **AI** — An opposing AI component attacks a random target, on either side                                    |
+| 64  | Poison message      | Incident | Common | 2    | Destroy an opposing component costing 2 or less                                                              |
 
-Incidents communs complémentaires, numérotés de 65 à 71 dans les données (US-008) :
-**Timeout** (1 — un composant adverse ne peut pas attaquer à son prochain tour), **Doublon** (1 — le prochain dégât
-subi par un composant adverse est doublé), **Fichier vide à 3 h du matin** (1 — la prochaine attaque d'un composant
-Batch adverse n'inflige rien), **Encodage cassé** (1 — 2 dégâts à un composant Fichiers ou ESB), et les incidents IA
-**Contexte saturé** (1 — un composant IA adverse perd ses capacités jusqu'à la fin de son prochain tour),
-**Boucle d'agents** (2 — un ou deux agents adverses ne peuvent pas attaquer à leur prochain tour) et **Facture de tokens**
-(1 — l'adversaire a 2 Débit de moins à son prochain tour).
+Additional common incidents, numbered 65 to 71 in the data (US-008):
+**Timeout** (1 — an opposing component cannot attack on its next turn), **Duplicate** (1 — the next damage taken by an
+opposing component is doubled), **Empty file at 3 a.m.** (1 — the next attack by an opposing Batch component deals
+nothing), **Broken encoding** (1 — 2 damage to a Files or ESB component), and the AI incidents
+**Context overflow** (1 — an opposing AI component loses its abilities until the end of its next turn),
+**Agent loop** (2 — one or two opposing agents cannot attack on their next turn) and **Token bill**
+(1 — the opponent has 2 less Throughput on their next turn).
 
-## Extension : API First, EDA et API GraphQL (US-077, 2026-10-25)
+## Extension: API First, EDA and GraphQL API (US-077, 2026-10-25)
 
-Trois cartes demandées par le porteur du projet, ajoutées au set 1 plutôt qu'en ouverture d'un set 2 : elles
-relèvent des familles API et Événementiel du set 1, alors que le set 2 (EPIC-13, US-076) portera sur le DDD, les
-microservices et le DevOps. Elles prennent les numéros 72 à 74, à la suite, sans renuméroter (ADR 0011). Les deux
-« façons de concevoir » sont des sorts, la technologie un composant ; aucune capacité nouvelle.
+Three cards requested by the project owner, added to set 1 rather than opening a set 2: they belong to the API and
+Event-driven families of set 1, whereas set 2 (EPIC-13, US-076) will cover DDD, microservices and DevOps. They take
+numbers 72 to 74, in sequence, without renumbering (ADR 0011). The two "ways of designing" are spells, the technology
+is a component; no new ability.
 
-| N°  | Carte       | Famille      | Type      | Rareté | Coût | Att/PV | Capacités / effet                                                                                     | En vrai                                                             |
-| --- | ----------- | ------------ | --------- | ------ | ---- | ------ | ----------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
-| 72  | API First   | API          | Sort      | Rare   | 3    | —      | Piochez les deux premières cartes API de votre pioche, puis un de vos composants API gagne +1 attaque | Le contrat avant le code, fournisseur et consommateurs en parallèle |
-| 73  | EDA         | Événementiel | Sort      | Épique | 3    | —      | Chacun de vos composants EDA inflige 1 dégât à un composant adverse tiré au hasard                    | Un fait publié, chaque abonné y réagit sans attendre                |
-| 74  | API GraphQL | API          | Composant | Rare   | 4    | 2/3    | Quand elle est posée, piochez une carte par autre composant en jeu chez vous (2 au plus)              | Une requête, exactement les champs voulus, plusieurs sources        |
+| No. | Card        | Family       | Type      | Rarity | Cost | Att/HP | Abilities / effect                                                                           | In real life                                                      |
+| --- | ----------- | ------------ | --------- | ------ | ---- | ------ | -------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| 72  | API First   | API          | Spell     | Rare   | 3    | —      | Draw the first two API cards from your deck, then one of your API components gains +1 attack | The contract before the code, provider and consumers in parallel  |
+| 73  | EDA         | Event-driven | Spell     | Epic   | 3    | —      | Each of your EDA components deals 1 damage to a random opposing component                    | A fact is published, each subscriber reacts to it without waiting |
+| 74  | GraphQL API | API          | Component | Rare   | 4    | 2/3    | When deployed, draw one card for each other component you have in play (2 at most)           | One query, exactly the fields wanted, several sources             |
 
-**Équilibrage.** Les decks prêtés ne changent pas. Pour mesurer chaque carte, le deck Moderne en reçoit deux
-exemplaires (à la place de Workflow low-code et d'une File d'attente pour API First, des deux Connecteur SaaS pour
-GraphQL, des deux Topic pour EDA), puis affronte les trois decks prêtés : 400 parties par duel, Batch de nuit des deux
-côtés, graine 1 puis graine 2. Repères : les mêmes remplacements par deux Chain of thought ou deux Splitter.
+**Balancing.** The loaned decks do not change. To measure each card, the Modern deck gets two copies of it (in place of
+Low-code workflow and one Queue for API First, the two SaaS connectors for GraphQL, the two Topics for EDA), then faces
+the three loaned decks: 400 games per duel, Nightly Batch on both sides, seed 1 then seed 2. Benchmarks: the same
+replacements with two Chain of thought or two Splitter.
 
-| Deck A                    | contre Héritage | contre Moderne | contre Hybride |
-| ------------------------- | --------------- | -------------- | -------------- |
-| Moderne (inchangé)        | 46 % / 47 %     | 49 % / 49 %    | 48 % / 44 %    |
-| + API First × 2           | 46 % / 43 %     | 50 % / 49 %    | 47 % / 46 %    |
-| + API GraphQL × 2         | 46 % / 46 %     | 55 % / 54 %    | 48 % / 46 %    |
-| + EDA × 2                 | 47 % / 40 %     | 59 % / 56 %    | 48 % / 46 %    |
-| + une de chaque           | 54 % / 51 %     | 55 % / 55 %    | 49 % / 50 %    |
-| Repère : Chain of thought | 51 % / 52 %     | 53 % / 57 %    | 52 % / 51 %    |
-| Repère : Splitter         | 52 % / 46 %     | 62 % / 56 %    | 48 % / 48 %    |
+| Deck A                      | against Legacy | against Modern | against Hybrid |
+| --------------------------- | -------------- | -------------- | -------------- |
+| Modern (unchanged)          | 46% / 47%      | 49% / 49%      | 48% / 44%      |
+| + API First × 2             | 46% / 43%      | 50% / 49%      | 47% / 46%      |
+| + GraphQL API × 2           | 46% / 46%      | 55% / 54%      | 48% / 46%      |
+| + EDA × 2                   | 47% / 40%      | 59% / 56%      | 48% / 46%      |
+| + one of each               | 54% / 51%      | 55% / 55%      | 49% / 50%      |
+| Benchmark: Chain of thought | 51% / 52%      | 53% / 57%      | 52% / 51%      |
+| Benchmark: Splitter         | 52% / 46%      | 62% / 56%      | 48% / 48%      |
 
-Réglages faits en chemin : API First à 2 de Débit et une seule carte API piochée restait sous Moderne (44 à 48 %) ;
-avec deux cartes à 2 de Débit, elle passait au-dessus (53 à 59 %), d'où le coût de 3. API GraphQL ne comptait d'abord
-que les composants API : peu nombreux dans un deck, elle faisait tomber Moderne à 37–41 %. EDA reste un peu forte dans
-le miroir Moderne (56–59 %), sans dépasser le Splitter. Toutes les mesures restent entre 40 et 59 %.
+Adjustments made along the way: API First at 2 Throughput and a single API card drawn stayed below Modern (44 to 48%);
+with two cards at 2 Throughput, it went above (53 to 59%), hence the cost of 3. GraphQL API at first counted only API
+components: few in a deck, it brought Modern down to 37–41%. EDA is still a little strong in the Modern mirror
+(56–59%), without exceeding Splitter. All measurements stay between 40 and 59%.
 
-### API GraphQL passe à 4 de Débit (US-085, 2026-10-27)
+### GraphQL API goes up to 4 Throughput (US-085, 2026-10-27)
 
-La mesure d'US-029 (`npm run simuler:carte -- 74`) met la carte dans **chaque** deck prêté, et non plus dans le seul
-Moderne : à 3 de Débit, Héritage gagnait 13 à 18 points contre chacun des trois decks. Deux causes se cumulaient,
-démêlées par des témoins (400 parties par duel, Batch de nuit des deux côtés ; victoires contre Héritage / Moderne /
-Hybride) :
+The US-029 measurement (`npm run simuler:carte -- 74`) puts the card in **each** loaned deck, rather than in Modern
+alone: at 3 Throughput, Legacy gained 13 to 18 points against each of the three decks. Two causes added up, untangled
+with control runs (400 games per duel, Nightly Batch on both sides; wins against Legacy / Modern / Hybrid):
 
-| Deck et remplacement (graine 1, sauf mention)          | Victoires      | Écart à l'inchangé |
-| ------------------------------------------------------ | -------------- | ------------------ |
-| Héritage inchangé                                      | 48 / 51 / 49 % | —                  |
-| Héritage, API GraphQL (3) pour Universal Messaging+MWS | 65 / 69 / 66 % | +16 à +18          |
-| Héritage, SOAP / WSDL (3/4 sans effet) pour les mêmes  | 58 / 62 / 56 % | +7 à +11           |
-| Héritage, API GraphQL (3) pour deux MQSeries           | 56 / 58 / 50 % | +1 à +8            |
-| Moderne inchangé                                       | 46 / 49 / 48 % | —                  |
-| Moderne, API GraphQL (3) pour deux Pub/Sub             | 64 / 68 / 68 % | +18 à +20          |
-| Moderne, Webhook (2/3 sans effet) pour deux Pub/Sub    | 45 / 50 / 46 % | −2 à +1            |
-| Moderne, idem graine 2 (inchangé : 47 / 49 / 44 %)     | 42 / 48 / 47 % | −5 à +3            |
+| Deck and replacement (seed 1, unless stated)        | Wins          | Gap to unchanged |
+| --------------------------------------------------- | ------------- | ---------------- |
+| Legacy unchanged                                    | 48 / 51 / 49% | —                |
+| Legacy, GraphQL API (3) for Universal Messaging+MWS | 65 / 69 / 66% | +16 to +18       |
+| Legacy, SOAP / WSDL (3/4 no effect) for the same    | 58 / 62 / 56% | +7 to +11        |
+| Legacy, GraphQL API (3) for two MQSeries            | 56 / 58 / 50% | +1 to +8         |
+| Modern unchanged                                    | 46 / 49 / 48% | —                |
+| Modern, GraphQL API (3) for two Pub/Sub             | 64 / 68 / 68% | +18 to +20       |
+| Modern, Webhook (2/3 no effect) for two Pub/Sub     | 45 / 50 / 46% | −2 to +1         |
+| Modern, same with seed 2 (unchanged: 47 / 49 / 44%) | 42 / 48 / 47% | −5 to +3         |
 
-- **L'outil** choisit, à coût égal, les premières cartes du deck : dans Héritage, Universal Messaging et MWS, deux
-  exemplaires uniques et faibles (Supervision ne sert pas au bot). Même une commune 3/4 sans effet y gagne 7 à 11
-  points. Départager en faveur d'une paire du deck (deux MQSeries) apaisait Héritage, mais déplaçait le problème :
-  Moderne perdait alors ses deux Pub/Sub et gagnait 18 à 20 points, et les mesures d'API First et d'EDA bougeaient
-  aussi (jusqu'à −12 points). La règle de l'outil reste donc celle d'US-029.
-- **La carte** : à corps égal (Webhook, 2/3 sans effet, à la place des mêmes Pub/Sub), Moderne ne bouge pas ; avec
-  API GraphQL, il gagne 18 à 20 points. La pioche de deux cartes vaut à elle seule plus que l'écart toléré.
+- **The tool** picks, at equal cost, the first cards of the deck: in Legacy, Universal Messaging and MWS, two unique,
+  weak copies (Monitoring is of no use to the bot). Even a common 3/4 with no effect gains 7 to 11 points there.
+  Breaking the tie in favour of a pair from the deck (two MQSeries) calmed Legacy down but moved the problem: Modern
+  then lost its two Pub/Sub and gained 18 to 20 points, and the API First and EDA measurements moved too (up to −12
+  points). The tool's rule therefore stays that of US-029.
+- **The card**: with an equal body (Webhook, 2/3 with no effect, in place of the same Pub/Sub), Modern does not move;
+  with GraphQL API, it gains 18 to 20 points. Drawing two cards is worth more on its own than the tolerated gap.
 
-Réglages essayés avec la règle de l'outil (graine 1, écart d'Héritage contre les trois decks) : 1/3 à 3 de Débit,
-+10 à +14 ; 2/2 à 3 de Débit, +13 à +15 ; une seule carte piochée, +13 à +14 ; **4 de Débit, 2/3, deux cartes au
-plus : −2 à +3**. La carte passe à 4 de Débit, sans autre changement. `npm run simuler:carte -- 74` sur deux graines :
+Adjustments tried with the tool's rule (seed 1, Legacy's gap against the three decks): 1/3 at 3 Throughput, +10 to
++14; 2/2 at 3 Throughput, +13 to +15; a single card drawn, +13 to +14; **4 Throughput, 2/3, two cards at most: −2 to
++3**. The card goes up to 4 Throughput, with no other change. `npm run simuler:carte -- 74` over two seeds:
 
-| Deck avec la carte | contre Héritage     | contre Moderne      | contre Hybride      |
-| ------------------ | ------------------- | ------------------- | ------------------- |
-| Héritage           | 48 → 50 / 50 → 47 % | 51 → 49 / 53 → 52 % | 49 → 52 / 47 → 47 % |
-| Moderne            | 46 → 49 / 47 → 45 % | 49 → 48 / 49 → 45 % | 48 → 44 / 44 → 43 % |
-| Hybride            | 51 → 49 / 50 → 45 % | 55 → 52 / 51 → 48 % | 49 → 45 / 50 → 48 % |
+| Deck with the card | against Legacy     | against Modern     | against Hybrid     |
+| ------------------ | ------------------ | ------------------ | ------------------ |
+| Legacy             | 48 → 50 / 50 → 47% | 51 → 49 / 53 → 52% | 49 → 52 / 47 → 47% |
+| Modern             | 46 → 49 / 47 → 45% | 49 → 48 / 49 → 45% | 48 → 44 / 44 → 43% |
+| Hybrid             | 51 → 49 / 50 → 45% | 55 → 52 / 51 → 48% | 49 → 45 / 50 → 48% |
 
-Aucun écart de 10 points ou plus (de −6 à +3). Repères à 4 de Débit : à la place de deux Pub/Sub (coût 3), Moderne
-monte encore à 57–63 % (graine 1) et 57–59 % (graine 2), soit 4 à 6 points au-dessus de deux SOAP / WSDL, communes
-3/4 à 3 de Débit ; à la place de deux Connecteur SaaS (mesure d'US-077), 45 / 49 / 46 % puis 41 / 49 / 38 %. Les
-decks prêtés ne contiennent pas la carte : `npm run simuler` est inchangé (45 à 54 % de victoires).
+No gap of 10 points or more (from −6 to +3). Benchmarks at 4 Throughput: in place of two Pub/Sub (cost 3), Modern
+still rises to 57–63% (seed 1) and 57–59% (seed 2), i.e. 4 to 6 points above two SOAP / WSDL, common 3/4s at 3
+Throughput; in place of two SaaS connectors (US-077 measurement), 45 / 49 / 46% then 41 / 49 / 38%. The loaned decks
+do not contain the card: `npm run simuler` is unchanged (45 to 54% wins).
 
-## Points à trancher pendant l'équilibrage
+## Points to settle during balancing
 
-- **FTP** est peut-être trop forte pour une légendaire à 3 de Débit malgré Non conforme : simulations à faire.
-- Les cartes **Autonomes** sans Orchestration sont imprévisibles : vérifier qu'elles restent intéressantes à jouer.
+- **FTP** is perhaps too strong for a legendary at 3 Throughput despite Non-compliant: simulations to be run.
+- **Autonomous** cards without Orchestration are unpredictable: check that they remain fun to play.
 
-## Équilibrage des decks prêtés (US-011, 2026-10-18)
+## Balancing the loaned decks (US-011, 2026-10-18)
 
-`npm run simuler -- 400 1` : 400 parties par duel, bot « Batch de nuit » des deux côtés, en alternant les places.
-Résultats confirmés avec la graine 1000 (écarts de 1 à 5 points).
+`npm run simuler -- 400 1`: 400 games per duel, "Nightly Batch" bot on both sides, alternating seats. Results
+confirmed with seed 1000 (gaps of 1 to 5 points).
 
-| Deck A   | Deck B   | Victoires A | Victoires B | Nulles | Finies par SLA | Tours moyens |
-| -------- | -------- | ----------- | ----------- | ------ | -------------- | ------------ |
-| Héritage | Héritage | 52 %        | 47 %        | 2 %    | 69 %           | 17.2         |
-| Héritage | Moderne  | 46 %        | 53 %        | 2 %    | 64 %           | 17.7         |
-| Héritage | Hybride  | 47 %        | 52 %        | 1 %    | 68 %           | 17.2         |
-| Moderne  | Moderne  | 48 %        | 51 %        | 1 %    | 59 %           | 17.9         |
-| Moderne  | Hybride  | 44 %        | 53 %        | 3 %    | 62 %           | 17.6         |
-| Hybride  | Hybride  | 48 %        | 51 %        | 2 %    | 69 %           | 17.2         |
+| Deck A | Deck B | A wins | B wins | Draws | Ended by SLA | Average turns |
+| ------ | ------ | ------ | ------ | ----- | ------------ | ------------- |
+| Legacy | Legacy | 52%    | 47%    | 2%    | 69%          | 17.2          |
+| Legacy | Modern | 46%    | 53%    | 2%    | 64%          | 17.7          |
+| Legacy | Hybrid | 47%    | 52%    | 1%    | 68%          | 17.2          |
+| Modern | Modern | 48%    | 51%    | 1%    | 59%          | 17.9          |
+| Modern | Hybrid | 44%    | 53%    | 3%    | 62%          | 17.6          |
+| Hybrid | Hybrid | 48%    | 51%    | 2%    | 69%          | 17.2          |
 
-**Avant rééquilibrage** (première version des decks, 200 parties par duel) : Moderne gagnait 64 % contre Héritage et
-82 % contre Hybride.
+**Before rebalancing** (first version of the decks, 200 games per duel): Modern won 64% against Legacy and 82% against
+Hybrid.
 
-**Diagnostic**, par le taux de victoire du camp qui pose chaque carte (600 parties) : les cartes bon marché qui font
-piocher (Portail développeur 78 %, Connecteur ERP 77 %, Webhook 76 %) et l'Event broker (75 %) donnaient l'avantage à
-Moderne ; les cartes mortes d'Hybride le plombaient (Fenêtre de contexte 28 %, sans attaque ; Fichier CSV 33 % ;
-LLM 33 %, cher et fragile face à la riposte).
+**Diagnosis**, by the win rate of the side that deploys each card (600 games): the cheap cards that draw (Developer
+portal 78%, ERP connector 77%, Webhook 76%) and the Event broker (75%) gave Modern the advantage; Hybrid's dead cards
+weighed it down (Context window 28%, no attack; CSV file 33%; LLM 33%, expensive and fragile against the counter-attack).
 
-**Rééquilibrage** (composition des decks seulement, aucune statistique de carte modifiée) :
+**Rebalancing** (deck composition only, no card statistic changed):
 
-- Moderne : Apigee API Gateway 2 → 1, Event broker 2 → 1, Workflow low-code 1 → 2, File d'attente 1 → 2.
-- Hybride : LLM 2 → 1, Fenêtre de contexte 2 → 0, et ajout d'un Adaptateur SAP, d'un MQSeries et d'un Webhook.
+- Modern: Apigee API Gateway 2 → 1, Event broker 2 → 1, Low-code workflow 1 → 2, Queue 1 → 2.
+- Hybrid: LLM 2 → 1, Context window 2 → 0, and the addition of one SAP Adapter, one MQSeries and one Webhook.
 
-**Lecture** : tous les duels restent entre 42 et 57 % ; les miroirs sont proches de 50/50, donc l'avantage du
-premier joueur est faible. 60 à 74 % des parties se terminent par un SLA à 0, vers le 17e tour sur 20. Héritage est
-désormais le deck le plus faible, de peu (42 à 47 %) : à surveiller.
+**Reading**: all duels stay between 42 and 57%; the mirrors are close to 50/50, so the first player's advantage is
+small. 60 to 74% of games end with an SLA at 0, around turn 17 out of 20. Legacy is now the weakest deck, by a small
+margin (42 to 47%): to be watched.
 
-### Mise à jour du 2026-10-18 : sorts et incidents (US-014)
+### Update of 2026-10-18: spells and incidents (US-014)
 
-Les sorts et les incidents sont jouables. Chaque deck prêté en intègre quelques-uns de son univers :
+Spells and incidents are playable. Each loaned deck includes a few from its own universe:
 
-- **Héritage** : Dead Letter Queue, Retry, Message poison (à la place d'un Fichier CSV, d'un Fichier à positions
-  fixes et du Flow service ; un MQSeries de plus) ;
-- **Moderne** : Content-Based Router, Message poison (à la place d'un Workflow low-code et d'une File d'attente) ;
-- **Hybride** : Chain of thought, Couplage fort, Doublon, Facture de tokens (à la place d'un Fichier CSV, d'un Topic,
-  de l'Adaptateur JDBC et de la File d'attente).
+- **Legacy**: Dead Letter Queue, Retry, Poison message (in place of a CSV file, a Fixed-width file and the Flow
+  service; one more MQSeries);
+- **Modern**: Content-Based Router, Poison message (in place of a Low-code workflow and a Queue);
+- **Hybrid**: Chain of thought, Tight coupling, Duplicate, Token bill (in place of a CSV file, a Topic, the JDBC
+  Adapter and the Queue).
 
-`npm run simuler -- 400 1` (graine 1000 entre parenthèses quand elle diffère de plus de 2 points) :
+`npm run simuler -- 400 1` (seed 1000 in brackets when it differs by more than 2 points):
 
-| Deck A   | Deck B   | Victoires A | Victoires B | Nulles | Finies par SLA | Tours moyens |
-| -------- | -------- | ----------- | ----------- | ------ | -------------- | ------------ |
-| Héritage | Héritage | 50 %        | 48 %        | 2 %    | 75 %           | 16.6         |
-| Héritage | Moderne  | 53 %        | 46 %        | 2 %    | 69 % (65 %)    | 17.4         |
-| Héritage | Hybride  | 55 %        | 43 % (45 %) | 2 %    | 70 % (74 %)    | 17.1         |
-| Moderne  | Moderne  | 52 %        | 47 %        | 1 %    | 58 % (51 %)    | 18.1         |
-| Moderne  | Hybride  | 51 % (47 %) | 48 % (51 %) | 2 %    | 58 %           | 17.7         |
-| Hybride  | Hybride  | 52 %        | 47 %        | 2 %    | 64 %           | 17.1         |
+| Deck A | Deck B | A wins    | B wins    | Draws | Ended by SLA | Average turns |
+| ------ | ------ | --------- | --------- | ----- | ------------ | ------------- |
+| Legacy | Legacy | 50%       | 48%       | 2%    | 75%          | 16.6          |
+| Legacy | Modern | 53%       | 46%       | 2%    | 69% (65%)    | 17.4          |
+| Legacy | Hybrid | 55%       | 43% (45%) | 2%    | 70% (74%)    | 17.1          |
+| Modern | Modern | 52%       | 47%       | 1%    | 58% (51%)    | 18.1          |
+| Modern | Hybrid | 51% (47%) | 48% (51%) | 2%    | 58%          | 17.7          |
+| Hybrid | Hybrid | 52%       | 47%       | 2%    | 64%          | 17.1          |
 
-Une première composition (sorts d'immobilisation et Circuit Breaker pour Moderne, Splitter pour Héritage) faisait
-retomber Moderne à 31–38 % : les sorts de destruction pèsent plus que ceux qui immobilisent. Tous les duels restent
-entre 43 et 55 %.
+A first composition (immobilising spells and Circuit Breaker for Modern, Splitter for Legacy) brought Modern back
+down to 31–38%: destruction spells weigh more than those that immobilise. All duels stay between 43 and 55%.
 
-### Mise à jour du 2026-10-18 : les 71 cartes jouables (US-020)
+### Update of 2026-10-18: the 71 playable cards (US-020)
 
-Avec les capacités IA et Migration, toutes les cartes sont jouables, et les decks prêtés en profitent :
+With the AI and Migration abilities, all cards are playable, and the loaned decks benefit:
 
-- **Moderne** : Apigee AI Gateway et Solace Agent Mesh (les évolutions de ses deux cartes phares), à la place du
-  Content-Based Router et du Message poison ;
-- **Hybride** : SFTP, Agent, RAG et Serveur MCP, à la place de l'Adaptateur JDBC, du SOAP / WSDL, du Couplage fort
-  et du Doublon (un Fichier CSV et un Topic de moins, une API REST de plus) ;
-- **Héritage** : inchangé.
+- **Modern**: Apigee AI Gateway and Solace Agent Mesh (the evolutions of its two flagship cards), in place of the
+  Content-Based Router and the Poison message;
+- **Hybrid**: SFTP, Agent, RAG and MCP server, in place of the JDBC Adapter, SOAP / WSDL, Tight coupling and
+  Duplicate (one CSV file and one Topic fewer, one REST API more);
+- **Legacy**: unchanged.
 
-Une première version (SFTP dans Héritage, évolutions IA à la place de composants de Moderne) donnait 58 à 66 % à
-Héritage contre Moderne : les évolutions restent mortes tant que leur carte d'origine n'est pas en jeu.
+A first version (SFTP in Legacy, AI evolutions in place of Modern's components) gave Legacy 58 to 66% against Modern:
+evolutions stay dead as long as the card they come from is not in play.
 
-`npm run simuler -- 400 1` (graine 1000 entre parenthèses quand elle diffère de plus de 2 points) :
+`npm run simuler -- 400 1` (seed 1000 in brackets when it differs by more than 2 points):
 
-| Deck A   | Deck B   | Victoires A | Victoires B | Nulles | Finies par SLA | Tours moyens |
-| -------- | -------- | ----------- | ----------- | ------ | -------------- | ------------ |
-| Héritage | Héritage | 50 %        | 48 %        | 2 %    | 75 %           | 16.6         |
-| Héritage | Moderne  | 51 %        | 49 %        | 1 %    | 70 %           | 17.3         |
-| Héritage | Hybride  | 50 % (56 %) | 48 % (44 %) | 3 %    | 76 %           | 16.7         |
-| Moderne  | Moderne  | 48 %        | 50 %        | 2 %    | 61 %           | 17.9         |
-| Moderne  | Hybride  | 46 % (45 %) | 52 % (54 %) | 2 %    | 67 %           | 17.4         |
-| Hybride  | Hybride  | 49 % (55 %) | 50 % (43 %) | 2 %    | 66 %           | 17.2         |
+| Deck A | Deck B | A wins    | B wins    | Draws | Ended by SLA | Average turns |
+| ------ | ------ | --------- | --------- | ----- | ------------ | ------------- |
+| Legacy | Legacy | 50%       | 48%       | 2%    | 75%          | 16.6          |
+| Legacy | Modern | 51%       | 49%       | 1%    | 70%          | 17.3          |
+| Legacy | Hybrid | 50% (56%) | 48% (44%) | 3%    | 76%          | 16.7          |
+| Modern | Modern | 48%       | 50%       | 2%    | 61%          | 17.9          |
+| Modern | Hybrid | 46% (45%) | 52% (54%) | 2%    | 67%          | 17.4          |
+| Hybrid | Hybrid | 49% (55%) | 50% (43%) | 2%    | 66%          | 17.2          |
 
-Tous les duels entre decks différents restent entre 44 et 56 %.
+All duels between different decks stay between 44 and 56%.
 
-## Niveaux du bot (US-021, 2026-10-18)
+## Bot levels (US-021, 2026-10-18)
 
-`npm run simuler -- 100 101` : 100 parties par deck prêté et par duel (300 au total), même deck des deux côtés pour ne
-mesurer que le jeu.
+`npm run simuler -- 100 101`: 100 games per loaned deck and per duel (300 in total), the same deck on both sides so as
+to measure only the play.
 
-| Niveau A       | Niveau B       | Victoires A | Victoires B | Nulles |
-| -------------- | -------------- | ----------- | ----------- | ------ |
-| Batch de nuit  | Architecte ESB | 45 %        | 55 %        | 0 %    |
-| Batch de nuit  | Agent autonome | 36 %        | 63 %        | 1 %    |
-| Architecte ESB | Agent autonome | 42 %        | 58 %        | 0 %    |
+| Level A       | Level B          | A wins | B wins | Draws |
+| ------------- | ---------------- | ------ | ------ | ----- |
+| Nightly Batch | ESB Architect    | 45%    | 55%    | 0%    |
+| Nightly Batch | Autonomous Agent | 36%    | 63%    | 1%    |
+| ESB Architect | Autonomous Agent | 42%    | 58%    | 0%    |
 
-Les écarts restent modestes : le tirage des cartes pèse lourd dans une partie de 20 tours. Une recherche plus
-profonde, ou qui simule le tour adverse, s'est révélée moins forte (voir la story US-021).
+The gaps stay modest: the draw of the cards weighs heavily in a 20-turn game. A deeper search, or one that simulates
+the opponent's turn, turned out weaker (see the US-021 story).
 
-## Un bot battable et une partie équitable (US-064, 2026-10-22)
+## A beatable bot and a fair game (US-064, 2026-10-22)
 
-Deux constats : aucun niveau n'était vraiment facile, et commencer donnait un gros avantage. Trois changements :
-le second joueur reçoit **1 Débit de plus à son premier tour** ([ADR 0026](../decisions/0026-debit-du-second-joueur.md)),
-un niveau facile, **Stagiaire**, passe devant les trois autres (Batch de nuit devient moyen, Architecte ESB difficile,
-Agent autonome expert), et Architecte ESB étudie **4 actions candidates au lieu de 3** (voir la story US-064).
+Two findings: no level was really easy, and going first gave a big advantage. Three changes: the second player gets
+**1 more Throughput on their first turn** ([ADR 0026](../decisions/0026-debit-du-second-joueur.md)), an easy level,
+**Intern**, goes ahead of the other three (Nightly Batch becomes medium, ESB Architect hard, Autonomous Agent expert),
+and ESB Architect looks at **4 candidate actions instead of 3** (see the US-064 story).
 
-`npm run simuler -- 200 1` (graine 1001 entre parenthèses quand elle diffère de plus de 2 points). Les deux
-dernières mesures croisent les decks prêtés : 200 parties pour chacune des 9 paires de decks, soit 1 800 parties par
-ligne. Le **profil débutant** joue comme quelqu'un qui découvre le jeu : il pose sa carte la plus chère tant qu'il
-peut, attaque le SI dès qu'il peut (sinon la première cible permise), sans sort, incident ni décommissionnement.
-« Avant » : les mêmes mesures sur le moteur sans la règle, avec les niveaux d'US-021 (graine 1).
+`npm run simuler -- 200 1` (seed 1001 in brackets when it differs by more than 2 points). The last two measurements
+cross the loaned decks: 200 games for each of the 9 pairs of decks, i.e. 1,800 games per row. The **beginner profile**
+plays like someone discovering the game: it deploys its most expensive card whenever it can, attacks the System as
+soon as it can (otherwise the first allowed target), with no spell, incident or decommissioning. "Before": the same
+measurements on the engine without the rule, with the US-021 levels (seed 1).
 
-**Premier et second joueur**, chaque joueur contre lui-même (les nulles font le complément) :
+**First and second player**, each player against itself (draws make up the rest):
 
-| Joueurs         | Avant : premier | Avant : second | Après : premier | Après : second |
-| --------------- | --------------- | -------------- | --------------- | -------------- |
-| Profil débutant | 73 %            | 27 %           | 54 %            | 46 %           |
-| Stagiaire       | —               | —              | 53 %            | 48 %           |
-| Batch de nuit   | 63 %            | 36 %           | 52 %            | 46 %           |
-| Architecte ESB  | 66 %            | 33 %           | 54 %            | 46 %           |
-| Agent autonome  | 62 %            | 38 %           | 49 %            | 51 %           |
+| Players          | Before: first | Before: second | After: first | After: second |
+| ---------------- | ------------- | -------------- | ------------ | ------------- |
+| Beginner profile | 73%           | 27%            | 54%          | 46%           |
+| Intern           | —             | —              | 53%          | 48%           |
+| Nightly Batch    | 63%           | 36%            | 52%          | 46%           |
+| ESB Architect    | 66%           | 33%            | 54%          | 46%           |
+| Autonomous Agent | 62%           | 38%            | 49%          | 51%           |
 
-**Victoires d'un joueur contre chaque niveau**, en tout, quand il commence et quand il joue en second. Avant :
+**A player's wins against each level**, overall, when going first and when going second. Before:
 
-| Niveau du bot (d'alors)    | Débutant | en commençant | en second | Joueur « Batch de nuit » | en commençant | en second |
-| -------------------------- | -------- | ------------- | --------- | ------------------------ | ------------- | --------- |
-| Batch de nuit (facile)     | 14 %     | 21 %          | 7 %       | 50 %                     | 63 %          | 36 %      |
-| Architecte ESB (moyen)     | 13 %     | 19 %          | 7 %       | 46 %                     | 61 %          | 31 %      |
-| Agent autonome (difficile) | 4 %      | 6 %           | 1 %       | 39 %                     | 51 %          | 25 %      |
+| Bot level (as it was)   | Beginner | going first | going second | "Nightly Batch" player | going first | going second |
+| ----------------------- | -------- | ----------- | ------------ | ---------------------- | ----------- | ------------ |
+| Nightly Batch (easy)    | 14%      | 21%         | 7%           | 50%                    | 63%         | 36%          |
+| ESB Architect (medium)  | 13%      | 19%         | 7%           | 46%                    | 61%         | 31%          |
+| Autonomous Agent (hard) | 4%       | 6%          | 1%           | 39%                    | 51%         | 25%          |
 
-Après :
+After:
 
-| Niveau du bot              | Débutant | en commençant | en second | Joueur « Batch de nuit » | en commençant | en second |
-| -------------------------- | -------- | ------------- | --------- | ------------------------ | ------------- | --------- |
-| Stagiaire (facile)         | 56 %     | 59 %          | 53 %      | 90 %                     | 91 %          | 89 %      |
-| Batch de nuit (moyen)      | 14 %     | 16 %          | 12 %      | 50 %                     | 53 % (50 %)   | 46 %      |
-| Architecte ESB (difficile) | 8 %      | 9 %           | 7 %       | 44 % (40 %)              | 49 % (42 %)   | 40 %      |
-| Agent autonome (expert)    | 4 %      | 5 %           | 2 %       | 39 % (36 %)              | 42 % (37 %)   | 36 %      |
+| Bot level                 | Beginner | going first | going second | "Nightly Batch" player | going first | going second |
+| ------------------------- | -------- | ----------- | ------------ | ---------------------- | ----------- | ------------ |
+| Intern (easy)             | 56%      | 59%         | 53%          | 90%                    | 91%         | 89%          |
+| Nightly Batch (medium)    | 14%      | 16%         | 12%          | 50%                    | 53% (50%)   | 46%          |
+| ESB Architect (hard)      | 8%       | 9%          | 7%           | 44% (40%)              | 49% (42%)   | 40%          |
+| Autonomous Agent (expert) | 4%       | 5%          | 2%           | 39% (36%)              | 42% (37%)   | 36%          |
 
-**Niveaux deux à deux**, même deck des deux côtés (600 parties par ligne) :
+**Levels two by two**, the same deck on both sides (600 games per row):
 
-| Niveau A       | Niveau B       | Victoires A | Victoires B | Nulles |
-| -------------- | -------------- | ----------- | ----------- | ------ |
-| Stagiaire      | Batch de nuit  | 9 %         | 91 %        | 0 %    |
-| Stagiaire      | Architecte ESB | 8 %         | 92 %        | 0 %    |
-| Stagiaire      | Agent autonome | 3 %         | 97 %        | 0 %    |
-| Batch de nuit  | Architecte ESB | 40 %        | 59 %        | 1 %    |
-| Batch de nuit  | Agent autonome | 37 %        | 63 %        | 1 %    |
-| Architecte ESB | Agent autonome | 43 % (47 %) | 57 % (53 %) | 0 %    |
+| Level A       | Level B          | A wins    | B wins    | Draws |
+| ------------- | ---------------- | --------- | --------- | ----- |
+| Intern        | Nightly Batch    | 9%        | 91%       | 0%    |
+| Intern        | ESB Architect    | 8%        | 92%       | 0%    |
+| Intern        | Autonomous Agent | 3%        | 97%       | 0%    |
+| Nightly Batch | ESB Architect    | 40%       | 59%       | 1%    |
+| Nightly Batch | Autonomous Agent | 37%       | 63%       | 1%    |
+| ESB Architect | Autonomous Agent | 43% (47%) | 57% (53%) | 0%    |
 
-**Decks prêtés** avec la règle (Batch de nuit des deux côtés, 200 parties par duel) :
+**Loaned decks** with the rule (Nightly Batch on both sides, 200 games per duel):
 
-| Deck A   | Deck B   | Victoires A | Victoires B | Nulles | Finies par SLA | Tours moyens |
-| -------- | -------- | ----------- | ----------- | ------ | -------------- | ------------ |
-| Héritage | Héritage | 50 %        | 48 %        | 2 %    | 72 % (76 %)    | 17.2         |
-| Héritage | Moderne  | 52 %        | 46 %        | 3 %    | 69 %           | 17.5         |
-| Héritage | Hybride  | 50 %        | 49 %        | 2 %    | 74 %           | 17.2         |
-| Moderne  | Moderne  | 51 % (54 %) | 48 %        | 2 %    | 54 %           | 18.3         |
-| Moderne  | Hybride  | 54 % (46 %) | 45 % (52 %) | 2 %    | 64 %           | 17.7         |
-| Hybride  | Hybride  | 54 % (48 %) | 45 % (52 %) | 2 %    | 70 %           | 17.4         |
+| Deck A | Deck B | A wins    | B wins    | Draws | Ended by SLA | Average turns |
+| ------ | ------ | --------- | --------- | ----- | ------------ | ------------- |
+| Legacy | Legacy | 50%       | 48%       | 2%    | 72% (76%)    | 17.2          |
+| Legacy | Modern | 52%       | 46%       | 3%    | 69%          | 17.5          |
+| Legacy | Hybrid | 50%       | 49%       | 2%    | 74%          | 17.2          |
+| Modern | Modern | 51% (54%) | 48%       | 2%    | 54%          | 18.3          |
+| Modern | Hybrid | 54% (46%) | 45% (52%) | 2%    | 64%          | 17.7          |
+| Hybrid | Hybrid | 54% (48%) | 45% (52%) | 2%    | 70%          | 17.4          |
 
-**Lecture** :
+**Reading**:
 
-- Le Débit du second joueur ramène l'avantage du premier de 62–73 % à 49–54 % des parties, à chaque niveau. Contre
-  Batch de nuit, un débutant qui joue en second passe de 7 à 12 % de victoires, un joueur du même niveau de 36 à 46 %.
-- Le Stagiaire laisse 54 à 56 % de victoires à un débutant (plus de la moitié en commençant comme en second) et 90 %
-  à un joueur du niveau de Batch de nuit. Il perd au moins 90 % de ses parties contre chacun des autres niveaux.
-- L'échelle des niveaux tient : chaque niveau bat le précédent, de 53 à 91 % du temps. Agent autonome ne bat plus
-  Architecte ESB que 53 à 57 % du temps, contre 57 à 60 % quand ESB n'étudiait que 3 actions candidates.
-- Les decks restent équilibrés : tous les duels entre 45 et 55 %, aux deux graines.
+- The second player's Throughput brings the first player's advantage down from 62–73% to 49–54% of games, at every
+  level. Against Nightly Batch, a beginner going second goes from 7 to 12% wins, a player of the same level from 36 to
+  46%.
+- The Intern leaves 54 to 56% wins to a beginner (more than half, going first or second) and 90% to a player at the
+  Nightly Batch level. It loses at least 90% of its games against each of the other levels.
+- The level ladder holds: each level beats the previous one, 53 to 91% of the time. Autonomous Agent now beats ESB
+  Architect only 53 to 57% of the time, against 57 to 60% when ESB looked at only 3 candidate actions.
+- The decks stay balanced: all duels between 45 and 55%, at both seeds.
 
-## Un joueur qui suit le conseil (US-066, 2026-10-24)
+## A player who follows the advice (US-066, 2026-10-24)
 
-Le conseil suit les règles de Batch de nuit (ADR 0040). Victoires d'un joueur qui le suit toujours, decks prêtés
-croisés, 450 parties par mesure (graine 1, et graine 2 entre parenthèses) :
+The advice follows the Nightly Batch rules (ADR 0040). Wins of a player who always follows it, loaned decks crossed,
+450 games per measurement (seed 1, and seed 2 in brackets):
 
-| Niveau du bot | Victoires   | en commençant | en second   |
-| ------------- | ----------- | ------------- | ----------- |
-| Stagiaire     | 89 % (90 %) | 91 % (90 %)   | 88 % (90 %) |
-| Batch de nuit | 47 % (51 %) | 51 % (50 %)   | 44 % (52 %) |
+| Bot level     | Wins      | going first | going second |
+| ------------- | --------- | ----------- | ------------ |
+| Intern        | 89% (90%) | 91% (90%)   | 88% (90%)    |
+| Nightly Batch | 47% (51%) | 51% (50%)   | 44% (52%)    |
 
-Les cibles d'EPIC-11 sont tenues : au moins 85 % contre Stagiaire et 45 % contre Batch de nuit. Le conseil se calcule
-en moins d'une milliseconde.
+The EPIC-11 targets are met: at least 85% against Intern and 45% against Nightly Batch. The advice is computed in under
+a millisecond.

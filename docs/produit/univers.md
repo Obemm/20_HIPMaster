@@ -1,53 +1,53 @@
-# Univers : la plateforme d'intégration
+# Universe: the integration platform
 
-HIPMaster raconte l'histoire de la **plateforme d'intégration hybride** (HIP, _Hybrid Integration Platform_) de l’entreprise,
-du fichier déposé par FTP jusqu'aux agents d'IA. Chaque carte est une technologie, un pattern ou un incident que
-connaît une équipe d'intégration. Le jeu est d'abord **interne** : il sert à former et à animer l'équipe.
+HIPMaster tells the story of the company's **hybrid integration platform** (HIP), from the file dropped over FTP to AI
+agents. Each card is a technology, a pattern or an incident that an integration team knows well. The game is first of
+all **internal**: it is used to train and engage the team.
 
-## Le récit : chaque brique évolue vers sa forme moderne
+## The story: every building block evolves towards its modern form
 
-| Époque             | Point de départ                     | Cible                   |
+| Era                | Starting point                      | Target                  |
 | ------------------ | ----------------------------------- | ----------------------- |
-| Fichiers & Batch   | FTP (**interdit** en interne) → SFTP | → API ou événement      |
-| Messagerie & ESB   | webMethods Integration Server 10.15 | → webMethods.io (iPaaS) |
+| Files & Batch      | FTP (**banned** at the company) → SFTP     | → API or event          |
+| Messaging & ESB    | webMethods Integration Server 10.15 | → webMethods.io (iPaaS) |
 | API                | Apigee API Gateway                  | → Apigee AI Gateway     |
-| Événementiel (EDA) | Solace Event Mesh                   | → Solace Agent Mesh     |
-| IA agentique       | (atteinte par évolution)            | agents, MCP, A2A, LLM   |
+| Event-driven (EDA) | Solace Event Mesh                   | → Solace Agent Mesh     |
+| Agentic AI         | (reached through evolution)         | agents, MCP, A2A, LLM   |
 
-Le message du jeu : **le deck gagnant combine les époques**, comme une vraie plateforme hybride. Un deck « tout IA »
-est puissant mais exposé aux incidents ; un deck « tout fichier » est solide mais lent et non conforme.
+The message of the game: **the winning deck combines the eras**, like a real hybrid platform. An "all AI" deck is
+powerful but exposed to incidents; an "all files" deck is solid but slow and non-compliant.
 
-## Les familles
+## The families
 
-Six familles d'époque, deux familles transverses.
+Six era families, two cross-cutting families.
 
-| Famille                | Époque | Exemples                                                                                 | Capacité phare                   |
-| ---------------------- | ------ | ---------------------------------------------------------------------------------------- | -------------------------------- |
-| **Fichiers & Batch**   | 1990+  | FTP, SFTP, CSV, positions fixes, cron, EDI                                               | **Batch** (lent mais fort)       |
-| **Messagerie & ESB**   | 2000+  | webMethods IS 10.15, Universal Messaging, MWS, JMS                                       | **Hub** (bonus, point unique)    |
-| **API**                | 2010+  | Apigee, API Hub, REST, OpenAPI, OAuth2                                                   | **Garde** (protège le SI)        |
-| **iPaaS**              | 2015+  | webMethods.io, connecteurs SaaS et ERP, low-code                                         | **Connecteur** (pioche)          |
-| **Événementiel (EDA)** | 2018+  | Solace Event Mesh, Event Portal, topic, file, CDC                                        | **Diffusion** (plusieurs cibles) |
-| **IA agentique**       | 2023+  | Solace Agent Mesh, Apigee AI Gateway, LLM, MCP, A2A                                      | **Autonome** (agit seul)         |
-| **Patterns**           | —      | _Enterprise Integration Patterns_ : Router, Splitter, Circuit Breaker, Dead Letter Queue | sorts                            |
-| **Bestiaire**          | —      | Message poison, Timeout, Hallucination, Prompt injection, Facture de tokens              | incidents                        |
+| Family                 | Era   | Examples                                                                                | Signature ability                |
+| ---------------------- | ----- | --------------------------------------------------------------------------------------- | -------------------------------- |
+| **Files & Batch**      | 1990+ | FTP, SFTP, CSV, fixed-width files, cron, EDI                                            | **Batch** (slow but strong)      |
+| **Messaging & ESB**    | 2000+ | webMethods IS 10.15, Universal Messaging, MWS, JMS                                      | **Hub** (bonus, single point)    |
+| **API**                | 2010+ | Apigee, API Hub, REST, OpenAPI, OAuth2                                                  | **Guard** (protects the System)  |
+| **iPaaS**              | 2015+ | webMethods.io, SaaS and ERP connectors, low-code                                        | **Connector** (draws cards)      |
+| **Event-driven (EDA)** | 2018+ | Solace Event Mesh, Event Portal, topic, queue, CDC                                      | **Broadcast** (several targets)  |
+| **Agentic AI**         | 2023+ | Solace Agent Mesh, Apigee AI Gateway, LLM, MCP, A2A                                     | **Autonomous** (acts on its own) |
+| **Patterns**           | —     | _Enterprise Integration Patterns_: Router, Splitter, Circuit Breaker, Dead Letter Queue | spells                           |
+| **Bestiary**           | —     | Poison message, Timeout, Hallucination, Prompt injection, Token bill                    | incidents                        |
 
-## Les lignées d'évolution
+## The evolution lines
 
-Une carte d'évolution se pose **à la place** de la carte dont elle est issue (voir [regles.md](regles.md)).
+An evolution card is deployed **in place of** the card it comes from (see [regles.md](regles.md)).
 
-- **FTP → SFTP → API ou événement** : FTP est une relique « non conforme » ; SFTP peut migrer vers une carte API ou EDA.
-- **webMethods Integration Server 10.15 → webMethods.io** : la migration vers l'iPaaS supprime l'entretien sur site
-  et le point unique de défaillance.
-- **Apigee API Gateway → Apigee AI Gateway** : quotas de tokens, cache sémantique, garde-fous, routage multi-modèles.
-- **Solace Event Mesh → Solace Agent Mesh** : l'événementiel devient le système nerveux des agents (A2A et MCP).
+- **FTP → SFTP → API or event**: FTP is a "non-compliant" relic; SFTP can migrate to an API or EDA card.
+- **webMethods Integration Server 10.15 → webMethods.io**: the move to iPaaS removes on-premises upkeep and the
+  single point of failure.
+- **Apigee API Gateway → Apigee AI Gateway**: token quotas, semantic cache, guardrails, multi-model routing.
+- **Solace Event Mesh → Solace Agent Mesh**: events become the nervous system of the agents (A2A and MCP).
 
-Synergie notable : **Apigee AI Gateway + Solace Agent Mesh** en jeu ensemble forment des « agents gouvernés ».
+Notable synergy: **Apigee AI Gateway + Solace Agent Mesh** in play together form "governed agents".
 
-## Choix de ton
+## Tone
 
-- **Vrais noms de produits** (Apigee, Solace, webMethods), jamais leurs logos : le jeu est interne. À revoir avant
-  toute diffusion publique.
-- Chaque carte porte une **phrase d'explication** (pédagogique) et, si possible, un **texte d'ambiance** (humour
-  d'équipe : « On devait la décommissionner en 2012. »).
-- Mode futur **« Certification »** : un QCM construit à partir des textes des cartes (hors périmètre pour l'instant).
+- **Real product names** (Apigee, Solace, webMethods), never their logos: the game is internal. To be reviewed before
+  any public release.
+- Each card carries an **explanatory sentence** (educational) and, where possible, a **flavour text** (team humour:
+  "We were supposed to decommission it in 2012.").
+- Future **"Certification"** mode: a multiple-choice quiz built from the card texts (out of scope for now).
