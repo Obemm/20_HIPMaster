@@ -58,7 +58,7 @@ Le relecteur peut ajuster la rareté visée : la plupart des propositions sont c
 ### Statistiques
 
 Le **coût** se paie en Débit (1 au premier tour, +1 par tour, 10 au plus). L'**attaque** est infligée à la cible, les
-**PV** sont les points de vie du composant. Ordres de grandeur relevés sur les 74 cartes du catalogue (minimum–maximum,
+**PV** sont les points de vie du composant. Ordres de grandeur relevés le 2026-10-27 sur les 74 cartes du catalogue (minimum–maximum,
 moyenne entre parenthèses) :
 
 | Type et rareté       | Cartes | Coût      | Attaque   | PV        | Capacités |
@@ -198,7 +198,8 @@ C'est le cas le plus courant : l'idée est bonne, la relecture ajuste un chiffre
    statistiques peuvent être ajustés, comme pour API First.
 4. **Publication** : à la fusion, la carte est mise en ligne automatiquement. Elle prend le numéro suivant du
    catalogue et peut sortir des boosters.
-5. **Crédit** : votre nom affiché accompagne la carte (« Proposée par … »).
+5. **Crédit** : votre nom figure dans le catalogue et le CHANGELOG ; il s'affichera sur la carte (« Proposée par … »)
+   dès que le jeu saura le montrer (US-030, US-031).
 
 **Pas de compte GitHub, ou pas le temps ?** Envoyez le gabarit rempli au porteur du projet, par message ou en
 atelier : il intégrera la carte lui-même, avec votre nom.

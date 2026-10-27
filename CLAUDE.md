@@ -11,6 +11,7 @@ pure en TypeScript, PostgreSQL + Drizzle. TypeScript strict, Node ≥ 24.15.
 2. **Tout ce qui est codé est documenté dans une story et un epic.** Aucune ligne de code sans story `US-XXX`
    rattachée à un epic `EPIC-XX`. Si aucune story ne couvre la demande, rédiger la story (et l'epic si besoin) dans
    `docs/backlog/` **avant** de coder, et la tenir à jour pendant et après le travail (critères, journal, tableau).
+   Seule exception : une PR de carte proposée par un contributeur relève de l'EPIC-08, sans story (ADR 0050).
 3. **Toute décision d'architecture est consignée dans un ADR** (`docs/decisions/NNNN-titre.md`, à partir de
    `template.md`, référencé dans `docs/decisions/README.md`). Les ADR acceptés font **référence** : les relire avant
    de concevoir ou de coder, s'y conformer, et ne jamais les contredire en silence. Pour changer d'avis, écrire un

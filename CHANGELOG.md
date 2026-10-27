@@ -7,6 +7,10 @@ Toutes les évolutions notables du projet sont consignées ici
 
 ### Ajouté
 
+- Kit pour l'IA du contributeur : une consigne de carte (`docs/contribuer/consigne-carte.md`) à donner à un assistant
+  de code, qui écrit la carte, sa traduction, sa fiche, son effet et ses tests sans mécanique nouvelle, éprouvée par
+  deux essais ; une consigne d'illustration (`consigne-illustration.md`) avec l'image de référence, les phrases de
+  rareté et les blocs de style par famille. Une carte proposée ne demande pas de story (US-028, ADR 0050).
 - Proposer une carte : un `CONTRIBUTING.md` et un guide, « Concevoir une carte » (`docs/contribuer/regles-cartes.md`),
   pour les architectes et tech leads qui veulent proposer leurs cartes par pull request depuis un fork : familles,
   types, raretés, ordres de grandeur relevés sur les 74 cartes, capacités, texte « En vrai », fiche « En savoir

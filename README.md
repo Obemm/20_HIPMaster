@@ -32,25 +32,25 @@ npm run dev          # migrations appliquées au démarrage ; API sur localhost:
 
 ## Scripts
 
-| Commande                            | Rôle                                                                  |
-| ----------------------------------- | --------------------------------------------------------------------- |
-| `npm run dev`                       | API + front Angular en mode développement                             |
-| `npm run build`                     | Construit le front pour la production                                 |
-| `npm run lint`                      | ESLint + règles SonarJS et Angular (`lint:fix`)                       |
-| `npm run format`                    | Formate tout le code avec Prettier                                    |
-| `npm run typecheck`                 | Vérifie les types de chaque paquet                                    |
-| `npm test`                          | Tests unitaires (Vitest : domaine, API, Angular)                      |
-| `npm run test:e2e`                  | Tests de bout en bout + accessibilité (Playwright)                    |
-| `npm run test:e2e:production`       | Les mêmes sur le build de production, avec la CSP de Firebase (= CI)  |
-| `npm run test:coverage`             | Tests du domaine et de l'API avec couverture                          |
-| `npm run check`                     | Lint + format + types + tests (quality gate, = CI)                    |
-| `npm run db:up`                     | Démarre PostgreSQL (Docker, facultatif) ; `db:down` pour l'arrêter    |
-| `npm run db:generate`               | Génère une migration depuis le schéma Drizzle                         |
-| `npm run db:migrate`                | Applique les migrations à PostgreSQL (`DATABASE_URL`) ; PGlite : auto |
-| `npm run db:studio`                 | Explore la base PostgreSQL (`DATABASE_URL`) dans le navigateur        |
-| `npm run invitation`                | Crée, liste ou révoque les invitations (PostgreSQL, voir `--aide`)    |
-| `npm run illustrations`             | Décline les illustrations des cartes (voir `packages/illustrations`)  |
-| `npm run illustrations:provisoires` | Dessine les illustrations provisoires des 74 cartes, puis les décline |
+| Commande                            | Rôle                                                                         |
+| ----------------------------------- | ---------------------------------------------------------------------------- |
+| `npm run dev`                       | API + front Angular en mode développement                                    |
+| `npm run build`                     | Construit le front pour la production                                        |
+| `npm run lint`                      | ESLint + règles SonarJS et Angular (`lint:fix`)                              |
+| `npm run format`                    | Formate tout le code avec Prettier                                           |
+| `npm run typecheck`                 | Vérifie les types de chaque paquet                                           |
+| `npm test`                          | Tests unitaires (Vitest : domaine, API, Angular)                             |
+| `npm run test:e2e`                  | Tests de bout en bout + accessibilité (Playwright)                           |
+| `npm run test:e2e:production`       | Les mêmes sur le build de production, avec la CSP de Firebase (= CI)         |
+| `npm run test:coverage`             | Tests du domaine et de l'API avec couverture                                 |
+| `npm run check`                     | Lint + format + types + tests (quality gate, = CI)                           |
+| `npm run db:up`                     | Démarre PostgreSQL (Docker, facultatif) ; `db:down` pour l'arrêter           |
+| `npm run db:generate`               | Génère une migration depuis le schéma Drizzle                                |
+| `npm run db:migrate`                | Applique les migrations à PostgreSQL (`DATABASE_URL`) ; PGlite : auto        |
+| `npm run db:studio`                 | Explore la base PostgreSQL (`DATABASE_URL`) dans le navigateur               |
+| `npm run invitation`                | Crée, liste ou révoque les invitations (PostgreSQL, voir `--aide`)           |
+| `npm run illustrations`             | Décline les illustrations des cartes (voir `packages/illustrations`)         |
+| `npm run illustrations:provisoires` | Dessine les illustrations provisoires de toutes les cartes, puis les décline |
 
 Les tests de l'API tournent sur PGlite, qui exécute les requêtes une par une. La CI les fait aussi passer sur
 PostgreSQL 18, où les opérations simultanées se chevauchent vraiment (US-056) ; en local, avec Docker :

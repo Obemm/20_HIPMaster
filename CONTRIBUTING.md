@@ -18,10 +18,9 @@ gabarit : c'est lui que vous donnerez à votre IA et que vous reprendrez dans la
 1. **Forkez** le dépôt sur GitHub, puis clonez votre fork. Vous n'avez besoin d'aucun droit sur le dépôt d'origine.
 2. **Installez** le projet : Node 24.15 ou plus, puis `npm ci` (voir le [README](README.md#démarrage)).
 3. **Créez une branche** `carte-<nom-de-la-carte>`.
-4. **Écrivez la carte avec votre assistant IA**, à partir de votre gabarit : la carte, sa traduction anglaise, sa fiche
-   « En savoir plus » et son illustration. Les consignes prêtes à l'emploi pour l'IA sont en préparation (US-028) ;
-   d'ici là, le fichier [CLAUDE.md](CLAUDE.md) et la PR des cartes 72 à 74 (US-077) montrent tout ce qu'il faut
-   toucher.
+4. **Écrivez la carte avec votre assistant IA**, à partir de votre gabarit : donnez-lui la
+   [consigne de carte](docs/contribuer/consigne-carte.md) (la carte, sa traduction anglaise, sa fiche « En savoir
+   plus », les tests), puis dessinez la créature avec la [consigne d'illustration](docs/contribuer/consigne-illustration.md).
 5. **Vérifiez** : `npm run check` doit passer (lint, format, types, tests), et `npm run dev` vous montre la carte dans
    le catalogue (localhost:4200).
 6. **Ouvrez la PR** vers `main`, avec le gabarit rempli dans la description, l'original de l'illustration en pièce

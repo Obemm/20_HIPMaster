@@ -93,6 +93,6 @@ describe('detaillerCapacites', () => {
 describe('trouverCarte', () => {
   it('ne trouve rien pour un numéro inconnu', () => {
     expect(trouverCarte(0)).toBeUndefined();
-    expect(trouverCarte(75)).toBeUndefined();
+    expect(trouverCarte(SET_1.length + 1)).toBeUndefined();
   });
 });

@@ -26,7 +26,7 @@ suivant du catalogue et porte le nom de son auteur.
 ## Stories
 
 - [x] US-027 — Guide du contributeur : les règles de création d'une carte
-- [ ] US-028 — Kit pour l'IA du contributeur : consignes de carte et d'illustration
+- [x] US-028 — Kit pour l'IA du contributeur : consignes de carte et d'illustration
 - [ ] US-029 — Relire une carte proposée dans sa pull request
 - [ ] US-030 — L'auteur d'une carte dans le catalogue, et une première carte de la communauté
 - [ ] US-031 — Créditer les contributeurs dans le jeu
