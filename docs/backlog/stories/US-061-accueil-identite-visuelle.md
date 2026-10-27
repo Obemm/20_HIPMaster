@@ -1,105 +1,100 @@
-# US-061 — Une identité visuelle et un accueil qui donnent envie
+# US-061 — A visual identity and a home page that make you want to play
 
-- **Epic** : EPIC-10
-- **Statut** : Faite
-- **Priorité** : Should
-- **Taille** : M
-- **Branche** : `us-061-accueil-identite-visuelle`
+- **Epic**: EPIC-10
+- **Status**: Done
+- **Priority**: Should
+- **Size**: M
+- **Branch**: `us-061-accueil-identite-visuelle`
 
-## Récit
+## Story
 
-En tant que **collègue qui reçoit une invitation**, je veux **comprendre en un coup d'œil que HIPMaster est un jeu
-de cartes, et avoir envie d'y jouer** afin de **créer mon compte au lieu de refermer l'onglet**.
+As a **colleague receiving an invitation**, I want **to understand at a glance that HIPMaster is a card game, and want
+to play it** so that **I create my account instead of closing the tab**.
 
-## Contexte
+## Context
 
-Constat de la revue du 2026-10-22 : l'interface est entièrement en niveaux de gris (jetons `--hip-*` de zinc,
-l'accent est la couleur du texte), avec la police système et aucun logo. L'accueil montre un titre, deux boutons,
-un tableau des chances par booster et la mention « Projet en cours de construction », mais aucune carte. Seules les
-cartes ont de la couleur (cadres de rareté, illustrations vectorielles d'US-018).
+Finding from the 2026-10-22 review: the interface is entirely in greyscale (zinc `--hip-*` tokens, the accent is the
+text colour), with the system font and no logo. The home page shows a title, two buttons, a table of booster odds and
+the "Project under construction" notice, but no card. Only the cards have colour (rarity frames, US-018 vector
+illustrations).
 
-Demande du porteur du projet (2026-10-23) : « le redesign du site pour en faire un vrai site app de jeux en ligne
-avec un design attrayant ». Travail mené de nuit, sans lui : chaque choix est noté ici, dans l'ADR 0037 et dans la
-description de la PR, pour qu'il le valide ou le corrige au réveil.
+Request from the project owner (2026-10-23): "redesign the site to make it a real online games app with an attractive
+design". Work carried out overnight, without them: every choice is noted here, in ADR 0037 and in the PR description,
+so they can validate or correct it on waking.
 
-### Ce qui fait « application de gestion » (relevé du 2026-10-24, toutes les pages, téléphone et bureau, deux thèmes)
+### What makes it look like a "management application" (survey of 2026-10-24, all pages, phone and desktop, two themes)
 
-| Constat                                                                                        | Où                         | Traité par           |
-| ---------------------------------------------------------------------------------------------- | -------------------------- | -------------------- |
-| Palette en niveaux de gris, boutons noirs (clair) ou blancs (sombre), aucune couleur de marque | partout                    | US-061 (jetons)      |
-| Police du système partout, titres sans caractère                                               | partout                    | US-061 (Exo 2)       |
-| « HIPMaster » en texte simple, icône d'onglet d'Angular                                        | bandeau, onglet            | US-061 (logo)        |
-| Fond blanc ou noir uni, aucun décor                                                            | partout                    | US-061 (nuit, halos) |
-| Accueil sans carte : titre, deux boutons, tableau de pourcentages, « en construction »         | accueil                    | US-061               |
-| Lien partagé sans aperçu (ni titre, ni image)                                                  | messageries                | US-061 (Open Graph)  |
-| Arrivée d'un invité sur un formulaire nu « Mon compte »                                        | compte (lien d'invitation) | US-061               |
-| Listes de boîtes grises (duels, decks), longs paragraphes avant de pouvoir jouer               | jouer, duels               | US-068               |
-| Filtres en listes déroulantes de formulaire                                                    | catalogue, collection      | US-068               |
-| Progression en barre et tuiles de statistiques                                                 | collection                 | US-068               |
-| Boosters : une phrase et un bouton, aucun paquet                                               | boosters                   | US-062               |
-| Écrans de texte (confidentialité, inviter) sans hiérarchie visuelle                            | confidentialité, inviter   | US-068               |
+| Finding                                                                                 | Where                     | Handled by            |
+| --------------------------------------------------------------------------------------- | ------------------------- | --------------------- |
+| Greyscale palette, black (light) or white (dark) buttons, no brand colour               | everywhere                | US-061 (tokens)       |
+| System font everywhere, titles with no character                                        | everywhere                | US-061 (Exo 2)        |
+| "HIPMaster" as plain text, Angular tab icon                                             | banner, tab               | US-061 (logo)         |
+| Plain white or black background, no decoration                                          | everywhere                | US-061 (night, glows) |
+| Home page without cards: title, two buttons, table of percentages, "under construction" | home                      | US-061                |
+| Shared link with no preview (no title, no image)                                        | messaging apps            | US-061 (Open Graph)   |
+| A guest landing on a bare "My account" form                                             | account (invitation link) | US-061                |
+| Lists of grey boxes (duels, decks), long paragraphs before being able to play           | play, duels               | US-068                |
+| Filters as form drop-down lists                                                         | catalogue, collection     | US-068                |
+| Progress as a bar and statistics tiles                                                  | collection                | US-068                |
+| Boosters: one sentence and one button, no pack                                          | boosters                  | US-062                |
+| Text screens (privacy, invite) with no visual hierarchy                                 | privacy, invite           | US-068                |
 
-## Critères d'acceptation
+## Acceptance criteria
 
-- [x] **Étant donné** les jetons de couleur (ADR 0012), **alors** une couleur d'accent de marque et sa variante
-      sombre sont définies et utilisées par les actions principales, avec un contraste AA vérifié dans les deux
-      thèmes.
-- [x] **Étant donné** la typographie, **alors** une échelle de tailles et une police de titres sont choisies,
-      auto-hébergées (aucun appel à un service tiers), sans dégrader le temps d'affichage.
-- [x] **Étant donné** l'en-tête, **alors** un logo (SVG) remplace le texte « HIPMaster », et le site a sa propre
-      icône d'onglet et d'écran d'accueil (voir US-063) : `public/favicon.ico` est aujourd'hui celui d'Angular par
-      défaut.
-- [x] **Étant donné** l'accueil, **quand** un visiteur arrive, **alors** il voit quelques cartes du set, la promesse
-      du jeu en une phrase, et une action principale adaptée (« Créer mon compte » s'il a une invitation, « Jouer »
-      sinon) ; « Projet en cours de construction » disparaît ; les chances par booster vont dans l'écran des
-      boosters.
-- [x] **Étant donné** un lien vers le jeu partagé dans une messagerie, **alors** l'aperçu affiche un titre, une
-      description et une image (balises Open Graph).
-- [x] **Étant donné** un téléphone de 375 × 667, **quand** un visiteur ouvre l'accueil, **alors** les cartes et
-      l'appel à jouer tiennent dans le premier écran, et le plateau de partie tient toujours sans défilement.
-- [x] **Étant donné** un invité qui suit son lien (`/compte?invitation=…`), **alors** la page l'accueille avec les
-      cartes du jeu avant le formulaire.
-- [x] **Étant donné** la préférence « réduire les animations », **alors** aucune des nouvelles animations n'est
-      jouée.
+- [x] **Given** the colour tokens (ADR 0012), **then** a brand accent colour and its dark variant are defined and used
+      by the main actions, with an AA contrast checked in both themes.
+- [x] **Given** the typography, **then** a size scale and a titles font are chosen, self-hosted (no call to a
+      third-party service), without degrading display time.
+- [x] **Given** the header, **then** a logo (SVG) replaces the "HIPMaster" text, and the site has its own tab and home
+      screen icon (see US-063): `public/favicon.ico` is currently Angular's default one.
+- [x] **Given** the home page, **when** a visitor arrives, **then** they see a few cards from the set, the game's
+      promise in one sentence, and a suitable main action ("Create my account" if they have an invitation, "Play"
+      otherwise); "Project under construction" disappears; the odds per booster move to the boosters screen.
+- [x] **Given** a link to the game shared in a messaging app, **then** the preview shows a title, a description and an
+      image (Open Graph tags).
+- [x] **Given** a 375 × 667 phone, **when** a visitor opens the home page, **then** the cards and the call to play fit
+      in the first screen, and the game board still fits without scrolling.
+- [x] **Given** a guest following their link (`/compte?invitation=…`), **then** the page welcomes them with the game's
+      cards before the form.
+- [x] **Given** the "reduce motion" preference, **then** none of the new animations is played.
 
-## Décisions (ADR 0037)
+## Decisions (ADR 0037)
 
-- **Ambiance « nuit électrique »** : le bleu nuit et les halos des illustrations ; la coquille (bandeau, onglets)
-  reste de nuit dans les deux thèmes.
-- **Indigo électrique** pour l'interactif, **or** réservé à l'action principale d'un écran (l'énergie, comme le
-  Débit), rose pour les pastilles.
-- **Exo 2** pour les titres, boutons et chiffres, un fichier de 41 Ko servi par le site ; texte courant en police du
-  système.
-- **Accueil** : sur téléphone, les trois cartes en éventail d'abord (Apigee API Gateway, Solace Agent Mesh, FTP : du
-  FTP aux agents d'IA), puis le nom du jeu, la promesse et « Jouer contre le bot » en or ; un visiteur voit
-  « Comment on joue » en trois étapes, un joueur connecté retrouve ses duels, boosters et collection en tuiles ; les
-  huit familles en puces. L'accueil accepte aussi `?invitation=` : l'action principale devient « Créer mon compte ».
-- **Libellés** : « Jouer contre le bot » plutôt que « Jouer » (on sait qu'on peut jouer tout de suite, sans compte) ;
-  « Découvrir les cartes » plutôt que « Voir le catalogue des cartes ». L'accroche garde le tutoiement de l'ancien
-  accueil ; les écrans restent au vouvoiement.
+- **"Electric night" mood**: the night blue and the illustrations' glows; the shell (banner, tabs) stays dark in both
+  themes.
+- **Electric indigo** for interactive elements, **gold** reserved for a screen's main action (energy, like
+  Throughput), pink for badges.
+- **Exo 2** for titles, buttons and numbers, a 41 KB file served by the site; body text in the system font.
+- **Home page**: on phones, the three cards fanned out first (Apigee API Gateway, Solace Agent Mesh, FTP: from FTP to
+  AI agents), then the game's name, the promise and "Play against the bot" in gold; a visitor sees "How to play" in
+  three steps, a signed-in player finds their duels, boosters and collection as tiles; the eight families as chips.
+  The home page also accepts `?invitation=`: the main action becomes "Create my account".
+- **Labels**: "Play against the bot" rather than "Play" (we know we can play right away, without an account);
+  "Discover the cards" rather than "See the card catalogue". The tagline keeps the informal "tu" of the old home
+  page; the screens stay with the formal "vous".
 
-- **Poids** : l'accueil enrichi faisait passer le bundle initial à 504 Ko (budget d'avertissement : 500 Ko) ; le
-  plateau (partie et duel) et la page « Inviter » sont désormais chargés à la demande : 438 Ko (110 Ko transférés).
+- **Weight**: the enriched home page pushed the initial bundle to 504 KB (warning budget: 500 KB); the board (game and
+  duel) and the "Invite" page are now loaded on demand: 438 KB (110 KB transferred).
 
-## Captures avant / après
+## Before / after screenshots
 
-- [Accueil sur téléphone](../../produit/captures/us-061-accueil-tel-avant-apres.jpg),
-  [au bureau](../../produit/captures/us-061-accueil-bureau-avant-apres.jpg),
-  [joueur connecté](../../produit/captures/us-061-accueil-connecte-avant-apres.jpg)
-- [Arrivée d'un invité](../../produit/captures/us-061-invitation-tel-avant-apres.jpg)
-- [Plateau sur téléphone](../../produit/captures/us-061-partie-tel-avant-apres.jpg) : il tient toujours dans 375 × 667.
+- [Home page on phone](../../produit/captures/us-061-accueil-tel-avant-apres.jpg),
+  [on desktop](../../produit/captures/us-061-accueil-bureau-avant-apres.jpg),
+  [signed-in player](../../produit/captures/us-061-accueil-connecte-avant-apres.jpg)
+- [A guest arriving](../../produit/captures/us-061-invitation-tel-avant-apres.jpg)
+- [Board on phone](../../produit/captures/us-061-partie-tel-avant-apres.jpg): it still fits in 375 × 667.
 
 ## Notes
 
-- S'appuyer sur la direction artistique d'US-016 (fond bleu nuit et halos du style « Sunlit Sketches ») pour que
-  l'interface et les futures illustrations parlent la même langue.
-- [ref] the company (Figma) : pas de maquette cette nuit ; les captures avant et après de la PR en tiennent lieu.
-- L'image d'aperçu des liens (`apercu-lien.jpg`) est tirée du rendu de l'accueil : à régénérer avec les
-  illustrations définitives (US-017).
+- Build on US-016's art direction (night-blue background and glows in the "Sunlit Sketches" style) so that the
+  interface and the future illustrations speak the same language.
+- the company [ref] (Figma): no mock-up tonight; the PR's before and after screenshots stand in for it.
+- The link preview image (`apercu-lien.jpg`) is taken from the home page rendering: to be regenerated with the final
+  illustrations (US-017).
 
-## Journal
+## Log
 
-- 2026-10-22 — création, issue de la revue du design avant mise en ligne.
-- 2026-10-24 — affinée et commencée (session de nuit) : relevé de ce qui fait « application de gestion » sur toutes
-  les pages, ADR 0037, charte graphique.
-- 2026-10-24 — livrée : Identité « nuit électrique » (jetons, Exo 2, logo, icônes, Open Graph), accueil avec cartes en éventail et appel à jouer, arrivée des invités, chances par booster sur l'écran des boosters (ADR 0037).
+- 2026-10-22 — created, from the design review before going live.
+- 2026-10-24 — refined and started (overnight session): survey of what makes it look like a "management application"
+  on all pages, ADR 0037, graphic charter.
+- 2026-10-24 — delivered: "Electric night" identity (tokens, Exo 2, logo, icons, Open Graph), home page with fanned-out cards and call to play, guest arrival, odds per booster on the boosters screen (ADR 0037).

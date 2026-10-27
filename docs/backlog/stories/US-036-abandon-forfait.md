@@ -1,37 +1,38 @@
-# US-036 — Abandon et forfait
+# US-036 — Concede and forfeit
 
-- **Epic** : EPIC-06
-- **Statut** : Faite
-- **Priorité** : Should
-- **Taille** : S
-- **Branche** : `us-036-abandon-forfait`
+- **Epic**: EPIC-06
+- **Status**: Done
+- **Priority**: Should
+- **Size**: S
+- **Branch**: `us-036-abandon-forfait`
 
-## Récit
+## Story
 
-En tant que **joueur en duel**, je veux **pouvoir abandonner, et ne pas rester bloqué par un adversaire absent**
-afin que **chaque duel finisse un jour**.
+As a **player in a duel**, I want to **be able to concede, and not be stuck by an absent opponent** so that **every
+duel ends someday**.
 
-## Critères d'acceptation
+## Acceptance criteria
 
-- [x] Je peux abandonner un duel en cours, après confirmation : l'adversaire gagne.
-- [x] Sans action du joueur actif pendant 72 heures (réglable), il perd par forfait ; l'échéance est évaluée à la
-      lecture (ADR 0020) et affichée aux deux joueurs, sur le plateau et dans « Mes duels » (temps restant).
-- [x] L'issue indique la raison (SLA, tours, abandon, forfait) dans l'écran de fin et dans « Mes duels ».
-- [x] Tests de l'API (abandon, forfait avec horloge injectée) et de l'écran.
+- [x] I can concede an ongoing duel, after confirmation: the opponent wins.
+- [x] With no action from the active player for 72 hours (configurable), they lose by forfeit; the deadline is
+      evaluated on read (ADR 0020) and shown to both players, on the board and in "My duels" (time left).
+- [x] The outcome states the reason (SLA, turns, concession, forfeit) on the end screen and in "My duels".
+- [x] API tests (concession, forfeit with an injected clock) and screen tests.
 
 ## Notes
 
-- Le moteur gagne deux raisons d'issue (`abandon`, `forfait`), ou l'API les porte à côté de l'issue du moteur.
+- The engine gains two outcome reasons (`abandon`, `forfait`), or the API carries them alongside the engine's
+  outcome.
 
-## Journal
+## Log
 
-- 2026-10-19 — création (découpage d'EPIC-06, ADR 0020 proposé).
-- 2026-10-19 — moteur : `conceder(etat, perdant, 'abandon' | 'forfait')`, fonction pure, et deux nouvelles raisons
-  d'issue. API : `POST /duels/{id}/abandon` ; échéance = dernier coup + 72 h (`delaiTourMs`, réglable), exposée
-  dans le duel et dans `GET /moi/duels` ; le forfait est appliqué à la lecture (duel, liste, coup trop tard), par
-  une mise à jour conditionnée à la version. Front : « Abandonner » sur le plateau avec confirmation à l'écran,
-  échéance affichée (« À vous de jouer dans les 2 j 5 h, sinon forfait »), raison de la fin (abandon, forfait) sur
-  l'écran de fin et dans « Mes duels » (« Victoire par forfait », « reste 2 j 1 h »). L'écran de duel interroge
-  désormais le serveur pendant toute la partie, pour voir un abandon adverse pendant son propre tour. Tests :
-  moteur (2), API (3), écrans (2), e2e (1 : abandon vu par l'adversaire sans recharger).
-- 2026-10-19 — livrée : Abandon et forfait des duels : échéance de 72 h évaluée à la lecture
+- 2026-10-19 — created (split of EPIC-06, ADR 0020 proposed).
+- 2026-10-19 — engine: `conceder(etat, perdant, 'abandon' | 'forfait')`, a pure function, and two new outcome
+  reasons. API: `POST /duels/{id}/abandon`; deadline = last move + 72 h (`delaiTourMs`, configurable), exposed in the
+  duel and in `GET /moi/duels`; the forfeit is applied on read (duel, list, move too late), through an update
+  conditional on the version. Front end: "Concede" on the board with confirmation on screen, deadline shown ("Your
+  move: within 2 d 5 h, or you forfeit"), reason for the end (concession, forfeit) on the end screen and in "My
+  duels" ("Victory by forfeit", "2 d 1 h left"). The duel screen now polls the server throughout the game, to see an
+  opposing concession during one's own turn. Tests: engine (2), API (3), screens (2), e2e (1: concession seen by the
+  opponent without reloading).
+- 2026-10-19 — delivered: Duel concession and forfeit: 72 h deadline evaluated on read

@@ -1,34 +1,34 @@
-# US-082 — Des messages d'erreur traduits et des parcours vérifiés dans les deux langues
+# US-082 — Translated error messages and journeys verified in both languages
 
-- **Epic** : EPIC-14
-- **Statut** : Faite
-- **ADR** : [0042](../../decisions/0042-site-bilingue-i18n-angular.md), [0043](../../decisions/0043-contenu-traduit-domaine-langue-api.md)
-- **Priorité** : Should
-- **Taille** : S
-- **Branche** : `us-082-erreurs-parcours-bilingues`
+- **Epic**: EPIC-14
+- **Status**: Done
+- **ADR**: [0042](../../decisions/0042-site-bilingue-i18n-angular.md), [0043](../../decisions/0043-contenu-traduit-domaine-langue-api.md)
+- **Priority**: Should
+- **Size**: S
+- **Branch**: `us-082-erreurs-parcours-bilingues`
 
-## Récit
+## Story
 
-En tant que **joueur**, je veux **comprendre les erreurs dans ma langue** afin de **savoir quoi faire quand une
-action est refusée**.
+As a **player**, I want to **understand errors in my language** so that I **know what to do when an action is
+refused**.
 
-## Critères d'acceptation
+## Acceptance criteria
 
-- [x] Les erreurs de l'API (Problem Details) portent un code stable que le front traduit ; le texte français reste
-      en repli.
-      → `apps/api/src/problemes.ts` : chaque erreur porte `code` (raison du refus, code du moteur pour une action
-      refusée, `requete-invalide`, `trop-de-requetes`…), décrit dans chaque contrat OpenAPI ; le front traduit les
-      refus d'action par code (`reseau/probleme.ts`) et garde le texte français de l'API en repli. Les autres
-      messages d'erreur du front, choisis d'après le statut HTTP, sont traduits depuis US-080.
-- [x] Les parcours e2e principaux tournent dans les deux langues, audit d'accessibilité compris.
-      → `e2e/parcours-anglais.spec.ts` (compte, booster, collection, carte et fiche, partie contre le bot, partie
-      guidée) et `e2e/langues.spec.ts` en anglais ; la série existante couvre le français.
-- [x] Le guide d'exploitation et le CHANGELOG disent comment ajouter une langue.
-      → « Les langues du jeu » dans `docs/exploitation/README.md`.
+- [x] API errors (Problem Details) carry a stable code that the front end translates; the French text remains as a
+      fallback.
+      → `apps/api/src/problemes.ts`: every error carries `code` (reason for the refusal, engine code for a refused
+      action, `requete-invalide`, `trop-de-requetes`…), described in each OpenAPI contract; the front end translates
+      action refusals by code (`reseau/probleme.ts`) and keeps the API's French text as a fallback. The front end's
+      other error messages, chosen from the HTTP status, have been translated since US-080.
+- [x] The main e2e journeys run in both languages, accessibility audit included.
+      → `e2e/parcours-anglais.spec.ts` (account, booster, collection, card and sheet, game against the bot, guided
+      game) and `e2e/langues.spec.ts` in English; the existing series covers French.
+- [x] The operations guide and the CHANGELOG say how to add a language.
+      → "Les langues du jeu" in `docs/exploitation/README.md`.
 
-## Journal
+## Log
 
-- 2026-10-24 — création, à la demande du porteur du projet (EPIC-14).
-- 2026-10-24 — codes d'erreur stables, refus d'action traduits par code, parcours anglais, guide pour ajouter une
-  langue.
-- 2026-10-24 — livrée : Codes d'erreur stables dans chaque Problem Details, refus d'action traduits par code, parcours principaux vérifiés en anglais, guide pour ajouter une langue
+- 2026-10-24 — created, at the project owner's request (EPIC-14).
+- 2026-10-24 — stable error codes, action refusals translated by code, English journeys, guide to add a language.
+- 2026-10-24 — delivered: Stable error codes in every Problem Details, action refusals translated by code, main
+  journeys verified in English, guide to add a language

@@ -1,39 +1,39 @@
-# US-032 — Duels côté serveur : créer, rejoindre, jouer à son tour
+# US-032 — Server-side duels: create, join, play on your turn
 
-- **Epic** : EPIC-06
-- **Statut** : Faite
-- **Priorité** : Must
-- **Taille** : L
-- **Branche** : `us-032-duels-serveur`
+- **Epic**: EPIC-06
+- **Status**: Done
+- **Priority**: Must
+- **Size**: L
+- **Branch**: `us-032-duels-serveur`
 
-## Récit
+## Story
 
-En tant que **joueur connecté**, je veux **qu'un duel contre un autre joueur soit tenu par le serveur** afin de
-**jouer à mon rythme sans que personne ne puisse tricher**.
+As a **signed-in player**, I want a **duel against another player to be held by the server** so that **I can play at
+my own pace without anyone being able to cheat**.
 
-## Critères d'acceptation
+## Acceptance criteria
 
-- [x] L'ADR [0020](../../decisions/0020-duels-asynchrones.md) est accepté par le porteur du projet.
-- [x] Une table `duels` (migration) garde les deux joueurs, leurs decks, l'état du moteur, le joueur actif,
-      l'issue, l'échéance du tour et une version ; les deux joueurs sont des comptes (ADR 0017).
-- [x] `POST /duels` crée un duel en attente d'adversaire avec le deck choisi ; `POST /duels/{id}/rejoindre` le
-      lance avec le deck de l'adversaire (tirage de qui commence, comme contre le bot).
-- [x] `GET /duels/{id}` renvoie **la vue du joueur qui demande** et sa version ; avec la version connue, la réponse
-      est vide si rien n'a changé (304).
-- [x] `POST /duels/{id}/actions` n'est accepté que du joueur actif ; deux actions simultanées ne peuvent pas
-      s'appliquer toutes les deux (409 sur version périmée) ; un tiers reçoit 404.
-- [x] Contrat OpenAPI avant le code ; tests de l'API (droits, tour, concurrence, vue cachée de l'adversaire).
+- [x] ADR [0020](../../decisions/0020-duels-asynchrones.md) is accepted by the project owner.
+- [x] A `duels` table (migration) keeps the two players, their decks, the engine state, the active player, the
+      outcome, the turn deadline and a version; both players are accounts (ADR 0017).
+- [x] `POST /duels` creates a duel waiting for an opponent with the chosen deck; `POST /duels/{id}/rejoindre` starts
+      it with the opponent's deck (draw to see who starts, as against the bot).
+- [x] `GET /duels/{id}` returns **the view of the requesting player** and its version; with the known version, the
+      response is empty if nothing has changed (304).
+- [x] `POST /duels/{id}/actions` is only accepted from the active player; two simultaneous actions cannot both be
+      applied (409 on a stale version); a third party gets 404.
+- [x] OpenAPI contract before the code; API tests (rights, turn, concurrency, opponent's hidden view).
 
 ## Notes
 
-- Réutiliser le moteur tel quel (`appliquer`, `vueDe`) et les schémas de la vue publique (US-026).
+- Reuse the engine as is (`appliquer`, `vueDe`) and the public view schemas (US-026).
 
-## Journal
+## Log
 
-- 2026-10-19 — création (découpage d'EPIC-06, ADR 0020 proposé).
-- 2026-10-19 — ADR 0020 accepté. Contrat `openapi/duels.yaml` ; table `duels` (migration `0005_duels`, état du
-  moteur en JSON, version) ; module `duels/duels.ts` (créer, lire, rejoindre, jouer, dans des transactions qui
-  verrouillent la ligne) ; routes `/duels` avec `ETag`, `If-None-Match` (304) et `If-Match` (409 si périmé) ; le
-  créateur joue j1, l'adversaire j2, le tirage désigne qui commence. Un tiers voit un duel en attente (pour le
-  rejoindre, US-033) mais jamais un duel commencé (404). Tests de l'API (8), dont un duel joué jusqu'au bout.
-- 2026-10-19 — livrée : Duels côté serveur : créer, rejoindre, jouer à son tour, état en base
+- 2026-10-19 — created (split of EPIC-06, ADR 0020 proposed).
+- 2026-10-19 — ADR 0020 accepted. Contract `openapi/duels.yaml`; `duels` table (migration `0005_duels`, engine state
+  as JSON, version); `duels/duels.ts` module (create, read, join, play, inside transactions that lock the row);
+  `/duels` routes with `ETag`, `If-None-Match` (304) and `If-Match` (409 if stale); the creator plays j1, the
+  opponent j2, the draw decides who starts. A third party sees a waiting duel (to join it, US-033) but never a
+  started duel (404). API tests (8), including a duel played to the end.
+- 2026-10-19 — delivered: Server-side duels: create, join, play on your turn, state in the database

@@ -1,53 +1,55 @@
-# US-079 — Le socle bilingue : i18n d'Angular, deux versions du site et un sélecteur de langue
+# US-079 — The bilingual foundation: Angular i18n, two versions of the site and a language switcher
 
-- **Epic** : EPIC-14
-- **Statut** : Faite
-- **ADR** : [0042](../../decisions/0042-site-bilingue-i18n-angular.md)
-- **Priorité** : Should
-- **Taille** : M
-- **Branche** : `us-079-socle-bilingue`
+- **Epic**: EPIC-14
+- **Status**: Done
+- **ADR**: [0042](../../decisions/0042-site-bilingue-i18n-angular.md)
+- **Priority**: Should
+- **Size**: M
+- **Branch**: `us-079-socle-bilingue`
 
-## Récit
+## Story
 
-En tant que **collègue anglophone**, je veux **que le site s'ouvre dans ma langue et que je puisse en changer**
-afin de **jouer sans barrière de langue**.
+As an **English-speaking colleague**, I want **the site to open in my language and to be able to change it** so that I
+can **play without a language barrier**.
 
-## Critères d'acceptation
+## Acceptance criteria
 
-- [x] Un ADR, après consultation du référentiel the company (ADR 0005), fixe l'outil (i18n native d'Angular, ou Transloco
-      si l'analyse le justifie), l'organisation des traductions et la place du français comme langue de référence.
-      → [ADR 0042](../../decisions/0042-site-bilingue-i18n-angular.md) : `@angular/localize`, traductions JSON dans
-      `apps/web/src/locale/`, le français langue source ; [ref] the company (Localazy) adapté.
-- [x] **Étant donné** le build de production, **alors** une version française et une version anglaise sont produites
-      et servies par Firebase Hosting (`/fr/`, `/en/`, et la racine qui redirige selon la langue du navigateur),
-      sous la même CSP stricte, avec la PWA fonctionnelle dans les deux langues.
-      → `npm run build` compile les deux langues puis `scripts/langues/assembler-site.ts` assemble le site (fichiers
-      communs à la racine, manifeste et `ngsw.json` par langue, `index.html` anglais, page de la racine) ;
-      `e2e/langues.spec.ts` et `e2e/pwa.spec.ts` sur le build de production, sans violation de CSP.
-- [x] **Étant donné** un joueur, **quand** il choisit FR ou EN dans un sélecteur accessible, **alors** il bascule
-      sur la même page dans l'autre langue, et ce choix est gardé (préférence du navigateur, ADR 0032).
-      → `hip-choix-langue` dans le bandeau (`aria-current`, `lang`, `hreflang`, 44 px), `hipmaster.langue` relu par la
-      page de la racine ; audit axe de la page en anglais.
-- [x] `lang` est juste sur chaque page ; la CI échoue si une traduction manque.
-      → `lang` posé par Angular sur chaque version ; `i18nMissingTranslation: error` au build et
-      `npm run i18n:verifier` (extraction à jour, ni traduction manquante ni orpheline) dans la CI.
-- [x] Le déploiement continu (ADR 0028) publie les deux versions.
-      → `firebase.json` (réécritures par langue, cache immuable dans les sous-dossiers) ; l'étape `site` de
-      `deployer.sh` vérifie `/`, `/fr/` et `/en/` après chaque publication.
+- [x] An ADR, after consulting the the company reference (ADR 0005), fixes the tool (Angular's native i18n, or Transloco if
+      the analysis justifies it), the organisation of the translations and the place of French as the reference
+      language.
+      → [ADR 0042](../../decisions/0042-site-bilingue-i18n-angular.md): `@angular/localize`, JSON translations in
+      `apps/web/src/locale/`, French as the source language; the company [ref] (Localazy) adapted.
+- [x] **Given** the production build, **then** a French and an English version are produced and served by Firebase
+      Hosting (`/fr/`, `/en/`, and the root which redirects according to the browser's language), under the same
+      strict CSP, with the PWA working in both languages.
+      → `npm run build` compiles both languages then `scripts/langues/assembler-site.ts` assembles the site (shared
+      files at the root, manifest and `ngsw.json` per language, English `index.html`, root page);
+      `e2e/langues.spec.ts` and `e2e/pwa.spec.ts` on the production build, with no CSP violation.
+- [x] **Given** a player, **when** they choose FR or EN in an accessible switcher, **then** they switch to the same
+      page in the other language, and this choice is kept (browser preference, ADR 0032).
+      → `hip-choix-langue` in the banner (`aria-current`, `lang`, `hreflang`, 44 px), `hipmaster.langue` read back by
+      the root page; axe audit of the page in English.
+- [x] `lang` is right on every page; the CI fails if a translation is missing.
+      → `lang` set by Angular on each version; `i18nMissingTranslation: error` at build time and
+      `npm run i18n:verifier` (extraction up to date, no missing or orphan translation) in the CI.
+- [x] Continuous deployment (ADR 0028) publishes both versions.
+      → `firebase.json` (rewrites per language, immutable cache in the sub-folders); the `site` step of `deployer.sh`
+      checks `/`, `/fr/` and `/en/` after each publication.
 
 ## Notes
 
-- Les anciens joueurs ont un service worker à la racine : il y est remplacé par le `safety-worker.js` d'Angular, qui
-  se désinstalle et recharge la page une fois.
-- Les anciens liens sans langue (invitations, duels partagés) passent par la page de la racine et gardent leur page,
-  leurs paramètres et leur ancre.
-- En dehors du sélecteur (« Langue »), l'interface reste en français dans la version anglaise : sa traduction est
+- Existing players have a service worker at the root: it is replaced there by Angular's `safety-worker.js`, which
+  uninstalls itself and reloads the page once.
+- Old links without a language (invitations, shared duels) go through the root page and keep their page, parameters
+  and anchor.
+- Apart from the switcher ("Language"), the interface stays in French in the English version: its translation is
   US-080.
 
-## Journal
+## Log
 
-- 2026-10-24 — création, à la demande du porteur du projet (EPIC-14).
-- 2026-10-24 — Vérifié : CI de la PR #88 verte (parcours e2e et CSP sur le build de production compris).
-- 2026-10-24 — ADR 0042 (référentiel the company consulté : [ref] Localazy adapté, [ref] et [ref] retenus),
-  i18n d'Angular, `/fr/` et `/en/`, page de la racine, sélecteur, contrôle des traductions dans la CI.
-- 2026-10-24 — livrée : Deux versions du site (/fr/, /en/) par l'i18n d'Angular, page de la racine qui choisit la langue, sélecteur FR / EN, contrôle des traductions dans la CI (ADR 0042)
+- 2026-10-24 — created, at the project owner's request (EPIC-14).
+- 2026-10-24 — Verified: CI of PR #88 green (e2e journeys and CSP on the production build included).
+- 2026-10-24 — ADR 0042 (the company reference consulted: [ref] Localazy adapted, [ref] and [ref] kept), Angular
+  i18n, `/fr/` and `/en/`, root page, switcher, translation check in the CI.
+- 2026-10-24 — delivered: Two versions of the site (/fr/, /en/) through Angular i18n, root page that chooses the
+  language, FR / EN switcher, translation check in the CI (ADR 0042)

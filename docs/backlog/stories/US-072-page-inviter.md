@@ -1,73 +1,71 @@
-# US-072 — Une page « Inviter » réservée au porteur du projet
+# US-072 — An "Invite" page reserved for the project owner
 
-- **Epic** : EPIC-09
-- **Statut** : Faite
-- **Priorité** : Must
-- **Taille** : M
-- **Branche** : `us-072-page-inviter`
+- **Epic**: EPIC-09
+- **Status**: Done
+- **Priority**: Must
+- **Size**: M
+- **Branch**: `us-072-page-inviter`
 
-## Récit
+## Story
 
-En tant que **porteur du projet**, je veux **créer, suivre et révoquer les invitations depuis le site, sur mon
-téléphone** afin d'**inviter un collègue en quelques secondes, sans ligne de commande ni secrets de production**.
+As the **project owner**, I want **to create, follow and revoke invitations from the site, on my phone** so that **I
+can invite a colleague in a few seconds, with no command line or production secrets**.
 
-## Contexte
+## Context
 
-L'inscription se fait sur invitation (US-048, ADR 0027), mais les invitations ne se créent qu'avec la commande
-`npm run invitation`, qui demande les secrets de production (Cloud Run Job ou poste). Décision du porteur du projet
-(2026-10-23) : une page d'administration **réservée à son seul compte** ; pas d'invitations par les joueurs. Les
-comptes sont des comptes invités, sans e-mail ni mot de passe (ADR 0017), protégés par limitation de débit, sessions
-révocables et HMAC (ADR 0025).
+Registration is by invitation (US-048, ADR 0027), but invitations can only be created with the `npm run invitation`
+command, which needs the production secrets (Cloud Run Job or workstation). Project owner's decision (2026-10-23): an
+administration page **reserved for their account alone**; no invitations by players. The accounts are guest accounts,
+with no email or password (ADR 0017), protected by rate limiting, revocable sessions and HMAC (ADR 0025).
 
-## Critères d'acceptation
+## Acceptance criteria
 
-- [x] **Étant donné** la configuration de l'API, **alors** la liste des administrateurs vient de la variable
-      `ADMINISTRATEURS` (identifiants de joueur), jamais du front ; une valeur invalide empêche l'API de démarrer.
-- [x] **Étant donné** un joueur qui n'est pas administrateur, un visiteur sans compte ou une session expirée,
-      **quand** il appelle une route d'administration, **alors** l'API répond **404**, exactement comme pour une route
-      qui n'existe pas (ni 401, ni 403, ni 429).
-- [x] **Étant donné** un administrateur, **quand** il crée une invitation (libellé, nombre de comptes, date limite),
-      **alors** l'API renvoie le code et le lien **une seule fois** ; la base n'en garde que l'empreinte.
-- [x] **Étant donné** un administrateur, **quand** il liste les invitations, **alors** il voit pour chacune son
-      libellé, les comptes créés sur le maximum, l'expiration et si elle est révoquée, **jamais le code**.
-- [x] **Étant donné** un administrateur, **quand** il révoque une invitation, **alors** son code ne crée plus de
-      compte, les comptes déjà créés restent, et la liste la dit « révoquée ».
-- [x] Les routes d'administration sont décrites dans un contrat OpenAPI écrit avant le code, et limitées en débit ;
-      elles reprennent la logique de la commande `npm run invitation`, sans la dupliquer.
-- [x] **Étant donné** « Mon compte », **quand** le joueur est administrateur, **alors** un lien « Inviter » mène à la
-      page ; sinon, ni le lien ni la page ne sont accessibles.
-- [x] **Étant donné** la page « Inviter », **quand** une invitation est créée, **alors** son lien se copie en un geste,
-      et se partage par le menu du téléphone (Web Share) quand il existe.
-- [x] **Étant donné** la page « Inviter », **alors** elle liste les invitations avec leur usage et permet de révoquer
-      après confirmation ; elle s'utilise au clavier, en 375 px, dans les deux thèmes, sans violation axe-core.
-- [x] **Étant donné** le déploiement, **alors** `ADMINISTRATEURS` est transmise à l'API par `scripts/gcp/deployer.sh`
-      et le workflow ; le guide d'exploitation explique comment le porteur du projet trouve son identifiant de joueur.
-- [x] Tests : logique des invitations et de la configuration, API (dont le 404 pour un non-administrateur), écran,
-      parcours e2e.
+- [x] **Given** the API configuration, **then** the list of administrators comes from the `ADMINISTRATEURS` variable
+      (player identifiers), never from the front end; an invalid value prevents the API from starting.
+- [x] **Given** a player who is not an administrator, a visitor without an account or an expired session, **when** they
+      call an administration route, **then** the API answers **404**, exactly as for a route that does not exist (not
+      401, not 403, not 429).
+- [x] **Given** an administrator, **when** they create an invitation (label, number of accounts, deadline), **then**
+      the API returns the code and the link **only once**; the database keeps only the fingerprint.
+- [x] **Given** an administrator, **when** they list the invitations, **then** they see for each its label, the
+      accounts created out of the maximum, the expiry and whether it is revoked, **never the code**.
+- [x] **Given** an administrator, **when** they revoke an invitation, **then** its code no longer creates accounts,
+      accounts already created remain, and the list says it is "revoked".
+- [x] The administration routes are described in an OpenAPI contract written before the code, and rate-limited; they
+      reuse the logic of the `npm run invitation` command, without duplicating it.
+- [x] **Given** "My account", **when** the player is an administrator, **then** an "Invite" link leads to the page;
+      otherwise, neither the link nor the page is accessible.
+- [x] **Given** the "Invite" page, **when** an invitation is created, **then** its link can be copied in one gesture,
+      and shared through the phone's menu (Web Share) when it exists.
+- [x] **Given** the "Invite" page, **then** it lists the invitations with their usage and allows revoking after
+      confirmation; it can be used with the keyboard, at 375 px, in both themes, with no axe-core violation.
+- [x] **Given** deployment, **then** `ADMINISTRATEURS` is passed to the API by `scripts/gcp/deployer.sh` and the
+      workflow; the operations guide explains how the project owner finds their player identifier.
+- [x] Tests: invitations and configuration logic, API (including the 404 for a non-administrator), screen, e2e
+      journey.
 
 ## Notes
 
-- Décision : [ADR 0029](../../decisions/0029-administrateurs-par-configuration.md), qui complète les ADR 0017 et 0027.
-- L'identifiant de joueur s'affiche dans « Mon compte » (« Identifiant du compte »), pour le recopier dans la
-  configuration.
-- Contrat : `apps/api/openapi/administration.yaml` (`GET` et `POST /admin/invitations`,
-  `POST /admin/invitations/{id}/revocation`) ; `GET /moi` porte `administrateur: true` pour un administrateur, et rien
-  pour les autres (`comptes.yaml` 1.3.0).
-- Le refus passe par un crochet `onRequest` propre au plugin d'administration, avant la lecture du corps et la limite
-  de débit, et répond par le gestionnaire 404 de l'application (`callNotFound`) : la même réponse, octet pour octet,
-  qu'une route inexistante. Testé sans jeton, avec un jeton inconnu et avec un joueur ordinaire, au-delà de la limite.
-- Les routes appellent `apps/api/src/comptes/invitations.ts`, comme la commande ; bornes, date limite (`finDuJour`),
-  lien (`lienInvitation`) et statut (`statutInvitation`) y sont désormais partagés.
-- Migration `0009_revocation_invitations` : une colonne facultative `revoquee_le`, compatible avec la version en ligne.
-- Réglages : `ADMINISTRATEURS` (UUID séparés par des espaces ou des virgules ; `tous` hors production seulement, refusé
-  au démarrage en production) et `ADRESSE_SITE` (adresse des liens). Les e2e lancent l'API avec
+- Decision: [ADR 0029](../../decisions/0029-administrateurs-par-configuration.md), which supplements ADR 0017 and 0027.
+- The player identifier is displayed in "My account" ("Account ID"), to be copied into the configuration.
+- Contract: `apps/api/openapi/administration.yaml` (`GET` and `POST /admin/invitations`,
+  `POST /admin/invitations/{id}/revocation`); `GET /moi` carries `administrateur: true` for an administrator, and
+  nothing for the others (`comptes.yaml` 1.3.0).
+- The refusal goes through an `onRequest` hook specific to the administration plugin, before the body is read and the
+  rate limit, and answers with the application's 404 handler (`callNotFound`): the same response, byte for byte, as a
+  non-existent route. Tested with no token, with an unknown token and with an ordinary player, beyond the limit.
+- The routes call `apps/api/src/comptes/invitations.ts`, like the command; bounds, deadline (`finDuJour`), link
+  (`lienInvitation`) and status (`statutInvitation`) are now shared there.
+- Migration `0009_revocation_invitations`: an optional `revoquee_le` column, compatible with the live version.
+- Settings: `ADMINISTRATEURS` (UUIDs separated by spaces or commas; `tous` outside production only, refused at startup
+  in production) and `ADRESSE_SITE` (address of the links). The e2e tests launch the API with
   `ADMINISTRATEURS=tous`.
-- Déploiement : variable GitHub `HIPMASTER_ADMINISTRATEURS`, vérifiée par `deployer.sh` avant toute étape, posée par
-  les étapes `migrations` et `revision` ; guide d'exploitation, section « Administrateurs ».
-- E2e lancés sur des ports dédiés (3300/4500) : 3000 et 4200 servaient une autre session.
+- Deployment: GitHub variable `HIPMASTER_ADMINISTRATEURS`, checked by `deployer.sh` before any step, set by the
+  `migrations` and `revision` steps; operations guide, "Administrators" section.
+- E2e run on dedicated ports (3300/4500): 3000 and 4200 were serving another session.
 
-## Journal
+## Log
 
-- 2026-10-23 — création, après la décision du porteur du projet d'inviter depuis le site, avec son seul compte.
-- 2026-10-23 — ADR [0029](../../decisions/0029-administrateurs-par-configuration.md), contrat OpenAPI d'abord.
-- 2026-10-23 — livrée : page « Inviter » réservée aux administrateurs désignés par ADMINISTRATEURS (variable GitHub HIPMASTER_ADMINISTRATEURS au déploiement) : créer une invitation avec code et lien montrés une seule fois, copier ou partager le lien, suivre l'usage, révoquer après confirmation ; routes /api/v1/admin/invitations en 404 pour tout autre appelant ; révocation distinguée de l'expiration (migration 0009) ; e2e complets et sous CSP de production verts
+- 2026-10-23 — created, after the project owner's decision to invite from the site, with their account alone.
+- 2026-10-23 — ADR [0029](../../decisions/0029-administrateurs-par-configuration.md), OpenAPI contract first.
+- 2026-10-23 — delivered: "Invite" page reserved for administrators designated by ADMINISTRATEURS (GitHub variable HIPMASTER_ADMINISTRATEURS at deployment): create an invitation with code and link shown only once, copy or share the link, follow usage, revoke after confirmation; /api/v1/admin/invitations routes return 404 for any other caller; revocation distinguished from expiry (migration 0009); complete e2e and under the production CSP green

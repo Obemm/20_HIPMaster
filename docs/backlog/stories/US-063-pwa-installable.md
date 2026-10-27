@@ -1,54 +1,55 @@
-# US-063 — Installer le jeu sur son téléphone (PWA)
+# US-063 — Install the game on your phone (PWA)
 
-- **Epic** : EPIC-10
-- **Statut** : Faite
-- **Priorité** : Could
-- **Taille** : S
-- **Branche** : `us-063-pwa-installable`
+- **Epic**: EPIC-10
+- **Status**: Done
+- **Priority**: Could
+- **Size**: S
+- **Branch**: `us-063-pwa-installable`
 
-## Récit
+## Story
 
-En tant que **joueur sur téléphone**, je veux **ajouter HIPMaster à mon écran d'accueil** afin de **le lancer comme
-une application, en plein écran, et le retrouver vite**.
+As a **player on a phone**, I want **to add HIPMaster to my home screen** so that **I can launch it like an app, full
+screen, and find it quickly**.
 
-## Contexte
+## Context
 
-L'ADR 0006 annonce un front « livré en PWA » ([ref] the company) ; la revue du 2026-10-22 constate qu'il n'y a ni
-manifeste web, ni service worker, ni icônes : le jeu n'est pas installable.
+ADR 0006 announces a front end "delivered as a PWA" (the company [ref]); the 2026-10-22 review finds there is no web
+manifest, no service worker and no icons: the game is not installable.
 
-## Critères d'acceptation
+## Acceptance criteria
 
-- [x] **Étant donné** le site en ligne, **alors** un manifeste web (nom, couleurs du thème, icônes 192 et 512 px,
-      icône masquable, affichage `standalone`) le rend installable sur Android et iOS.
-- [x] **Étant donné** un joueur qui revient, **alors** l'interface et les illustrations se chargent depuis le cache
-      du service worker (`@angular/service-worker`), et les appels à `/api/` ne sont jamais mis en cache.
-- [x] **Étant donné** une nouvelle version publiée, **alors** le joueur est invité à recharger au lieu de garder
-      indéfiniment l'ancienne.
-- [x] **Étant donné** l'absence de réseau, **alors** un message clair le dit (le jeu se joue en ligne : le serveur
-      fait foi, ADR 0004).
-- [x] Installable selon Chrome : `Page.getInstallabilityErrors` ne renvoie aucune erreur (Lighthouse n'a plus de
-      catégorie PWA depuis sa version 12 : ce contrôle de Chrome remplace son audit « installable »).
+- [x] **Given** the live site, **then** a web manifest (name, theme colours, 192 and 512 px icons, maskable icon,
+      `standalone` display) makes it installable on Android and iOS.
+- [x] **Given** a returning player, **then** the interface and illustrations load from the service worker's cache
+      (`@angular/service-worker`), and calls to `/api/` are never cached.
+- [x] **Given** a newly published version, **then** the player is invited to reload instead of keeping the old one
+      indefinitely.
+- [x] **Given** no network, **then** a clear message says so (the game is played online: the server is authoritative,
+      ADR 0004).
+- [x] Installable according to Chrome: `Page.getInstallabilityErrors` returns no error (Lighthouse has had no PWA
+      category since version 12: this Chrome check replaces its "installable" audit).
 
-## Décisions (ADR 0038)
+## Decisions (ADR 0038)
 
-- **Service worker d'Angular**, actif seulement en production : interface en cache dès l'installation,
-  illustrations et icônes à la demande, **aucun appel à l'API en cache** (pas de `dataGroup`).
-- **Mise à jour** : vérifiée à chaque chargement et à chaque retour sur l'onglet ; un bandeau « Une nouvelle version
-  de HIPMaster est prête » propose « Recharger ».
-- **Hors ligne** : l'interface s'ouvre depuis le cache ; un bandeau dit « Pas de réseau. HIPMaster se joue en
-  ligne… » et disparaît au retour du réseau.
-- **Icônes** tirées du logo d'US-061, sur la nuit ; l'icône masquable garde le logo dans la zone sûre.
-- **Tests** : les parcours e2e bloquent le service worker (il échapperait aux pannes simulées) ; `pwa.spec.ts` le
-  réactive et vérifie le manifeste, les icônes, l'installabilité et, sur le build de production, l'ouverture hors
-  ligne et l'absence de l'API dans le cache.
+- **Angular's service worker**, active in production only: interface cached from installation, illustrations and icons
+  on demand, **no API call cached** (no `dataGroup`).
+- **Update**: checked on every load and every return to the tab; a "A new version of HIPMaster is ready" banner offers
+  "Reload".
+- **Offline**: the interface opens from the cache; a banner says "No network. HIPMaster is played online…" and
+  disappears when the network returns.
+- **Icons** taken from the US-061 logo, on the night background; the maskable icon keeps the logo within the safe
+  zone.
+- **Tests**: the e2e journeys block the service worker (it would bypass the simulated failures); `pwa.spec.ts`
+  re-enables it and checks the manifest, the icons, installability and, on the production build, opening offline and
+  the absence of the API from the cache.
 
-## Captures
+## Screenshots
 
-- [Bandeau hors ligne sur téléphone](../../produit/captures/us-063-hors-ligne.jpg)
-- [Icônes de l'écran d'accueil](../../produit/captures/us-063-icones.png)
+- [Offline banner on phone](../../produit/captures/us-063-hors-ligne.jpg)
+- [Home screen icons](../../produit/captures/us-063-icones.png)
 
-## Journal
+## Log
 
-- 2026-10-22 — création, issue de la revue avant mise en ligne (écart entre l'ADR 0006 et le code).
-- 2026-10-24 — affinée et commencée (session de nuit) : ADR 0038.
-- 2026-10-24 — livrée : Manifeste web et icônes, service worker d'Angular en production (interface et illustrations en cache, jamais l'API), bandeaux « nouvelle version » et « pas de réseau », installabilité et ouverture hors ligne vérifiées en e2e sur le build de production.
+- 2026-10-22 — created, from the review before going live (gap between ADR 0006 and the code).
+- 2026-10-24 — refined and started (overnight session): ADR 0038.
+- 2026-10-24 — delivered: Web manifest and icons, Angular service worker in production (interface and illustrations cached, never the API), "new version" and "no network" banners, installability and offline opening checked in e2e on the production build.

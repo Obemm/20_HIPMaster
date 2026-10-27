@@ -1,27 +1,27 @@
-# US-076 — Concevoir le set 2 : DDD, microservices, DevOps
+# US-076 — Design set 2: DDD, microservices, DevOps
 
-- **Epic** : EPIC-13
-- **Statut** : À affiner
-- **Priorité** : Could
-- **Taille** : L
-- **Branche** : `us-076-concevoir-set-2`
+- **Epic**: EPIC-13
+- **Status**: To refine
+- **Priority**: Could
+- **Size**: L
+- **Branch**: `us-076-concevoir-set-2`
 
-## Récit
+## Story
 
-En tant que **joueur qui a fait le tour du set 1**, je veux **découvrir de nouvelles cartes sur la façon de concevoir
-et de livrer les systèmes (DDD, microservices, DevOps)** afin de **continuer à apprendre en jouant**.
+As a **player who has gone through set 1**, I want to **discover new cards about how to design and deliver systems
+(DDD, microservices, DevOps)** so that I can **keep learning while playing**.
 
-## Critères d'acceptation
+## Acceptance criteria
 
-- [ ] **Étant donné** les pistes de l'EPIC-13, **alors** une liste de cartes est proposée (famille, rareté, coût,
-      texte « En vrai », capacités), équilibrée avec le set 1 par simulation, et relue par le porteur du projet.
-- [ ] **Étant donné** chaque carte retenue, **alors** elle a sa fiche « En savoir plus » et au moins un lien vérifié.
-- [ ] Les nouvelles familles ou capacités éventuelles sont décidées dans un ADR.
+- [ ] **Given** the leads of EPIC-13, **then** a list of cards is proposed (family, rarity, cost, "In real life" text,
+      abilities), balanced against set 1 by simulation, and reviewed by the project owner.
+- [ ] **Given** each selected card, **then** it has its "Learn more" sheet and at least one verified link.
+- [ ] Any new families or abilities are decided in an ADR.
 
 ## Notes
 
-- À découper en plusieurs stories une fois la liste arrêtée (catalogue, équilibrage, illustrations, boosters).
+- To be split into several stories once the list is settled (catalogue, balancing, illustrations, boosters).
 
-## Journal
+## Log
 
-- 2026-10-24 — création : sujets notés par le porteur du projet (« DDD, architecture microservice, DevOps… »).
+- 2026-10-24 — created: topics noted by the project owner ("DDD, microservice architecture, DevOps…").

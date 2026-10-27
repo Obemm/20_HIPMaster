@@ -1,37 +1,36 @@
-# EPIC-06 — Duels entre joueurs
+# EPIC-06 — Duels between players
 
-- **Statut** : Terminé
-- **Priorité** : Should
+- **Status**: Done
+- **Priority**: Should
 
-## Objectif
+## Goal
 
-Défier un collègue ou un joueur au hasard. Les duels sont **asynchrones, au tour par tour** (ADR
-[0020](../../decisions/0020-duels-asynchrones.md), accepté le 2026-10-19) : chacun joue quand il veut, et la partie avance en
-direct si les deux joueurs sont présents.
+Challenge a colleague or a random player. Duels are **asynchronous and turn-based** (ADR
+[0020](../../decisions/0020-duels-asynchrones.md), accepted on 2026-10-19): everyone plays when they like, and the game
+moves along live if both players are present.
 
-## Indicateur de réussite
+## Success indicator
 
-- Un duel entre deux joueurs se termine sans désynchronisation ni triche possible (le serveur fait foi, chacun ne
-  voit que sa vue).
-- Un joueur sait en un coup d'œil, depuis n'importe quelle page, qu'un duel attend son tour.
+- A duel between two players ends without any desynchronisation or possible cheating (the server is authoritative,
+  each player only sees their own view).
+- A player knows at a glance, from any page, that a duel is waiting for their turn.
 
 ## Stories
 
-- [x] US-032 — Duels côté serveur : créer, rejoindre, jouer à son tour
-- [x] US-033 — Défier un collègue par lien
-- [x] US-034 — Écran de duel
-- [x] US-035 — Mes duels et « à vous de jouer »
-- [x] US-036 — Abandon et forfait
-- [x] US-037 — Adversaire au hasard
-- [x] US-038 — Un booster pour une victoire en duel
-- [x] US-042 — Des parcours e2e de duel fiables sous charge
+- [x] US-032 — Server-side duels: create, join, play on your turn
+- [x] US-033 — Challenge a colleague by link
+- [x] US-034 — Duel screen
+- [x] US-035 — My duels and "your turn"
+- [x] US-036 — Concede and forfeit
+- [x] US-037 — Random opponent
+- [x] US-038 — A booster for a duel victory
+- [x] US-042 — Reliable duel e2e journeys under load
 
-Ordre suggéré : US-032, US-033 et US-034 forment le premier duel jouable de bout en bout ; US-035 et US-036 le
-rendent vivable au quotidien ; US-037 et US-038 viennent ensuite.
+Suggested order: US-032, US-033 and US-034 make up the first duel playable end to end; US-035 and US-036 make it
+liveable day to day; US-037 and US-038 come next.
 
-## Hors périmètre
+## Out of scope
 
-- Tournois, classement (EPIC-07).
-- Chat entre joueurs.
-- Construction de decks depuis la collection : à traiter dans sa propre story (les duels démarrent avec les decks
-  prêtés).
+- Tournaments, ranking (EPIC-07).
+- Chat between players.
+- Building decks from the collection: to be handled in its own story (duels start with loaned decks).

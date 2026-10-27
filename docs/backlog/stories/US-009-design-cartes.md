@@ -1,72 +1,71 @@
-# US-009 — Design des cartes façon carte à jouer
+# US-009 — Playing-card style card design
 
-- **Epic** : EPIC-05
-- **Statut** : Faite
-- **Priorité** : Should
-- **Taille** : L
-- **Branche** : `us-009-design-cartes`
+- **Epic**: EPIC-05
+- **Status**: Done
+- **Priority**: Should
+- **Size**: L
+- **Branch**: `us-009-design-cartes`
 
-## Récit
+## Story
 
-En tant que **joueur de l'équipe d'intégration**, je veux **que les cartes ressemblent à de vraies cartes à
-collectionner** afin d'**avoir envie de les parcourir, de les collectionner et de les montrer**.
+As a **player on the integration team**, I want **the cards to look like real collectible cards**
+so that **I feel like browsing them, collecting them and showing them off**.
 
-## Critères d'acceptation
+## Acceptance criteria
 
-### La carte (composant réutilisable `hip-vignette-carte`)
+### The card (reusable `hip-vignette-carte` component)
 
-- [x] **Étant donné** une carte du catalogue, **alors** elle s'affiche au format portrait (rapport proche de 5:7), coins
-      arrondis, avec de haut en bas : un bandeau (pastille de rareté et coût en Débit), une **zone d'illustration**, le
-      nom en gras, le type et la famille, un texte court (effet ou capacités), puis un pied séparé avec **Attaque**
-      (icône d'épée) et **PV** (icône de bouclier) pour les composants et les évolutions.
-- [x] Chaque **rareté** a son propre cadre et son fond (commune, rare, épique, légendaire de plus en plus marqués), et
-      se lit aussi par un libellé et un symbole, jamais par la seule couleur.
-- [x] Chaque **famille** a sa couleur d'accent et son pictogramme, repris dans la zone d'illustration tant que les
-      vraies illustrations (stories suivantes d'EPIC-05) n'existent pas.
-- [x] Le composant ne dépend que des données de l'API : il servira tel quel au deck, aux boosters et au combat.
+- [x] **Given** a card from the catalogue, **then** it is displayed in portrait format (ratio close to 5:7), with
+      rounded corners, with from top to bottom: a banner (rarity badge and cost in Throughput), an **illustration
+      area**, the name in bold, the type and the family, a short text (effect or abilities), then a separate footer
+      with **Attack** (sword icon) and **HP** (shield icon) for components and evolutions.
+- [x] Each **rarity** has its own frame and background (common, rare, epic, legendary, increasingly pronounced), and
+      can also be read through a label and a symbol, never through colour alone.
+- [x] Each **family** has its own accent colour and pictogram, reused in the illustration area as long as the real
+      illustrations (later stories of EPIC-05) do not exist.
+- [x] The component depends only on the API data: it will be used as is for the deck, the boosters and combat.
 
-### Le catalogue
+### The catalogue
 
-- [x] Sur un téléphone (375 px), les cartes s'affichent en **grille de 2 colonnes**, puis 3 à 5 colonnes sur des
-      écrans plus larges, sans défilement horizontal.
-- [x] Les filtres par famille et par rareté et le compteur annoncé aux lecteurs d'écran sont conservés.
+- [x] On a phone (375 px), the cards are displayed in a **2-column grid**, then 3 to 5 columns on wider screens,
+      without horizontal scrolling.
+- [x] The filters by family and by rarity and the counter announced to screen readers are kept.
 
-### Le détail (façon WikiMasters)
+### The detail (WikiMasters style)
 
-- [x] **Quand** je choisis une carte, **alors** son détail s'ouvre dans une **fenêtre modale** au-dessus du catalogue :
-      la carte en grand d'un côté, un panneau de l'autre (empilés sur téléphone) avec le nom, un badge de rareté,
-      des tuiles Débit / Attaque / PV, les capacités décrites, l'effet, le texte « En vrai » et, pour une évolution,
-      le lien vers sa carte d'origine.
-- [x] L'URL `/cartes/:numero` ouvre directement ce détail et reste partageable ; à la fermeture (bouton, touche
-      Échap, clic en dehors), je retrouve le catalogue **avec mes filtres** et le focus revient sur la carte choisie.
-- [x] Dans la modale, le focus reste piégé et le titre est annoncé (rôle `dialog`, `aria-modal`, nom accessible).
+- [x] **When** I choose a card, **then** its detail opens in a **modal window** above the catalogue: the card enlarged
+      on one side, a panel on the other (stacked on a phone) with the name, a rarity badge, Throughput / Attack / HP
+      tiles, the described abilities, the effect, the "In real life" text and, for an evolution, the link to its
+      source card.
+- [x] The URL `/cartes/:numero` opens this detail directly and stays shareable; on closing (button, Escape key, click
+      outside), I get back to the catalogue **with my filters** and the focus returns to the chosen card.
+- [x] In the modal, the focus stays trapped and the title is announced (`dialog` role, `aria-modal`, accessible name).
 
-### Qualité
+### Quality
 
-- [x] Les contrastes respectent WCAG AA sur chaque cadre de rareté ; les effets de survol respectent
-      `prefers-reduced-motion`.
-- [x] Tests unitaires du composant carte et de la modale ; les parcours e2e du catalogue sont adaptés, sans
-      violation axe-core sur mobile et sur bureau ; `npm run check`, `npm run build` et `npm run test:e2e` passent.
-- [x] Une capture de la carte et du détail, sur mobile et sur bureau, est jointe à la PR.
+- [x] Contrasts meet WCAG AA on every rarity frame; hover effects respect `prefers-reduced-motion`.
+- [x] Unit tests of the card component and of the modal; the catalogue e2e journeys are adapted, with no axe-core
+      violation on mobile and desktop; `npm run check`, `npm run build` and `npm run test:e2e` pass.
+- [x] A screenshot of the card and of the detail, on mobile and desktop, is attached to the PR.
 
 ## Notes
 
-- **Référence visuelle** : la fenêtre de détail d'une carte de WikiMasters (capture partagée par le porteur du
-  projet le 2026-10-18). On transpose ATK / DEF en Attaque / PV et on ajoute le coût en Débit. On ne reprend ni
-  leurs visuels ni leurs icônes : seulement la composition.
-- **Hors périmètre** : étiquettes, favoris, marché et enchères, défausse contre de la monnaie (EPIC-03 et EPIC-07) ;
-  vraies illustrations et chaîne d'optimisation des images (stories suivantes d'EPIC-05) ; effets holographiques.
-- **Icônes** : SVG en ligne dans le projet, sans nouvelle dépendance.
-- **Thème** : tranché le 2026-10-18 par le porteur du projet, le front suit la préférence du système, clair ou
-  sombre ([ADR 0012](../../decisions/0012-theme-clair-sombre.md)).
-- **Captures** : `docs/produit/captures/us-009-*.png`.
+- **Visual reference**: the card detail window of WikiMasters (screenshot shared by the project owner on 2026-10-18).
+  ATK / DEF is transposed into Attack / HP and the cost in Throughput is added. Neither their visuals nor their icons
+  are reused: only the composition.
+- **Out of scope**: labels, favourites, market and auctions, discarding in exchange for currency (EPIC-03 and
+  EPIC-07); real illustrations and the image optimisation pipeline (later stories of EPIC-05); holographic effects.
+- **Icons**: inline SVG in the project, with no new dependency.
+- **Theme**: settled on 2026-10-18 by the project owner, the front end follows the system preference, light or dark
+  ([ADR 0012](../../decisions/0012-theme-clair-sombre.md)).
+- **Screenshots**: `docs/produit/captures/us-009-*.png`.
 
-## Journal
+## Log
 
-- 2026-10-18 — création, à partir de la capture WikiMasters ; US-008 validée par le porteur du projet.
-- 2026-10-18 — ADR 0012 (thème selon le système, jetons de couleur) ; composants `hip-icone` (pictogrammes SVG
-  maison) et `hip-vignette-carte` (portrait 5:7, tailles en `cqw`, cadre et halo par rareté, illustration provisoire
-  par famille) ; catalogue en grille de 2 à 5 colonnes ; détail en `<dialog>` natif sur une route enfant du
-  catalogue (filtres conservés, Échap, clic sur le fond, focus rendu à la carte) ; 13 tests unitaires du front,
-  e2e et audit axe-core en clair et en sombre ; captures jointes. En revue.
-- 2026-10-18 — livrée : cartes au design de carte à jouer (cadre par rareté, illustration provisoire par famille), détail en fenêtre modale, thème clair ou sombre selon le système (ADR 0012)
+- 2026-10-18 — created, based on the WikiMasters screenshot; US-008 validated by the project owner.
+- 2026-10-18 — ADR 0012 (theme following the system, colour tokens); components `hip-icone` (in-house SVG
+  pictograms) and `hip-vignette-carte` (5:7 portrait, sizes in `cqw`, frame and halo per rarity, provisional
+  illustration per family); catalogue as a grid of 2 to 5 columns; detail in a native `<dialog>` on a child route of
+  the catalogue (filters kept, Escape, click on the backdrop, focus returned to the card); 13 front-end unit tests,
+  e2e and axe-core audit in light and dark; screenshots attached. In review.
+- 2026-10-18 — delivered: cards in a playing-card design (frame per rarity, provisional illustration per family), detail in a modal window, light or dark theme following the system (ADR 0012)

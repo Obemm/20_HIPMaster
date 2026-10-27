@@ -1,42 +1,40 @@
-# US-011 — Bot « Batch de nuit » et decks prêtés
+# US-011 — "Nightly Batch" bot and loaned decks
 
-- **Epic** : EPIC-04
-- **Statut** : Faite
-- **Priorité** : Must
-- **Taille** : M
-- **Branche** : `us-011-bot-decks-pretes`
+- **Epic**: EPIC-04
+- **Status**: Done
+- **Priority**: Must
+- **Size**: M
+- **Branch**: `us-011-bot-decks-pretes`
 
-## Récit
+## Story
 
-En tant que **joueur débutant**, je veux **un adversaire simple et un deck tout prêt** afin de **jouer ma première
-partie sans rien collectionner d'abord**.
+As a **beginner player**, I want **a simple opponent and a ready-made deck** so that **I can play my first game
+without collecting anything first**.
 
-## Critères d'acceptation
+## Acceptance criteria
 
-- [x] `validerDeck(deck)` applique les règles du deck : 20 cartes, au plus 2 exemplaires d'une carte, 1 seul par
-      légendaire.
-- [x] Deux ou trois **decks prêtés** thématiques (par exemple « Héritage » fichiers et ESB, « Moderne » API et EDA)
-      sont valides et ne contiennent que des cartes prises en charge par le moteur (US-010).
-- [x] Le bot **Batch de nuit** choisit ses actions à partir de **sa seule vue** de la partie (il ne triche pas) :
-      il pose la carte la plus chère qu'il peut payer, attaque d'abord ce qu'il peut détruire, sinon le SI, et
-      décommissionne quand il ne peut rien jouer. Le hasard éventuel passe par le générateur à graine.
-- [x] Une simulation « bot contre bot » rejoue N parties à partir d'une graine et donne le taux de victoire par deck
-      et la durée moyenne (en tours) ; elle se lance par `npm run simuler`.
-- [x] Toute partie bot contre bot se termine (20 tours au plus) ; les résultats d'une première simulation sont notés
-      dans [cartes-set-1.md](../../produit/cartes-set-1.md) pour l'équilibrage.
+- [x] `validerDeck(deck)` applies the deck rules: 20 cards, at most 2 copies of a card, only 1 per legendary.
+- [x] Two or three themed **loaned decks** (for example "Legacy" files and ESB, "Modern" API and EDA) are valid and
+      contain only cards supported by the engine (US-010).
+- [x] The **Nightly Batch** bot chooses its actions from **its own view only** of the game (it does not cheat): it
+      deploys the most expensive card it can pay for, attacks first what it can destroy, otherwise the System, and
+      decommissions when it cannot play anything. Any chance goes through the seeded generator.
+- [x] A "bot against bot" simulation replays N games from a seed and gives the win rate per deck and the average
+      duration (in turns); it is run with `npm run simuler`.
+- [x] Every bot-against-bot game ends (20 turns at most); the results of a first simulation are noted in
+      [cartes-set-1.md](../../produit/cartes-set-1.md) for balancing.
 
 ## Notes
 
-- D'autres niveaux de bot (Architecte ESB, Architecte EDA, Agent autonome) viendront dans une story suivante.
+- Other bot levels (ESB Architect, EDA Architect, Autonomous Agent) will come in a later story.
 
-## Journal
+## Log
 
-- 2026-10-18 — création (découpage d'EPIC-04).
-- 2026-10-18 — `validerDeck` et 3 decks prêtés (Héritage, Moderne, Hybride) ; bot `choisirActionBatchDeNuit`
-  (décide sur sa seule vue, sans hasard) ; `jouerPartie` et `simuler` ; script `npm run simuler` ; 11 tests ;
-  résultats de la simulation (200 parties par duel) notés dans cartes-set-1.md : Moderne domine, Hybride est le plus
-  faible. En revue.
-- 2026-10-18 — rééquilibrage demandé par le porteur du projet : Moderne allégé (Apigee et Event broker 2 → 1),
-  Hybride débarrassé de ses cartes mortes (Fenêtres de contexte, un LLM) au profit d'Adaptateur SAP, MQSeries et
-  Webhook ; tous les duels entre 42 et 57 % sur 400 parties et deux graines.
-- 2026-10-18 — livrée : bot Batch de nuit, 3 decks prêtés équilibrés par simulation (duels entre 42 et 57 %), npm run simuler
+- 2026-10-18 — created (split of EPIC-04).
+- 2026-10-18 — `validerDeck` and 3 loaned decks (Legacy, Modern, Hybrid); `choisirActionBatchDeNuit` bot (decides on
+  its own view only, without chance); `jouerPartie` and `simuler`; `npm run simuler` script; 11 tests; simulation
+  results (200 games per duel) noted in cartes-set-1.md: Modern dominates, Hybrid is the weakest. In review.
+- 2026-10-18 — rebalancing requested by the project owner: Modern lightened (Apigee and Event broker 2 → 1), Hybrid
+  rid of its dead cards (Context window, an LLM) in favour of SAP Adapter, MQSeries and Webhook; all duels between 42
+  and 57% over 400 games and two seeds.
+- 2026-10-18 — delivered: Nightly Batch bot, 3 loaned decks balanced by simulation (duels between 42 and 57%), npm run simuler

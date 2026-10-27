@@ -1,33 +1,33 @@
-# US-075 — Un statut d'epic toujours conforme à ses stories
+# US-075 — An epic status that always matches its stories
 
-- **Epic** : EPIC-00
-- **Statut** : Faite
-- **Priorité** : Must
-- **Taille** : XS
-- **Branche** : `us-075-statut-epics`
+- **Epic**: EPIC-00
+- **Status**: Done
+- **Priority**: Must
+- **Size**: XS
+- **Branch**: `us-075-statut-epics`
 
-## Récit
+## Story
 
-En tant que **porteur du projet**, je veux **que le statut et l'avancement de chaque epic soient justes, dans son
-fichier comme dans le tableau de suivi** afin de **savoir d'un coup d'œil ce qui est terminé**.
+As the **project owner**, I want **the status and progress of each epic to be right, in its file as in the tracking
+board** so that I can **see at a glance what is finished**.
 
-## Contexte
+## Context
 
-Constat du porteur du projet (2026-10-23) : des epics terminés restaient « En cours ». `scripts/cloturer-story.py`
-passait bien l'epic à « Terminé » dans le tableau, mais n'écrivait jamais que « En cours » dans le fichier de l'epic
-(EPIC-00, EPIC-02, EPIC-04). Et l'avancement du tableau n'était pas recompté quand une story était ajoutée à un epic
-(EPIC-03 affiché 2/2 au lieu de 2/3, EPIC-07 0/0 au lieu de 0/1, EPIC-10 0/5 au lieu de 0/6).
+Finding by the project owner (2026-10-23): finished epics were still "In progress". `scripts/cloturer-story.py` did
+set the epic to "Done" in the board, but only ever wrote "In progress" in the epic's file (EPIC-00, EPIC-02, EPIC-04).
+And the board's progress was not recounted when a story was added to an epic (EPIC-03 shown as 2/2 instead of 2/3,
+EPIC-07 0/0 instead of 0/1, EPIC-10 0/5 instead of 0/6).
 
-## Critères d'acceptation
+## Acceptance criteria
 
-- [x] **Étant donné** la clôture d'une story, **alors** le statut de son epic se déduit de ses stories (« Terminé »
-      quand toutes sont faites, « En cours » quand une partie l'est) et s'écrit à l'identique dans le fichier de
-      l'epic et dans le tableau.
-- [x] **Étant donné** `python scripts/cloturer-story.py --recompter`, **alors** le statut et l'avancement de chaque
-      epic sont recalculés et réécrits partout, sans rien clôturer : à lancer après l'ajout d'une story.
-- [x] Les epics du dépôt sont recomptés : aucun écart entre fichiers et tableau.
+- [x] **Given** the closing of a story, **then** its epic's status is deduced from its stories ("Done" when all are
+      done, "In progress" when some are) and is written identically in the epic's file and in the board.
+- [x] **Given** `python scripts/cloturer-story.py --recompter`, **then** the status and progress of each epic are
+      recomputed and rewritten everywhere, without closing anything: to be run after adding a story.
+- [x] The repository's epics are recounted: no discrepancy between files and board.
 
-## Journal
+## Log
 
-- 2026-10-23 — création, à la suite du constat du porteur du projet.
-- 2026-10-23 — livrée : statut et avancement des epics déduits de leurs stories, à l'identique dans le fichier de l'epic et le tableau ; option --recompter ; tous les epics recomptés
+- 2026-10-23 — created, following the project owner's finding.
+- 2026-10-23 — delivered: epic status and progress deduced from their stories, identical in the epic's file and the
+  board; --recompter option; all epics recounted

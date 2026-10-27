@@ -1,37 +1,37 @@
-# US-006 — Socle Angular aligné sur le référentiel the company
+# US-006 — Angular foundation aligned with the the company reference
 
-- **Epic** : EPIC-00
-- **Statut** : Faite
-- **Priorité** : Must
-- **Taille** : M
-- **Branche** : `us-006-socle-angular`
+- **Epic**: EPIC-00
+- **Status**: Done
+- **Priority**: Must
+- **Size**: M
+- **Branch**: `us-006-socle-angular`
 
-## Récit
+## Story
 
-En tant que **porteur du projet**, je veux **que les premiers choix techniques s'appuient sur les ADR technologiques
-de l’entreprise** afin de **travailler avec la stack et les pratiques du Groupe, sans en subir les obligations d'entreprise**.
+As the **project owner**, I want **the first technical choices to rely on the the company technology ADRs**
+so that **I work with the Group's stack and practices, without bearing its enterprise obligations**.
 
-## Critères d'acceptation
+## Acceptance criteria
 
-- [x] Un ADR fixe le référentiel : chaque ADR technologique the company pertinent est retenu, adapté ou écarté, avec sa raison.
-- [x] Les ADR qui contredisent le référentiel (0001 Next.js) sont remplacés par de nouveaux ADR, sans être réécrits.
-- [x] **Étant donné** le dépôt, **quand** je tape `npm run dev`, **alors** le front Angular (localhost:4200) et l'API
-      (localhost:3000) démarrent, et le front affiche l'état de l'API.
-- [x] La logique de jeu vit dans un paquet pur `packages/domain`, utilisé par l'API.
-- [x] `npm run check`, `npm run build` et `npm run test:e2e` passent ; la CI est adaptée.
-- [x] Les règles d'analyse statique de type SonarWay (eslint-plugin-sonarjs) s'appliquent localement et en CI.
-- [x] README, CLAUDE.md, TABLEAU et CHANGELOG sont à jour.
+- [x] An ADR sets the reference: each relevant the company technology ADR is kept, adapted or rejected, with its reason.
+- [x] The ADRs that contradict the reference (0001 Next.js) are replaced by new ADRs, without being rewritten.
+- [x] **Given** the repository, **when** I type `npm run dev`, **then** the Angular front end (localhost:4200) and the
+      API (localhost:3000) start, and the front end displays the state of the API.
+- [x] The game logic lives in a pure package `packages/domain`, used by the API.
+- [x] `npm run check`, `npm run build` and `npm run test:e2e` pass; the CI is adapted.
+- [x] SonarWay-type static analysis rules (eslint-plugin-sonarjs) apply locally and in the CI.
+- [x] README, CLAUDE.md, BOARD and CHANGELOG are up to date.
 
 ## Notes
 
-Source : référentiel des ADR the company de l'espace Confluence [ref] (miroir daté du 2026-09-16 dans
-`(local mirror)`). Décision de l'utilisateur le 2026-10-16 :
-**inspiration seulement** (pas d'Okta, d'Azure Repo, de TAD ni de LeanIX imposés) et **passage à Angular** ([ref] the company).
+Source: reference of the the company ADRs from the [ref] Confluence space (mirror dated 2026-09-16 in
+`(local mirror)`). User's decision on 2026-10-16:
+**inspiration only** (no Okta, Azure Repo, TAD or LeanIX imposed) and **switch to Angular** (the company [ref]).
 
-## Journal
+## Log
 
-- 2026-10-16 — création ; branche ouverte.
-- 2026-10-16 — ADR 0005 à 0009 écrits, 0001 remplacé. Next.js retiré ; monorepo npm workspaces ; `packages/domain` et
-  API Fastify (`/api/v1/sante`, `/api/v1/raretes`, erreurs Problem Details) testés (9 tests), ESLint + SonarJS au vert.
-  **Bloqué** : Angular 22 exige Node ≥ 24.15 (installé : 24.14) — mise à jour de Node à faire par le porteur du projet.
-- 2026-10-16 — livrée : ADR 0005 à 0009 inspirés du référentiel the company ; Angular 22 + API Fastify 5 + packages/domain ; SonarJS ; 12 tests unitaires et 4 parcours e2e au vert
+- 2026-10-16 — created; branch opened.
+- 2026-10-16 — ADRs 0005 to 0009 written, 0001 replaced. Next.js removed; npm workspaces monorepo; `packages/domain`
+  and Fastify API (`/api/v1/sante`, `/api/v1/raretes`, Problem Details errors) tested (9 tests), ESLint + SonarJS green.
+  **Blocked**: Angular 22 requires Node ≥ 24.15 (installed: 24.14) — Node update to be done by the project owner.
+- 2026-10-16 — delivered: ADRs 0005 to 0009 inspired by the the company reference; Angular 22 + Fastify 5 API + packages/domain; SonarJS; 12 unit tests and 4 e2e journeys green

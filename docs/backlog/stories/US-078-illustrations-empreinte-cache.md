@@ -1,48 +1,49 @@
-# US-078 — Des illustrations à empreinte, gardées un an en cache
+# US-078 — Fingerprinted illustrations, cached for a year
 
-- **Epic** : EPIC-05
-- **Statut** : Faite
-- **Priorité** : Should
-- **Taille** : S
-- **Décision** : [ADR 0046](../../decisions/0046-illustrations-a-empreinte-cache-long.md), qui complète l'ADR 0015
-- **Branche** : `us-078-illustrations-empreinte`
+- **Epic**: EPIC-05
+- **Status**: Done
+- **Priority**: Should
+- **Size**: S
+- **Decision**: [ADR 0046](../../decisions/0046-illustrations-a-empreinte-cache-long.md), which completes ADR 0015
+- **Branch**: `us-078-illustrations-empreinte`
 
-## Récit
+## Story
 
-En tant que **joueur sur téléphone**, je veux **que les illustrations déjà vues ne soient plus jamais retéléchargées**
-afin que **le catalogue et les parties s'affichent vite, même avec un réseau moyen**.
+As a **player on a phone**, I want **illustrations I have already seen never to be downloaded again** so that **the
+catalogue and the games display quickly, even on an average network**.
 
-## Contexte
+## Context
 
-Reportée d'US-057 (2026-10-24), dont c'était le dernier critère : les illustrations (`apps/web/public/cartes/`,
-chaîne d'US-015, ADR 0015) n'ont pas d'empreinte dans leur nom ; `firebase.json` ne peut donc les garder qu'un jour
-(`max-age=86400`), et elles partagent le préfixe `/cartes/` avec une route Angular (le catalogue). La chaîne et les
-fichiers changent avec US-017, en cours : la story se mène avec elle ou juste après.
+Carried over from US-057 (2026-10-24), of which it was the last criterion: the illustrations
+(`apps/web/public/cartes/`, US-015 pipeline, ADR 0015) have no fingerprint in their name; `firebase.json` can
+therefore only keep them for a day (`max-age=86400`), and they share the `/cartes/` prefix with an Angular route (the
+catalogue). The pipeline and the files change with US-017, in progress: the story is carried out with it or just
+after.
 
-## Critères d'acceptation
+## Acceptance criteria
 
-- [x] **Étant donné** la chaîne des illustrations, **alors** chaque fichier produit porte une empreinte de son
-      contenu dans son nom (`53-640.a1b2c3d4.avif`, 8 caractères du SHA-256), reprise par le manifeste que lit le
-      front ; le script supprime les fichiers orphelins (carte retirée, ancienne empreinte).
-- [x] **Étant donné** une image refaite, **alors** elle change de nom, et l'ancienne n'est plus servie.
-- [x] **Étant donné** Firebase Hosting, **alors** les illustrations sont servies sous un préfixe propre
-      (`/illustrations/`, l'ancien `/cartes/set-1/` disparaît), gardées un an
-      (`Cache-Control: public, max-age=31536000, immutable`), et une image absente répond 404 (pas `index.html`).
-- [x] **Étant donné** le service worker (ADR 0038), **alors** son groupe d'images suit le nouveau préfixe, dans les
-      deux langues.
-- [x] **Étant donné** le déploiement, **alors** l'étape `site` et les e2e de production vérifient l'en-tête d'une
-      illustration et le 404 d'une illustration absente, en français et en anglais.
+- [x] **Given** the illustration pipeline, **then** every produced file carries a fingerprint of its content in its
+      name (`53-640.a1b2c3d4.avif`, 8 characters of the SHA-256), picked up by the manifest the front end reads; the
+      script deletes orphan files (card removed, old fingerprint).
+- [x] **Given** a redone image, **then** it changes name, and the old one is no longer served.
+- [x] **Given** Firebase Hosting, **then** the illustrations are served under their own prefix (`/illustrations/`, the
+      old `/cartes/set-1/` disappears), kept for a year (`Cache-Control: public, max-age=31536000, immutable`), and a
+      missing image answers 404 (not `index.html`).
+- [x] **Given** the service worker (ADR 0038), **then** its image group follows the new prefix, in both languages.
+- [x] **Given** the deployment, **then** the `site` step and the production e2e tests check the header of an
+      illustration and the 404 of a missing illustration, in French and in English.
 
-## Notes techniques
+## Technical notes
 
-- Les 284 fichiers versionnés sont renommés par l'empreinte de leurs octets actuels (pas de réencodage : les
-  originaux ne sont pas dans le dépôt), puis le manifeste est régénéré ; `npm run illustrations` produit les mêmes
-  noms à partir des mêmes octets.
-- Réécriture catch-all : `!/illustrations/**` → `/index.html`, exclusion documentée par Firebase Hosting.
+- The 284 versioned files are renamed by the fingerprint of their current bytes (no re-encoding: the originals are not
+  in the repository), then the manifest is regenerated; `npm run illustrations` produces the same names from the same
+  bytes.
+- Catch-all rewrite: `!/illustrations/**` → `/index.html`, an exclusion documented by Firebase Hosting.
 
-## Journal
+## Log
 
-- 2026-10-24 — création, reportée d'US-057.
-- 2026-10-25 — affinée et codée : le porteur ne voyait pas les nouvelles illustrations 53 à 71 (même nom, cache d'un
-  jour et service worker). Empreinte dans le nom, préfixe `/illustrations/`, cache d'un an, 404, ADR 0046.
-- 2026-10-25 — livrée : illustrations à empreinte sous /illustrations/, un an en cache, 404 si absente, service worker et contrôles du déploiement à jour (ADR 0046)
+- 2026-10-24 — created, carried over from US-057.
+- 2026-10-25 — refined and coded: the owner did not see the new illustrations 53 to 71 (same name, one-day cache and
+  service worker). Fingerprint in the name, `/illustrations/` prefix, one-year cache, 404, ADR 0046.
+- 2026-10-25 — delivered: fingerprinted illustrations under /illustrations/, cached for a year, 404 if missing,
+  service worker and deployment checks up to date (ADR 0046)

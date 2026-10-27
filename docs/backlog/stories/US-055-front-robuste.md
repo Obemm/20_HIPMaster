@@ -1,99 +1,93 @@
-# US-055 — Un front robuste au démarrage à froid et aux sessions expirées
+# US-055 — A front end that is robust to cold starts and expired sessions
 
-- **Epic** : EPIC-09
-- **Statut** : Faite
-- **Priorité** : Must
-- **Taille** : M
-- **Branche** : `us-055-front-robuste`
+- **Epic**: EPIC-09
+- **Status**: Done
+- **Priority**: Must
+- **Size**: M
+- **Branch**: `us-055-front-robuste`
 
-## Récit
+## Story
 
-En tant que **joueur**, je veux **que le jeu me dise clairement quand le serveur est lent, indisponible ou que ma
-session a expiré, et me laisse réessayer** afin de **ne jamais perdre mon compte ni rester devant « Chargement… »**.
+As a **player**, I want **the game to tell me clearly when the server is slow, unavailable or my session has expired,
+and let me retry** so that **I never lose my account nor stay stuck on "Loading…"**.
 
-## Contexte
+## Context
 
-Revue du front du 2026-10-22, constats vérifiés (en ligne, Cloud Run démarre à froid en 1 à 3 s, se redéploie
-souvent, et renverra des 429 avec US-047) :
+Front end review of 2026-10-22, findings verified (live, Cloud Run cold-starts in 1 to 3 s, redeploys often, and will
+return 429s with US-047):
 
-- **risque de perte de compte** : si `GET /api/v1/moi` échoue autrement qu'en 401 (panne passagère, déploiement,
-  429), `CompteService.charger()` considère le joueur comme déconnecté ; l'écran propose « Créer un compte », et un
-  nouveau compte **écrase le jeton** de l'ancien, qui ne se retrouve plus qu'avec le code de récupération ;
-- l'accueil affiche aux joueurs un message de développeur : « L'API ne répond pas : lance-la avec `npm run dev` » ;
-- un 401 en cours de session s'affiche comme une panne, sans oublier la session ; plusieurs écrans restent sur
-  « Chargement… » pour toujours si une requête échoue (collection, partie, mes duels) ; aucun écran ne propose
-  « Réessayer » ;
-- si le catalogue n'a pas pu être chargé, ouvrir un booster **consomme le booster sans montrer aucune carte** ;
-- les identifiants de partie et de duel tirés de l'URL sont recollés sans encodage dans les URL d'API :
-  `/jouer/..%2F..%2Fv1%2Fraretes` fait appeler `GET /api/v1/raretes` avec le jeton du joueur ;
-- l'écran reste blanc pendant le chargement du JavaScript ; la session n'est pas synchronisée entre onglets.
+- **risk of losing an account**: if `GET /api/v1/moi` fails other than with a 401 (temporary outage, deployment, 429),
+  `CompteService.charger()` treats the player as signed out; the screen offers "Create an account", and a new account
+  **overwrites the token** of the old one, which can then only be recovered with the recovery code;
+- the home page shows players a developer message: "L'API ne répond pas : lance-la avec `npm run dev`";
+- a 401 in the middle of a session is displayed as an outage, without forgetting the session; several screens stay on
+  "Loading…" forever if a request fails (collection, game, my duels); no screen offers "Retry";
+- if the catalogue could not be loaded, opening a booster **consumes the booster without showing any card**;
+- game and duel identifiers taken from the URL are pasted unencoded into API URLs:
+  `/jouer/..%2F..%2Fv1%2Fraretes` makes it call `GET /api/v1/raretes` with the player's token;
+- the screen stays blank while the JavaScript loads; the session is not synchronised between tabs.
 
-## Critères d'acceptation
+## Acceptance criteria
 
-- [x] **Étant donné** un jeton gardé et `/moi` en échec (hors 401), **alors** l'écran dit « Serveur injoignable »
-      avec « Réessayer » (et retente seul quelques fois) ; la création de compte n'est **jamais** proposée tant qu'un
-      jeton existe.
-- [x] **Étant donné** un 401 sur une route authentifiée, **alors** la session est oubliée et le joueur est renvoyé
-      vers « Mon compte » avec le message « Session expirée », puis ramené à sa page après reconnexion.
-- [x] **Étant donné** un 429, **alors** le message dit d'attendre (durée tirée de `Retry-After`).
-- [x] **Étant donné** une lecture (GET) qui échoue, **alors** elle est retentée deux fois avec un délai croissant ;
-      chaque écran en erreur affiche un message compréhensible et un bouton « Réessayer » ; aucun « Chargement… »
-      ne reste affiché indéfiniment.
-- [x] **Étant donné** le catalogue non chargé, **alors** « Ouvrir un booster » est désactivé.
-- [x] **Étant donné** un onglet caché, ou aucun geste du joueur depuis 10 minutes, **alors** les interrogations
-      périodiques (« Mes duels », écran de duel) s'arrêtent, et reprennent dès que le joueur revient. Sans cela, un
-      onglet oublié réveillerait la base gratuite toutes les minutes, jour et nuit, et épuiserait son quota (ADR 0021).
-- [x] **Étant donné** un identifiant de partie ou de duel dans l'URL, **alors** il est vérifié (forme d'un UUID) et
-      encodé ; sinon l'écran affiche « Partie introuvable ».
-- [x] **Étant donné** le premier chargement, **alors** `index.html` affiche un texte de chargement, un message
-      `<noscript>`, et déclare `<meta name="color-scheme" content="light dark">` (pas d'éclair blanc en thème
-      sombre) ; **étant donné** une déconnexion dans un autre onglet, **alors** cet onglet l'apprend (événement
-      `storage`).
-- [x] Le message de développeur de l'accueil disparaît. Les navigateurs pris en charge (exigences de Tailwind 4 :
-      Safari 16.4, Chrome 111, Firefox 128) sont écrits dans la documentation.
-- [x] Tests unitaires de l'intercepteur et du service de compte ; parcours e2e avec une API qui répond 503 puis 200.
+- [x] **Given** a kept token and `/moi` failing (other than 401), **then** the screen says "Server unreachable" with
+      "Retry" (and retries by itself a few times); account creation is **never** offered as long as a token exists.
+- [x] **Given** a 401 on an authenticated route, **then** the session is forgotten and the player is sent to "My
+      account" with the message "Session expired", then brought back to their page after signing in again.
+- [x] **Given** a 429, **then** the message says to wait (duration taken from `Retry-After`).
+- [x] **Given** a read (GET) that fails, **then** it is retried twice with an increasing delay; each screen in error
+      shows an understandable message and a "Retry" button; no "Loading…" stays displayed indefinitely.
+- [x] **Given** the catalogue not loaded, **then** "Open a booster" is disabled.
+- [x] **Given** a hidden tab, or no gesture from the player for 10 minutes, **then** periodic polling ("My duels", duel
+      screen) stops, and resumes as soon as the player returns. Without this, a forgotten tab would wake the free
+      database every minute, day and night, and exhaust its quota (ADR 0021).
+- [x] **Given** a game or duel identifier in the URL, **then** it is checked (UUID form) and encoded; otherwise the
+      screen displays "Game not found".
+- [x] **Given** the first load, **then** `index.html` displays a loading text, a `<noscript>` message, and declares
+      `<meta name="color-scheme" content="light dark">` (no white flash in dark theme); **given** a sign-out in another
+      tab, **then** this tab learns of it (`storage` event).
+- [x] The developer message on the home page disappears. The supported browsers (Tailwind 4 requirements: Safari 16.4,
+      Chrome 111, Firefox 128) are written in the documentation.
+- [x] Unit tests of the interceptor and the account service; e2e journey with an API that answers 503 then 200.
 
 ## Notes
 
-Ce qui a été construit (`apps/web/src/app/`) :
+What was built (`apps/web/src/app/`):
 
-- **Réseau** (`reseau/reseau.ts`) : `intercepteurReseau` retente deux fois une lecture de l'API (GET) en panne
-  passagère (réseau coupé, délai dépassé, 408, 5xx), après 1 s puis 3 s, et abandonne chaque essai resté 15 s sans
-  réponse : au pire, l'écran parle de panne au bout de 49 s, jamais « Chargement… » sans fin. Les écritures ne sont
-  jamais rejouées (un booster ouvert deux fois). Un 429 n'est pas retenté : `Retry-After` (secondes ou date HTTP, une
-  minute à défaut) met en pause les interrogations de fond. `expliquer()` traduit chaque erreur pour le joueur
-  (« Serveur injoignable… », « Trop de demandes en peu de temps : patientez 30 s… »).
-- **Session** (`compte/compte.service.ts`) : seul un 401 fait oublier la session. Toute autre erreur de
-  `GET /api/v1/moi` laisse le jeton et donne l'état « session non vérifiée » : trois nouvelles vérifications
-  automatiques (après 5, 15 et 45 s), puis à chaque navigation, au retour du réseau (`online`) et sur « Réessayer ».
-  `creer()` et `recuperer()` refusent de remplacer un jeton gardé, et aucun écran ne propose alors de créer un
-  compte (`<hip-etat-session>`). `intercepteurJeton` traite le 401 d'une route authentifiée (sauf `/sessions`, où il
-  veut dire « code inconnu » ou « session déjà fermée ») : session oubliée, renvoi vers `/compte?retour=…` avec
-  « Session expirée », retour à la page après reconnexion ; un 401 venu d'une ancienne session n'efface pas la
-  nouvelle. L'événement `storage` fait suivre à chaque onglet une connexion ou une déconnexion faite dans un autre.
-- **Présence** (`presence.ts`) : le joueur est là si l'onglet est visible et s'il a fait un geste (toucher, clic,
-  souris, clavier, défilement) depuis moins de 10 minutes. `interroger()` porte les interrogations de « Mes duels »
-  (60 s), de l'attente d'un défi (5 s) et du duel (3 s) : rien en son absence, reprise aussitôt à son retour si la
-  période est écoulée, jamais deux passages à la fois. La relecture du stock de boosters à la recharge attend aussi
-  son retour.
-- **Écrans** : `<hip-erreur-chargement>` (ce qui manque, pourquoi, « Réessayer ») sur l'accueil, le catalogue, le
-  détail d'une carte, le choix du deck et des niveaux, la partie, le duel, les boosters (stock et catalogue), la
-  collection, « Mes duels » et le nouveau défi. « Ouvrir un booster » reste désactivé tant que le catalogue manque.
-- **Identifiants** (`identifiant.ts`) : forme d'UUID vérifiée, puis `encodeURIComponent` ; sinon « Partie
-  introuvable » ou « Défi introuvable », sans aucune requête.
-- **`index.html`** : texte de chargement (masqué sans JavaScript par la variante `noscript:` de Tailwind),
-  `<noscript>`, `<meta name="color-scheme" content="light dark">` ; ni style ni script en ligne, que la CSP d'US-050
-  interdira.
-- Navigateurs pris en charge écrits dans le README.
+- **Network** (`reseau/reseau.ts`): `intercepteurReseau` retries twice an API read (GET) in temporary outage (network
+  cut, timeout, 408, 5xx), after 1 s then 3 s, and gives up on each attempt left 15 s without a response: at worst,
+  the screen speaks of an outage after 49 s, never an endless "Loading…". Writes are never replayed (a booster opened
+  twice). A 429 is not retried: `Retry-After` (seconds or HTTP date, one minute by default) pauses background polling.
+  `expliquer()` translates each error for the player ("Serveur injoignable…", "Trop de demandes en peu de temps :
+  patientez 30 s…").
+- **Session** (`compte/compte.service.ts`): only a 401 makes the session forgotten. Any other error of
+  `GET /api/v1/moi` keeps the token and gives the "session not verified" state: three new automatic checks (after 5,
+  15 and 45 s), then at each navigation, when the network returns (`online`) and on "Retry". `creer()` and
+  `recuperer()` refuse to replace a kept token, and no screen then offers to create an account
+  (`<hip-etat-session>`). `intercepteurJeton` handles the 401 of an authenticated route (except `/sessions`, where it
+  means "unknown code" or "session already closed"): session forgotten, redirect to `/compte?retour=…` with "Session
+  expired", return to the page after signing in again; a 401 coming from an old session does not erase the new one.
+  The `storage` event makes each tab follow a sign-in or sign-out made in another.
+- **Presence** (`presence.ts`): the player is there if the tab is visible and they have made a gesture (touch, click,
+  mouse, keyboard, scroll) less than 10 minutes ago. `interroger()` carries the polling of "My duels" (60 s), of the
+  wait for a challenge (5 s) and of the duel (3 s): nothing in their absence, resumed immediately on their return if
+  the period has elapsed, never two passes at once. Re-reading the booster stock on reload also waits for their return.
+- **Screens**: `<hip-erreur-chargement>` (what is missing, why, "Retry") on the home page, the catalogue, a card's
+  detail, the deck and level choice, the game, the duel, the boosters (stock and catalogue), the collection, "My
+  duels" and the new challenge. "Open a booster" stays disabled as long as the catalogue is missing.
+- **Identifiers** (`identifiant.ts`): UUID form checked, then `encodeURIComponent`; otherwise "Game not found" or
+  "Challenge not found", without any request.
+- **`index.html`**: loading text (hidden without JavaScript by Tailwind's `noscript:` variant), `<noscript>`,
+  `<meta name="color-scheme" content="light dark">`; no inline style or script, which the CSP of US-050 will forbid.
+- Supported browsers written in the README.
 
-Pas d'ADR : ces choix appliquent des conséquences déjà actées, celles de l'ADR 0021 (interrogations arrêtées quand
-l'onglet est caché ou le joueur inactif, nouvel essai au réveil du serveur) et de l'ADR 0017 (401 : session
-inconnue), sans rien changer à l'architecture ; l'interrogation par `GET` conditionnel de l'ADR 0020 est conservée.
+No ADR: these choices apply consequences already settled, those of ADR 0021 (polling stopped when the tab is hidden or
+the player inactive, new attempt when the server wakes) and of ADR 0017 (401: unknown session), changing nothing in
+the architecture; the polling through conditional `GET` of ADR 0020 is kept.
 
-## Journal
+## Log
 
-- 2026-10-22 — création, issue de la revue du front avant mise en ligne.
-- 2026-10-22 — en cours (session front du lot 1, branche `us-055-front-robuste`) : intercepteurs, état « session
-  non vérifiée », présence du joueur, « Réessayer » sur chaque écran, identifiants vérifiés, `index.html` ; tests
-  unitaires du front (106) au vert.
-- 2026-10-22 — livrée : seul un 401 fait oublier la session, sinon « session non vérifiée » avec « Réessayer » et nouvelles vérifications ; 401 : « Session expirée » puis retour à la page ; GET retentés deux fois (1 s, 3 s), 15 s au plus par essai, 429 et Retry-After ; « Réessayer » sur chaque écran en erreur ; booster désactivé sans catalogue ; identifiants vérifiés (UUID) et encodés ; interrogations arrêtées onglet caché ou après 10 min sans geste ; index.html (chargement, noscript, color-scheme) ; session suivie entre onglets ; navigateurs dans le README. 106 tests unitaires du front, e2e 93/93
+- 2026-10-22 — created, from the front end review before going live.
+- 2026-10-22 — in progress (batch 1 front end session, branch `us-055-front-robuste`): interceptors, "session not
+  verified" state, player presence, "Retry" on each screen, identifiers checked, `index.html`; front end unit tests
+  (106) green.
+- 2026-10-22 — delivered: only a 401 makes the session forgotten, otherwise "session not verified" with "Retry" and new checks; 401: "Session expired" then return to the page; GETs retried twice (1 s, 3 s), 15 s at most per attempt, 429 and Retry-After; "Retry" on each screen in error; booster disabled without catalogue; identifiers checked (UUID) and encoded; polling stopped on hidden tab or after 10 min without a gesture; index.html (loading, noscript, color-scheme); session followed between tabs; browsers in the README. 106 front end unit tests, e2e 93/93

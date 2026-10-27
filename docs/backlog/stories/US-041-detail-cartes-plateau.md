@@ -1,66 +1,65 @@
-# US-041 — Consulter le détail des cartes du plateau
+# US-041 — View the details of the cards on the board
 
-- **Epic** : EPIC-04
-- **Statut** : Faite
-- **Priorité** : Should
-- **Taille** : M
-- **Branche** : `us-041-detail-cartes-plateau`
+- **Epic**: EPIC-04
+- **Status**: Done
+- **Priority**: Should
+- **Size**: M
+- **Branch**: `us-041-detail-cartes-plateau`
 
-## Récit
+## Story
 
-En tant que **joueur**, je veux **consulter le détail de n'importe quel composant en jeu, le mien ou celui de
-l'adversaire** afin de **comprendre ce qu'il fait avant de l'attaquer ou de m'en défendre**.
+As a **player**, I want to **view the details of any component in play, mine or the opponent's** so that **I
+understand what it does before attacking it or defending against it**.
 
-## Critères d'acceptation
+## Acceptance criteria
 
-- [x] **Étant donné** une partie en cours (contre le bot ou en duel), **quand** je touche un composant du plateau
-      (mon camp ou celui de l'adversaire), à mon tour ou pendant le tour adverse, **alors** il est sélectionné et sa
-      carte s'affiche en grand, comme pour la main (US-040) : nom, type, famille, rareté, coût, effet, capacités avec
-      leur définition, évolution, « En vrai ». S'y ajoute son **état du moment** : PV restants sur PV de la carte,
-      attaque actuelle (bonus compris) à côté de l'attaque de la carte, et ses statuts en toutes lettres (posé ce
-      tour, a déjà attaqué, immobilisé, sans capacités, doublon, attaque nulle, couplé, outillé). Les statuts
-      restent ceux que le serveur expose : rien n'est recalculé dans le front (ADR 0004).
-- [x] **Étant donné** mon tour, **quand** je sélectionne un de mes composants qui peut attaquer, **alors** il
-      devient l'attaquant (les cibles possibles s'allument, comme aujourd'hui) et son détail dit « Choisissez une
-      cible ». Un composant qui ne peut pas attaquer se sélectionne aussi ; son détail dit pourquoi il n'attaque pas
-      quand le serveur le sait (posé ce tour, a déjà attaqué, immobilisé, attaque nulle).
-- [x] **Étant donné** un attaquant choisi, **quand** je touche une cible possible (un composant adverse allumé ou le
-      SI adverse), **alors** elle est sélectionnée et son détail s'affiche, **sans attaquer** ; sous le détail, un
-      bouton « Attaquer avec [attaquant] » lance l'attaque. Regarder et agir restent deux gestes distincts partout :
-      la sélection ne joue jamais, les actions sont toujours sous le détail.
-- [x] **Étant donné** une cible sélectionnée, **quand** je touche un autre de mes attaquants possibles, **alors** il
-      devient l'attaquant, son détail remplace celui de la cible et les cibles possibles se rallument pour lui.
-- [x] Un seul détail à la fois : sélectionner une carte de la main ferme le détail du plateau, et inversement.
-      Toucher de nouveau le composant, le bouton « Fermer » ou la touche Échap referment le détail ; le focus revient
-      au jeton. Le détail est lisible sur téléphone, sans défilement horizontal, et ne quitte pas la partie.
-- [x] Le journal et la règle courte restent exacts : la règle courte (US-039) dit désormais « sélectionnez
-      l'attaquant, puis sa cible, puis confirmez l'attaque ».
-- [x] Tests de l'écran ; `npm run check` passe ; `npm run test:e2e` passe (les parcours d'attaque ajoutent le
-      troisième toucher), audit axe-core compris.
+- [x] **Given** a game in progress (against the bot or in a duel), **when** I tap a component on the board (my side
+      or the opponent's), on my turn or during the opponent's turn, **then** it is selected and its card is shown
+      enlarged, as for the hand (US-040): name, type, family, rarity, cost, effect, abilities with their definition,
+      evolution, "In real life". To this is added its **current state**: remaining HP out of the card's HP, current
+      attack (bonuses included) next to the card's attack, and its statuses spelled out (deployed this turn, has
+      already attacked, immobilised, no abilities, duplicate, zero attack, coupled, tooled). The statuses remain those
+      the server exposes: nothing is recomputed in the front end (ADR 0004).
+- [x] **Given** my turn, **when** I select one of my components that can attack, **then** it becomes the attacker
+      (the possible targets light up, as today) and its details say "Choose a target". A component that cannot attack
+      can also be selected; its details say why it does not attack when the server knows (deployed this turn, has
+      already attacked, immobilised, zero attack).
+- [x] **Given** a chosen attacker, **when** I tap a possible target (a lit-up opposing component or the opposing
+      System), **then** it is selected and its details are shown, **without attacking**; below the details, an
+      "Attack with [attacker]" button launches the attack. Looking and acting remain two distinct gestures
+      everywhere: selecting never plays, the actions are always below the details.
+- [x] **Given** a selected target, **when** I tap another of my possible attackers, **then** it becomes the
+      attacker, its details replace the target's and the possible targets light up again for it.
+- [x] Only one detail panel at a time: selecting a card in the hand closes the board's details, and vice versa.
+      Tapping the component again, the "Close" button or the Esc key closes the details; focus returns to the token.
+      The details are readable on a phone, without horizontal scrolling, and do not leave the game.
+- [x] The log and the short rule remain accurate: the short rule (US-039) now says "select the attacker, then its
+      target, then confirm the attack".
+- [x] Screen tests; `npm run check` passes; `npm run test:e2e` passes (the attack journeys add the third tap), axe-core
+      audit included.
 
 ## Notes
 
-- Suite d'US-040, d'après le même principe des jeux de cartes numériques : tout ce qui est visible s'inspecte.
-- **Décision du porteur du projet (2026-10-19)** : sélection = détail, attaque confirmée. Trois gestes au lieu de
-  deux pour attaquer, mais un seul geste partout pour regarder (main et plateau), les actions toujours sous le
-  détail, et plus d'attaque lancée par erreur sur téléphone. Écartés : « toucher une cible allumée attaque tout de
-  suite » (incohérent avec la main : la sélection y ne joue jamais) et un bouton ⓘ sur chaque jeton (deux cibles
-  tactiles serrées par jeton).
-- Le jeton (`hip-jeton-composant`) reste purement visuel ; le bouton qui l'entoure n'est plus désactivé : il est
-  toujours cliquable pour regarder, et `aria-pressed` reflète la sélection. « Peut attaquer » et « cible possible »
-  restent signalés visuellement et dans le nom accessible.
-- Le détail du plateau réutilise le panneau d'US-040 (une seule « carte choisie », main ou plateau) : le composant
-  s'affiche avec `hip-vignette-carte`, et un encart « En jeu » porte l'état du moment. Le bouton « Attaquer avec… »
-  envoie l'action `attaquer` déjà fournie par `vue.actions` ; aucune règle dans le front.
-- Pendant le tour adverse, le détail s'affiche sans action, avec le message d'US-040 (« à votre tour »).
-- « Pourquoi ce composant n'attaque pas » vient du serveur : la vue expose `sansAttaque` (texte de
-  `raisonDeNePasAttaquer`, déjà utilisé pour refuser l'action) sur mes composants pendant mon tour, absent sinon.
-  Contrat OpenAPI (`parties.yaml`) et schéma de l'API mis à jour ; rien n'est recalculé dans le front.
+- Follow-up to US-040, based on the same digital card game principle: everything visible can be inspected.
+- **Project owner's decision (2026-10-19)**: selection = details, attack confirmed. Three gestures instead of two to
+  attack, but a single gesture everywhere to look (hand and board), the actions always below the details, and no more
+  attacks launched by mistake on a phone. Dropped: "tapping a lit-up target attacks right away" (inconsistent with
+  the hand: selecting never plays there) and an ⓘ button on each token (two tight touch targets per token).
+- The token (`hip-jeton-composant`) remains purely visual; the button around it is no longer disabled: it is always
+  clickable for looking, and `aria-pressed` reflects the selection. "Can attack" and "possible target" remain
+  signalled visually and in the accessible name.
+- The board details reuse the US-040 panel (a single "chosen card", hand or board): the component is shown with
+  `hip-vignette-carte`, and an "In play" box carries the current state. The "Attack with…" button sends the
+  `attaquer` action already provided by `vue.actions`; no rule in the front end.
+- During the opponent's turn, the details are shown without actions, with the US-040 message ("on your turn").
+- "Why this component does not attack" comes from the server: the view exposes `sansAttaque` (text from
+  `raisonDeNePasAttaquer`, already used to refuse the action) on my components during my turn, absent otherwise.
+  OpenAPI contract (`parties.yaml`) and API schema updated; nothing is recomputed in the front end.
 
-## Journal
+## Log
 
-- 2026-10-19 — création, à la demande du porteur du projet, en découpant US-040.
-- 2026-10-19 — affinée : geste tranché (sélection = détail, attaque confirmée sous le détail de la cible) ;
-  critères détaillés ; statut « Prête ». Branche partie d'`us-040-detail-cartes-main` (PR #34), à rebaser sur
-  `main` après sa fusion.
-- 2026-10-19 — livrée : Toucher un composant du plateau (le mien, l'adverse) ou le SI adverse l'affiche en grand avec son état du moment ; mes composants disent pourquoi ils n'attaquent pas (sansAttaque, exposé par la vue) ; l'attaque se confirme par « Attaquer avec… » sous le détail de la cible. Règle courte et avertissement de fin de tour mis à jour ; e2e adaptés (trois touchers). Suite e2e : un seul échec, dépassement de 30 s d'un duel à deux navigateurs sous charge, qui passe seul.
+- 2026-10-19 — created, at the project owner's request, by splitting US-040.
+- 2026-10-19 — refined: gesture settled (selection = details, attack confirmed below the target's details);
+  criteria detailed; status "Ready". Branch started from `us-040-detail-cartes-main` (PR #34), to be rebased onto
+  `main` after its merge.
+- 2026-10-19 — delivered: Tapping a board component (mine, the opponent's) or the opposing System shows it enlarged with its current state; my components say why they do not attack (sansAttaque, exposed by the view); the attack is confirmed by "Attack with…" below the target's details. Short rule and end-of-turn warning updated; e2e adapted (three taps). E2E suite: a single failure, a 30 s overrun of a two-browser duel under load, which passes on its own.

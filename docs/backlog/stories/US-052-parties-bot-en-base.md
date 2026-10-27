@@ -1,73 +1,72 @@
-# US-052 — Parties contre le bot gardées en base
+# US-052 — Games against the bot kept in the database
 
-- **Epic** : EPIC-09
-- **Statut** : Faite
-- **Priorité** : Must
-- **Taille** : M
-- **Branche** : `us-052-parties-bot-en-base`
+- **Epic**: EPIC-09
+- **Status**: Done
+- **Priority**: Must
+- **Size**: M
+- **Branch**: `us-052-parties-bot-en-base`
 
-## Récit
+## Story
 
-En tant que **joueur**, je veux **que ma partie contre le bot survive à une mise à jour du jeu ou à une pause** afin
-de **ne pas perdre une partie en cours sans raison**.
+As a **player**, I want **my game against the bot to survive a game update or a pause** so that **I do not lose a game
+in progress for no reason**.
 
-## Contexte
+## Context
 
-L'ADR 0014 garde les parties contre le bot dans la mémoire de l'API (une `Map` par processus) et impose une seule
-instance. Sur Cloud Run (ADR 0021) :
+ADR 0014 keeps games against the bot in the API's memory (one `Map` per process) and requires a single instance. On
+Cloud Run (ADR 0021):
 
-- chaque déploiement remplace l'instance : avec le déploiement continu (US-050) et le rythme actuel de plusieurs
-  merges par jour, les parties en cours seraient perdues plusieurs fois par jour ;
-- l'arrêt à zéro (après une quinzaine de minutes sans requête) et les recyclages d'instance effacent aussi tout ;
-- garder une instance allumée en permanence (`min-instances=1`) limiterait les pertes, mais ferait payer une instance
-  à toute heure, sans régler les déploiements ;
-- l'écran de partie annonce qu'une partie « expire après 30 minutes sans activité » : ce serait faux.
+- each deployment replaces the instance: with continuous deployment (US-050) and the current pace of several merges a
+  day, games in progress would be lost several times a day;
+- scaling to zero (after about fifteen minutes without a request) and instance recycling also wipe everything;
+- keeping an instance on permanently (`min-instances=1`) would limit the losses, but would pay for an instance at all
+  hours, without settling the deployments;
+- the game screen announces that a game "expires after 30 minutes without activity": this would be false.
 
-Les duels sont déjà en base (ADR 0020), avec le même moteur et un état sérialisable (ADR 0013) : 11 à 18 Ko par
-partie, 1,5 ms de calcul par action du bot en moyenne.
+Duels are already in the database (ADR 0020), with the same engine and a serialisable state (ADR 0013): 11 to 18 KB
+per game, 1.5 ms of computation per bot action on average.
 
-Décision : ADR [0030](../../decisions/0030-parties-bot-en-base.md), qui remplace l'ADR 0014.
+Decision: ADR [0030](../../decisions/0030-parties-bot-en-base.md), which replaces ADR 0014.
 
-## Critères d'acceptation
+## Acceptance criteria
 
-- [x] **Étant donné** une partie contre le bot en cours, **quand** l'API redémarre (nouvelle instance sur la même
-      base), **alors** la partie reprend là où elle en était (test d'API).
-- [x] **Étant donné** deux actions envoyées en même temps sur une même partie, **alors** une seule est appliquée,
-      l'autre reçoit 409 (version, comme les duels).
-- [x] **Étant donné** une partie sans activité depuis une durée réglable, **alors** elle est considérée comme
-      expirée à la lecture et purgée ensuite ; le texte de l'écran de partie dit la vraie règle.
-- [x] **Étant donné** des parties anonymes (sans compte), **alors** elles restent possibles (ADR 0017) et leur nombre
-      est borné par la limitation de débit (US-047) et la purge.
-- [x] Le service Cloud Run peut passer à plusieurs instances (ADR 0021) ; l'ADR 0014 est remplacé par un nouvel ADR.
+- [x] **Given** a game against the bot in progress, **when** the API restarts (new instance on the same database),
+      **then** the game resumes where it was (API test).
+- [x] **Given** two actions sent at the same time on the same game, **then** only one is applied, the other receives 409
+      (version, like duels).
+- [x] **Given** a game with no activity for a configurable duration, **then** it is considered expired when read and
+      purged afterwards; the text of the game screen states the real rule.
+- [x] **Given** anonymous games (without an account), **then** they remain possible (ADR 0017) and their number is
+      bounded by rate limiting (US-047) and the purge.
+- [x] The Cloud Run service can move to several instances (ADR 0021); ADR 0014 is replaced by a new ADR.
 
-## Conception
+## Design
 
-- Table `parties` : identifiant, propriétaire facultatif (joueur et empreinte de la session, tous deux absents pour
-  une partie anonyme), decks, niveau, état complet du moteur (JSON), `version`, dates de création et de dernier coup.
-  Supprimer le compte ou fermer la session supprime ses parties (clés étrangères en cascade).
-- **Une action = une seule écriture**, conditionnée à la version lue : l'action du joueur, puis tout le tour du bot,
-  sont calculés en mémoire et écrits ensemble (`UPDATE … WHERE version = $lue`). Deux actions simultanées : la
-  première écrit, l'autre ne trouve plus sa version et reçoit **409**. `If-Match` (facultatif, comme les duels) refuse
-  d'emblée une action fondée sur une version dépassée ; la réponse porte `version` et l'en-tête `ETag`.
-- **Expiration : 24 heures sans coup joué** (création ou action ; une simple lecture ne compte pas), réglable. Une
-  partie expirée répond 404 dès la lecture ; elle est supprimée à la création de partie suivante, avec toutes les
-  autres parties expirées. Aucune tâche de fond.
-- **Plafond : 1 000 parties**, réglable : à la création, au-delà, la partie anonyme la moins récemment jouée est
-  supprimée, et seulement à défaut celle d'un joueur connecté (règle d'ADR 0025, inchangée).
-- La migration ne fait qu'ajouter une table : la version en ligne n'en dépend pas (règle des migrations compatibles
-  de `docs/exploitation/README.md`). Les parties en mémoire de l'ancienne révision sont perdues une dernière fois au
-  déploiement.
+- `parties` table: identifier, optional owner (player and session fingerprint, both absent for an anonymous game),
+  decks, level, full engine state (JSON), `version`, creation and last-move dates. Deleting the account or closing
+  the session deletes its games (cascading foreign keys).
+- **One action = one single write**, conditional on the version read: the player's action, then the whole bot turn,
+  are computed in memory and written together (`UPDATE … WHERE version = $read`). Two simultaneous actions: the first
+  writes, the other no longer finds its version and receives **409**. `If-Match` (optional, like duels) rejects
+  outright an action based on a stale version; the response carries `version` and the `ETag` header.
+- **Expiry: 24 hours without a move played** (creation or action; a simple read does not count), configurable. An
+  expired game answers 404 as soon as it is read; it is deleted at the next game creation, with all the other expired
+  games. No background task.
+- **Ceiling: 1,000 games**, configurable: at creation, beyond it, the least recently played anonymous game is deleted,
+  and only failing that a signed-in player's (rule of ADR 0025, unchanged).
+- The migration only adds a table: the live version does not depend on it (rule of compatible migrations in
+  `docs/exploitation/README.md`). The in-memory games of the old revision are lost one last time at deployment.
 
 ## Notes
 
-- La récompense de victoire reste garantie une seule fois par partie (`recompenses.partie_id`).
-- Passer Cloud Run à plusieurs instances reste une décision d'exploitation : les compteurs de la limitation de débit
-  sont propres à chaque instance (ADR 0025), et chaque instance ouvre son propre pool de connexions (ADR 0023).
+- The victory reward remains guaranteed only once per game (`recompenses.partie_id`).
+- Moving Cloud Run to several instances remains an operations decision: the rate-limiting counters are specific to each
+  instance (ADR 0025), and each instance opens its own connection pool (ADR 0023).
 
-## Journal
+## Log
 
-- 2026-10-22 — création, issue de la revue avant mise en ligne (ADR 0014 et 0021).
-- 2026-10-23 — affinée : conception, ADR [0030](../../decisions/0030-parties-bot-en-base.md), contrat OpenAPI d'abord.
-- 2026-10-23 — livrée : parties contre le bot en base (table parties, migration 0010 en ajout seul) : une action et le tour du bot écrits en une seule fois sous condition de version (409 au perdant, If-Match facultatif, ETag) ; expiration 24 h sans coup joué évaluée à la lecture, purge et plafond de 1 000 parties (anonymes d'abord) à la création ; reprise après redémarrage testée ; concurrence éprouvée sur PostgreSQL 18 ; ADR 0030 remplace 0014
-- 2026-10-23 — décision du porteur du projet : les parties contre le bot sont des données de partie en cours, pas des
-  scores ; leur expiration reste possible, mais une récompense gagnée reste acquise (test ajouté, ADR 0030).
+- 2026-10-22 — created, from the review before going live (ADR 0014 and 0021).
+- 2026-10-23 — refined: design, ADR [0030](../../decisions/0030-parties-bot-en-base.md), OpenAPI contract first.
+- 2026-10-23 — delivered: games against the bot in the database (parties table, migration 0010 add-only): an action and the bot's turn written at once under a version condition (409 to the loser, optional If-Match, ETag); expiry after 24 h without a move evaluated on read, purge and ceiling of 1,000 games (anonymous first) at creation; resumption after restart tested; concurrency proven on PostgreSQL 18; ADR 0030 replaces 0014
+- 2026-10-23 — decision of the project owner: games against the bot are data of a game in progress, not scores; their
+  expiry remains possible, but a reward won stays acquired (test added, ADR 0030).

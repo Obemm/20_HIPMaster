@@ -1,71 +1,69 @@
-# US-010 — Moteur de combat : règles de base
+# US-010 — Combat engine: base rules
 
-- **Epic** : EPIC-04
-- **Statut** : Faite
-- **Priorité** : Must
-- **Taille** : L
-- **Branche** : `us-010-moteur-combat`
+- **Epic**: EPIC-04
+- **Status**: Done
+- **Priority**: Must
+- **Size**: L
+- **Branch**: `us-010-moteur-combat`
 
-## Récit
+## Story
 
-En tant que **porteur du projet**, je veux **un moteur qui applique les règles du combat de façon sûre et rejouable**
-afin que **le bot, l'API et l'écran de partie reposent tous sur la même vérité**.
+As the **project owner**, I want **an engine that applies the combat rules in a safe and replayable way**
+so that **the bot, the API and the game screen all rely on the same truth**.
 
-## Critères d'acceptation
+## Acceptance criteria
 
-### Modèle et principes (`packages/domain`)
+### Model and principles (`packages/domain`)
 
-- [x] L'état d'une partie est typé : pour chaque joueur, le SLA du SI (20), la pioche, la main, le plateau
-      (5 emplacements), la défausse et le Débit ; le numéro du tour, le joueur actif, le gagnant éventuel et un
-      journal d'événements.
-- [x] Le moteur est fait de **fonctions pures** : `creerPartie(decks, graine)` et `appliquer(etat, action)`, qui
-      renvoie un nouvel état ou une erreur typée pour une action illégale, sans jamais modifier l'état reçu. Le
-      hasard vient d'un générateur à graine : **la même graine et les mêmes actions redonnent la même partie**.
-- [x] `actionsPossibles(etat)` liste toutes les actions légales du joueur actif (pour le bot et l'écran).
-- [x] `vueDe(etat, joueur)` renvoie ce qu'un joueur a le droit de voir : la main et la pioche adverses sont masquées
-      (seul leur nombre de cartes reste visible).
+- [x] The state of a game is typed: for each player, the System's SLA (20), the draw pile, the hand, the board
+      (5 slots), the discard pile and the Throughput; the turn number, the active player, the winner if any and an
+      event log.
+- [x] The engine is made of **pure functions**: `creerPartie(decks, graine)` and `appliquer(etat, action)`, which
+      returns a new state or a typed error for an illegal action, without ever modifying the state received. Chance
+      comes from a seeded generator: **the same seed and the same actions give the same game again**.
+- [x] `actionsPossibles(etat)` lists all the legal actions of the active player (for the bot and the screen).
+- [x] `vueDe(etat, joueur)` returns what a player is allowed to see: the opponent's hand and draw pile are hidden
+      (only their number of cards remains visible).
 
-### Règles de base ([regles.md](../../produit/regles.md))
+### Base rules ([regles.md](../../produit/regles.md))
 
-- [x] Mise en place : decks mélangés, 4 cartes en main, premier joueur tiré au sort ; il ne pioche pas à son premier
-      tour.
-- [x] Début de tour : pioche (main de 8 cartes au plus, la carte en trop part à la défausse ; pioche vide : pas de
-      pioche), Débit égal au numéro de tour du joueur (10 au plus).
-- [x] Actions : poser un composant (coût payé, 5 emplacements au plus), poser une évolution à la place de sa carte
-      d'origine, décommissionner une carte une fois par tour, attaquer, finir son tour.
-- [x] Attaque : un composant ne peut attaquer qu'une fois par tour et pas le tour où il est posé (sauf une évolution,
-      si sa carte d'origine le pouvait) ; contre un composant, riposte et destruction à 0 PV ; contre le SI, perte de
-      SLA sans riposte ; tant qu'un composant adverse a **Garde**, il doit être attaqué en premier.
-- [x] Fin de partie : SLA à 0 (victoire), ou après 20 tours, le plus de SLA gagne (égalité : partie nulle).
+- [x] Setup: shuffled decks, 4 cards in hand, first player drawn at random; they do not draw on their first turn.
+- [x] Start of turn: draw (hand of 8 cards at most, the extra card goes to the discard pile; empty draw pile: no
+      draw), Throughput equal to the player's turn number (10 at most).
+- [x] Actions: deploy a component (cost paid, 5 slots at most), deploy an evolution in place of its source card,
+      decommission a card once per turn, attack, end one's turn.
+- [x] Attack: a component can only attack once per turn and not on the turn it is deployed (except an evolution, if
+      its source card could); against a component, retaliation and destruction at 0 HP; against the System, loss of
+      SLA without retaliation; as long as an opposing component has **Guard**, it must be attacked first.
+- [x] End of game: SLA at 0 (victory), or after 20 turns, the most SLA wins (tie: drawn game).
 
-### Capacités prises en charge
+### Supported abilities
 
-- [x] Garde, Batch, Hub, Point unique, Quotas, Connecteur (N), Diffusion, Réactif, Non conforme, Sur site, File
-      durable et Supervision sont appliquées. La liste des cartes que le moteur sait jouer entièrement (sans effet
-      propre ni capacité encore inconnue) est exposée : `CARTES_PRISES_EN_CHARGE`.
+- [x] Guard, Batch, Hub, Single point of failure, Quotas, Connector (N), Broadcast, Reactive, Non-compliant,
+      On-premises, Durable queue and Monitoring are applied. The list of cards that the engine can play entirely
+      (with no effect of their own or unknown ability yet) is exposed: `CARTES_PRISES_EN_CHARGE`.
 
-### Qualité
+### Quality
 
-- [x] Chaque règle et chaque capacité a son test ; une partie complète est rejouée à l'identique depuis sa graine et
-      sa liste d'actions ; `npm run check` passe.
-- [x] Les précisions de règles tranchées en codant (pioche vide, main pleine…) sont reportées dans
+- [x] Each rule and each ability has its test; a complete game is replayed identically from its seed and its list of
+      actions; `npm run check` passes.
+- [x] The rule clarifications settled while coding (empty draw pile, full hand…) are carried over into
       [regles.md](../../produit/regles.md).
 
 ## Notes
 
-- **Architecture** : [ADR 0013](../../decisions/0013-moteur-combat.md) (état sérialisable, réducteur pur, journal
-  d'événements, générateur à graine mulberry32), dans la ligne de l'ADR 0004.
-- **Vétéran** est pris en charge d'office : aucune carte IA ne peut encore cibler, son immunité est donc respectée.
-  Le moteur sait jouer **28 cartes** du set 1 (`CARTES_PRISES_EN_CHARGE`), dont FTP.
-- Hors périmètre : effets propres des sorts, incidents et cartes à effet (US-014), capacités IA (Autonome,
-  Orchestration, Outillage, Délégation, Contexte, Garde-fous, Asynchrone, Cache sémantique, Routage multi-modèles) et
+- **Architecture**: [ADR 0013](../../decisions/0013-moteur-combat.md) (serialisable state, pure reducer, event log,
+  seeded mulberry32 generator), in line with ADR 0004.
+- **Veteran** is supported by default: no AI card can target yet, so its immunity is therefore respected. The engine
+  can play **28 cards** of set 1 (`CARTES_PRISES_EN_CHARGE`), including FTP.
+- Out of scope: own effects of spells, incidents and cards with an effect (US-014), AI abilities (Autonomous,
+  Orchestration, Tooling, Delegation, Context, Guardrails, Asynchronous, Semantic cache, Multi-model routing) and
   Migration.
 
-## Journal
+## Log
 
-- 2026-10-18 — création (découpage d'EPIC-04).
-- 2026-10-18 — ADR 0013 ; moteur dans `packages/domain/src/combat/` : `creerPartie`, `appliquer`,
-  `actionsPossibles`, `vueDe`, 13 capacités, évolutions ; 33 tests (une règle ou une capacité par test, 25 parties
-  au hasard qui se terminent toutes, rejeu identique depuis la graine), couverture du moteur 97 % ; précisions de
-  règles reportées dans regles.md. En revue.
-- 2026-10-18 — livrée : moteur de combat pur et rejouable (ADR 0013) : règles de base, 13 capacités, 28 cartes jouables
+- 2026-10-18 — created (split of EPIC-04).
+- 2026-10-18 — ADR 0013; engine in `packages/domain/src/combat/`: `creerPartie`, `appliquer`, `actionsPossibles`,
+  `vueDe`, 13 abilities, evolutions; 33 tests (one rule or ability per test, 25 random games that all finish, identical
+  replay from the seed), engine coverage 97%; rule clarifications carried over into regles.md. In review.
+- 2026-10-18 — delivered: pure and replayable combat engine (ADR 0013): base rules, 13 abilities, 28 playable cards

@@ -1,58 +1,57 @@
-# US-065 — Des coups de pouce au bon moment
+# US-065 — Nudges at the right moment
 
-- **Epic** : EPIC-11
-- **Statut** : Faite
-- **Priorité** : Should
-- **Taille** : S
-- **Branche** : `us-065-coups-de-pouce`
+- **Epic**: EPIC-11
+- **Status**: Done
+- **Priority**: Should
+- **Size**: S
+- **Branch**: `us-065-coups-de-pouce`
 
-## Récit
+## Story
 
-En tant que **joueur débutant**, je veux **être averti quand je m'apprête à finir mon tour en laissant passer une
-action utile** afin d'**apprendre les réflexes du jeu sans lire les règles**.
+As a **beginner player**, I want **to be warned when I am about to end my turn while letting a useful action go by**
+so that **I learn the game's reflexes without reading the rules**.
 
-## Contexte
+## Context
 
-Le constat d'US-039 (une partie perdue sans un seul dégât) vient d'un tour fini sans attaquer. Le serveur fournit déjà
-tout ce qu'il faut : la liste des actions possibles du joueur (`vue.actions`) et, pour chaque composant, la raison pour
-laquelle il ne peut pas attaquer (`sansAttaque`, US-041). Le front n'invente aucune règle (ADR 0004) : il lit ces
-informations et les dit au bon moment.
+US-039's finding (a game lost without a single point of damage) comes from a turn ended without attacking. The server
+already provides everything needed: the list of the player's possible actions (`vue.actions`) and, for each component,
+the reason it cannot attack (`sansAttaque`, US-041). The front end invents no rule (ADR 0004): it reads this
+information and says it at the right moment.
 
-## Critères d'acceptation
+## Acceptance criteria
 
-- [x] **Étant donné** un tour où au moins un de mes composants peut attaquer, **quand** je clique « Finir mon tour »,
-      **alors** un message non bloquant le dit (« 2 de vos composants peuvent encore attaquer »), avec « Finir quand
-      même » et « Revenir au plateau ».
-- [x] **Étant donné** assez de Débit pour poser une carte de ma main, **quand** je clique « Finir mon tour », **alors**
-      le même message le mentionne (« Vous pouvez encore poser Pub/Sub »).
-- [x] **Étant donné** un composant adverse avec Garde, **quand** je choisis un attaquant, **alors** l'écran rappelle
-      que ce composant doit tomber avant le SI, et le SI apparaît comme cible indisponible avec sa raison.
-- [x] **Étant donné** un joueur qui a désactivé les coups de pouce (réglage gardé par le navigateur), **alors** plus
-      aucun ne s'affiche.
-- [x] Actifs contre le bot comme en duel : ils ne révèlent rien que le joueur ne puisse voir lui-même.
-- [x] Messages annoncés aux lecteurs d'écran, utilisables au clavier et en 375 px ; tests unitaires et parcours e2e.
+- [x] **Given** a turn where at least one of my components can attack, **when** I click "End my turn", **then** a
+      non-blocking message says so ("2 of your components can still attack"), with "End anyway" and "Back to the
+      board".
+- [x] **Given** enough Throughput to deploy a card from my hand, **when** I click "End my turn", **then** the same
+      message mentions it ("You can still deploy Pub/Sub").
+- [x] **Given** an opposing component with Guard, **when** I choose an attacker, **then** the screen reminds me that
+      this component must fall before the System, and the System appears as an unavailable target with its reason.
+- [x] **Given** a player who has turned off nudges (setting kept by the browser), **then** none is displayed any more.
+- [x] Active against the bot as in duels: they reveal nothing the player cannot see themselves.
+- [x] Messages announced to screen readers, usable with the keyboard and at 375 px; unit tests and e2e journeys.
 
 ## Notes
 
-- Aucune nouvelle route d'API : tout vient de la vue renvoyée par le serveur.
-- Choix retenus :
-  - **Avant de finir** : « Finir mon tour » ouvre, s'il reste quelque chose à faire, un message non modal au bas de
-    l'écran (`role="alertdialog"`, focus sur « Revenir au plateau », Échap y revient), avec « Finir quand même ». Ce
-    qui reste à faire vient seulement de `vue.actions` : les actions `attaquer` (composants qui peuvent encore
-    attaquer) et les actions qui posent ou jouent une carte de la main (`poser`, `evoluer`, `jouer`, `router`,
-    `migrer`) ; décommissionner ne compte pas, ce n'est pas un oubli.
-  - **Garde** : quand un attaquant est choisi et que le serveur ne propose pas le SI comme cible, le bouton du SI dit
-    « Indisponible », avec « Garde » si un composant adverse visible porte cette capacité ; le détail de l'attaquant
-    rappelle que ce composant doit tomber avant le SI. Le front ne décide d'aucune cible (ADR 0004).
-  - **Réglage** : une case « Coups de pouce » dans l'aide « Comment jouer ? », gardée par le navigateur
-    ([ADR 0032](../../decisions/0032-preferences-interface-navigateur.md)) ; décochée, ni message, ni rappel, ni
-    avertissement d'attaques oubliées (US-039).
+- No new API route: everything comes from the view returned by the server.
+- Choices made:
+  - **Before ending**: "End my turn" opens, if anything remains to be done, a non-modal message at the bottom of the
+    screen (`role="alertdialog"`, focus on "Back to the board", Escape goes back), with "End anyway". What remains to
+    be done comes only from `vue.actions`: `attaquer` actions (components that can still attack) and the actions that
+    deploy or play a card from the hand (`poser`, `evoluer`, `jouer`, `router`, `migrer`); decommissioning does not
+    count, it is not an oversight.
+  - **Guard**: when an attacker is chosen and the server does not offer the System as a target, the System's button
+    says "Unavailable", with "Guard" if a visible opposing component carries that ability; the attacker's detail
+    reminds that this component must fall before the System. The front end decides no target (ADR 0004).
+  - **Setting**: a "Nudges" checkbox in the "How to play" help, kept by the browser
+    ([ADR 0032](../../decisions/0032-preferences-interface-navigateur.md)); unchecked, no message, no reminder, and no
+    warning about forgotten attacks (US-039).
 
-## Journal
+## Log
 
-- 2026-10-23 — création, à la demande du porteur du projet (« un mode tuto ou un bot qui conseille le joueur »).
-- 2026-10-23 — affinée et commencée (lot 2, session front) : choix notés ci-dessus.
-- 2026-10-23 — livrée : message non bloquant avant « Finir mon tour » (attaques et cartes encore possibles d'après vue.actions), SI « Indisponible : Garde » et rappel de Garde, réglage dans l'aide gardé par le navigateur, actifs en duel (ADR 0032)
-- 2026-10-24 — anomalie signalée en ligne : après « Finir mon tour », choisir le SI ou une carte ouvrait la fiche de
-  détail par-dessus le message, qui gardait ses boutons cachés dessous. Choisir une carte ou un composant referme
-  désormais le message (test du composant qui échouait avant la correction).
+- 2026-10-23 — created, at the project owner's request ("a tutorial mode or a bot that advises the player").
+- 2026-10-23 — refined and started (batch 2, front-end session): choices noted above.
+- 2026-10-23 — delivered: non-blocking message before "End my turn" (attacks and cards still possible according to vue.actions), System "Unavailable: Guard" and Guard reminder, setting in the help kept by the browser, active in duels (ADR 0032)
+- 2026-10-24 — anomaly reported live: after "End my turn", choosing the System or a card opened the detail sheet over
+  the message, which kept its buttons hidden underneath. Choosing a card or a component now closes the message
+  (component test that failed before the fix).

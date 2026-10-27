@@ -1,56 +1,55 @@
-# EPIC-09 — Mise en ligne sur Google Cloud
+# EPIC-09 — Going live on Google Cloud
 
-- **Statut** : Terminé
-- **Priorité** : Must
+- **Status**: Done
+- **Priority**: Must
 
-## Objectif
+## Goal
 
-Mettre HIPMaster en ligne dans l'espace Google Cloud du porteur du projet, pour l'équipe d'intégration et des
-collègues **sur invitation** (choix du 2026-10-22), **sans frais** : Firebase Hosting, Cloud Run et une base Neon
-gratuite, que Claude installe, déploie et maintient en ligne de commande
-(ADR [0021](../../decisions/0021-hebergement-gcp.md), accepté le 2026-10-22). Le détail des constats est dans la
-[revue avant mise en ligne](../../revues/2026-10-22-revue-mise-en-ligne.md).
+Put HIPMaster online in the project owner's Google Cloud space, for the integration team and colleagues **by
+invitation** (choice of 2026-10-22), **at no cost**: Firebase Hosting, Cloud Run and a free Neon database, which
+Claude installs, deploys and maintains from the command line
+(ADR [0021](../../decisions/0021-hebergement-gcp.md), accepted on 2026-10-22). The detail of the findings is in the
+[review before going live](../../revues/2026-10-22-revue-mise-en-ligne.md).
 
-## Indicateur de réussite
+## Success indicator
 
-- Un collègue invité crée son compte, ouvre un booster et gagne une partie depuis son téléphone, sur l'adresse
-  publique du jeu.
-- Un merge sur `main` est en ligne en moins de 15 minutes, sans geste manuel ; un retour arrière prend moins de
-  5 minutes.
-- La facture mensuelle reste sous 1 € et la consommation de la base sous son quota gratuit ; une panne déclenche une
-  alerte.
+- An invited colleague creates their account, opens a booster and wins a game from their phone, at the game's public
+  address.
+- A merge into `main` is live in under 15 minutes, with no manual step; a rollback takes under 5 minutes.
+- The monthly bill stays under €1 and database usage stays under its free quota; an outage triggers an alert.
 
 ## Stories
 
-- [x] US-046 — Une API prête pour Cloud Run
-- [x] US-047 — Les protections indispensables avant l'ouverture
-- [x] US-048 — Inscription sur invitation
-- [x] US-049 — Infrastructure gratuite et reproductible
-- [x] US-050 — Déploiement continu vers Cloud Run et Firebase Hosting
-- [x] US-051 — Supervision, sauvegardes vérifiées et scan de sécurité
-- [x] US-052 — Parties contre le bot gardées en base
-- [x] US-053 — Page de confidentialité et suppression de son compte
-- [x] US-054 — Des sessions qui expirent et des données qui ne s'accumulent pas
-- [x] US-055 — Un front robuste au démarrage à froid et aux sessions expirées
-- [x] US-056 — La CI teste l'API sur un vrai PostgreSQL
-- [x] US-057 — Des requêtes légères : index, lectures bornées, cache et chargement à la demande
-- [x] US-058 — Des duels équitables : hasard imprévisible et appariement sûr
-- [x] US-072 — Une page « Inviter » réservée au porteur du projet
+- [x] US-046 — An API ready for Cloud Run
+- [x] US-047 — The essential protections before opening
+- [x] US-048 — Sign-up by invitation
+- [x] US-049 — Free and reproducible infrastructure
+- [x] US-050 — Continuous deployment to Cloud Run and Firebase Hosting
+- [x] US-051 — Monitoring, verified backups and security scan
+- [x] US-052 — Games against the bot kept in the database
+- [x] US-053 — Privacy page and deletion of one's account
+- [x] US-054 — Sessions that expire and data that does not pile up
+- [x] US-055 — A front end that is robust to cold starts and expired sessions
+- [x] US-056 — The CI tests the API on a real PostgreSQL
+- [x] US-057 — Light requests: indexes, bounded reads, cache and on-demand loading
+- [x] US-058 — Fair duels: unpredictable randomness and safe matchmaking
+- [x] US-072 — An "Invite" page reserved for the project owner
 
-Ordre suggéré, en trois lots :
+Suggested order, in three batches:
 
-1. **Avant la première mise en ligne** (le site existe, seul le porteur du projet y joue) : US-046, US-056, US-047,
-   US-048, US-055, US-049 et US-050.
-2. **Avant d'envoyer les invitations** : US-052 (sans elle, chaque déploiement efface les parties en cours), US-051,
-   US-053, puis l'ergonomie mobile d'EPIC-10 (US-059, US-060).
-3. **Ensuite** : US-054, US-057, US-058.
+1. **Before the first go-live** (the site exists, only the project owner plays on it): US-046, US-056, US-047,
+   US-048, US-055, US-049 and US-050.
+2. **Before sending the invitations**: US-052 (without it, every deployment erases games in progress), US-051,
+   US-053, then the mobile ergonomics of EPIC-10 (US-059, US-060).
+3. **Afterwards**: US-054, US-057, US-058.
 
-US-072 (décidée le 2026-10-23) s'ajoute au lot 2 : inviter depuis le site, avec le seul compte du porteur du
-projet, avant d'envoyer les invitations.
+US-072 (decided on 2026-10-23) is added to batch 2: inviting from the site, with the project owner's account only,
+before sending the invitations.
 
-## Hors périmètre
+## Out of scope
 
-- Ouverture publique à tous (sans invitation) : demanderait de revoir l'usage des marques et l'exposition aux abus.
-- Environnement de préproduction `stg` : prévu par l'ADR 0021, à créer quand le rythme de livraison le justifiera.
-- Domaine personnel : l'adresse `hipmaster.web.app` suffit pour commencer.
-- Pare-feu applicatif (Cloud Armor) : demande un équilibreur de charge, hors budget à cette échelle.
+- Public opening to everyone (without invitation): it would require reviewing the use of trademarks and the exposure
+  to abuse.
+- `stg` pre-production environment: planned by ADR 0021, to be created when the delivery pace justifies it.
+- Personal domain: the `hipmaster.web.app` address is enough to start with.
+- Web application firewall (Cloud Armor): it requires a load balancer, out of budget at this scale.

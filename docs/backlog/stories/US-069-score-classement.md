@@ -1,57 +1,54 @@
-# US-069 — Un score et un classement
+# US-069 — A score and a leaderboard
 
-- **Epic** : EPIC-07
-- **Statut** : Faite
-- **Priorité** : Could
-- **Taille** : L
-- **Branche** : `us-069-score-classement`
+- **Epic**: EPIC-07
+- **Status**: Done
+- **Priority**: Could
+- **Size**: L
+- **Branch**: `us-069-score-classement`
 
-## Récit
+## Story
 
-En tant que **joueur**, je veux **un score qui reflète mes progrès et un classement entre collègues** afin d'**avoir
-envie de revenir et de me comparer**.
+As a **player**, I want **a score that reflects my progress and a leaderboard among colleagues** so that **I want to
+come back and compare myself**.
 
-## Critères d'acceptation
+## Acceptance criteria
 
-- [x] **Étant donné** la règle de score retenue (à définir avec le porteur du projet : victoires pondérées par le
-      niveau du bot, cote de duel de type Elo, progression de la collection…), **alors** elle est écrite dans
-      `docs/produit/regles.md` et calculée par le serveur, jamais par le front (ADR 0004).
-- [x] **Étant donné** un joueur connecté, **alors** il voit son score et son rang ; un classement liste les joueurs
-      par pseudo.
-- [x] **Étant donné** un joueur qui ne veut pas apparaître, **alors** il peut se retirer du classement.
-- [x] **Étant donné** les parties jouées avant le score, **alors** elles comptent, autant que l'historique le permet.
-- [x] **Étant donné** la page de confidentialité, **alors** elle dit ce que les autres joueurs voient du score.
+- [x] **Given** the scoring rule adopted (to be defined with the project owner: victories weighted by bot level, an
+      Elo-type duel rating, collection progress…), **then** it is written in `docs/produit/regles.md` and computed by
+      the server, never by the front end (ADR 0004).
+- [x] **Given** a signed-in player, **then** they see their score and rank; a leaderboard lists players by username.
+- [x] **Given** a player who does not want to appear, **then** they can opt out of the leaderboard.
+- [x] **Given** games played before the score, **then** they count, as far as the history allows.
+- [x] **Given** the privacy page, **then** it says what other players see of the score.
 
 ## Notes
 
-- Demande du porteur du projet (2026-10-23). Questions ouvertes : quelles parties comptent (bot, duels), remise à
-  zéro périodique ou non, prise en compte des parties guidées (non).
-- Décision du porteur du projet (2026-10-24), parmi trois règles proposées (points seuls, cote unique, points + cote)
-  : **points + cote de duel**, tout le monde classé avec retrait possible, rattrapage de l'historique
-  ([ADR 0044](../../decisions/0044-score-et-cote-de-duel.md), [règles](../../produit/regles.md)).
-- Choix retenus :
-  - **Règle** (`packages/domain/src/score.ts`) : victoire contre le bot 1 / 2 / 3 / 5 points selon le niveau, duel
-    gagné 5, duel nul 2 chacun, au plus 10 victoires comptées par jour UTC ; cote Elo départ 1000, K = 32, entre deux
-    comptes encore présents. Sans remise à zéro.
-  - **Base** (migration `0014_score_classement`) : registre `points` (une ligne par partie et par joueur, ce qui
-    garantit une seule prise en compte), `joueurs.points`, `cote`, `duelsCotes`, `classe`, et `duels.scoreCompte`.
-    Index du classement (joueurs classés par points) et des duels à compter.
-  - **Quand** : la victoire contre le bot avec sa récompense ; le duel à sa première lecture une fois terminé.
-    `rattraperScores` compte le reste dans l'ordre chronologique (victoires d'avant le score à 1 point, duels
-    terminés en entier) : commande de migration avant chaque déploiement, purge de la nuit, démarrage de l'API de
-    développement.
-  - **API** (`openapi/classement.yaml`) : `GET /classement` (mon score, mon rang, les 100 premiers classés avec au
-    moins un point, rangs partagés à égalité), `PUT /moi/classement` (se retirer, revenir).
-  - **Écran** : page « Classement » (mon score, rang, cote ; case « Apparaître dans le classement » ; tableau des
-    joueurs ; la règle en bref), tuile « Classement » sur l'accueil (« 12 points · 3e »). Pas d'onglet de plus dans
-    la barre du téléphone (cinq onglets déjà).
-  - **Confidentialité** : nouvelle section « Ce que les autres joueurs voient », score ajouté aux données gardées sans
-    limite.
-  - **Traduction** : le socle multilingue (EPIC-14) n'était pas sur `main` ; les nouvelles chaînes restent en
-    français, à marquer avec le reste du site.
+- Project owner's request (2026-10-23). Open questions: which games count (bot, duels), periodic reset or not,
+  whether guided games count (no).
+- Project owner's decision (2026-10-24), among three proposed rules (points only, single rating, points + rating):
+  **points + duel rating**, everyone ranked with the possibility to opt out, history catch-up
+  ([ADR 0044](../../decisions/0044-score-et-cote-de-duel.md), [rules](../../produit/regles.md)).
+- Choices made:
+  - **Rule** (`packages/domain/src/score.ts`): victory against the bot 1 / 2 / 3 / 5 points depending on the level,
+    duel won 5, drawn duel 2 each, at most 10 victories counted per UTC day; Elo rating starting at 1000, K = 32,
+    between two accounts still present. No reset.
+  - **Database** (migration `0014_score_classement`): `points` register (one row per game and per player, which
+    guarantees it is counted only once), `joueurs.points`, `cote`, `duelsCotes`, `classe`, and `duels.scoreCompte`.
+    Index of the leaderboard (players ranked by points) and of the duels to count.
+  - **When**: the victory against the bot with its reward; the duel on its first reading once finished.
+    `rattraperScores` counts the rest in chronological order (pre-score victories at 1 point, duels finished in full):
+    migration command before each deployment, overnight purge, development API startup.
+  - **API** (`openapi/classement.yaml`): `GET /classement` (my score, my rank, the top 100 ranked with at least one
+    point, shared ranks on ties), `PUT /moi/classement` (opt out, come back).
+  - **Screen**: "Leaderboard" page (my score, rank, rating; "Appear in the leaderboard" checkbox; table of players;
+    the rule in brief), "Leaderboard" tile on the home page ("12 points · 3rd"). No extra tab in the phone bar (five
+    tabs already).
+  - **Privacy**: new "What other players see" section, score added to the data kept without limit.
+  - **Translation**: the multilingual foundation (EPIC-14) was not on `main`; the new strings stay in French, to be
+    marked along with the rest of the site.
 
-## Journal
+## Log
 
-- 2026-10-23 — création, notée pour plus tard à la demande du porteur du projet.
-- 2026-10-24 — règle décidée avec le porteur du projet (ADR 0044), commencée.
-- 2026-10-24 — livrée : score et classement : points selon le niveau du bot, duel 5, nul 2, 10 victoires comptées par jour, cote de duel Elo, sans remise à zéro, retrait possible, historique rattrapé (ADR 0044)
+- 2026-10-23 — created, noted for later at the project owner's request.
+- 2026-10-24 — rule decided with the project owner (ADR 0044), started.
+- 2026-10-24 — delivered: score and leaderboard: points depending on the bot level, duel 5, draw 2, 10 victories counted per day, Elo duel rating, no reset, opt-out possible, history caught up (ADR 0044)

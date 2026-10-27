@@ -1,48 +1,48 @@
-# EPIC-04 — Combat contre le bot
+# EPIC-04 — Combat against the bot
 
-- **Statut** : Terminé
-- **Priorité** : Must
+- **Status**: Done
+- **Priority**: Must
 
-## Objectif
+## Goal
 
-Jouer une partie courte contre un bot, avec plusieurs niveaux de difficulté, et gagner des boosters.
+Play a short game against a bot, with several difficulty levels, and win boosters.
 
-## Indicateur de réussite
+## Success indicator
 
-Une partie dure moins de 5 minutes ; le bot de niveau facile gagne au plus une partie sur deux contre un joueur
-débutant, et commencer ne donne pas d'avance décisive.
+A game lasts under 5 minutes; the easy-level bot wins at most one game in two against a beginner, and going first does
+not give a decisive advantage.
 
-Indicateur revu le 2026-10-22 (US-064) : il visait le niveau moyen (Architecte ESB du temps d'US-021), mais un
-débutant ne gagne qu'environ une partie sur sept contre Batch de nuit, désormais moyen, et moins encore contre
-Architecte ESB. C'est le niveau facile, Stagiaire, qui lui laisse plus d'une partie sur deux.
+Indicator revised on 2026-10-22 (US-064): it aimed at the medium level (ESB Architect at the time of US-021), but a
+beginner wins only about one game in seven against Nightly Batch, now medium, and even less against ESB Architect. It
+is the easy level, Intern, that lets them win more than one game in two.
 
 ## Stories
 
-- [x] US-010 — Moteur de combat : règles de base
-- [x] US-011 — Bot « Batch de nuit » et decks prêtés
-- [x] US-012 — API de partie contre le bot
-- [x] US-013 — Écran de partie contre le bot
-- [x] US-014 — Sorts et incidents
-- [x] US-019 — Effets propres des composants
-- [x] US-020 — Capacités IA et Migration
-- [x] US-021 — Niveaux du bot
-- [x] US-025 — Un booster pour chaque victoire
-- [x] US-026 — Une vue publique complète, qui suffit à un bot
-- [x] US-039 — Expliquer les attaques et la résolution des combats
-- [x] US-040 — Consulter le détail des cartes de sa main
-- [x] US-041 — Consulter le détail des cartes du plateau
-- [x] US-064 — Un bot battable par un débutant, une partie équitable pour les deux joueurs
-- [x] US-071 — Dire pourquoi une carte de la main ne se joue pas
+- [x] US-010 — Combat engine: base rules
+- [x] US-011 — "Nightly Batch" bot and loaned decks
+- [x] US-012 — Game API against the bot
+- [x] US-013 — Game screen against the bot
+- [x] US-014 — Spells and incidents
+- [x] US-019 — Component-specific effects
+- [x] US-020 — AI abilities and Migration
+- [x] US-021 — Bot levels
+- [x] US-025 — A booster for every victory
+- [x] US-026 — A complete public view, enough for a bot
+- [x] US-039 — Explain attacks and combat resolution
+- [x] US-040 — View the details of the cards in your hand
+- [x] US-041 — View the details of the cards on the board
+- [x] US-064 — A bot a beginner can beat, a fair game for both players
+- [x] US-071 — Say why a card in hand cannot be played
 
-Premier jalon jouable à la fin d'US-013, avec les cartes que le moteur prend déjà en charge (décision du porteur du
-projet, 2026-10-18). Niveaux du bot (US-021) et récompense de victoire (US-025, avec EPIC-02 et EPIC-03) rédigés le 2026-10-18.
+First playable milestone at the end of US-013, with the cards the engine already supports (project owner's decision,
+2026-10-18). Bot levels (US-021) and victory reward (US-025, with EPIC-02 and EPIC-03) written on 2026-10-18.
 
-Epic rouvert le 2026-10-22 : le porteur du projet trouve le bot presque impossible à battre ; une simulation montre
-qu'aucun niveau n'est vraiment facile et que commencer donne un gros avantage (US-064).
+Epic reopened on 2026-10-22: the project owner finds the bot almost impossible to beat; a simulation shows that no
+level is really easy and that going first is a big advantage (US-064).
 
-Epic rouvert le 2026-10-23 : le porteur du projet n'arrive pas à jouer Apigee AI Gateway, une évolution dont l'écran
-ne dit pas qu'elle attend sa carte d'origine sur le plateau (US-071).
+Epic reopened on 2026-10-23: the project owner cannot play Apigee AI Gateway, an evolution whose screen does not say
+that it is waiting for its source card on the board (US-071).
 
-## Hors périmètre
+## Out of scope
 
-Combat contre d'autres joueurs (EPIC-06).
+Combat against other players (EPIC-06).

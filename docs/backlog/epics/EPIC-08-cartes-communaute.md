@@ -1,53 +1,53 @@
-# EPIC-08 — Cartes proposées par la communauté IT
+# EPIC-08 — Cards proposed by the IT community
 
-- **Statut** : En cours
-- **Priorité** : Should
+- **Status**: In progress
+- **Priority**: Should
 
-## Objectif
+## Goal
 
-Faire du jeu un outil d'**acculturation IT** porté par plusieurs voix : les collègues architectes du porteur du projet
-proposent leurs propres cartes (une technologie, un pattern, un incident vécu), avec un texte « En vrai » qui explique
-ce que la carte représente dans le SI. Demande du porteur du projet, 2026-10-19.
+Make the game a tool for **IT acculturation** carried by several voices: the project owner's fellow architects propose
+their own cards (a technology, a pattern, an incident they lived through), with an "In real life" text that explains
+what the card stands for in the information system. Request from the project owner, 2026-10-19.
 
-**Affinage du 2026-10-27** (ADR [0050](../../decisions/0050-cartes-communaute-par-pull-request.md)) : les contributeurs
-sont des architectes à l'aise avec GitHub et avec un assistant IA. Plutôt qu'un formulaire et une file de relecture
-dans le jeu, **une carte de la communauté est une pull request ouverte depuis un fork**. Le dépôt leur fournit le
-matériel : un guide des règles de création, une consigne pour que leur IA écrive la carte, une autre pour qu'elle
-dessine l'illustration. La relecture, l'équilibrage et la publication se font dans la PR ; la carte prend le numéro
-suivant du catalogue et porte le nom de son auteur.
+**Refinement of 2026-10-27** (ADR [0050](../../decisions/0050-cartes-communaute-par-pull-request.md)): the
+contributors are architects who are comfortable with GitHub and with an AI assistant. Rather than a form and a review
+queue in the game, **a community card is a pull request opened from a fork**. The repository gives them the material:
+a guide to the card creation rules, a prompt for their AI to write the card, and another for it to draw the
+illustration. Review, balancing and publication happen in the PR; the card takes the next number in the catalogue and
+carries its author's name.
 
-## Indicateur de réussite
+## Success indicator
 
-- Au moins 5 contributeurs, en dehors du porteur du projet, ont une carte publiée dans le jeu.
-- Une PR de carte reçoit une réponse (fusionnée, à retravailler, refusée) en moins de deux semaines.
-- Une PR de carte produite avec le kit passe `npm run check` du premier coup dans la majorité des cas.
-- Chaque carte publiée garde un texte « En vrai » relu, compréhensible par un non-spécialiste.
+- At least 5 contributors, other than the project owner, have a card published in the game.
+- A card PR gets an answer (merged, to rework, rejected) in under two weeks.
+- A card PR produced with the kit passes `npm run check` first time in most cases.
+- Every published card keeps a reviewed "In real life" text, understandable by a non-specialist.
 
 ## Stories
 
-- [x] US-027 — Guide du contributeur : les règles de création d'une carte
-- [x] US-028 — Kit pour l'IA du contributeur : consignes de carte et d'illustration
-- [x] US-029 — Relire une carte proposée dans sa pull request
-- [ ] US-030 — L'auteur d'une carte dans le catalogue, et une première carte de la communauté
-- [ ] US-031 — Créditer les contributeurs dans le jeu
-- [x] US-086 — Le kit du contributeur en anglais
+- [x] US-027 — Contributor guide: the rules for creating a card
+- [x] US-028 — Kit for the contributor's AI: card and illustration prompts
+- [x] US-029 — Review a card proposed in its pull request
+- [ ] US-030 — A card's author in the catalogue, and a first community card
+- [ ] US-031 — Credit contributors in the game
+- [x] US-086 — The contributor kit in English
 
-Ordre suggéré : US-027 (utile tout de suite, y compris pour des idées reçues par message ou en atelier), US-028 et
-US-029 (le kit complet), puis US-030 avec un premier collègue pour éprouver le parcours, et US-031.
+Suggested order: US-027 (useful right away, including for ideas received by message or in a workshop), US-028 and
+US-029 (the complete kit), then US-030 with a first colleague to test the journey, and US-031.
 
-## Décisions prises
+## Decisions taken
 
-- **Identité et relecture** : aucun compte ni rôle dans le jeu ; le contributeur est l'auteur de la PR, le relecteur
-  est le porteur du projet (`CODEOWNERS`). Pas d'ADR d'identité (ADR 0050).
-- **Accès** : fork et PR, sans droit d'écriture sur le dépôt (ADR 0050).
-- **Chemin vers le catalogue** : la PR elle-même, avec les tests d'invariants en CI (ADR 0011, 0050).
-- **Sets** : pas de set à part ; numéros suivants du catalogue, distingués par le champ auteur (ADR 0050).
-- **Confidentialité** : règle écrite dans le guide (US-027), vérifiée par le contributeur avant d'ouvrir la PR (le
-  dépôt est public dès l'ouverture), puis par le relecteur (liste de contrôle d'US-029).
+- **Identity and review**: no account or role in the game; the contributor is the PR's author, the reviewer is the
+  project owner (`CODEOWNERS`). No identity ADR (ADR 0050).
+- **Access**: fork and PR, with no write access to the repository (ADR 0050).
+- **Path to the catalogue**: the PR itself, with the invariant tests in CI (ADR 0011, 0050).
+- **Sets**: no separate set; next numbers in the catalogue, distinguished by the author field (ADR 0050).
+- **Confidentiality**: rule written in the guide (US-027), checked by the contributor before opening the PR (the
+  repository is public as soon as it is opened), then by the reviewer (US-029 checklist).
 
-## Hors périmètre
+## Out of scope
 
-- Formulaire de proposition et file de relecture dans le jeu (remplacés par les PR, ADR 0050).
-- Droit d'écriture des contributeurs sur le dépôt.
-- Nouvelle capacité de combat apportée par une PR de carte : elle fait l'objet de sa propre story.
-- Votes publics sur les propositions et classements des contributeurs (EPIC-07, vie sociale, si besoin).
+- Proposal form and review queue in the game (replaced by PRs, ADR 0050).
+- Write access to the repository for contributors.
+- A new combat ability brought by a card PR: it is the subject of its own story.
+- Public votes on proposals and contributor rankings (EPIC-07, social life, if needed).

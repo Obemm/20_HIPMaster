@@ -1,56 +1,56 @@
-# US-062 — Ouvrir un booster, un vrai moment
+# US-062 — Opening a booster, a real moment
 
-- **Epic** : EPIC-10
-- **Statut** : Faite
-- **Priorité** : Could
-- **Taille** : M
-- **Branche** : `us-062-ouverture-booster-mise-en-scene`
+- **Epic**: EPIC-10
+- **Status**: Done
+- **Priority**: Could
+- **Size**: M
+- **Branch**: `us-062-ouverture-booster-mise-en-scene`
 
-## Récit
+## Story
 
-En tant que **joueur**, je veux **découvrir mes cartes une à une quand j'ouvre un booster** afin de **ressentir le
-plaisir de la découverte, surtout pour une carte rare**.
+As a **player**, I want **to discover my cards one by one when I open a booster** so that **I feel the pleasure of
+discovery, especially for a rare card**.
 
-## Contexte
+## Context
 
-Constat de la revue du 2026-10-22 : l'écran « Mes boosters » est un texte (« 5 boosters en stock ») et un bouton ;
-l'ouverture affiche d'un coup la grille des 5 cartes avec une étiquette « Nouvelle ! ». C'est le moment fort d'un
-jeu de cartes à collectionner (WikiMasters, voir `docs/produit/inspirations.md`).
+Finding from the 2026-10-22 review: the "My boosters" screen is a line of text ("5 boosters in stock") and a button;
+opening shows the grid of 5 cards all at once with a "New!" label. This is the high point of a collectible card game
+(WikiMasters, see `docs/produit/inspirations.md`).
 
-## Critères d'acceptation
+## Acceptance criteria
 
-- [x] **Étant donné** des boosters en stock, **alors** l'écran les montre comme des paquets (visuel), avec le stock
-      et le temps avant le prochain booster gratuit.
-- [x] **Étant donné** un booster ouvert, **quand** les cartes arrivent, **alors** elles se révèlent une à une (geste
-      ou appui), la rareté se voit avant le retournement, et une carte épique ou légendaire a un effet plus marqué.
-- [x] **Étant donné** un joueur pressé, **alors** un bouton « Tout révéler » montre les 5 cartes d'un coup.
-- [x] **Étant donné** la préférence système « réduire les animations », **alors** aucune animation n'est jouée.
-- [x] Le tirage reste fait par le serveur (ADR 0004, 0019) : l'animation ne change rien au résultat.
-- [x] **Étant donné** un lecteur d'écran ou le clavier, **alors** chaque carte cachée est un bouton qui dit sa
-      rareté (« Retourner la carte 1 : Rare »), la carte retournée est annoncée (« Carte 1 : FTP, légendaire,
-      nouvelle ! ») et le focus passe à la suivante, puis au bilan.
+- [x] **Given** boosters in stock, **then** the screen shows them as packs (visual), with the stock and the time before
+      the next free booster.
+- [x] **Given** an opened booster, **when** the cards arrive, **then** they are revealed one by one (gesture or tap),
+      the rarity is visible before the flip, and an epic or legendary card has a stronger effect.
+- [x] **Given** a player in a hurry, **then** a "Reveal all" button shows the 5 cards at once.
+- [x] **Given** the "reduce motion" system preference, **then** no animation is played.
+- [x] The draw is still made by the server (ADR 0004, 0019): the animation changes nothing about the result.
+- [x] **Given** a screen reader or the keyboard, **then** each hidden card is a button that states its rarity ("Turn
+      over card 1: Rare"), the flipped card is announced ("Card 1: FTP, legendary, new!") and focus moves to the next
+      one, then to the summary.
 
-## Décisions
+## Decisions
 
-- **Le tirage reste entier côté serveur** : la réponse de `POST /moi/boosters/ouvertures` arrive avant la mise en
-  scène, qui ne fait que retarder l'affichage ; la collection est déjà à jour quand la première carte se retourne.
-- **La rareté se lit au dos** : liseré de la couleur du cadre de rareté, halo pour les épiques et les légendaires,
-  et la rareté en toutes lettres sous la carte, avec son symbole (la couleur n'est jamais seule).
-- **Les « Nouvelle ! » n'apparaissent qu'une fois la carte retournée**, et le titre ne compte les nouvelles qu'à la
-  fin (« 5 cartes à retourner », puis « 5 cartes, 2 nouvelles ») : pas de surprise gâchée.
-- **Effets** : distribution des cartes une à une, retournement en pivot, éclat de lumière derrière une épique et plus
-  grand derrière une légendaire, paquet qui tremble pendant l'ouverture. Tous sous
-  `prefers-reduced-motion: no-preference` : sans animation, les cartes se retournent d'un coup, sans mouvement.
-- **Les paquets en stock** sont dessinés en CSS (feuille métallisée, dentelures, logo, « Set 1 ») : cinq au plus en
-  éventail, le nombre exact est écrit à côté ; un paquet grisé quand le stock est vide.
+- **The draw stays entirely server-side**: the response to `POST /moi/boosters/ouvertures` arrives before the staging,
+  which only delays the display; the collection is already up to date when the first card flips.
+- **Rarity can be read from the back**: a border in the rarity frame's colour, a glow for epics and legendaries, and
+  the rarity spelled out under the card, with its symbol (colour is never alone).
+- **The "New!" labels appear only once the card is flipped**, and the title counts the new ones only at the end ("5
+  cards to flip", then "5 cards, 2 new"): no spoiled surprise.
+- **Effects**: cards dealt one by one, pivoting flip, a burst of light behind an epic and a larger one behind a
+  legendary, pack shaking during the opening. All under `prefers-reduced-motion: no-preference`: without animation,
+  the cards flip at once, with no movement.
+- **The packs in stock** are drawn in CSS (metallic foil, crimped edges, logo, "Set 1"): at most five fanned out, the
+  exact number written next to them; a greyed-out pack when the stock is empty.
 
-## Captures
+## Screenshots
 
-- [Le déroulé sur téléphone, avant / après](../../produit/captures/us-062-ouverture-tel-avant-apres.jpg)
-- [Au bureau](../../produit/captures/us-062-ouverture-bureau.jpg)
+- [The sequence on phone, before / after](../../produit/captures/us-062-ouverture-tel-avant-apres.jpg)
+- [On desktop](../../produit/captures/us-062-ouverture-bureau.jpg)
 
-## Journal
+## Log
 
-- 2026-10-22 — création, issue de la revue du design avant mise en ligne.
-- 2026-10-24 — affinée et commencée (session de nuit, sur la charte d'US-061 et US-068).
-- 2026-10-24 — livrée : Paquets dessinés, cartes face cachée qui se retournent une à une ou toutes d'un coup, rareté au dos, éclat des épiques et légendaires, annonces et focus pour le clavier et les lecteurs d'écran, animations coupées sur demande.
+- 2026-10-22 — created, from the design review before going live.
+- 2026-10-24 — refined and started (overnight session, on the US-061 and US-068 charter).
+- 2026-10-24 — delivered: Drawn packs, face-down cards that flip one by one or all at once, rarity on the back, burst of light for epics and legendaries, announcements and focus for keyboard and screen readers, animations turned off on request.

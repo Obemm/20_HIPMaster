@@ -1,131 +1,131 @@
-# US-057 — Des requêtes légères : index, lectures bornées, cache et chargement à la demande
+# US-057 — Light requests: indexes, bounded reads, cache and on-demand loading
 
-- **Epic** : EPIC-09
-- **Statut** : Faite
-- **Priorité** : Should
-- **Taille** : M
-- **Branche** : `us-057-requetes-legeres`
+- **Epic**: EPIC-09
+- **Status**: Done
+- **Priority**: Should
+- **Size**: M
+- **Branch**: `us-057-requetes-legeres`
 
-## Récit
+## Story
 
-En tant que **joueur sur téléphone**, je veux **des écrans qui s'affichent vite, même avec un réseau moyen**, et en
-tant que **porteur du projet**, je veux **que chaque joueur coûte peu de requêtes** afin de **rester dans les quotas
-gratuits, base Neon comprise**.
+As a **player on a phone**, I want **screens that display quickly, even on an average network**, and as the **project
+owner**, I want **each player to cost few requests** so that **we stay within the free quotas, Neon database
+included**.
 
-## Contexte
+## Context
 
-Revue du 2026-10-22 :
+Review of 2026-10-22:
 
-- **base** : aucun index secondaire (PostgreSQL n'indexe pas les clés étrangères). « Mes duels », appelé par chaque
-  client connecté toutes les 60 s et à chaque navigation, balaie toute la table `duels`, ramène tous les duels du
-  joueur depuis toujours (la coupe à 20 se fait en JavaScript) et relit l'état complet de chacun ; l'écran de duel
-  interroge toutes les 3 à 5 s, et le `If-None-Match` n'est comparé qu'après avoir tout chargé ;
-- **réseau** : chaque page recharge le catalogue (21,5 Ko, 5 Ko compressé) et les decks ; les réponses ne sont ni
-  compressées ni accompagnées de `Cache-Control` ou d'`ETag` ; les interrogations continuent quand l'onglet est
-  caché ;
-- **front** : les 11 pages sont dans un seul bundle de 382 Ko (98,5 Ko transférés), aucune n'est chargée à la
-  demande ; les illustrations n'ont pas d'empreinte dans leur nom, ce qui interdit un cache long, et partagent le
-  préfixe `/cartes/` avec une route Angular.
+- **database**: no secondary index (PostgreSQL does not index foreign keys). "My duels", called by every signed-in
+  client every 60 s and at each navigation, sweeps the whole `duels` table, brings back all the player's duels since
+  forever (the cut to 20 is done in JavaScript) and re-reads the full state of each; the duel screen polls every 3 to 5
+  s, and the `If-None-Match` is compared only after loading everything;
+- **network**: each page reloads the catalogue (21.5 KB, 5 KB compressed) and the decks; responses are neither
+  compressed nor accompanied by `Cache-Control` or `ETag`; polling continues when the tab is hidden;
+- **front end**: the 11 pages are in a single 382 KB bundle (98.5 KB transferred), none is loaded on demand;
+  illustrations have no fingerprint in their name, which forbids a long cache, and share the `/cartes/` prefix with an
+  Angular route.
 
-Affinage du 2026-10-24, sur mesures (voir « Mesures ») : le plateau, le duel et la page « Inviter » étaient déjà
-chargés à la demande (US-061, US-072), et l'arrêt des interrogations onglet caché est livré (US-055). Les
-illustrations à empreinte passent dans une story à elles, [US-078](US-078-illustrations-empreinte-cache.md) : leur
-chaîne (US-015) est en plein travail avec US-017, et leur nom de fichier change avec elle. La liste des decks en
-composant unique est écartée : l'intercepteur du catalogue supprime déjà les lectures répétées, et ce composant
-toucherait l'écran de jeu, en chantier (US-066, US-067).
+Refinement of 2026-10-24, on measurements (see "Measurements"): the board, the duel and the "Invite" page were already
+loaded on demand (US-061, US-072), and stopping polling on a hidden tab is delivered (US-055). Fingerprinted
+illustrations go into a story of their own, [US-078](US-078-illustrations-empreinte-cache.md): their pipeline (US-015)
+is under heavy work with US-017, and their file name changes with it. The deck list as a single component is
+dropped: the catalogue interceptor already removes repeated reads, and this component would touch the game screen,
+under construction (US-066, US-067).
 
-## Critères d'acceptation
+## Acceptance criteria
 
-- [x] **Étant donné** les requêtes de duels, de récompenses et de sessions, **alors** des index les servent
-      (`duels` par créateur et par adversaire, file des duels ouverts, récompenses du jour, sessions et parties par
-      joueur) ; « Mes duels » est borné en SQL et ne décompresse l'état que des duels renvoyés.
-- [x] **Étant donné** une interrogation d'un duel qui n'a pas changé, **alors** l'API répond 304 après une lecture
-      légère de la version, sans charger l'état ; une échéance passée fait toujours appliquer le forfait.
-- [x] **Étant donné** le catalogue, les decks, les niveaux et les raretés, **alors** l'API les envoie compressés,
-      avec `Cache-Control: public, max-age=300` et un `ETag` (304 sans corps à qui le connaît) ; les réponses
-      personnelles et les erreurs restent `no-store`.
-- [x] **Étant donné** le front, **alors** le catalogue (cartes, détail, decks, niveaux, raretés) n'est demandé
-      qu'une fois par session, même par plusieurs écrans à la fois.
-- [x] **Étant donné** les routes Angular, **alors** toutes les pages sauf l'accueil sont chargées à la demande
-      (`loadComponent`) et les budgets du bundle initial sont resserrés.
-- [x] **Étant donné** une requête de l'API, **alors** sa mesure (`EXPLAIN ANALYZE` sur PostgreSQL 18) se rejoue
-      avec `npm run mesurer -w @hipmaster/api`, et chaque gain est prouvé par un test ou une mesure.
+- [x] **Given** the duel, reward and session queries, **then** indexes serve them (`duels` by creator and by opponent,
+      queue of open duels, rewards of the day, sessions and games per player); "My duels" is bounded in SQL and
+      decompresses the state only of the duels returned.
+- [x] **Given** a poll of a duel that has not changed, **then** the API answers 304 after a light read of the version,
+      without loading the state; a passed deadline still makes the forfeit apply.
+- [x] **Given** the catalogue, decks, levels and rarities, **then** the API sends them compressed, with
+      `Cache-Control: public, max-age=300` and an `ETag` (bodyless 304 to whoever knows it); personal responses and
+      errors stay `no-store`.
+- [x] **Given** the front end, **then** the catalogue (cards, detail, decks, levels, rarities) is requested only once
+      per session, even by several screens at once.
+- [x] **Given** the Angular routes, **then** all pages except the home page are loaded on demand (`loadComponent`) and
+      the initial bundle budgets are tightened.
+- [x] **Given** an API request, **then** its measurement (`EXPLAIN ANALYZE` on PostgreSQL 18) can be replayed with
+      `npm run mesurer -w @hipmaster/api`, and each gain is proven by a test or a measurement.
 
-## Conception
+## Design
 
 ADR [0039](../../decisions/0039-requetes-legeres-cache-compression.md).
 
-- **Migration `0013_index_requetes`** (index seulement, compatible avec la version en ligne) : `duels_createur`
-  et `duels_adversaire` (joueur, `maj_le`), `duels_attente` (partiel, `cree_le` des défis en attente),
-  `recompenses_joueur` (joueur, `accordee_le`), `sessions_joueur`, `parties_joueur`, `parties_session`.
-- **« Mes duels »** (`lireMesDuels`) : deux requêtes, chacune choisit ses duels par une sous-requête sans l'état
-  (pas terminés : 200 au plus, garde-fou ; terminés : les 20 derniers), puis n'extrait les champs JSON que pour eux.
-- **Duel inchangé** (`duelInchange`) : lit statut, version, joueurs et dates ; 304 si la version est connue, que le
-  joueur voit le duel, que le défi n'a pas expiré et qu'aucun forfait n'est dû. Sinon, lecture complète.
-- **Catalogue** (`cache-catalogue.ts`) : un `ETag` commun, empreinte SHA-256 de tout ce que servent `/cartes`,
-  `/cartes/{numero}`, `/decks`, `/niveaux` et `/raretes`, calculée au démarrage ; 304 dès `onRequest`.
-- **Compression** : `@fastify/compress`, au-delà de 1 Ko, Brotli qualité 5 ou gzip.
-- **Front** : `intercepteurCatalogue` (`reseau/catalogue.ts`) garde en mémoire la réponse de chaque lecture du
-  catalogue et la partage (`shareReplay`) ; aucun écran n'a changé. Toutes les routes en `loadComponent`, sauf
-  l'accueil ; budget initial : alerte à 420 Ko, erreur à 500 Ko (au lieu de 500 Ko et 1 Mo).
-- **Session expirée** (US-055) : avec des pages chargées à la demande, le 401 du démarrage arrive avant la fin de la
-  première navigation ; le retour après reconnexion vise donc la page en cours de navigation
-  (`router.currentNavigation()`), plus seulement la page affichée (trouvé par l'e2e `robustesse.spec.ts`).
+- **Migration `0013_index_requetes`** (indexes only, compatible with the live version): `duels_createur` and
+  `duels_adversaire` (player, `maj_le`), `duels_attente` (partial, `cree_le` of pending challenges),
+  `recompenses_joueur` (player, `accordee_le`), `sessions_joueur`, `parties_joueur`, `parties_session`.
+- **"My duels"** (`lireMesDuels`): two queries, each choosing its duels through a subquery without the state (not
+  finished: 200 at most, safeguard; finished: the last 20), then extracting the JSON fields only for them.
+- **Unchanged duel** (`duelInchange`): reads status, version, players and dates; 304 if the version is known, the
+  player sees the duel, the challenge has not expired and no forfeit is due. Otherwise, full read.
+- **Catalogue** (`cache-catalogue.ts`): a common `ETag`, SHA-256 fingerprint of everything served by `/cartes`,
+  `/cartes/{numero}`, `/decks`, `/niveaux` and `/raretes`, computed at startup; 304 as of `onRequest`.
+- **Compression**: `@fastify/compress`, beyond 1 KB, Brotli quality 5 or gzip.
+- **Front end**: `intercepteurCatalogue` (`reseau/catalogue.ts`) keeps in memory the response of each catalogue read and
+  shares it (`shareReplay`); no screen changed. All routes in `loadComponent`, except the home page; initial budget:
+  warning at 420 KB, error at 500 KB (instead of 500 KB and 1 MB).
+- **Expired session** (US-055): with pages loaded on demand, the startup 401 arrives before the end of the first
+  navigation; the return after signing in again therefore targets the page being navigated to
+  (`router.currentNavigation()`), no longer only the displayed page (found by the e2e `robustesse.spec.ts`).
 
-## Mesures
+## Measurements
 
-Base de mesure (`npm run mesurer -w @hipmaster/api`, PostgreSQL 18 en local) : 300 joueurs, 6 000 duels dont 400
-pour un joueur assidu, état de 9,9 Ko par duel (une vraie partie de 40 coups), 20 000 récompenses, 1 000 parties
-contre le bot. Second passage (cache chaud), temps d'exécution et blocs lus :
+Measurement base (`npm run mesurer -w @hipmaster/api`, local PostgreSQL 18): 300 players, 6,000 duels of which 400 for
+an assiduous player, 9.9 KB state per duel (a real 40-move game), 20,000 rewards, 1,000 games against the bot. Second
+pass (warm cache), execution time and blocks read:
 
-| Requête                                | Avant                       | Après                             |
-| -------------------------------------- | --------------------------- | --------------------------------- |
-| « Mes duels » : la liste               | 40,2 ms, 4 821 blocs (séq.) | 2,6 ms, 531 blocs (2 requêtes)    |
-| Duels en retard (forfait)              | 0,26 ms, 110 blocs (séq.)   | 0,31 ms, 11 blocs (index)         |
-| Adversaire déjà affronté ce jour       | 0,67 ms, 110 blocs (séq.)   | 0,13 ms, 7 blocs (index)          |
-| Hasard : déjà dans la file             | 0,22 ms, 110 blocs (séq.)   | 0,08 ms, 5 blocs (index)          |
-| Hasard : dernier adversaire            | 0,30 ms, 110 blocs (séq.)   | 0,19 ms, 15 blocs (index)         |
-| Hasard : file des duels ouverts        | 0,28 ms, 130 blocs (séq.)   | 0,06 ms, 22 blocs (index partiel) |
-| Récompense : victoires du jour         | 0,56 ms, 187 blocs (séq.)   | 0,08 ms, 4 blocs (index)          |
-| Fermer ses autres sessions             | 0,24 ms, 16 blocs (séq.)    | 0,27 ms, 9 blocs (index)          |
-| Purge : défis expirés                  | 0,26 ms, 124 blocs (séq.)   | 0,13 ms, 1 bloc (index partiel)   |
-| Session, lecture d'un duel, collection | déjà par clé primaire       | inchangé                          |
+| Query                               | Before                       | After                              |
+| ----------------------------------- | ---------------------------- | ---------------------------------- |
+| "My duels": the list                | 40.2 ms, 4,821 blocks (seq.) | 2.6 ms, 531 blocks (2 queries)     |
+| Overdue duels (forfeit)             | 0.26 ms, 110 blocks (seq.)   | 0.31 ms, 11 blocks (index)         |
+| Opponent already faced that day     | 0.67 ms, 110 blocks (seq.)   | 0.13 ms, 7 blocks (index)          |
+| Random: already in the queue        | 0.22 ms, 110 blocks (seq.)   | 0.08 ms, 5 blocks (index)          |
+| Random: last opponent               | 0.30 ms, 110 blocks (seq.)   | 0.19 ms, 15 blocks (index)         |
+| Random: queue of open duels         | 0.28 ms, 130 blocks (seq.)   | 0.06 ms, 22 blocks (partial index) |
+| Reward: victories of the day        | 0.56 ms, 187 blocks (seq.)   | 0.08 ms, 4 blocks (index)          |
+| Closing one's other sessions        | 0.24 ms, 16 blocks (seq.)    | 0.27 ms, 9 blocks (index)          |
+| Purge: expired challenges           | 0.26 ms, 124 blocks (seq.)   | 0.13 ms, 1 block (partial index)   |
+| Session, reading a duel, collection | already by primary key       | unchanged                          |
 
-À ce volume, les index gagnent peu en temps (tout tient en mémoire) mais lisent 5 à 40 fois moins de blocs, et ne
-croissent plus avec l'historique. Le vrai gain en base est « Mes duels » : 15 fois plus rapide, 9 fois moins de blocs.
+At this volume, the indexes gain little in time (everything fits in memory) but read 5 to 40 times fewer blocks, and
+no longer grow with the history. The real database gain is "My duels": 15 times faster, 9 times fewer blocks.
 
-Réseau et front :
+Network and front end:
 
-- **Catalogue compressé** : `/api/v1/cartes` 21 541 → 5 014 octets en Brotli (gzip : 5 110), 0,7 ms de calcul ;
-  avant, le site en ligne l'envoyait brut (mesuré sur `hipmaster.web.app` le 2026-10-24) ;
-- **Catalogue en cache** : 5 minutes au navigateur et au relais de Firebase Hosting, puis 304 sans corps ; dans le
-  front, une seule lecture par session au lieu d'une par écran (9 écrans le lisent) ;
-- **Interrogation d'un duel inchangé** : 2 requêtes en base (session, version) au lieu de 3 à 5 (session, duel
-  complet, pseudos, récompense), sans décompresser les 10 Ko de l'état ni calculer la vue ;
-- **Bundle initial** : 457,6 → 380,5 Ko (117,8 → 100,7 Ko transférés), chaque page chargée à sa première ouverture
-  (de 1,7 à 4,2 Ko transférés).
+- **Compressed catalogue**: `/api/v1/cartes` 21,541 → 5,014 bytes in Brotli (gzip: 5,110), 0.7 ms of computation;
+  before, the live site sent it raw (measured on `hipmaster.web.app` on 2026-10-24);
+- **Cached catalogue**: 5 minutes in the browser and at Firebase Hosting's relay, then bodyless 304; in the front end,
+  a single read per session instead of one per screen (9 screens read it);
+- **Poll of an unchanged duel**: 2 database queries (session, version) instead of 3 to 5 (session, full duel,
+  nicknames, reward), without decompressing the 10 KB of state nor computing the view;
+- **Initial bundle**: 457.6 → 380.5 KB (117.8 → 100.7 KB transferred), each page loaded at its first opening (1.7 to
+  4.2 KB transferred).
 
-Tests : `cache-catalogue.test.ts` (en-têtes, 304, `no-store` des réponses d'un joueur et des erreurs, compression),
-`duels.test.ts` (20 derniers terminés après les duels en cours ; 304 refusé à un tiers ; forfait appliqué malgré une
-version connue), `reseau/catalogue.spec.ts` (une lecture par session, partagée, retentée après un échec, jamais pour
-les données d'un joueur). E2e sur le build de production : 139 parcours verts, sans violation de la CSP.
+Tests: `cache-catalogue.test.ts` (headers, 304, `no-store` of a player's responses and of errors, compression),
+`duels.test.ts` (last 20 finished after the duels in progress; 304 refused to a third party; forfeit applied despite a
+known version), `reseau/catalogue.spec.ts` (one read per session, shared, retried after a failure, never for a
+player's data). E2e on the production build: 139 journeys green, without CSP violation.
 
-## Décision : surveiller avant d'allonger l'intervalle
+## Decision: monitor before lengthening the interval
 
-Un écran visible interroge l'API toutes les 60 s (« Mes duels ») et chaque requête d'un joueur lit sa session en
-base : tant qu'un écran est ouvert, Neon ne s'endort pas (veille après 5 minutes sans requête).
+A visible screen polls the API every 60 s ("My duels") and each player request reads their session in the database: as
+long as a screen is open, Neon does not fall asleep (sleep after 5 minutes without a request).
 
-Décision du porteur du projet (2026-10-24) : **ne rien changer pour l'instant et surveiller la consommation** avec le
-job `hipmaster-consommation` (US-051), qui alerte par e-mail dès 70 % du quota. Si l'alerte tombe à cause des
-interrogations, la réponse prévue est d'allonger l'intervalle à 10 minutes (`RAFRAICHISSEMENT_MS` de
-`mes-duels.service.ts`) : au-delà de 5 minutes, la base s'endort entre deux interrogations ; en dessous, allonger ne
-sert à rien. Écartées pour l'instant : n'interroger que sur l'accueil et « Mes duels », ou combiner les deux.
+Decision of the project owner (2026-10-24): **change nothing for now and monitor consumption** with the
+`hipmaster-consommation` job (US-051), which alerts by e-mail from 70% of the quota. If the alert fires because of the
+polling, the planned response is to lengthen the interval to 10 minutes (`RAFRAICHISSEMENT_MS` of
+`mes-duels.service.ts`): beyond 5 minutes, the database falls asleep between two polls; below, lengthening is
+pointless. Dropped for now: polling only on the home page and "My duels", or combining the two.
 
-## Journal
+## Log
 
-- 2026-10-22 — création, issue de la revue de l'API et du front avant mise en ligne.
-- 2026-10-24 — affinage sur mesures (PostgreSQL 18 et site en ligne) ; illustrations à empreinte reportées en US-078.
-- 2026-10-24 — livrée : index mesurés, « Mes duels » borné (40 → 2,6 ms), 304 léger des duels, catalogue compressé
-  et en cache public avec ETag, gardé en mémoire par le front, pages à la demande (bundle initial 457 → 380 Ko)
+- 2026-10-22 — created, from the API and front end review before going live.
+- 2026-10-24 — refinement on measurements (PostgreSQL 18 and the live site); fingerprinted illustrations postponed to
+  US-078.
+- 2026-10-24 — delivered: measured indexes, bounded "My duels" (40 → 2.6 ms), light 304 for duels, catalogue compressed
+  and in public cache with ETag, kept in memory by the front end, pages on demand (initial bundle 457 → 380 KB)
   (ADR 0039).
-- 2026-10-24 — décision : surveiller la consommation de Neon avant d'allonger l'intervalle des interrogations.
+- 2026-10-24 — decision: monitor Neon's consumption before lengthening the polling interval.

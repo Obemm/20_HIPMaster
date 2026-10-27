@@ -1,40 +1,41 @@
-# US-004 — Base de données locale
+# US-004 — Local database
 
-- **Epic** : EPIC-00
-- **Statut** : Faite
-- **Priorité** : Must
-- **Taille** : XS
-- **Branche** : `us-004-base-de-donnees`
+- **Epic**: EPIC-00
+- **Status**: Done
+- **Priority**: Must
+- **Size**: XS
+- **Branch**: `us-004-base-de-donnees`
 
-## Récit
+## Story
 
-En tant que **développeur**, je veux **une base PostgreSQL locale lancée en une commande, avec migrations**
-afin de **stocker joueurs, cartes et collections**.
+As a **developer**, I want **a local PostgreSQL database started with one command, with migrations**
+so that **I can store players, cards and collections**.
 
-> **Révisée le 2026-10-19.** Docker n'est pas installé sur le poste de développement : le besoin a été satisfait
-> autrement par US-022 (ADR [0018](../../decisions/0018-pglite-developpement.md)). Les critères d'origine, écrits
-> pour Docker, sont remplacés par ceux ci-dessous ; la voie Docker reste disponible mais n'a pas été vérifiée.
+> **Revised on 2026-10-19.** Docker is not installed on the development machine: the need was met differently by
+> US-022 (ADR [0018](../../decisions/0018-pglite-developpement.md)). The original criteria, written for Docker, are
+> replaced by the ones below; the Docker route remains available but has not been verified.
 
-## Critères d'acceptation
+## Acceptance criteria
 
-- [x] **Quand** je tape `npm run dev`, **alors** l'API ouvre une base PostgreSQL embarquée (PGlite, dans `.donnees/`)
-      sans Docker ni autre commande, et y applique toutes les migrations (`0000_init` à `0004_recompenses`).
-- [x] Les tests de l'API et les parcours e2e utilisent une base PGlite en mémoire, vierge à chaque lancement.
-- [x] Avec `DATABASE_URL`, l'API utilise un vrai PostgreSQL et le même schéma Drizzle ; `npm run db:up` (Docker,
-      port 5433), `db:migrate` et `db:studio` servent dans ce cas — **non vérifié**, faute de Docker sur le poste.
-- [x] ~~`npm run db:studio` permet de consulter la table `cartes`~~ : sans objet, la table provisoire `cartes` a été
-      retirée par US-023 (ADR 0011).
+- [x] **When** I type `npm run dev`, **then** the API opens an embedded PostgreSQL database (PGlite, in `.donnees/`)
+      without Docker or any other command, and applies all the migrations to it (`0000_init` to `0004_recompenses`).
+- [x] The API tests and the e2e journeys use an in-memory PGlite database, empty on every run.
+- [x] With `DATABASE_URL`, the API uses a real PostgreSQL and the same Drizzle schema; `npm run db:up` (Docker,
+      port 5433), `db:migrate` and `db:studio` are used in that case — **not verified**, for lack of Docker on the
+      machine.
+- [x] ~~`npm run db:studio` lets me browse the `cartes` table~~: no longer applicable, the provisional `cartes` table
+      was removed by US-023 (ADR 0011).
 
 ## Notes
 
-ADR [0003](../../decisions/0003-postgresql-drizzle.md) (PostgreSQL et Drizzle) et
-[0018](../../decisions/0018-pglite-developpement.md) (PGlite en développement et en tests). `db:migrate` et
-`db:studio` passent par drizzle-kit, qui lit `DATABASE_URL` : ils ne s'appliquent pas à la base PGlite, dont les
-migrations sont appliquées au démarrage de l'API.
+ADR [0003](../../decisions/0003-postgresql-drizzle.md) (PostgreSQL and Drizzle) and
+[0018](../../decisions/0018-pglite-developpement.md) (PGlite in development and tests). `db:migrate` and
+`db:studio` go through drizzle-kit, which reads `DATABASE_URL`: they do not apply to the PGlite database, whose
+migrations are applied when the API starts.
 
-## Journal
+## Log
 
-- 2026-10-16 — création, configuration écrite.
-- 2026-10-19 — révisée et close : la base locale est livrée par US-022 (PGlite, ADR 0018), le README précise que
-  `db:up`, `db:migrate` et `db:studio` concernent PostgreSQL (`DATABASE_URL`).
-- 2026-10-19 — livrée : Base locale sans Docker grâce à PGlite (US-022, ADR 0018) ; voie PostgreSQL documentée
+- 2026-10-16 — created, configuration written.
+- 2026-10-19 — revised and closed: the local database is delivered by US-022 (PGlite, ADR 0018), the README states
+  that `db:up`, `db:migrate` and `db:studio` concern PostgreSQL (`DATABASE_URL`).
+- 2026-10-19 — delivered: Local database without Docker thanks to PGlite (US-022, ADR 0018); PostgreSQL route documented

@@ -1,32 +1,32 @@
-# EPIC-15 — Des decks à soi
+# EPIC-15 — Decks of your own
 
-- **Statut** : Terminé
-- **Priorité** : Should
+- **Status**: Done
+- **Priority**: Should
 
-## Objectif
+## Goal
 
-Aujourd'hui, on ne joue qu'avec trois decks prêtés (Héritage, Moderne, Hybride, US-011). La vision produit prévoit
-pourtant de **construire son deck** à partir de sa collection (`docs/produit/vision.md`). Demande du porteur du
-projet (2026-10-26) : chaque joueur doit pouvoir se construire des decks personnalisés et jouer avec, ce qui donne
-enfin un sens à la collection et aux boosters.
+Today you can only play with three lent decks (Legacy, Modern, Hybrid, US-011). Yet the product vision plans for
+players to **build their own deck** from their collection (`docs/produit/vision.md`). Request from the project owner
+(2026-10-26): every player must be able to build custom decks and play with them, which at last gives meaning to the
+collection and the boosters.
 
-## Indicateur de réussite
+## Success indicator
 
-- Un joueur compose un deck à partir des cartes qu'il possède, le nomme, le garde, et le retrouve sur un autre
-  appareil (compte invité, US-022).
-- Il joue avec ce deck contre le bot et en duel ; le serveur vérifie toujours le deck (taille, exemplaires, cartes
-  possédées), jamais le front (ADR 0004).
-- Les decks prêtés restent disponibles, pour débuter.
+- A player builds a deck from the cards they own, names it, saves it, and finds it again on another device (guest
+  account, US-022).
+- They play with this deck against the bot and in a duel; the server always checks the deck (size, copies, cards
+  owned), never the front end (ADR 0004).
+- The lent decks stay available, for beginners.
 
 ## Stories
 
-- [x] US-083 — Construire, nommer et garder ses decks à partir de sa collection
-- [x] US-084 — Jouer avec son deck contre le bot et en duel
+- [x] US-083 — Build, name and keep your own decks from your collection
+- [x] US-084 — Play with your deck against the bot and in duels
 
-Ordre : US-083, puis US-084.
+Order: US-083, then US-084.
 
-## Hors périmètre
+## Out of scope
 
-- L'échange ou la vente de cartes entre joueurs.
-- Des formats de deck différents (taille, restrictions par famille) : les règles actuelles (20 cartes, 2 exemplaires
-  au plus, 1 pour une légendaire, `validerDeck` du domaine) s'appliquent.
+- Trading or selling cards between players.
+- Different deck formats (size, restrictions by family): the current rules (20 cards, at most 2 copies, 1 for a
+  legendary, the domain's `validerDeck`) apply.

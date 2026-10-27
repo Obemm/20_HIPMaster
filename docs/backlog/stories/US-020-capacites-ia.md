@@ -1,43 +1,42 @@
-# US-020 — Capacités IA et Migration
+# US-020 — AI abilities and Migration
 
-- **Epic** : EPIC-04
-- **Statut** : Faite
-- **Priorité** : Should
-- **Taille** : L
-- **Branche** : `us-020-capacites-ia`
+- **Epic**: EPIC-04
+- **Status**: Done
+- **Priority**: Should
+- **Size**: L
+- **Branch**: `us-020-capacites-ia`
 
-## Récit
+## Story
 
-En tant que **joueur**, je veux **jouer les agents et les évolutions IA** afin de **profiter de Solace Agent Mesh,
-d'Apigee AI Gateway et de toute l'IA agentique du set**.
+As a **player**, I want to **play the agents and the AI evolutions** so that **I can enjoy Solace Agent Mesh, Apigee AI
+Gateway and all the agentic AI of the set**.
 
-## Critères d'acceptation
+## Acceptance criteria
 
-- [x] Les capacités IA sont appliquées : Autonome (attaque au hasard en début de tour), Orchestration, Outillage,
-      Délégation, Contexte, Garde-fous, Asynchrone, Cache sémantique, Routage multi-modèles.
-- [x] Migration (SFTP) est appliquée.
-- [x] Les évolutions Solace Agent Mesh et Apigee AI Gateway, et les cartes Agent, Orchestrateur multi-agents,
-      Serveur MCP, Agent Card (A2A), RAG et SFTP rejoignent `CARTES_PRISES_EN_CHARGE` : **les 71 cartes** sont
-      jouables.
-- [x] Le bot sait jouer ces cartes ; la simulation « bot contre bot » tourne avec le set complet.
-- [x] Chaque capacité a son test ; le hasard (Autonome) passe par le générateur à graine.
+- [x] The AI abilities are applied: Autonomous (attacks at random at the start of the turn), Orchestration, Tooling,
+      Delegation, Context, Guardrails, Asynchronous, Semantic cache, Multi-model routing.
+- [x] Migration (SFTP) is applied.
+- [x] The Solace Agent Mesh and Apigee AI Gateway evolutions, and the Agent, Multi-agent orchestrator, MCP server,
+      Agent Card (A2A), RAG and SFTP cards join `CARTES_PRISES_EN_CHARGE`: **all 71 cards** are playable.
+- [x] The bot can play these cards; the "bot against bot" simulation runs with the complete set.
+- [x] Each ability has its test; the randomness (Autonomous) goes through the seeded generator.
 
 ## Notes
 
-- Issue du découpage d'[US-014](US-014-effets-cartes.md) le 2026-10-18.
-- Trois capacités demandent un choix du joueur et deviennent des actions explicites (ADR 0013) : `outiller`,
-  `router`, `migrer`. Les agents Autonomes attaquent au début du tour de leur propriétaire, juste après sa pioche.
-- Les decks prêtés intègrent les cartes IA (Moderne : AI Gateway et Agent Mesh ; Hybride : SFTP, Agent, RAG, Serveur
-  MCP) ; duels entre 44 et 56 % sur 400 parties.
+- Comes from the breakdown of [US-014](US-014-effets-cartes.md) on 2026-10-18.
+- Three abilities require a choice from the player and become explicit actions (ADR 0013): `outiller`, `router`,
+  `migrer`. Autonomous agents attack at the start of their owner's turn, right after the draw.
+- The loaner decks include the AI cards (Modern: AI Gateway and Agent Mesh; Hybrid: SFTP, Agent, RAG, MCP server);
+  duels between 44 and 56% over 400 games.
 
-## Journal
+## Log
 
-- 2026-10-18 — création (découpage d'US-014).
-- 2026-10-18 — `ia.ts` (Autonome, Outillage, Cache sémantique, Routage, Migration), Orchestration, Délégation et
-  Contexte dans les outils du moteur ; actions `outiller`, `router`, `migrer` ; bot (Migration, Outillage) ; decks
-  prêtés et simulation ; API (contrat, schémas) et écran (boutons, statuts, journal) ; 13 tests du domaine, 2 tests
-  de l'écran. **Les 71 cartes sont jouables.** En revue.
-- 2026-10-18 — livrée : capacités IA et Migration : les 71 cartes du set 1 sont jouables, bot et decks prêtés équilibrés (44 à 56 %)
-- 2026-10-18 — CI : le test « retire les images d'une carte qui n'est plus décrite » (packages/illustrations)
-  dépassait les 5 s par défaut sur GitHub, l'encodage AVIF étant ralenti par les simulations du domaine qui tournent
-  en parallèle ; délai porté à 30 s pour le seul projet illustrations (`vitest.config.ts`).
+- 2026-10-18 — created (breakdown of US-014).
+- 2026-10-18 — `ia.ts` (Autonomous, Tooling, Semantic cache, Routing, Migration), Orchestration, Delegation and Context
+  in the engine tools; actions `outiller`, `router`, `migrer`; bot (Migration, Tooling); loaner decks and simulation;
+  API (contract, schemas) and screen (buttons, statuses, log); 13 domain tests, 2 screen tests. **All 71 cards are
+  playable.** In review.
+- 2026-10-18 — delivered: AI abilities and Migration: all 71 cards of set 1 are playable, bot and loaner decks balanced (44 to 56%)
+- 2026-10-18 — CI: the test "removes the images of a card that is no longer described" (packages/illustrations)
+  exceeded the default 5 s on GitHub, AVIF encoding being slowed down by the domain simulations running in parallel;
+  timeout raised to 30 s for the illustrations project only (`vitest.config.ts`).

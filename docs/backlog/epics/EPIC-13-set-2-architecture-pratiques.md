@@ -1,37 +1,35 @@
-# EPIC-13 — Un set 2 : architecture et pratiques
+# EPIC-13 — A set 2: architecture and practices
 
-- **Statut** : En cours
-- **Priorité** : Could
+- **Status**: In progress
+- **Priority**: Could
 
-## Objectif
+## Goal
 
-Le set 1 parle des briques de l'intégration (fichiers, API, ESB, événements, iPaaS, IA agentique). Le porteur du
-projet voudrait, un jour, étendre l'acculturation aux **façons de concevoir et de livrer** ces systèmes : le
-_Domain-Driven Design_, les architectures en microservices, le DevOps… Sujets notés le 2026-10-24, sans engagement
-de date.
+Set 1 is about the building blocks of integration (files, APIs, ESB, events, iPaaS, agentic AI). The project owner
+would like, one day, to extend the acculturation to the **ways of designing and delivering** these systems:
+_Domain-Driven Design_, microservice architectures, DevOps… Topics noted on 2026-10-24, with no commitment on a date.
 
-## Indicateur de réussite
+## Success indicator
 
-- Un set 2 jouable dont chaque carte enseigne un concept, avec sa fiche « En savoir plus » (EPIC-12).
-- Les mécaniques de combat restent celles du set 1 (ADR 0010) ; de nouvelles capacités seulement si un concept
-  l'exige.
+- A playable set 2 in which every card teaches a concept, with its "Learn more" sheet (EPIC-12).
+- The combat mechanics stay those of set 1 (ADR 0010); new abilities only if a concept requires them.
 
 ## Stories
 
-- [ ] US-076 — Concevoir le set 2 : DDD, microservices, DevOps
-- [x] US-077 — Trois nouvelles cartes : API First, EDA et API GraphQL
-- [x] US-085 — Rééquilibrer la carte API GraphQL
+- [ ] US-076 — Design set 2: DDD, microservices, DevOps
+- [x] US-077 — Three new cards: API First, EDA and GraphQL API
+- [x] US-085 — Rebalance the GraphQL API card
 
-## Pistes de contenu (à trier)
+## Content ideas (to be sorted)
 
-- **DDD** : contexte délimité, langage omniprésent, agrégat, carte de contextes, couche anticorruption.
-- **Microservices** : découpage par domaine, passerelle d'API, service mesh, saga, disjoncteur, base par service,
-  ou au contraire le monolithe modulaire.
-- **DevOps** : intégration et déploiement continus, infrastructure en code, observabilité, déploiement progressif,
-  retour arrière, culture du post-mortem sans blâme.
-- Les incidents de ces mondes (couplage distribué, « microservices en cascade », dérive de configuration) pour les
-  sorts et incidents.
+- **DDD**: bounded context, ubiquitous language, aggregate, context map, anti-corruption layer.
+- **Microservices**: splitting by domain, API gateway, service mesh, saga, circuit breaker, database per service, or
+  on the contrary the modular monolith.
+- **DevOps**: continuous integration and deployment, infrastructure as code, observability, progressive delivery,
+  rollback, blameless post-mortem culture.
+- The incidents of these worlds (distributed coupling, "cascading microservices", configuration drift) for the spells
+  and incidents.
 
-## Hors périmètre
+## Out of scope
 
-- Changer l'architecture de HIPMaster lui-même : ces sujets sont ici des thèmes de cartes, pas une refonte de l'app.
+- Changing the architecture of HIPMaster itself: these topics are card themes here, not an overhaul of the app.

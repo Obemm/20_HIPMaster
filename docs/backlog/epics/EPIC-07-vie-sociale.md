@@ -1,22 +1,22 @@
-# EPIC-07 — Vie sociale
+# EPIC-07 — Social life
 
-- **Statut** : Terminé
-- **Priorité** : Could
+- **Status**: Done
+- **Priority**: Could
 
-## Objectif
+## Goal
 
-Donner envie de revenir : échanger ses doubles, se comparer, jouer en groupe.
+Make people want to come back: trade duplicates, compare themselves, play in groups.
 
-## Indicateur de réussite
+## Success indicator
 
-À définir quand le jeu aura ses premiers joueurs.
+To be defined once the game has its first players.
 
 ## Stories
 
-- [x] US-069 — Un score et un classement
+- [x] US-069 — A score and a leaderboard
 
-À découper ensuite : échanges de cartes, guildes, enchères (sans argent réel).
+To be split out next: card trades, guilds, auctions (without real money).
 
-## Hors périmètre
+## Out of scope
 
-Tout échange contre de l'argent réel.
+Any exchange against real money.

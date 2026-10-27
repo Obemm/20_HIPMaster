@@ -1,29 +1,30 @@
-# EPIC-00 — Fondations du projet
+# EPIC-00 — Project foundations
 
-- **Statut** : Terminé
-- **Priorité** : Must
+- **Status**: Done
+- **Priority**: Must
 
-## Objectif
+## Goal
 
-Disposer d'un socle de développement propre, outillé et traçable.
+Have a clean, well-equipped and traceable development base.
 
-## Indicateur de réussite
+## Success indicator
 
-`npm run check`, `npm run build` et `npm run test:e2e` passent ; la base locale démarre ; la méthode de travail est documentée.
+`npm run check`, `npm run build` and `npm run test:e2e` pass; the local database starts; the way of working is
+documented.
 
 ## Stories
 
-- [x] US-001 — Socle de développement
+- [x] US-001 — Development foundation
 - [x] US-002 — Next.js + Tailwind CSS
-- [x] US-003 — Organisation en mode projet
-- [x] US-004 — Base de données locale
-- [x] US-006 — Socle Angular aligné sur le référentiel the company
-- [x] US-007 — Dependabot ne propose que des versions compatibles
-- [x] US-043 — Tests de l'API robustes sur un poste chargé
-- [x] US-044 — Le quality gate ignore les worktrees de l'app Claude Desktop
-- [x] US-045 — `npm run dev` ne redémarre l'API que sur un changement des sources
-- [x] US-075 — Un statut d'epic toujours conforme à ses stories
+- [x] US-003 — Project-mode organisation
+- [x] US-004 — Local database
+- [x] US-006 — Angular foundation aligned with the the company reference
+- [x] US-007 — Dependabot only proposes compatible versions
+- [x] US-043 — API tests that stay robust on a loaded machine
+- [x] US-044 — The quality gate ignores the Claude Desktop app worktrees
+- [x] US-045 — `npm run dev` restarts the API only when its sources change
+- [x] US-075 — An epic status that always matches its stories
 
-## Hors périmètre
+## Out of scope
 
-Hébergement de production, nom de domaine.
+Production hosting, domain name.

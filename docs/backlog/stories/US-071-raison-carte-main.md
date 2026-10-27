@@ -1,58 +1,56 @@
-# US-071 — Dire pourquoi une carte de la main ne se joue pas
+# US-071 — Say why a card in hand cannot be played
 
-- **Epic** : EPIC-04
-- **Statut** : Faite
-- **Priorité** : Must
-- **Taille** : M
-- **Branche** : `us-071-raison-carte-main`
+- **Epic**: EPIC-04
+- **Status**: Done
+- **Priority**: Must
+- **Size**: M
+- **Branch**: `us-071-raison-carte-main`
 
-## Récit
+## Story
 
-En tant que **joueur**, je veux **savoir pourquoi une carte de ma main ne se joue pas maintenant** afin de **ne pas
-rester bloqué devant une carte sans comprendre ce qu'il me faut pour la jouer**.
+As a **player**, I want **to know why a card in my hand cannot be played right now** so that **I am not left stuck in
+front of a card without understanding what I need to play it**.
 
-## Critères d'acceptation
+## Acceptance criteria
 
-- [x] **Étant donné** mon tour et une carte d'évolution en main (Apigee AI Gateway) sans sa carte d'origine sur mon
-      plateau, **quand** je la sélectionne, **alors** son détail dit « Évolution d’Apigee API Gateway : posez d’abord
-      Apigee API Gateway, puis faites-la évoluer. », au lieu du message générique d'aujourd'hui.
-- [x] **Étant donné** mon tour, **quand** une carte de ma main n'est pas jouable, **alors** la vue de l'API dit
-      pourquoi, par ordre de priorité : carte pas encore prise en charge par le moteur ; évolution sans son origine
-      sur le plateau ; plateau plein (5 composants) pour un composant ; Débit insuffisant, avec le coût effectif
-      (réductions comprises) et le Débit disponible (« Il vous faut 5 Débit, vous en avez 3. ») ; aucune cible
-      possible pour un sort ou un incident. Une carte qui se joue autrement (Migration, Routage multi-modèles) est
-      jouable : aucune raison n'est donnée.
-- [x] **Étant donné** le tour de l'adversaire, **quand** je consulte une carte de ma main, **alors** la raison est
-      « Ce n’est pas votre tour : attendez le vôtre pour jouer cette carte. » ; partie terminée, aucune raison n'est exposée.
-- [x] La raison est calculée par le domaine (`vueDe`), sur le modèle de `sansAttaque` (US-041) ; l'écran ne fait que
-      l'afficher (ADR 0004). Elle passe dans la vue des parties contre le bot et des duels : contrats OpenAPI
-      (`parties.yaml`, `duels.yaml`) mis à jour d'abord, schéma Zod de la vue à jour (le champ n'est pas retiré à la
-      sérialisation).
-- [x] **Étant donné** mon tour, une carte injouable de la main reste lisible (pas de grisé) et porte une mention
-      visible « Pas jouable » sous sa vignette ; la raison complète fait partie de la description accessible du
-      bouton de la carte, et s'affiche dans son détail, au-dessus de ses actions (Décommissionner reste proposé).
-- [x] Tests : domaine (chaque raison, dont l'évolution sans origine), API (parties et duels), écran ; un parcours
-      e2e montre la raison d'une évolution sans origine ; `npm run check` et `npm run test:e2e` passent, audit
-      axe-core compris.
+- [x] **Given** my turn and an evolution card in hand (Apigee AI Gateway) without its source card on my board,
+      **when** I select it, **then** its detail says "Evolution of Apigee API Gateway: deploy Apigee API Gateway first,
+      then evolve it.", instead of today's generic message.
+- [x] **Given** my turn, **when** a card in my hand is not playable, **then** the API view says why, in priority order:
+      card not yet supported by the engine; evolution without its source on the board; full board (5 components) for a
+      component; insufficient Throughput, with the effective cost (reductions included) and the available Throughput
+      ("You need 5 Throughput, you have 3."); no possible target for a spell or an incident. A card that is played in
+      another way (Migration, Multi-model routing) is playable: no reason is given.
+- [x] **Given** the opponent's turn, **when** I look at a card in my hand, **then** the reason is "It's not your turn:
+      wait for yours to play this card."; game over, no reason is exposed.
+- [x] The reason is computed by the domain (`vueDe`), modelled on `sansAttaque` (US-041); the screen only displays it
+      (ADR 0004). It goes into the view of games against the bot and of duels: OpenAPI contracts (`parties.yaml`,
+      `duels.yaml`) updated first, the view's Zod schema up to date (the field is not stripped at serialisation).
+- [x] **Given** my turn, an unplayable card in hand stays readable (not greyed out) and carries a visible "Not
+      playable" mention under its thumbnail; the full reason is part of the card button's accessible description, and
+      is displayed in its detail, above its actions (Decommission is still offered).
+- [x] Tests: domain (each reason, including evolution without a source), API (games and duels), screen; an e2e journey
+      shows the reason for an evolution without a source; `npm run check` and `npm run test:e2e` pass, axe-core audit
+      included.
 
 ## Notes
 
-- Retour du porteur du projet le 2026-10-23 : impossible de jouer « Apigee AI Gateway » (n° 40). C'est une évolution
-  d'« Apigee API Gateway » (n° 18) : elle ne se pose pas, elle se joue par « Faire évoluer … » quand l'origine est
-  sur le plateau (`posesPossibles`). Le détail de la carte ne proposait que « Décommissionner », et le message
-  générique (« Débit, plateau plein, ou carte pas encore jouable ») n'apparaissait même pas.
-- Champ `injouable` (texte ou `null`) sur chaque carte de `vue.moi.main`, tant que la partie n'est pas terminée. Il
-  se déduit des actions légales déjà calculées par `actionsPossibles` (une carte est jouable dès qu'une action
-  `poser`, `evoluer`, `jouer`, `migrer` ou `router` la joue), puis de contrôles simples pour nommer l'obstacle :
-  aucun calcul de cibles en plus, la vue reste aussi rapide pour les bots.
-- `reconstituer` (vue → état, pour les bots) retire le champ, comme il retire `attaque` des composants.
-- La mention « Pas jouable » porte la raison complète dans un texte `sr-only` (position absolue) : chaque carte de
-  la main est `relative`, sans quoi ce texte sortait de la main qui défile et élargissait la page sur téléphone
-  (débordement horizontal vu par les e2e mobiles, clics interceptés).
-- Décommissionner n'est pas « jouer » : une carte qu'on ne peut que décommissionner est injouable, et sa raison
-  s'affiche au-dessus du bouton « Décommissionner ».
+- Feedback from the project owner on 2026-10-23: impossible to play "Apigee AI Gateway" (no. 40). It is an evolution
+  of "Apigee API Gateway" (no. 18): it is not deployed, it is played with "Evolve …" when the source is on the board
+  (`posesPossibles`). The card's detail only offered "Decommission", and the generic message ("Throughput, full board,
+  or card not yet playable") did not even appear.
+- `injouable` field (text or `null`) on every card of `vue.moi.main`, as long as the game is not over. It is deduced
+  from the legal actions already computed by `actionsPossibles` (a card is playable as soon as a `poser`, `evoluer`,
+  `jouer`, `migrer` or `router` action plays it), then from simple checks to name the obstacle: no extra target
+  computation, the view stays just as fast for the bots.
+- `reconstituer` (view → state, for the bots) removes the field, as it removes `attaque` from components.
+- The "Not playable" mention carries the full reason in a `sr-only` text (absolute position): each card in the hand is
+  `relative`, otherwise this text escaped the scrolling hand and widened the page on phones (horizontal overflow seen
+  by the mobile e2e tests, intercepted clicks).
+- Decommissioning is not "playing": a card that can only be decommissioned is unplayable, and its reason is displayed
+  above the "Decommission" button.
 
-## Journal
+## Log
 
-- 2026-10-23 — création, après le retour du porteur du projet sur Apigee AI Gateway ; statut « En cours ».
-- 2026-10-23 — livrée : Chaque carte de la main porte, dans la vue de l'API (parties et duels), la raison pour laquelle elle ne se joue pas (injouable, calculée par vueDe) : évolution sans origine, plateau plein, Débit manquant (coût effectif), aucune cible, carte non prise en charge, tour adverse. L'écran affiche une mention « Pas jouable » sous la vignette, la raison dans la description accessible et dans le détail au-dessus des actions ; le message générique disparaît. Tests domaine, API, écran ; e2e d'Apigee AI Gateway sans son origine ; suite e2e 97/97.
+- 2026-10-23 — created, after the project owner's feedback on Apigee AI Gateway; status "In progress".
+- 2026-10-23 — delivered: Each card in hand carries, in the API view (games and duels), the reason it cannot be played (injouable, computed by vueDe): evolution without a source, full board, missing Throughput (effective cost), no target, unsupported card, opponent's turn. The screen displays a "Not playable" mention under the thumbnail, the reason in the accessible description and in the detail above the actions; the generic message disappears. Domain, API, screen tests; e2e of Apigee AI Gateway without its source; e2e suite 97/97.

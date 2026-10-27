@@ -1,40 +1,39 @@
-# US-034 — Écran de duel
+# US-034 — Duel screen
 
-- **Epic** : EPIC-06
-- **Statut** : Faite
-- **Priorité** : Must
-- **Taille** : L
-- **Branche** : `us-034-ecran-duel`
+- **Epic**: EPIC-06
+- **Status**: Done
+- **Priority**: Must
+- **Size**: L
+- **Branch**: `us-034-ecran-duel`
 
-## Récit
+## Story
 
-En tant que **joueur en duel**, je veux **jouer mon tour et voir celui de mon adversaire** afin de **mener le duel
-jusqu'au bout**.
+As a **player in a duel**, I want to **play my turn and see my opponent's** so that **I can take the duel through to
+the end**.
 
-## Critères d'acceptation
+## Acceptance criteria
 
-- [x] L'écran réutilise celui de la partie contre le bot (plateau, main, journal, aides) avec le pseudo de
-      l'adversaire.
-- [x] Pendant le tour de l'adversaire, l'écran l'annonce (« Au tour d'Ada ») et se met à jour seul quand il a joué
-      (interrogation toutes les 3 secondes, suspendue si l'onglet est caché) ; les actions de l'adversaire passent
-      dans le journal comme celles du bot.
-- [x] La fin du duel annonce victoire, défaite ou nulle, et propose une revanche : « Lancer une revanche » ouvre un
-      nouveau défi, dont le lien est à renvoyer à l'adversaire (l'envoi direct au même adversaire attend « Mes
-      duels », US-035).
-- [x] Tests de l'écran ; parcours e2e d'un duel complet à deux navigateurs ; audit axe-core au vert.
+- [x] The screen reuses the one for the game against the bot (board, hand, log, help) with the opponent's username.
+- [x] During the opponent's turn, the screen announces it ("Ada's turn") and updates by itself once they have played
+      (polling every 3 seconds, suspended if the tab is hidden); the opponent's actions go into the log like the
+      bot's.
+- [x] The end of the duel announces victory, defeat or draw, and offers a rematch: "Rematch" opens a new challenge,
+      whose link is to be sent back to the opponent (sending directly to the same opponent waits for "My duels",
+      US-035).
+- [x] Screen tests; e2e journey of a full duel with two browsers; axe-core audit green.
 
 ## Notes
 
-- Les annonces de mise à jour passent par une zone `aria-live` polie.
+- Update announcements go through a polite `aria-live` region.
 
-## Journal
+## Log
 
-- 2026-10-19 — création (découpage d'EPIC-06, ADR 0020 proposé).
-- 2026-10-19 — l'écran de partie gagne un mode « duel » (`mode`) au lieu d'être dupliqué : l'adversaire est nommé
-  partout (titre, camp, aides, règle courte, journal avec élision « d'Ada »), les actions partent vers
-  `/duels/{id}/actions` avec `If-Match`, et pendant le tour adverse l'écran redemande le duel toutes les 3 s
-  (`If-None-Match`, `?depuis=`), sauf si l'onglet est caché ; un 409 recharge le duel. La page `/duels/:id`
-  affiche ce plateau dès que le défi est relevé. La main de cartes devient focusable (défilement au clavier même
-  quand ses cartes sont désactivées). Repli du mode sur « bot » quand le routeur lie `undefined`. Tests : écran (4),
-  journal (1), e2e (3 : duel à deux navigateurs, fin menée par l'API pour aller vite, axe en clair et en sombre).
-- 2026-10-19 — livrée : Écran de duel : plateau partagé avec le bot, adversaire nommé, mise à jour pendant le tour adverse
+- 2026-10-19 — created (split of EPIC-06, ADR 0020 proposed).
+- 2026-10-19 — the game screen gains a "duel" mode (`mode`) instead of being duplicated: the opponent is named
+  everywhere (title, side, help, short rule, log with the French elision "d'Ada"), actions go to
+  `/duels/{id}/actions` with `If-Match`, and during the opponent's turn the screen requests the duel again every
+  3 s (`If-None-Match`, `?depuis=`), unless the tab is hidden; a 409 reloads the duel. The `/duels/:id` page shows
+  this board as soon as the challenge is taken up. The hand of cards becomes focusable (keyboard scrolling even when
+  its cards are disabled). Mode falls back to "bot" when the router binds `undefined`. Tests: screen (4), log (1),
+  e2e (3: duel with two browsers, ending driven by the API to go fast, axe in light and dark).
+- 2026-10-19 — delivered: Duel screen: board shared with the bot, named opponent, update during the opponent's turn

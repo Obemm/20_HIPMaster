@@ -1,58 +1,58 @@
-# US-067 — Une première partie guidée
+# US-067 — A guided first game
 
-- **Epic** : EPIC-11
-- **Statut** : Faite
-- **Priorité** : Should
-- **Taille** : L
-- **Branche** : `us-067-premiere-partie-guidee`
+- **Epic**: EPIC-11
+- **Status**: Done
+- **Priority**: Should
+- **Size**: L
+- **Branch**: `us-067-premiere-partie-guidee`
 
-## Récit
+## Story
 
-En tant que **collègue qui découvre HIPMaster**, je veux **une première partie guidée pas à pas** afin de
-**comprendre les règles en 5 minutes, sans rien lire avant**.
+As a **colleague discovering HIPMaster**, I want **a first game guided step by step** so that **I understand the rules
+in 5 minutes, without reading anything beforehand**.
 
-## Critères d'acceptation
+## Acceptance criteria
 
-- [x] **Étant donné** un visiteur qui n'a jamais joué, **quand** il arrive sur l'accueil ou l'écran « Jouer »,
-      **alors** « Apprendre à jouer (5 min) » lui est proposé. Il reste accessible depuis l'aide « Comment jouer ? ».
-- [x] **Étant donné** la partie guidée, **alors** elle oppose des decks d'initiation fixes au Stagiaire, avec une
-      graine fixe : la main de départ et les pioches sont connues d'avance (moteur rejouable, ADR 0013).
-- [x] **Étant donné** chaque étape (le Débit et la pose ; l'attaque du SI ; la riposte entre composants ; la Garde ;
-      la défausse pour gagner du Débit ; la fin du tour ; la victoire), **alors** une bulle explique quoi faire, met en
-      évidence la zone concernée, attend le bon geste et refuse poliment un autre geste.
-- [x] **Étant donné** la fin de la partie guidée, **alors** l'écran félicite le joueur et propose une partie contre
-      Stagiaire avec le conseil activé (US-066). La partie guidée ne rapporte pas de booster.
-- [x] Bulles annoncées aux lecteurs d'écran, utilisables au clavier et en 375 px ; parcours e2e qui suit la partie
-      guidée jusqu'au bout.
+- [x] **Given** a visitor who has never played, **when** they arrive on the home page or the "Play" screen, **then**
+      "Learn to play (5 min)" is offered. It stays reachable from the "How to play" help.
+- [x] **Given** the guided game, **then** it pits fixed starter decks against Intern, with a fixed seed: the starting
+      hand and the draws are known in advance (replayable engine, ADR 0013).
+- [x] **Given** each step (Throughput and deploying; attacking the System; the counter-attack between components;
+      Guard; discarding to gain Throughput; ending the turn; victory), **then** a bubble explains what to do,
+      highlights the relevant area, waits for the right gesture and politely refuses any other gesture.
+- [x] **Given** the end of the guided game, **then** the screen congratulates the player and offers a game against
+      Intern with the hint enabled (US-066). The guided game earns no booster.
+- [x] Bubbles announced to screen readers, usable with the keyboard and at 375 px; e2e journey that follows the guided
+      game to the end.
 
 ## Notes
 
-- À faire après US-059 (plateau qui tient dans un écran de téléphone), pour ne pas refaire les bulles.
-- Le scénario (decks, graine, étapes) est une donnée versionnée du domaine, comme le catalogue (ADR 0011).
-- Choix retenus ([ADR 0041](../../decisions/0041-partie-guidee-graine-fixe.md)) :
-  - **Scénario** (`packages/domain/src/combat/partie-guidee.ts`) : deck « Initiation » du joueur, deck du bot fait
-    de petits composants et de deux Répertoires de dépôt (Garde), graine 1262 (le joueur commence), contre
-    Stagiaire. 12 étapes guidées sur trois tours (poser, finir, attaquer le SI, décommissionner LLM pour poser deux
-    cartes, finir, Garde, riposte, SI de nouveau accessible, poser, finir), puis une 13e, libre. Un test rejoue le
-    scénario : chaque action attendue est légale à son étape, la Garde est là quand la bulle en parle, et la partie
-    se gagne ensuite au conseil au tour 11 (25 actions), soit bien moins de 5 minutes.
-  - **API** : `POST /api/v1/parties` avec `guidee: true` (deck et niveau ignorés) ; chaque réponse porte `guide`,
-    l'étape du moment (l'étape n attend la n-ième action, la version de la partie). Aucune récompense.
-  - **Écran** : la bulle « Étape n / 13 » au-dessus de « Finir mon tour », annoncée aux lecteurs d'écran ; ce
-    qu'elle désigne porte le pointillé doré du conseil (US-066) ; un autre geste est refusé poliment (« Pas tout de
-    suite : suivez l'étape… »), sans requête ; « Passer le guide » à tout moment. L'aide ne s'ouvre pas d'elle-même
-    dans la partie guidée, et le conseil n'y est proposé qu'à la dernière étape, libre.
-  - **Entrées** : sur l'écran « Jouer », « Première partie ? Apprendre à jouer (5 min) » en tête tant que le guide
-    n'est ni fini ni passé, puis « Revoir les règles en jouant » en bas ; un lien depuis l'accueil (même condition)
-    et depuis l'aide « Comment jouer ? ». Fini ou passé se garde dans le navigateur
+- To be done after US-059 (board that fits on a phone screen), so as not to redo the bubbles.
+- The scenario (decks, seed, steps) is versioned domain data, like the catalogue (ADR 0011).
+- Choices made ([ADR 0041](../../decisions/0041-partie-guidee-graine-fixe.md)):
+  - **Scenario** (`packages/domain/src/combat/partie-guidee.ts`): the player's "Starter" deck, the bot's deck made of
+    small components and two Drop folders (Guard), seed 1262 (the player starts), against Intern. 12 guided steps over
+    three turns (deploy, end, attack the System, decommission LLM to deploy two cards, end, Guard, counter-attack,
+    System reachable again, deploy, end), then a 13th, free one. A test replays the scenario: each expected action is
+    legal at its step, the Guard is there when the bubble talks about it, and the game is then won following the hints
+    on turn 11 (25 actions), well under 5 minutes.
+  - **API**: `POST /api/v1/parties` with `guidee: true` (deck and level ignored); every response carries `guide`, the
+    current step (step n expects the n-th action, the game's version). No reward.
+  - **Screen**: the "Step n / 13" bubble above "End my turn", announced to screen readers; what it designates carries
+    the golden dotted outline of the hint (US-066); another gesture is politely refused ("Not just yet: follow the
+    step…"), without a request; "Skip the guide" at any time. The help does not open by itself in the guided game, and
+    the hint is only offered at the last, free step.
+  - **Entry points**: on the "Play" screen, "First game? Learn to play (5 min)" at the top as long as the guide is
+    neither finished nor skipped, then "Review the rules by playing" at the bottom; a link from the home page (same
+    condition) and from the "How to play" help. Finished or skipped is kept in the browser
     (`hipmaster.partie-guidee-finie`, ADR 0032).
-  - **Fin** : « Bravo, vous savez jouer ! », sans booster, et « Jouer contre Stagiaire avec le conseil », qui active
-    « Un conseil à chaque coup » et ouvre l'écran « Jouer » (Stagiaire présélectionné).
-  - **Écart** : le serveur ne refuse pas une action hors scénario (le refus est fait par l'écran) : une partie
-    d'apprentissage n'a pas d'enjeu, et qui passe le guide continue librement contre Stagiaire.
+  - **End**: "Well done, you know how to play!", with no booster, and "Play against Intern with the hint", which
+    enables "A hint every move" and opens the "Play" screen (Intern preselected).
+  - **Gap**: the server does not refuse an out-of-scenario action (the refusal is done by the screen): a learning game
+    has nothing at stake, and whoever skips the guide carries on freely against Intern.
 
-## Journal
+## Log
 
-- 2026-10-23 — création, à la demande du porteur du projet (« un mode tuto »).
-- 2026-10-24 — affinée et commencée : choix notés ci-dessus (ADR 0041).
-- 2026-10-24 — livrée : partie guidée : decks et graine fixes contre Stagiaire, 12 étapes servies par l'API qui attendent le bon geste et refusent poliment les autres, passables, puis jeu libre jusqu'à la victoire, sans booster (ADR 0041)
+- 2026-10-23 — created, at the project owner's request ("a tutorial mode").
+- 2026-10-24 — refined and started: choices noted above (ADR 0041).
+- 2026-10-24 — delivered: guided game: fixed decks and seed against Intern, 12 steps served by the API that wait for the right gesture and politely refuse the others, skippable, then free play to victory, with no booster (ADR 0041)

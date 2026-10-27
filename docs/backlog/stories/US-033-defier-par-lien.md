@@ -1,38 +1,37 @@
-# US-033 — Défier un collègue par lien
+# US-033 — Challenge a colleague by link
 
-- **Epic** : EPIC-06
-- **Statut** : Faite
-- **Priorité** : Must
-- **Taille** : M
-- **Branche** : `us-033-defier-par-lien`
+- **Epic**: EPIC-06
+- **Status**: Done
+- **Priority**: Must
+- **Size**: M
+- **Branch**: `us-033-defier-par-lien`
 
-## Récit
+## Story
 
-En tant que **joueur connecté**, je veux **envoyer un lien de défi à un collègue** afin de **jouer contre lui sans
-chercher son pseudo**.
+As a **signed-in player**, I want to **send a challenge link to a colleague** so that **I can play against them
+without looking for their username**.
 
-## Critères d'acceptation
+## Acceptance criteria
 
-- [x] Depuis « Jouer », je choisis « Défier un collègue » et mon deck ; j'obtiens un lien à copier (bouton
-      « Copier le lien »).
-- [x] **Étant donné** le lien, **quand** mon collègue l'ouvre, **alors** il voit qui le défie, choisit son deck
-      et accepte ; sans compte, il est invité à en créer un, puis revient au défi.
-- [x] Un défi ne sert qu'une fois ; je ne peux pas accepter mon propre défi ; un défi non accepté expire après
-      7 jours, et je peux l'annuler avant.
-- [x] Tests de l'écran et parcours e2e à deux navigateurs (créer le défi, l'accepter) ; audit axe-core au vert.
+- [x] From "Play", I choose "Challenge a colleague" and my deck; I get a link to copy ("Copy the link" button).
+- [x] **Given** the link, **when** my colleague opens it, **then** they see who is challenging them, choose their
+      deck and accept; without an account, they are invited to create one, then return to the challenge.
+- [x] A challenge can only be used once; I cannot accept my own challenge; a challenge that is not accepted expires
+      after 7 days, and I can cancel it before then.
+- [x] Screen tests and e2e journey with two browsers (create the challenge, accept it); axe-core audit green.
 
 ## Notes
 
-- Le lien porte l'identifiant du duel en attente (UUID non devinable).
+- The link carries the identifier of the waiting duel (unguessable UUID).
 
-## Journal
+## Log
 
-- 2026-10-19 — création (découpage d'EPIC-06, ADR 0020 proposé).
-- 2026-10-19 — API : `DELETE /duels/{id}` (annulation par le créateur, tant que le défi n'est pas relevé) et
-  expiration des défis après 7 jours, évaluée à la lecture (410). Front : « Défier un collègue » depuis « Jouer »
-  (`/duels/nouveau`), page `/duels/:id` (lien à copier et annulation pour le créateur, qui voit le défi relevé
-  sans recharger ; invitation à relever le défi pour un collègue ; invitation à créer un compte puis retour au
-  défi via `?retour=`, limité aux chemins internes). En attendant l'écran de duel (US-034), la page annonce à qui
-  est le tour. Tests : API (3 de plus), écrans (6), e2e (4, à deux et trois navigateurs, axe en clair et en
-  sombre).
-- 2026-10-19 — livrée : Défier un collègue par lien : défi à partager, invitation, annulation, expiration
+- 2026-10-19 — created (split of EPIC-06, ADR 0020 proposed).
+- 2026-10-19 — API: `DELETE /duels/{id}` (cancellation by the creator, as long as the challenge has not been taken
+  up) and expiry of challenges after 7 days, evaluated on read (410). Front end: "Challenge a colleague" from "Play"
+  (`/duels/nouveau`), `/duels/:id` page (link to copy and cancellation for the creator, who sees the challenge taken
+  up without reloading; invitation to take up the challenge for a colleague; invitation to create an account then
+  return to the challenge via `?retour=`, limited to internal paths). Until the duel screen (US-034), the page
+  announces whose turn it is. Tests: API (3 more), screens (6), e2e (4, with two and three browsers, axe in light and
+  dark).
+- 2026-10-19 — delivered: Challenge a colleague by link: challenge to share, invitation, cancellation, expiry

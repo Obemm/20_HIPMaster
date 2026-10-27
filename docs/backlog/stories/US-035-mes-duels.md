@@ -1,38 +1,37 @@
-# US-035 — Mes duels et « à vous de jouer »
+# US-035 — My duels and "your turn"
 
-- **Epic** : EPIC-06
-- **Statut** : Faite
-- **Priorité** : Should
-- **Taille** : M
-- **Branche** : `us-035-mes-duels`
+- **Epic**: EPIC-06
+- **Status**: Done
+- **Priority**: Should
+- **Size**: M
+- **Branch**: `us-035-mes-duels`
 
-## Récit
+## Story
 
-En tant que **joueur connecté**, je veux **voir mes duels et savoir lesquels attendent mon tour** afin de **ne pas
-faire attendre mes adversaires**.
+As a **signed-in player**, I want to **see my duels and know which ones are waiting for my turn** so that **I do not
+keep my opponents waiting**.
 
-## Critères d'acceptation
+## Acceptance criteria
 
-- [x] Une page « Mes duels » liste les duels à mon tour (en premier), au tour de l'adversaire, en attente
-      d'adversaire et terminés, avec l'adversaire, le tour et l'heure du dernier coup (« il y a 3 min ») ; le
-      temps restant avant l'échéance s'ajoutera avec le forfait (US-036).
-- [x] Le bandeau affiche un compteur « à vous de jouer » (mis à jour à la navigation et toutes les minutes).
-- [x] Le titre de l'onglet le reprend (« (2) HIPMaster ») pour le voir depuis un autre onglet.
-- [x] `GET /moi/duels` (contrat OpenAPI) ; tests de l'API et de l'écran ; audit axe-core au vert.
+- [x] A "My duels" page lists the duels where it is my turn (first), the opponent's turn, waiting for an opponent
+      and finished, with the opponent, the turn and the time of the last move ("3 min ago"); the time left before the
+      deadline will come with the forfeit (US-036).
+- [x] The banner shows a "your turn" counter (updated on navigation and every minute).
+- [x] The tab title picks it up ("(2) HIPMaster") so it can be seen from another tab.
+- [x] `GET /moi/duels` (OpenAPI contract); API and screen tests; axe-core audit green.
 
 ## Notes
 
-- Une notification poussée (Server-Sent Events, courriel) reste une amélioration possible (ADR 0020).
+- A push notification (Server-Sent Events, email) remains a possible improvement (ADR 0020).
 
-## Journal
+## Log
 
-- 2026-10-19 — création (découpage d'EPIC-06, ADR 0020 proposé).
-- 2026-10-19 — `GET /moi/duels` (contrat dans `duels.yaml`) : les duels du joueur triés par groupe (à mon tour, au
-  tour de l'adversaire, en attente, puis les 20 derniers terminés), le plus récent d'abord ; seuls le joueur actif,
-  le tour et le gagnant sont lus dans l'état (extraction JSON en base). Front : `MesDuelsService` (mis à jour à la
-  connexion, à chaque navigation et toutes les minutes), page `/duels`, lien « Duels » avec compteur dans le
-  bandeau (« 1 à vous de jouer » pour les lecteurs d'écran) et titre d'onglet « (n) … » par une `TitleStrategy`.
-  Piège évité : le service n'injecte pas le routeur (dépendance circulaire avec la stratégie de titre), c'est le
-  bandeau qui écoute les navigations. Tests : API (3), écran et titre (2), e2e (3, à deux navigateurs, axe en clair
-  et en sombre).
-- 2026-10-19 — livrée : Mes duels : liste par priorité, compteur « à vous de jouer » dans le bandeau et le titre
+- 2026-10-19 — created (split of EPIC-06, ADR 0020 proposed).
+- 2026-10-19 — `GET /moi/duels` (contract in `duels.yaml`): the player's duels sorted by group (my turn, opponent's
+  turn, waiting, then the last 20 finished), most recent first; only the active player, the turn and the winner are
+  read from the state (JSON extraction in the database). Front end: `MesDuelsService` (updated on sign-in, on each
+  navigation and every minute), `/duels` page, "Duels" link with a counter in the banner ("1 your turn" for screen
+  readers) and tab title "(n) …" through a `TitleStrategy`. Pitfall avoided: the service does not inject the router
+  (circular dependency with the title strategy), the banner listens to navigations instead. Tests: API (3), screen
+  and title (2), e2e (3, with two browsers, axe in light and dark).
+- 2026-10-19 — delivered: My duels: list by priority, "your turn" counter in the banner and the title

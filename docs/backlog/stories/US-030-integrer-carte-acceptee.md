@@ -1,35 +1,37 @@
-# US-030 — L'auteur d'une carte dans le catalogue, et une première carte de la communauté
+# US-030 — A card's author in the catalogue, and a first community card
 
-- **Epic** : EPIC-08
-- **Statut** : En cours
-- **Priorité** : Should
-- **Taille** : M
-- **Branche** : `us-030-auteur-carte`
+- **Epic**: EPIC-08
+- **Status**: In progress
+- **Priority**: Should
+- **Size**: M
+- **Branch**: `us-030-auteur-carte`
 
-## Récit
+## Story
 
-En tant que **mainteneur du jeu**, je veux **qu'une carte du catalogue puisse porter son auteur** et **éprouver le kit
-avec un premier collègue** afin de **publier les cartes de la communauté sans ressaisie, avec leur crédit**.
+As the **game maintainer**, I want a **catalogue card to be able to carry its author** and to **test the kit with a
+first colleague** so that **community cards are published without re-entry, with their credit**.
 
-## Critères d'acceptation
+## Acceptance criteria
 
-- [x] Une carte du domaine peut porter un **auteur** facultatif (nom affiché choisi par le contributeur) ; les cartes
-      existantes n'en ont pas ; l'API du catalogue l'expose (contrat OpenAPI mis à jour avant le code).
-- [x] Les tests d'invariants du catalogue acceptent les cartes avec auteur, à la suite des numéros existants.
-- [x] La consigne de carte (US-028) renseigne ce champ.
-- [ ] **Étant donné** un collègue architecte et le kit, **quand** il ouvre sa PR depuis un fork, **alors** elle est
-      relue, fusionnée et mise en ligne ; ce qui a coincé est corrigé dans le guide ou la consigne.
+- [x] A domain card can carry an optional **author** (display name chosen by the contributor); existing cards have
+      none; the catalogue API exposes it (OpenAPI contract updated before the code).
+- [x] The catalogue invariant tests accept cards with an author, following the existing numbers.
+- [x] The card brief (US-028) fills in this field.
+- [ ] **Given** an architect colleague and the kit, **when** they open their PR from a fork, **then** it is reviewed,
+      merged and put online; whatever got stuck is fixed in the guide or the brief.
 
 ## Notes
 
-- ADR [0050](../../decisions/0050-cartes-communaute-par-pull-request.md). Remplace la commande d'intégration du plan
-  initial (`npm run carte:integrer`), devenue inutile : la PR du contributeur est l'intégration.
-- L'illustration suit la chaîne de l'ADR 0047 ; à défaut, l'illustration provisoire (ADR 0016).
+- ADR [0050](../../decisions/0050-cartes-communaute-par-pull-request.md). Replaces the integration command of the
+  initial plan (`npm run carte:integrer`), now useless: the contributor's PR is the integration.
+- The illustration follows the chain of ADR 0047; failing that, the placeholder illustration (ADR 0016).
 
-## Journal
+## Log
 
-- 2026-10-19 — création (EPIC-08, à traiter plus tard), sous le titre « Intégrer une carte acceptée au catalogue ».
-- 2026-10-27 — affinage (ADR 0050) : un champ auteur et un premier essai avec un collègue, plus de commande.
-- 2026-10-27 — champ `auteur` facultatif (40 caractères au plus, non traduit) dans le domaine, le contrat OpenAPI,
-  l'API et le modèle du front ; invariant du catalogue (aucun auteur sur les cartes 1 à 74, nom court sans blanc
-  superflu) ; consigne et gabarit le renseignent. Reste le premier essai avec un collègue : la story reste en cours.
+- 2026-10-19 — created (EPIC-08, to be handled later), under the title "Integrate an accepted card into the
+  catalogue".
+- 2026-10-27 — refined (ADR 0050): an author field and a first trial with a colleague, no command any more.
+- 2026-10-27 — optional `auteur` field (40 characters at most, not translated) in the domain, the OpenAPI contract,
+  the API and the front-end model; catalogue invariant (no author on cards 1 to 74, short name without superfluous
+  whitespace); the brief and the template fill it in. The first trial with a colleague remains: the story stays in
+  progress.

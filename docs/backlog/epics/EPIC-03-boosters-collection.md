@@ -1,24 +1,24 @@
-# EPIC-03 — Boosters et collection
+# EPIC-03 — Boosters and collection
 
-- **Statut** : Terminé
-- **Priorité** : Must
+- **Status**: Done
+- **Priority**: Must
 
-## Objectif
+## Goal
 
-La boucle de base : recevoir des boosters, les ouvrir avec une animation satisfaisante, voir sa collection grandir.
+The basic loop: receive boosters, open them with a satisfying animation, watch your collection grow.
 
-## Indicateur de réussite
+## Success indicator
 
-Un booster s'ouvre en moins d'une seconde ; la collection affiche la progression du set (ex. 37/200).
+A booster opens in under a second; the collection shows the progress through the set (e.g. 37/200).
 
 ## Stories
 
-- [x] US-023 — Recevoir et ouvrir des boosters
-- [x] US-024 — Ma collection
-- [x] US-070 — Des boosters offerts par code, pour récompenser le travail réel
+- [x] US-023 — Receive and open boosters
+- [x] US-024 — My collection
+- [x] US-070 — Boosters given by code, to reward real work
 
-Gestion des doubles et animation plus riche à découper ensuite.
+Handling of duplicates and a richer animation to be split out next.
 
-## Hors périmètre
+## Out of scope
 
-Échanges entre joueurs (EPIC-07).
+Trades between players (EPIC-07).

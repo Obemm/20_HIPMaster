@@ -1,33 +1,32 @@
-# US-024 — Ma collection
+# US-024 — My collection
 
-- **Epic** : EPIC-03
-- **Statut** : Faite
-- **Priorité** : Must
-- **Taille** : M
-- **Branche** : `us-024-ma-collection`
+- **Epic**: EPIC-03
+- **Status**: Done
+- **Priority**: Must
+- **Size**: M
+- **Branch**: `us-024-ma-collection`
 
-## Récit
+## Story
 
-En tant que **joueur connecté**, je veux **voir les cartes que je possède et celles qui me manquent** afin de
-**suivre ma progression dans le set**.
+As a **signed-in player**, I want to **see the cards I own and those I am missing** so that **I can track my progress in
+the set**.
 
-## Critères d'acceptation
+## Acceptance criteria
 
-- [x] La page collection affiche la **progression du set** (ex. « 37 / 71 ») et, par rareté, le nombre de cartes
-      obtenues.
-- [x] Chaque carte possédée montre son nombre d'exemplaires (doubles) ; les cartes manquantes restent visibles,
-      grisées, avec leur nom, pour donner envie.
-- [x] Les filtres du catalogue (famille, rareté) s'appliquent, plus un filtre « possédées / manquantes ».
-- [x] Le détail d'une carte (US-009) indique le nombre d'exemplaires possédés.
-- [x] Tests de l'API et de l'écran ; parcours e2e et audit axe-core au vert.
+- [x] The collection page displays the **set progress** (e.g. "37 / 71") and, per rarity, the number of cards obtained.
+- [x] Each owned card shows its number of copies (duplicates); missing cards stay visible, greyed out, with their name,
+      to make you want them.
+- [x] The catalogue filters (family, rarity) apply, plus an "owned / missing" filter.
+- [x] A card's detail view (US-009) shows the number of copies owned.
+- [x] API and screen tests; e2e journeys and axe-core audit green.
 
-## Journal
+## Log
 
-- 2026-10-18 — création.
-- 2026-10-18 — contrat `openapi/collection.yaml` et route `GET /moi/collection` (cartes possédées et exemplaires).
-  Front : `CollectionService` (chargée à la connexion, rechargée après chaque booster), page « Ma collection »
-  (progression du set et par rareté, barre de progression, doubles « × n », manquantes grisées, filtres possession,
-  famille et rareté), détail en fenêtre modale au-dessus de la collection (`/collection/:numero`, donnée de route
-  `retour`) qui indique les exemplaires possédés ; lien « Collection » dans le bandeau. Tests : API (collection),
-  écran (3), détail (2 de plus), e2e (3, axe en clair et en sombre compris).
-- 2026-10-18 — livrée : Ma collection : progression du set, doubles, cartes manquantes grisées, exemplaires dans le détail
+- 2026-10-18 — created.
+- 2026-10-18 — contract `openapi/collection.yaml` and route `GET /moi/collection` (owned cards and copies). Front end:
+  `CollectionService` (loaded at sign-in, reloaded after each booster), "My collection" page (progress for the set and
+  per rarity, progress bar, duplicates "× n", missing cards greyed out, ownership, family and rarity filters), detail
+  view in a modal above the collection (`/collection/:numero`, route data `retour`) showing the copies owned;
+  "Collection" link in the banner. Tests: API (collection), screen (3), detail (2 more), e2e (3, axe in light and dark
+  included).
+- 2026-10-18 — delivered: My collection: set progress, duplicates, missing cards greyed out, copies in the detail view

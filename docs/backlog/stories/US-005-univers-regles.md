@@ -1,38 +1,40 @@
-# US-005 — Univers et règles du jeu
+# US-005 — Game universe and rules
 
-- **Epic** : EPIC-01
-- **Statut** : Faite
-- **Priorité** : Must
-- **Taille** : M
-- **Branche** : `us-005-univers-regles`
+- **Epic**: EPIC-01
+- **Status**: Done
+- **Priority**: Must
+- **Size**: M
+- **Branch**: `us-005-univers-regles`
 
-## Récit
+## Story
 
-En tant que **porteur du projet**, je veux **choisir l'univers des cartes et les règles de combat**
-afin de **pouvoir créer le premier set et le moteur de jeu**.
+As the **project owner**, I want **to choose the card universe and the combat rules**
+so that **I can create the first set and the game engine**.
 
-## Critères d'acceptation
+## Acceptance criteria
 
-- [x] Les questions ouvertes de la [vision](../../produit/vision.md) sont tranchées (univers, origine des cartes, combat, monétisation).
-- [x] Les règles tiennent sur une page dans `docs/produit/regles.md`.
-- [x] Les caractéristiques d'une carte (familles, statistiques, raretés, capacités) sont listées.
-- [x] Un ADR consigne le choix de mécanique de combat.
+- [x] The open questions of the [vision](../../produit/vision.md) are settled (universe, origin of the cards, combat,
+      monetisation).
+- [x] The rules fit on one page in `docs/produit/regles.md`.
+- [x] The characteristics of a card (families, statistics, rarities, abilities) are listed.
+- [x] An ADR records the choice of combat mechanic.
 
 ## Notes
 
-Références : [inspirations](../../produit/inspirations.md) (WikiMasters : QCM ; Async TCG : plateau RAM / attaque / PV).
+References: [inspirations](../../produit/inspirations.md) (WikiMasters: multiple-choice questions; Async TCG: RAM
+board / attack / HP).
 
-Livrables : [univers.md](../../produit/univers.md), [regles.md](../../produit/regles.md),
-[cartes-set-1.md](../../produit/cartes-set-1.md) (brouillon de 64 cartes), [ADR 0010](../../decisions/0010-combat-plateau.md).
+Deliverables: [univers.md](../../produit/univers.md), [regles.md](../../produit/regles.md),
+[cartes-set-1.md](../../produit/cartes-set-1.md) (draft of 64 cards), [ADR 0010](../../decisions/0010-combat-plateau.md).
 
-Choix du porteur du projet (échange du 2026-10-16) : univers de la plateforme d'intégration, du FTP à l'IA agentique
-(MCP, A2A, LLM, prompting) ; vraies briques the company en cartes signatures — webMethods Integration Server 10.15 sur site
-(avec Universal Messaging et MWS) vers webMethods.io, Apigee API Gateway vers AI Gateway, Solace Event Mesh vers
-Solace Agent Mesh (aucun outil d'IA agentique en place : Agent Mesh retenu pour le jeu) ; FTP est officiellement
-interdit en interne et SFTP progressivement remplacé ; vrais noms de produits, sans logos, jeu interne.
+Project owner's choices (discussion of 2026-10-16): the integration platform universe, from FTP to agentic AI (MCP,
+A2A, LLM, prompting); real the company building blocks as signature cards — on-premises webMethods Integration Server 10.15
+(with Universal Messaging and MWS) towards webMethods.io, Apigee API Gateway towards AI Gateway, Solace Event Mesh
+towards Solace Agent Mesh (no agentic AI tool in place: Agent Mesh chosen for the game); FTP is officially forbidden
+at the company and SFTP is being gradually replaced; real product names, without logos, internal game.
 
-## Journal
+## Log
 
-- 2026-10-16 — création.
-- 2026-10-16 — univers, règles, brouillon du set 1 et ADR 0010 rédigés ; en revue par le porteur du projet.
-- 2026-10-18 — livrée : univers de la plateforme d'intégration (FTP à l'IA agentique), règles du combat sur plateau, brouillon de 64 cartes, ADR 0010
+- 2026-10-16 — created.
+- 2026-10-16 — universe, rules, draft of set 1 and ADR 0010 written; under review by the project owner.
+- 2026-10-18 — delivered: integration platform universe (FTP to agentic AI), board combat rules, draft of 64 cards, ADR 0010

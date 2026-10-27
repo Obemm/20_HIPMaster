@@ -1,129 +1,121 @@
-# US-046 — Une API prête pour Cloud Run
+# US-046 — An API ready for Cloud Run
 
-- **Epic** : EPIC-09
-- **Statut** : Faite
-- **Priorité** : Must
-- **Taille** : L
-- **Branche** : `us-046-api-prete-cloud-run`
+- **Epic**: EPIC-09
+- **Status**: Done
+- **Priority**: Must
+- **Size**: L
+- **Branch**: `us-046-api-prete-cloud-run`
 
-## Récit
+## Story
 
-En tant que **porteur du projet**, je veux **une image Docker de l'API qui démarre, se connecte à la base Neon,
-laisse cette base se mettre en veille, s'arrête proprement et journalise ce qu'il faut** afin de **la déployer sur
-Cloud Run sans surprise et sans frais (ADR 0021)**.
+As the **project owner**, I want **a Docker image of the API that starts, connects to the Neon database, lets that
+database go to sleep, shuts down cleanly and logs what it should** so that **I can deploy it on Cloud Run without
+surprises and at no cost (ADR 0021)**.
 
-## Contexte
+## Context
 
-Revue du 2026-10-22 ([revue](../../revues/2026-10-22-revue-mise-en-ligne.md)), constats vérifiés dans le code :
+Review of 2026-10-22 ([review](../../revues/2026-10-22-revue-mise-en-ligne.md)), findings verified in the code:
 
-- l'API écoute `127.0.0.1` par défaut et ne lit que `API_PORT`, alors que Cloud Run injecte `PORT` (`config.ts`) ;
-- aucun `Dockerfile` ni `.dockerignore` ; `config.ts` charge `.env` s'il existe, qu'un `COPY . .` embarquerait ;
-- sans `DATABASE_URL`, l'API se rabat **en silence** sur PGlite : en production, chaque instance aurait sa propre base
-  éphémère ;
-- le gestionnaire d'erreurs personnalisé (`app.ts`) remplace celui de Fastify, le seul qui journalise : **une erreur
-  500 ne laisse aucune trace** ;
-- aucun écouteur `SIGTERM` : Cloud Run coupe les requêtes en cours et le pool n'est jamais fermé ;
-- pool postgres.js par défaut : 10 connexions, **jamais fermées**. Or la base Neon gratuite (ADR 0021) ne se met pas
-  en veille tant qu'une connexion reste ouverte, et son quota se compte en heures de calcul : des connexions oubliées
-  le consommeraient même quand personne ne joue ;
-- migrations appliquées au démarrage, sans verrou : deux instances qui démarrent ensemble les exécutent en double ;
-- journaux pino (`level` numérique, `msg`) que Cloud Logging range tous en sévérité « DEFAULT ».
+- the API listens on `127.0.0.1` by default and reads only `API_PORT`, whereas Cloud Run injects `PORT` (`config.ts`);
+- no `Dockerfile` nor `.dockerignore`; `config.ts` loads `.env` if it exists, which a `COPY . .` would embed;
+- without `DATABASE_URL`, the API falls back **silently** on PGlite: in production, each instance would have its own
+  ephemeral database;
+- the custom error handler (`app.ts`) replaces Fastify's, the only one that logs: **a 500 error leaves no trace**;
+- no `SIGTERM` listener: Cloud Run cuts the requests in flight and the pool is never closed;
+- default postgres.js pool: 10 connections, **never closed**. Yet the free Neon database (ADR 0021) does not go to
+  sleep as long as a connection stays open, and its quota is counted in compute hours: forgotten connections would
+  consume it even when nobody is playing;
+- migrations applied at startup, without a lock: two instances starting together run them twice;
+- pino logs (numeric `level`, `msg`) that Cloud Logging files all under the "DEFAULT" severity.
 
-## Critères d'acceptation
+## Acceptance criteria
 
-- [x] **Étant donné** la variable `PORT`, **quand** l'API démarre dans un conteneur, **alors** elle écoute
-      `0.0.0.0:$PORT` (le développement garde `127.0.0.1:3000`).
-- [x] **Étant donné** le `Dockerfile` multi-étapes construit depuis la racine du monorepo, **alors** l'image contient
-      seulement l'API, `packages/domain` (lien du workspace préservé, Node refusant le TypeScript sous
-      `node_modules`), les migrations et les dépendances de production ; elle lance `node apps/api/src/server.ts`
-      sans `npm`, sous un utilisateur non root ; `.dockerignore` exclut `.env`, `.donnees`, les rapports de tests et
-      `.claude`.
-- [x] **Étant donné** l'URL de la base Neon fournie par Secret Manager, **alors** l'API s'y connecte en TLS
-      (`sslmode=require`), de préférence sur le point d'accès direct : le point d'accès mutualisé de Neon (PgBouncer
-      en mode transaction) impose des précautions sur les requêtes préparées de postgres.js, à vérifier s'il est
-      retenu.
-- [x] **Étant donné** la production, **quand** la connexion à PostgreSQL n'est pas configurée, **alors** l'API refuse
-      de démarrer avec un message clair ; PGlite n'est chargé qu'en développement et en tests.
-- [x] **Étant donné** une erreur 500, **alors** elle est journalisée avec son message et sa pile d'appels (test à
-      l'appui), sans jeton, code ni corps de requête.
-- [x] **Étant donné** un `SIGTERM`, **alors** l'API refuse les nouvelles requêtes, termine celles en cours, ferme le
-      pool et s'arrête avant le délai de Cloud Run.
-- [x] **Étant donné** le pool postgres.js, **alors** sa taille (petite), son délai d'inactivité (court) et son délai
-      de connexion sont réglables ; **quand** plus aucune requête n'arrive, **alors** toutes les connexions se ferment
-      et la base Neon se met en veille en moins de 10 minutes (mesuré en production, y compris avec le processeur de
-      Cloud Run alloué seulement pendant les requêtes). Si les connexions restaient ouvertes, une piste est le pilote
-      HTTP de Neon pour les lectures, à évaluer dans la story. _Vérifié en local (connexion fermée au terme du délai
-      d'inactivité) ; la mesure en production, impossible avant le premier déploiement, est reprise par US-050 selon
-      la procédure ci-dessous._
-- [x] **Étant donné** une commande de migration dédiée (exécutée par un Cloud Run Job, US-050), **alors** la
-      production ne migre plus au démarrage ; le développement et les tests gardent la migration au démarrage
-      (ADR 0018).
-- [x] **Étant donné** les journaux en production, **alors** ce sont des lignes JSON avec `severity`, `message` et la
-      trace de la requête (`X-Cloud-Trace-Context`) ; le niveau est réglable (`LOG_LEVEL`).
-- [x] L'image démarre en local contre le PostgreSQL de `docker-compose.yml` et passe la sonde `/api/v1/sante`.
+- [x] **Given** the `PORT` variable, **when** the API starts in a container, **then** it listens on `0.0.0.0:$PORT`
+      (development keeps `127.0.0.1:3000`).
+- [x] **Given** the multi-stage `Dockerfile` built from the monorepo root, **then** the image contains only the API,
+      `packages/domain` (workspace link preserved, Node refusing TypeScript under `node_modules`), the migrations and
+      the production dependencies; it runs `node apps/api/src/server.ts` without `npm`, under a non-root user;
+      `.dockerignore` excludes `.env`, `.donnees`, the test reports and `.claude`.
+- [x] **Given** the Neon database URL supplied by Secret Manager, **then** the API connects to it over TLS
+      (`sslmode=require`), preferably on the direct endpoint: Neon's pooled endpoint (PgBouncer in transaction mode)
+      requires precautions on postgres.js prepared statements, to be checked if it is chosen.
+- [x] **Given** production, **when** the PostgreSQL connection is not configured, **then** the API refuses to start
+      with a clear message; PGlite is loaded only in development and in tests.
+- [x] **Given** a 500 error, **then** it is logged with its message and its stack trace (backed by a test), without
+      token, code or request body.
+- [x] **Given** a `SIGTERM`, **then** the API refuses new requests, finishes those in flight, closes the pool and
+      stops before the Cloud Run deadline.
+- [x] **Given** the postgres.js pool, **then** its size (small), its idle timeout (short) and its connection timeout
+      are configurable; **when** no more requests arrive, **then** all connections close and the Neon database goes to
+      sleep in under 10 minutes (measured in production, including with Cloud Run's CPU allocated only during
+      requests). If connections stayed open, one lead is Neon's HTTP driver for reads, to be evaluated in the story.
+      _Verified locally (connection closed at the end of the idle timeout); the measurement in production, impossible
+      before the first deployment, is taken over by US-050 following the procedure below._
+- [x] **Given** a dedicated migration command (run by a Cloud Run Job, US-050), **then** production no longer migrates
+      at startup; development and tests keep migrating at startup (ADR 0018).
+- [x] **Given** the logs in production, **then** they are JSON lines with `severity`, `message` and the request trace
+      (`X-Cloud-Trace-Context`); the level is configurable (`LOG_LEVEL`).
+- [x] The image starts locally against the PostgreSQL of `docker-compose.yml` and passes the `/api/v1/sante` probe.
 
 ## Notes
 
-- Décision : [ADR 0023](../../decisions/0023-postgresql-production.md) (complète l'ADR 0018) — production sur
-  PostgreSQL seulement, migrations par une commande dédiée sous verrou, pool court, point d'accès direct de Neon,
-  certificat vérifié.
-- La dépendance `"@hipmaster/domain": "*"` ne se résout que dans le workspace : toujours construire l'image depuis la
-  racine du dépôt.
-- `node --watch` en développement : voir US-045.
+- Decision: [ADR 0023](../../decisions/0023-postgresql-production.md) (completes ADR 0018) — production on PostgreSQL
+  only, migrations by a dedicated command under a lock, short pool, Neon direct endpoint, verified certificate.
+- The `"@hipmaster/domain": "*"` dependency resolves only in the workspace: always build the image from the root of the
+  repository.
+- `node --watch` in development: see US-045.
 
-## Réalisation
+## Implementation
 
-- `config.ts` : `lireConfig()` lit et valide l'environnement (`PORT`, `NODE_ENV`, `LOG_LEVEL`, pool,
-  `GOOGLE_CLOUD_PROJECT`) et lève une erreur explicite ; `chargerEnv()` ne lit `.env` qu'hors production.
-- `journaux.ts` : journal pino au format Cloud Logging (`severity`, `message`, heure ISO), pile d'appels dans
-  `stack_trace` (Error Reporting, US-051), erreurs réduites à leur type, message, code et cause (jamais les
-  paramètres d'une requête SQL), champs de trace tirés de `X-Cloud-Trace-Context`.
-- `app.ts` : journal et trace par requête ; le gestionnaire d'erreurs journalise les 500 (message et pile) et ne garde
-  que le code d'une requête refusée.
-- `arret.ts` : arrêt propre sur SIGTERM et SIGINT ; pendant l'arrêt, chaque réponse ferme sa connexion, sans quoi une
-  connexion keep-alive (72 s chez Fastify) retenait l'arrêt jusqu'au délai de garde, sans fermer le pool (défaut
-  trouvé par le test).
-- `db/index.ts` : PGlite importé à la demande (et passé en dépendance de développement) ; pool réglable qui journalise
-  chaque connexion fermée ; `urlPostgres()` (TLS vérifié, `channel_binding` retiré) ; `migrerPostgres()` sous verrou
-  consultatif. `migrer.ts` : la commande de migration, aussi `npm run db:migrate`.
-- `Dockerfile` multi-étapes et `.dockerignore` par liste blanche ; Dependabot surveille l'image de base.
+- `config.ts`: `lireConfig()` reads and validates the environment (`PORT`, `NODE_ENV`, `LOG_LEVEL`, pool,
+  `GOOGLE_CLOUD_PROJECT`) and raises an explicit error; `chargerEnv()` reads `.env` only outside production.
+- `journaux.ts`: pino logger in Cloud Logging format (`severity`, `message`, ISO time), stack trace in `stack_trace`
+  (Error Reporting, US-051), errors reduced to their type, message, code and cause (never the parameters of an SQL
+  query), trace fields taken from `X-Cloud-Trace-Context`.
+- `app.ts`: logger and trace per request; the error handler logs 500s (message and stack) and keeps only the code of a
+  rejected request.
+- `arret.ts`: clean shutdown on SIGTERM and SIGINT; during shutdown, each response closes its connection, without which
+  a keep-alive connection (72 s in Fastify) held the shutdown until the guard timeout, without closing the pool (flaw
+  found by the test).
+- `db/index.ts`: PGlite imported on demand (and moved to a development dependency); configurable pool that logs each
+  closed connection; `urlPostgres()` (verified TLS, `channel_binding` removed); `migrerPostgres()` under an advisory
+  lock. `migrer.ts`: the migration command, also `npm run db:migrate`.
+- Multi-stage `Dockerfile` and allow-list `.dockerignore`; Dependabot watches the base image.
 
-## Vérifications
+## Verifications
 
-Faites le 2026-10-22, image construite sur le poste (Docker 29.1.3) contre le PostgreSQL 18 de `docker-compose.yml` :
+Done on 2026-10-22, image built on the machine (Docker 29.1.3) against the PostgreSQL 18 of `docker-compose.yml`:
 
-- image de 294 Mo, dont 43 Mo de dépendances : l'API, `packages/domain`, les migrations ; ni PGlite (il faut
-  `--omit=optional`, sinon il entre comme pair optionnel de drizzle-orm : 77 Mo), ni `.env`, ni tests ; utilisateur
-  `node` ;
-- sans `DATABASE_URL` : une ligne `CRITICAL` « Configuration invalide … obligatoire en production », code de sortie 1 ;
-- `node apps/api/src/migrer.ts` sur une base vide : « 8 appliquée(s), 8 au total », puis « 0 appliquée(s) » ;
-- l'API écoute `0.0.0.0:8080` ; aucune connexion à la base au démarrage ni pour `/api/v1/sante` ; une création de
-  compte ouvre une connexion, refermée 5 s après la dernière requête avec `BASE_INACTIVITE_SECONDES=5` (journal
-  « Connexion PostgreSQL fermée ») ;
-- `docker stop` (SIGTERM) avec une connexion keep-alive ouverte : arrêt en 0,8 s, pool fermé, code de sortie 0 ;
-- auprès de Neon (Francfort), avec un point d'accès fictif : la vérification du certificat réussit, seule
-  l'authentification échoue ;
-- deux migrations simultanées sur PostgreSQL : l'une applique tout, l'autre rien ; sans le verrou, la seconde échoue
-  (test `db/index.test.ts`, qui tourne quand `DATABASE_URL` est posée, voir US-056).
+- 294 MB image, of which 43 MB of dependencies: the API, `packages/domain`, the migrations; neither PGlite (it needs
+  `--omit=optional`, otherwise it comes in as an optional peer of drizzle-orm: 77 MB), nor `.env`, nor tests; `node`
+  user;
+- without `DATABASE_URL`: a `CRITICAL` line "Configuration invalide … obligatoire en production", exit code 1;
+- `node apps/api/src/migrer.ts` on an empty database: "8 appliquée(s), 8 au total", then "0 appliquée(s)";
+- the API listens on `0.0.0.0:8080`; no connection to the database at startup nor for `/api/v1/sante`; an account
+  creation opens a connection, closed 5 s after the last request with `BASE_INACTIVITE_SECONDES=5` (log
+  "Connexion PostgreSQL fermée");
+- `docker stop` (SIGTERM) with a keep-alive connection open: shutdown in 0.8 s, pool closed, exit code 0;
+- against Neon (Frankfurt), with a dummy endpoint: the certificate verification succeeds, only authentication fails;
+- two simultaneous migrations on PostgreSQL: one applies everything, the other nothing; without the lock, the second
+  fails (test `db/index.test.ts`, which runs when `DATABASE_URL` is set, see US-056).
 
-## Vérifier la mise en veille de Neon en production
+## Checking Neon's sleep in production
 
-Cloud Run n'alloue le processeur que pendant les requêtes : le minuteur qui ferme une connexion inactive peut prendre
-du retard. À mesurer au premier déploiement (US-050) :
+Cloud Run allocates the CPU only during requests: the timer that closes an idle connection may run late. To be
+measured at the first deployment (US-050):
 
-1. Jouer quelques actions, puis noter l'heure de la dernière requête et ne plus rien envoyer (ni onglet ouvert, ni
-   test de disponibilité qui toucherait la base : `/api/v1/sante` ne la touche pas).
-2. Dans Cloud Logging, chercher `jsonPayload.message="Connexion PostgreSQL fermée"` : la dernière fermeture doit
-   suivre la dernière requête d'environ 30 s (`BASE_INACTIVITE_SECONDES`).
-3. Dix minutes après la dernière requête, `neonctl operations list --project-id <projet> --output json` doit montrer
-   une opération `suspend_compute` postérieure à la dernière fermeture (ou la console Neon, onglet Monitoring : calcul
-   suspendu).
-4. Si une connexion reste ouverte plus de 5 minutes : la fermer quand plus aucune requête n'est en cours, ou passer
-   les lectures au pilote HTTP de Neon (ADR 0023, alternatives).
+1. Play a few actions, then note the time of the last request and send nothing more (no open tab, no availability
+   check that would touch the database: `/api/v1/sante` does not touch it).
+2. In Cloud Logging, search for `jsonPayload.message="Connexion PostgreSQL fermée"`: the last closing must follow the
+   last request by about 30 s (`BASE_INACTIVITE_SECONDES`).
+3. Ten minutes after the last request, `neonctl operations list --project-id <project> --output json` must show a
+   `suspend_compute` operation later than the last closing (or the Neon console, Monitoring tab: compute suspended).
+4. If a connection stays open for more than 5 minutes: close it when no request is in flight any more, or switch the
+   reads to Neon's HTTP driver (ADR 0023, alternatives).
 
-## Journal
+## Log
 
-- 2026-10-22 — création, issue de la revue avant mise en ligne (ADR 0021).
-- 2026-10-22 — prise en charge (lot 1, session API) ; ADR 0023 écrit ; image vérifiée contre le PostgreSQL local et
-  TLS vérifié auprès de Neon ; la mesure de la veille de Neon en production est reprise par US-050.
-- 2026-10-22 — livrée : image Docker de l'API (sans PGlite ni .env, non root), écoute 0.0.0.0:$PORT, journaux JSON Cloud Logging avec trace et erreurs 500 journalisées sans données sensibles, arrêt propre sur SIGTERM, pool court et certificat vérifié, migrations par une commande dédiée sous verrou (ADR 0023) ; image vérifiée contre le PostgreSQL local, mesure de la veille de Neon en production reprise par US-050
+- 2026-10-22 — created, from the review before going live (ADR 0021).
+- 2026-10-22 — taken on (batch 1, API session); ADR 0023 written; image verified against the local PostgreSQL and
+  verified TLS against Neon; the measurement of Neon's sleep in production is taken over by US-050.
+- 2026-10-22 — delivered: Docker image of the API (without PGlite or .env, non-root), listens on 0.0.0.0:$PORT, JSON Cloud Logging logs with trace and 500 errors logged without sensitive data, clean shutdown on SIGTERM, short pool and verified certificate, migrations by a dedicated command under a lock (ADR 0023); image verified against the local PostgreSQL, measurement of Neon's sleep in production taken over by US-050

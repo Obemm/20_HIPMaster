@@ -1,54 +1,51 @@
-# US-021 — Niveaux du bot
+# US-021 — Bot levels
 
-- **Epic** : EPIC-04
-- **Statut** : Faite
-- **Priorité** : Must
-- **Taille** : M
-- **Branche** : `us-021-niveaux-bot`
+- **Epic**: EPIC-04
+- **Status**: Done
+- **Priority**: Must
+- **Size**: M
+- **Branch**: `us-021-niveaux-bot`
 
-## Récit
+## Story
 
-En tant que **joueur**, je veux **choisir la difficulté du bot** afin de **progresser, du débutant au joueur
-aguerri**.
+As a **player**, I want to **choose the bot's difficulty** so that **I can progress, from beginner to seasoned
+player**.
 
-## Critères d'acceptation
+## Acceptance criteria
 
-- [x] Trois niveaux, du plus simple au plus fort, nommés d'après l'univers : **Batch de nuit** (l'actuel, prévisible),
-      **Architecte ESB** (moyen) et **Agent autonome** (difficile). Chaque niveau ne voit que sa propre vue de la
-      partie (aucune triche).
-- [x] Les niveaux Architecte ESB et Agent autonome **évaluent les conséquences de leurs actions** avec le moteur, sur
-      un état reconstitué à partir de leur vue (les cartes cachées sont remplacées par des cartes neutres).
-- [x] La simulation montre une progression nette : Architecte ESB gagne plus de la moitié de ses parties contre Batch
-      de nuit (objectif initial 60 %, obtenu 55 % : le hasard du jeu plafonne l'écart, voir les notes), Agent autonome
-      au moins 55 % contre Architecte ESB (obtenu 58 %) et 63 % contre Batch de nuit ; résultats notés dans
-      [cartes-set-1.md](../../produit/cartes-set-1.md). `npm run simuler` compare aussi les niveaux.
-- [x] Un tour de bot reste rapide : moins de 200 ms en moyenne pour le niveau le plus fort (limite d'[ref] the company :
-      3 s pour une API front).
-- [x] L'API liste les niveaux (`GET /api/v1/niveaux`) et accepte le niveau à la création d'une partie (Batch de nuit
-      par défaut) ; contrat OpenAPI à jour.
-- [x] À l'écran, le choix du niveau précède le choix du deck, et le niveau est rappelé pendant la partie.
-- [x] Tests du domaine (choix des bots, reconstitution de l'état), de l'API et de l'écran ; parcours e2e et audit
-      axe-core au vert.
+- [x] Three levels, from the simplest to the strongest, named after the universe: **Nightly Batch** (the current one,
+      predictable), **ESB Architect** (medium) and **Autonomous Agent** (hard). Each level sees only its own view of
+      the game (no cheating).
+- [x] The ESB Architect and Autonomous Agent levels **evaluate the consequences of their actions** with the engine, on a
+      state rebuilt from their view (hidden cards are replaced by neutral cards).
+- [x] The simulation shows a clear progression: ESB Architect wins more than half of its games against Nightly Batch
+      (initial target 60%, achieved 55%: the game's randomness caps the gap, see the notes), Autonomous Agent at least
+      55% against ESB Architect (achieved 58%) and 63% against Nightly Batch; results recorded in
+      [cartes-set-1.md](../../produit/cartes-set-1.md). `npm run simuler` also compares the levels.
+- [x] A bot turn stays fast: under 200 ms on average for the strongest level (limit from the company [ref]: 3 s for a front
+      API).
+- [x] The API lists the levels (`GET /api/v1/niveaux`) and accepts the level when a game is created (Nightly Batch by
+      default); OpenAPI contract up to date.
+- [x] On screen, the level choice comes before the deck choice, and the level is recalled during the game.
+- [x] Domain tests (bot choices, state reconstruction), API tests and screen tests; e2e journeys and axe-core audit
+      green.
 
 ## Notes
 
-- Le niveau « moyen » (Architecte ESB) vise l'indicateur d'EPIC-04 : environ une partie sur deux gagnée contre un
-  joueur débutant.
-- **Ce que les simulations ont appris** (300 parties par essai) : un choix purement immédiat est plus faible que Batch
-  de nuit (il ne voit pas qu'un décommissionnement permet de poser une carte) ; regarder un coup plus loin sur toutes
-  les actions est le meilleur réglage ; aller plus loin dans le tour, ou simuler la réponse adverse sur des cartes
-  cachées remplacées par des cartes neutres, rend le bot **moins** fort. Les poids de l'évaluation changent peu le
-  résultat (± 5 points).
-- Un tour d'Agent autonome prend 7 ms en moyenne, 44 ms au pire (127 tours mesurés).
-- La vue du joueur expose désormais ses propres marqueurs (« une fois par tour », protections), pour que la
-  reconstitution soit fidèle ; un test vérifie que l'état reconstitué offre exactement les mêmes actions que la vraie
-  partie.
+- The "medium" level (ESB Architect) targets the EPIC-04 indicator: about one game in two won against a beginner
+  player.
+- **What the simulations taught** (300 games per trial): a purely immediate choice is weaker than Nightly Batch (it does
+  not see that a decommission makes it possible to deploy a card); looking one move ahead on all actions is the best
+  setting; going further into the turn, or simulating the opponent's reply on hidden cards replaced by neutral cards,
+  makes the bot **weaker**. The evaluation weights change the result little (± 5 points).
+- An Autonomous Agent turn takes 7 ms on average, 44 ms at worst (127 turns measured).
+- The player's view now exposes their own markers ("once per turn", protections), so that the reconstruction is
+  faithful; a test checks that the rebuilt state offers exactly the same actions as the real game.
 
-## Journal
+## Log
 
-- 2026-10-18 — création, après le choix du porteur du projet (« tu évalueras ça mieux que moi »).
-- 2026-10-18 — `reconstitution.ts`, `bots-forts.ts` (évaluation, recherche réglable), `niveaux.ts` ; `simuler`
-  compare deux stratégies ; script de simulation étendu aux niveaux ; API `GET /niveaux` et niveau à la création ;
-  écran : choix de la difficulté et rappel pendant la partie ; 4 tests du domaine, 3 de l'API, écran et e2e mis à
-  jour. En revue.
-- 2026-10-18 — livrée : trois niveaux de bot (Batch de nuit, Architecte ESB, Agent autonome), sans triche, progression mesurée par simulation
+- 2026-10-18 — created, after the project owner's choice ("you will evaluate that better than I will").
+- 2026-10-18 — `reconstitution.ts`, `bots-forts.ts` (evaluation, adjustable search), `niveaux.ts`; `simuler` compares
+  two strategies; simulation script extended to the levels; API `GET /niveaux` and level at creation; screen:
+  difficulty choice and reminder during the game; 4 domain tests, 3 API tests, screen and e2e updated. In review.
+- 2026-10-18 — delivered: three bot levels (Nightly Batch, ESB Architect, Autonomous Agent), no cheating, progression measured by simulation

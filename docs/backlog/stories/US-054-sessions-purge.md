@@ -1,83 +1,77 @@
-# US-054 — Des sessions qui expirent et des données qui ne s'accumulent pas
+# US-054 — Sessions that expire and data that does not pile up
 
-- **Epic** : EPIC-09
-- **Statut** : Faite
-- **Priorité** : Should
-- **Taille** : M
-- **Branche** : `us-054-sessions-purge`
+- **Epic**: EPIC-09
+- **Status**: Done
+- **Priority**: Should
+- **Size**: M
+- **Branch**: `us-054-sessions-purge`
 
-## Récit
+## Story
 
-En tant que **porteur du projet**, je veux **que les sessions inutilisées expirent et que les données périmées soient
-supprimées** afin de **limiter l'effet d'un jeton volé, tenir la promesse de la page de confidentialité et garder
-une base petite et rapide**.
+As the **project owner**, I want **unused sessions to expire and outdated data to be deleted** so that I can **limit
+the effect of a stolen token, keep the promise of the privacy page and keep a small, fast database**.
 
-## Contexte
+## Context
 
-Revue du 2026-10-22 : rien n'est jamais supprimé. Les sessions n'expirent pas (le message 401 parle pourtant de
-session « expirée »), et les comptes abandonnés, les défis expirés, les duels terminés (avec leur état complet de 11 à
-18 Ko) et les récompenses s'accumulent sans fin. Le jeton est gardé dans le navigateur (ADR 0017) : un jeton volé
-donne un accès permanent.
+Review of 2026-10-22: nothing is ever deleted. Sessions do not expire (the 401 message nevertheless speaks of an
+"expired" session), and abandoned accounts, expired challenges, finished duels (with their full state of 11 to 18 KB)
+and rewards pile up endlessly. The token is kept in the browser (ADR 0017): a stolen token gives permanent access.
 
-## Critères d'acceptation
+## Acceptance criteria
 
-- [x] **Étant donné** une session inutilisée depuis une durée réglable (90 jours par défaut), **alors** elle est
-      refusée (401) ; chaque usage prolonge la session (au plus une écriture par jour et par session).
-- [x] **Étant donné** la politique de conservation écrite (durées par type de donnée, reprises dans la page de
-      confidentialité, US-053, ADR 0031), **quand** la purge s'exécute, **alors** elle supprime les sessions
-      expirées, les défis jamais acceptés (7 jours), les parties contre le bot expirées, et peut alléger l'état complet
-      des duels terminés depuis longtemps.
-- [x] **Étant donné** un compte, même inactif depuis des années, **alors** la purge ne supprime **jamais** ni le
-      compte, ni sa collection, ni ses récompenses, ni l'historique utile aux scores (US-069) : d'un duel terminé, au
-      moins le gagnant, les deux joueurs, la raison de la fin et la date restent, même quand l'état complet est
-      allégé. Seul le joueur supprime son compte (US-053).
-- [x] **Étant donné** la production, **alors** la purge tourne chaque nuit (Cloud Scheduler et Cloud Run Job, sans
-      tâche de fond dans l'API) et journalise ce qu'elle a supprimé.
-- [x] Tests de la purge sur une base de test, horloge injectée.
+- [x] **Given** a session unused for a configurable duration (90 days by default), **then** it is refused (401); each
+      use extends the session (at most one write per day and per session).
+- [x] **Given** the written retention policy (durations per type of data, restated in the privacy page, US-053, ADR
+      0031), **when** the purge runs, **then** it deletes expired sessions, challenges never accepted (7 days), expired
+      games against the bot, and can lighten the full state of duels finished long ago.
+- [x] **Given** an account, even inactive for years, **then** the purge **never** deletes the account, its collection,
+      its rewards, or the history useful for scores (US-069): of a finished duel, at least the winner, the two players,
+      the reason for the end and the date remain, even when the full state is lightened. Only the player deletes their
+      account (US-053).
+- [x] **Given** production, **then** the purge runs every night (Cloud Scheduler and Cloud Run Job, no background task
+      in the API) and logs what it deleted.
+- [x] Tests of the purge on a test database, injected clock.
 
-## Conception
+## Design
 
 ADR [0035](../../decisions/0035-purge-donnees-techniques.md).
 
-- **Sessions** : colonne `sessions.utilisee_le` (migration `0012_sessions_utilisees`, ajout seul, valeur par défaut
-  `now()`, index pour la purge). `joueurDuJeton` refuse une session inutilisée depuis `SESSIONS_DUREE_JOURS` (90 par
-  défaut) et la prolonge au plus une fois par jour. Toutes les routes passent par lui (`exigerJoueur`, parties,
-  administration) avec les réglages posés par `construireApp` (`sessions`). Contrat `comptes.yaml` 1.5.0.
-- **Purge** (`apps/api/src/purge/purge.ts`, commande `apps/api/src/purger.ts`, `npm run purge -w apps/api`) :
-  parties contre le bot sans coup depuis 24 heures, défis jamais acceptés depuis 7 jours, sessions expirées (et leurs
-  parties) ; bilan journalisé par sorte. Jamais les tables `joueurs`, `collection`, `recompenses`, ni un duel
-  commencé.
-- **Alléger les duels terminés** : non retenu. L'état complet porte l'historique des scores (US-069) et le volume reste
-  faible ; `lireMesDuels` n'a donc pas à changer.
-- **Production** : job Cloud Run `hipmaster-purge` (image de l'API, compte `hipmaster-purge` qui ne lit que
-  `database-url`), lancé à 5 h 25 (Paris) par Cloud Scheduler, cinq minutes avant la sauvegarde (un seul réveil de
-  Neon). `infrastructure.sh` (étape 17) crée le compte, son droit et la tâche planifiée, et ajoute le job à l'alerte
-  des jobs ; `deployer.sh purge` crée ou met à jour le job ; le workflow de déploiement ne fait que le mettre à jour
-  s'il existe. Mise en service : accord du porteur du projet (guide d'exploitation, « Purge des données techniques »).
-- **Page `/confidentialite`** : plus de « bientôt » ; elle dit que les données techniques sont effacées chaque nuit.
+- **Sessions**: column `sessions.utilisee_le` (migration `0012_sessions_utilisees`, add-only, default value `now()`,
+  index for the purge). `joueurDuJeton` refuses a session unused for `SESSIONS_DUREE_JOURS` (90 by default) and
+  extends it at most once a day. All routes go through it (`exigerJoueur`, games, administration) with the settings
+  set by `construireApp` (`sessions`). Contract `comptes.yaml` 1.5.0.
+- **Purge** (`apps/api/src/purge/purge.ts`, command `apps/api/src/purger.ts`, `npm run purge -w apps/api`): games
+  against the bot with no move for 24 hours, challenges never accepted for 7 days, expired sessions (and their games);
+  summary logged by kind. Never the `joueurs`, `collection`, `recompenses` tables, nor a duel that has started.
+- **Lightening finished duels**: not retained. The full state carries the scores history (US-069) and the volume
+  remains low; `lireMesDuels` therefore does not have to change.
+- **Production**: Cloud Run job `hipmaster-purge` (API image, `hipmaster-purge` account that reads only
+  `database-url`), launched at 5:25 (Paris) by Cloud Scheduler, five minutes before the backup (a single wake-up of
+  Neon). `infrastructure.sh` (step 17) creates the account, its right and the scheduled task, and adds the job to the
+  jobs alert; `deployer.sh purge` creates or updates the job; the deployment workflow only updates it if it exists.
+  Going live: the project owner's agreement (operations guide, "Purge des données techniques").
+- **`/confidentialite` page**: no more "soon"; it says that technical data is erased every night.
 
 ## Notes
 
-- Décision du porteur du projet (2026-10-23) : « il faut aussi que les comptes joueurs, leurs collections et les scores
-  soient conservés ». Plus de suppression des comptes inactifs. Seules des données techniques expirent : sessions
-  inutilisées 90 jours (le joueur se reconnecte avec son code), journaux techniques et sauvegardes 30 jours (rétention
-  par défaut de Cloud Logging, US-051), parties contre le bot abandonnées (24 heures, ADR 0030 : une récompense gagnée
-  reste acquise), défis jamais acceptés.
-- Alléger un duel terminé : garder dans des colonnes (ou un résumé) ce que lisent « Mes duels » et les futurs scores
-  avant de vider `etat`, puis adapter les lectures qui l'extraient aujourd'hui du JSON (`lireMesDuels`).
-- Les index nécessaires à la purge sont posés dans US-057 ; celui de `sessions.utilisee_le` arrive avec sa colonne.
-- **Mise en service** : le code, les scripts et le guide sont livrés, mais la purge ne tournera chaque nuit qu'après
-  les commandes du guide d'exploitation (« Mettre la purge en service »), lancées avec l'accord du porteur du projet.
-  L'expiration des sessions, elle, s'applique dès le déploiement.
+- Decision of the project owner (2026-10-23): "player accounts, their collections and the scores must also be kept".
+  No more deletion of inactive accounts. Only technical data expires: sessions unused for 90 days (the player signs in
+  again with their code), technical logs and backups 30 days (Cloud Logging default retention, US-051), abandoned
+  games against the bot (24 hours, ADR 0030: a reward won stays acquired), challenges never accepted.
+- Lightening a finished duel: keep in columns (or a summary) what "My duels" and the future scores read before
+  emptying `etat`, then adapt the reads that extract it from the JSON today (`lireMesDuels`).
+- The indexes needed by the purge are set in US-057; that of `sessions.utilisee_le` comes with its column.
+- **Going live**: the code, scripts and guide are delivered, but the purge will run every night only after the
+  commands of the operations guide ("Mettre la purge en service"), launched with the project owner's agreement.
+  Session expiry, for its part, applies from deployment.
 
-## Journal
+## Log
 
-- 2026-10-22 — création, issue de la revue avant mise en ligne.
-- 2026-10-23 — décision du porteur du projet : comptes, collections et scores conservés sans limite ; la purge ne
-  touche que des données techniques (mise à jour depuis US-053).
-- 2026-10-24 — affinée et commencée (branche partie d'US-058) : expiration des sessions à la lecture, purge par une
-  commande dédiée et un job Cloud Run planifié, ADR 0035. Aucune commande GCP lancée : la mise en service attend
-  l'accord du porteur du projet.
-- 2026-10-24 — livrée : sessions refusées après 90 jours sans usage (SESSIONS_DUREE_JOURS), prolongées au plus une fois par jour ; purge des parties contre le bot abandonnées, des défis jamais acceptés et des sessions expirées par une commande dédiée, jamais un compte, une collection, une récompense ni un duel commencé (test sur un compte inactif depuis des années, dix ans plus tard) ; job Cloud Run hipmaster-purge et tâche Cloud Scheduler de 5 h 25 dans les scripts GCP, mise en service soumise au porteur du projet ; page de confidentialité sans « bientôt » ; ADR 0035
-- 2026-10-24 — purge mise en service en production par le porteur du projet (`infrastructure.sh`, `deployer.sh purge`) :
-  premier passage réussi (0 session, 0 défi, 0 partie supprimés), tâche planifiée « 25 5 * * * » (Europe/Paris) active.
+- 2026-10-22 — created, from the review before going live.
+- 2026-10-23 — decision of the project owner: accounts, collections and scores kept without limit; the purge touches
+  only technical data (updated since US-053).
+- 2026-10-24 — refined and started (branch cut from US-058): session expiry on read, purge through a dedicated command
+  and a scheduled Cloud Run job, ADR 0035. No GCP command run: going live awaits the project owner's agreement.
+- 2026-10-24 — delivered: sessions refused after 90 days without use (SESSIONS_DUREE_JOURS), extended at most once a day; purge of abandoned games against the bot, challenges never accepted and expired sessions through a dedicated command, never an account, a collection, a reward nor a duel that has started (test on an account inactive for years, ten years later); Cloud Run job hipmaster-purge and 5:25 Cloud Scheduler task in the GCP scripts, going live submitted to the project owner; privacy page without "soon"; ADR 0035
+- 2026-10-24 — purge put live in production by the project owner (`infrastructure.sh`, `deployer.sh purge`): first run
+  succeeded (0 session, 0 challenge, 0 game deleted), scheduled task "25 5 * * *" (Europe/Paris) active.

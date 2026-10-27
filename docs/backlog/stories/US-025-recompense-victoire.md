@@ -1,35 +1,33 @@
-# US-025 — Un booster pour chaque victoire
+# US-025 — A booster for every victory
 
-- **Epic** : EPIC-04
-- **Statut** : Faite
-- **Priorité** : Should
-- **Taille** : S
-- **Branche** : `us-025-recompense-victoire`
+- **Epic**: EPIC-04
+- **Status**: Done
+- **Priority**: Should
+- **Size**: S
+- **Branch**: `us-025-recompense-victoire`
 
-## Récit
+## Story
 
-En tant que **joueur connecté**, je veux **gagner un booster quand je bats le bot** afin d'**avoir une raison de
-rejouer**.
+As a **signed-in player**, I want to **win a booster when I beat the bot** so that **I have a reason to play again**.
 
-## Critères d'acceptation
+## Acceptance criteria
 
-- [x] Une victoire contre le bot, partie jouée en étant connecté, rapporte **un booster** (plafond de 3 par jour,
-      réglable) ; la récompense est attribuée **par le serveur**, une seule fois par partie.
-- [x] L'écran de fin de partie annonce le booster gagné (ou le plafond atteint) et mène à son ouverture.
-- [x] Tests de l'API (récompense unique, plafond) et de l'écran.
+- [x] A victory against the bot, in a game played while signed in, earns **one booster** (cap of 3 per day,
+      adjustable); the reward is granted **by the server**, only once per game.
+- [x] The end-of-game screen announces the booster won (or the cap reached) and leads to opening it.
+- [x] API tests (single reward, cap) and screen tests.
 
 ## Notes
 
-- Dépend d'US-022 (compte) et d'US-023 (boosters).
+- Depends on US-022 (account) and US-023 (boosters).
 
-## Journal
+## Log
 
-- 2026-10-18 — création.
-- 2026-10-18 — la partie retient le joueur connecté qui l'a lancée (jeton facultatif sur `POST /parties`) ; une
-  victoire ajoute `recompense` à la partie (`GET` et `POST …/actions`). Table `recompenses` (une ligne par partie
-  gagnée, migration `0004_recompenses`) : une seule récompense par partie, plafond de 3 boosters par jour UTC
-  (`REGLES_BOOSTERS.victoiresParJour`), booster gagné ajouté au stock même au-delà du plafond de recharge. Écran de
-  fin : « Un booster gagné ! » et « Ouvrir mon booster », plafond atteint, ou invitation à créer un compte. Tests :
-  API (5 : unicité, plafond et lendemain, dépassement du plafond de recharge, partie gagnée connectée, partie sans
-  compte), écran (3).
-- 2026-10-18 — livrée : Un booster par victoire contre le bot, une fois par partie, 3 par jour au plus
+- 2026-10-18 — created.
+- 2026-10-18 — the game remembers the signed-in player who started it (optional token on `POST /parties`); a victory
+  adds `recompense` to the game (`GET` and `POST …/actions`). `recompenses` table (one row per game won, migration
+  `0004_recompenses`): a single reward per game, cap of 3 boosters per UTC day (`REGLES_BOOSTERS.victoiresParJour`),
+  booster won added to the stock even beyond the refill cap. End screen: "A booster won!" and "Open my booster", cap
+  reached, or invitation to create an account. Tests: API (5: uniqueness, cap and next day, exceeding the refill cap,
+  won game while signed in, game without an account), screen (3).
+- 2026-10-18 — delivered: One booster per victory against the bot, once per game, 3 per day at most

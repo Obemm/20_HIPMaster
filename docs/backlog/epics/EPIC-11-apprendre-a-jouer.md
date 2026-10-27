@@ -1,41 +1,40 @@
-# EPIC-11 — Apprendre à jouer
+# EPIC-11 — Learning to play
 
-- **Statut** : Terminé
-- **Priorité** : Should
+- **Status**: Done
+- **Priority**: Should
 
-## Objectif
+## Goal
 
-Qu'un collègue qui n'a jamais joué comprenne les règles et gagne sa première partie contre le bot facile sans lire de
-documentation. Les règles sont riches (Débit, Garde, riposte, capacités), et les constats concordent :
+A colleague who has never played should understand the rules and win their first game against the easy bot without
+reading any documentation. The rules are rich (Throughput, Guard, counter-attack, abilities), and the findings agree:
 
-- US-039 : une partie perdue sans un seul dégât infligé, faute de savoir qu'il faut choisir l'attaquant et sa cible ;
-- étude par simulation du 2026-10-22 : un débutant ne gagnait que 14 % de ses parties contre l'ancien niveau
-  « facile » ;
-- US-064 a créé un vrai niveau facile, « Stagiaire ». Reste à apprendre à jouer **en jouant**.
+- US-039: a game lost without inflicting a single point of damage, for lack of knowing that you must choose the
+  attacker and its target;
+- simulation study of 2026-10-22: a beginner won only 14% of their games against the former "easy" level;
+- US-064 created a real easy level, "Intern". What remains is to teach how to play **by playing**.
 
-## Indicateur de réussite
+## Success indicator
 
-- Un joueur qui suit les conseils bat Stagiaire au moins 85 % du temps (mesuré par simulation).
-- Un joueur ne finit plus un tour sans attaquer, alors qu'il le pouvait, sans en avoir été averti.
-- La première partie guidée se termine en moins de 5 minutes.
+- A player who follows the tips beats Intern at least 85% of the time (measured by simulation).
+- A player no longer ends a turn without attacking, when they could have, without having been warned.
+- The first guided game ends in under 5 minutes.
 
 ## Stories
 
-- [x] US-065 — Des coups de pouce au bon moment
-- [x] US-066 — Un conseil à la demande, contre le bot
-- [x] US-067 — Une première partie guidée
+- [x] US-065 — Nudges at the right moment
+- [x] US-066 — A hint on demand, against the bot
+- [x] US-067 — A guided first game
 
-Ordre suggéré : US-065 et US-066 avant d'envoyer les invitations (lot 2), une fois le lot 1 d'EPIC-09 terminé. Puis
-US-067, après le plateau mobile (US-059), pour ne pas refaire les bulles d'aide quand le plateau changera.
+Suggested order: US-065 and US-066 before sending the invitations (batch 2), once batch 1 of EPIC-09 is done. Then
+US-067, after the mobile board (US-059), so the help bubbles are not redone when the board changes.
 
-## Décisions
+## Decisions
 
-- Le conseil n'est donné que **contre le bot**, jamais en duel : un duel reste un face-à-face (porteur du projet,
+- Advice is given **against the bot only**, never in a duel: a duel remains a face-to-face (project owner,
   2026-10-23).
-- Les coups de pouce restent actifs partout, duels compris : ils ne disent que ce que le joueur pourrait voir
-  lui-même.
+- Tips stay active everywhere, duels included: they only say what the player could see for themselves.
 
-## Hors périmètre
+## Out of scope
 
-- Un assistant conversationnel (LLM) qui commenterait la partie.
-- Le mode « Certification » (questionnaire tiré des textes des cartes), gardé pour plus tard dans la vision produit.
+- A conversational assistant (LLM) that would comment on the game.
+- "Certification" mode (a questionnaire drawn from the card texts), kept for later in the product vision.

@@ -1,37 +1,37 @@
-# US-019 — Effets propres des composants
+# US-019 — Component-specific effects
 
-- **Epic** : EPIC-04
-- **Statut** : Faite
-- **Priorité** : Should
-- **Taille** : M
-- **Branche** : `us-019-effets-composants`
+- **Epic**: EPIC-04
+- **Status**: Done
+- **Priority**: Should
+- **Size**: M
+- **Branch**: `us-019-effets-composants`
 
-## Récit
+## Story
 
-En tant que **joueur**, je veux **que les composants à effet fassent ce que dit leur carte** afin de **jouer Cron,
-Designer ou CDC comme de vrais rouages de la plateforme**.
+As a **player**, I want **components with an effect to do what their card says** so that **I can play Cron, Designer or
+CDC as real cogs of the platform**.
 
-## Critères d'acceptation
+## Acceptance criteria
 
-- [x] Les effets « quand il est posé » sont appliqués : webMethods Designer, Apigee API Hub, OpenAPI, Solace Event
-      Portal, CDC, AsyncAPI.
-- [x] Les effets permanents sont appliqués : Cron (un composant Batch peut attaquer deux tours de suite), Base
-      vectorielle (vos agents ont +1 PV).
-- [x] Un effet qui demande un choix (OpenAPI, AsyncAPI) se joue avec sa cible ; un effet de pioche ciblée (Designer,
-      API Hub, Event Portal) prend la première carte de la famille voulue dans la pioche, sinon rien.
-- [x] Ces 8 cartes rejoignent `CARTES_PRISES_EN_CHARGE` ; chaque effet a son test.
+- [x] The "when deployed" effects are applied: webMethods Designer, Apigee API Hub, OpenAPI, Solace Event Portal, CDC,
+      AsyncAPI.
+- [x] The permanent effects are applied: Cron (a Batch component can attack two turns in a row), Vector database (your
+      agents have +1 HP).
+- [x] An effect that asks for a choice (OpenAPI, AsyncAPI) is played with its target; a targeted draw effect (Designer,
+      API Hub, Event Portal) takes the first card of the wanted family from the draw pile, otherwise nothing.
+- [x] These 8 cards join `CARTES_PRISES_EN_CHARGE`; each effect has its test.
 
 ## Notes
 
-- Issue du découpage d'[US-014](US-014-effets-cartes.md) le 2026-10-18.
-- `poser` accepte une `cible` facultative (le composant renforcé par OpenAPI ou AsyncAPI) : l'action reste explicite
-  (ADR 0013). L'API normalise l'absence de cible pour le domaine.
-- Le moteur joue désormais **63 cartes sur 71** ; les 8 restantes sont celles d'[US-020](US-020-capacites-ia.md).
+- Comes from the breakdown of [US-014](US-014-effets-cartes.md) on 2026-10-18.
+- `poser` accepts an optional `cible` (the component reinforced by OpenAPI or AsyncAPI): the action stays explicit
+  (ADR 0013). The API normalises the absence of a target for the domain.
+- The engine now plays **63 cards out of 71**; the remaining 8 are those of [US-020](US-020-capacites-ia.md).
 
-## Journal
+## Log
 
-- 2026-10-18 — création (découpage d'US-014).
-- 2026-10-18 — `effets-composants.ts` (pioche ciblée, renfort, CDC, Base vectorielle), règle Cron dans les outils du
-  moteur ; `poser` avec cible ; API (schéma et contrat) et écran (« Poser et renforcer … ») ; 11 tests du domaine,
-  1 test de l'écran ; précisions dans regles.md. En revue.
-- 2026-10-18 — livrée : effets propres des composants (pioche ciblée, renfort, CDC, Cron, Base vectorielle) : 63 cartes sur 71 jouables
+- 2026-10-18 — created (breakdown of US-014).
+- 2026-10-18 — `effets-composants.ts` (targeted draw, reinforcement, CDC, Vector database), Cron rule in the engine
+  tools; `poser` with target; API (schema and contract) and screen ("Deploy and reinforce …"); 11 domain tests, 1
+  screen test; clarifications in regles.md. In review.
+- 2026-10-18 — delivered: component-specific effects (targeted draw, reinforcement, CDC, Cron, Vector database): 63 cards out of 71 playable

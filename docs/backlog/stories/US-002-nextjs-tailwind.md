@@ -1,24 +1,24 @@
 # US-002 — Next.js + Tailwind CSS
 
-- **Epic** : EPIC-00
-- **Statut** : Faite
-- **Priorité** : Must
-- **Taille** : XS
+- **Epic**: EPIC-00
+- **Status**: Done
+- **Priority**: Must
+- **Size**: XS
 
-## Récit
+## Story
 
-En tant que **développeur**, je veux **une application Next.js 16 + Tailwind CSS 4 qui démarre**
-afin de **commencer à construire le jeu**.
+As a **developer**, I want **a Next.js 16 + Tailwind CSS 4 application that starts**
+so that **I can begin building the game**.
 
-## Critères d'acceptation
+## Acceptance criteria
 
-- [x] `npm run dev` affiche une page d'accueil provisoire en français (`lang="fr"`).
-- [x] `npm run build` passe.
+- [x] `npm run dev` shows a provisional home page in French (`lang="fr"`).
+- [x] `npm run build` passes.
 
 ## Notes
 
 ADR [0001](../../decisions/0001-nextjs-tailwind.md).
 
-## Journal
+## Log
 
-- 2026-10-16 — réalisée.
+- 2026-10-16 — delivered.

@@ -1,22 +1,22 @@
-# US-003 — Organisation en mode projet
+# US-003 — Project-mode organisation
 
-- **Epic** : EPIC-00
-- **Statut** : Faite
-- **Priorité** : Must
-- **Taille** : S
+- **Epic**: EPIC-00
+- **Status**: Done
+- **Priority**: Must
+- **Size**: S
 
-## Récit
+## Story
 
-En tant que **porteur du projet**, je veux **un backlog epics/stories, des ADR, une vision et un changelog dans le dépôt**
-afin de **savoir où on va et garder la trace de ce qui est fait**.
+As the **project owner**, I want **an epic/story backlog, ADRs, a vision and a changelog in the repository**
+so that **I know where we are heading and keep track of what is done**.
 
-## Critères d'acceptation
+## Acceptance criteria
 
-- [x] Méthode, modèles et tableau de suivi dans `docs/backlog/`.
-- [x] Vision et inspirations dans `docs/produit/`.
-- [x] Premiers ADR dans `docs/decisions/`.
-- [x] Epics EPIC-01 à EPIC-07 esquissés.
+- [x] Method, templates and tracking board in `docs/backlog/`.
+- [x] Vision and inspirations in `docs/produit/`.
+- [x] First ADRs in `docs/decisions/`.
+- [x] Epics EPIC-01 to EPIC-07 sketched out.
 
-## Journal
+## Log
 
-- 2026-10-16 — réalisée.
+- 2026-10-16 — delivered.

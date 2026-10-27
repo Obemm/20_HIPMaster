@@ -1,43 +1,42 @@
-# US-045 — `npm run dev` ne redémarre l'API que sur un changement des sources
+# US-045 — `npm run dev` restarts the API only when its sources change
 
-- **Epic** : EPIC-00
-- **Statut** : Faite
-- **Priorité** : Must
-- **Taille** : XS
-- **Branche** : `us-045-api-dev-watch-sources`
+- **Epic**: EPIC-00
+- **Status**: Done
+- **Priority**: Must
+- **Size**: XS
+- **Branch**: `us-045-api-dev-watch-sources`
 
-## Récit
+## Story
 
-En tant que **développeur**, je veux **que l'API lancée par `npm run dev` ne redémarre que lorsque je modifie son
-code** afin de **pouvoir développer sans qu'elle redémarre en boucle sur un poste chargé**.
+As a **developer**, I want **the API started by `npm run dev` to restart only when I change its code** so that **I can
+develop without it restarting in a loop on a loaded machine**.
 
-## Contexte
+## Context
 
-Constat du 2026-10-20 : `npm run dev` faisait redémarrer l'API en boucle. Le script `dev` de l'API lance
-`node --watch src/server.ts`, qui surveille **tout le graphe des modules chargés**, `node_modules` compris. Sur un
-poste saturé (antivirus, mémoire basse), des fichiers de `node_modules` sont vus « modifiés » pendant le chargement,
-d'où un redémarrage, qui recharge les modules, et ainsi de suite. Contournement provisoire : une configuration
-`hipmaster-sans-watch` dans `.claude/launch.json`, non commitée, qui lance l'API sans surveillance.
+Finding of 2026-10-20: `npm run dev` made the API restart in a loop. The API's `dev` script runs
+`node --watch src/server.ts`, which watches **the whole graph of loaded modules**, `node_modules` included. On a
+saturated machine (antivirus, low memory), files in `node_modules` are seen as "modified" while loading, hence a
+restart, which reloads the modules, and so on. Temporary workaround: a `hipmaster-sans-watch` configuration in
+`.claude/launch.json`, not committed, which starts the API without watching.
 
-## Critères d'acceptation
+## Acceptance criteria
 
-- [x] **Étant donné** `npm run dev`, **quand** l'API démarre, **alors** seuls ses sources (`apps/api/src`), ses
-      migrations (`apps/api/drizzle`) et la logique de jeu (`packages/domain/src`) sont surveillés, pas
-      `node_modules`.
-- [x] **Étant donné** l'API démarrée par `npm run dev`, **quand** un fichier de `apps/api/src` ou de
-      `packages/domain/src` est modifié, **alors** l'API redémarre une fois.
-- [x] **Étant donné** l'API démarrée par `npm run dev` et aucune modification, **alors** elle ne redémarre pas.
-- [x] Le contournement `hipmaster-sans-watch` est retiré de `.claude/launch.json`.
+- [x] **Given** `npm run dev`, **when** the API starts, **then** only its sources (`apps/api/src`), its migrations
+      (`apps/api/drizzle`) and the game logic (`packages/domain/src`) are watched, not `node_modules`.
+- [x] **Given** the API started by `npm run dev`, **when** a file in `apps/api/src` or `packages/domain/src` is
+      modified, **then** the API restarts once.
+- [x] **Given** the API started by `npm run dev` and no modification, **then** it does not restart.
+- [x] The `hipmaster-sans-watch` workaround is removed from `.claude/launch.json`.
 
 ## Notes
 
-- `--watch-path` remplace la surveillance du graphe des modules par celle des seuls dossiers indiqués (Node ≥ 22,
-  pris en charge sous Windows et macOS, et sous Linux depuis la surveillance récursive de `fs.watch`).
-- Mesures du 2026-10-22 (API seule, 45 s sans modification) : 3 redémarrages avec `--watch`, aucun avec
-  `--watch-path`. Avec `--watch-path`, modifier `apps/api/src/config.ts` puis `packages/domain/src/index.ts`
-  donne exactement un redémarrage chacun. `npm run dev` complet : aucun redémarrage en 60 s.
+- `--watch-path` replaces watching the module graph with watching only the folders given (Node ≥ 22, supported on
+  Windows and macOS, and on Linux since the recursive `fs.watch` watching).
+- Measurements of 2026-10-22 (API alone, 45 s without modification): 3 restarts with `--watch`, none with
+  `--watch-path`. With `--watch-path`, modifying `apps/api/src/config.ts` then `packages/domain/src/index.ts` gives
+  exactly one restart each. Full `npm run dev`: no restart in 60 s.
 
-## Journal
+## Log
 
-- 2026-10-22 — création, pour remplacer le contournement `hipmaster-sans-watch` du 2026-10-20.
-- 2026-10-22 — livrée : l'API ne surveille plus que src, drizzle et packages/domain/src ; plus aucun redémarrage sans modification, un seul par modification ; contournement hipmaster-sans-watch retiré
+- 2026-10-22 — created, to replace the `hipmaster-sans-watch` workaround of 2026-10-20.
+- 2026-10-22 — delivered: the API now watches only src, drizzle and packages/domain/src; no more restarts without a modification, a single one per modification; hipmaster-sans-watch workaround removed

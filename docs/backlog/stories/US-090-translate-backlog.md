@@ -1,7 +1,7 @@
 # US-090 — Translate the backlog (method, board, epics, stories)
 
 - **Epic**: EPIC-16
-- **Status**: Ready
+- **Status**: Done
 - **Priority**: Should
 - **Size**: L
 - **Branch**: `us-090-translate-backlog`
@@ -13,11 +13,12 @@ write my own stories**.
 
 ## Acceptance criteria
 
-- [ ] `docs/backlog/README.md` (way of working), `TABLEAU.md` (board), every epic and every story are in English,
+- [x] `docs/backlog/README.md` (way of working), `TABLEAU.md` (board), every epic and every story are in English,
       paths unchanged, following the formats of ADR 0051 (`- **Status**: Done`…).
-- [ ] `python scripts/close-story.py --recount` leaves the board and the epics consistent.
-- [ ] Links and anchors still resolve; `npm run check` passes.
+- [x] `python scripts/close-story.py --recount` leaves the board and the epics consistent.
+- [x] Links and anchors still resolve; `npm run check` passes.
 
 ## Log
 
 - 2026-10-27 — created (EPIC-16).
+- 2026-10-28 — delivered: backlog translated into British English (README, board, 16 epics, 86 stories)

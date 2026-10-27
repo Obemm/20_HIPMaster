@@ -1,33 +1,32 @@
-# EPIC-12 — Des cartes qui enseignent
+# EPIC-12 — Cards that teach
 
-- **Statut** : Terminé
-- **Priorité** : Must
+- **Status**: Done
+- **Priority**: Must
 
-## Objectif
+## Goal
 
-L'objectif premier de HIPMaster est **l'acculturation** de l'équipe d'intégration et des collègues curieux (vision
-produit). Chaque carte doit donc apprendre quelque chose de vrai sur la technologie, le pattern ou l'incident qu'elle
-représente, **tout en restant ludique** : un texte court et vivant sur la carte, et la profondeur à la demande, avec
-des liens vers des ressources externes pour aller plus loin. Aujourd'hui, une carte n'a qu'une phrase « En vrai » et
-un éventuel texte d'ambiance (ADR 0011).
+HIPMaster's primary goal is the **acculturation** of the integration team and curious colleagues (product vision).
+Each card must therefore teach something true about the technology, pattern or incident it represents, **while
+staying fun**: a short, lively text on the card, and depth on demand, with links to external resources to go further.
+Today a card has only an "In real life" sentence and an optional flavour text (ADR 0011).
 
-## Indicateur de réussite
+## Success indicator
 
-- Chacune des 71 cartes du set 1 a une fiche « En savoir plus » relue (définition, usage, exemple, piège) et au moins
-  un lien externe vérifié.
-- Le texte visible sur la carte reste lisible en un coup d'œil (une à deux phrases) : la profondeur est dans la fiche.
-- Un joueur peut ouvrir la fiche depuis le catalogue, sa collection, une partie ou l'ouverture d'un booster.
+- Each of the 71 cards of set 1 has a reviewed "Learn more" sheet (definition, usage, example, pitfall) and at least
+  one verified external link.
+- The text visible on the card stays readable at a glance (one or two sentences): the depth is in the sheet.
+- A player can open the sheet from the catalogue, their collection, a game or a booster opening.
 
 ## Stories
 
-- [x] US-073 — Une fiche « En savoir plus » et des liens externes pour chaque carte
-- [x] US-074 — Enrichir le contenu des 71 cartes du set 1
+- [x] US-073 — A "Learn more" sheet and external links for every card
+- [x] US-074 — Enrich the content of the 71 cards of set 1
 
-Ordre suggéré : US-073 (le modèle et l'écran, avec quelques cartes pilotes), puis US-074 (le contenu, famille par
-famille).
+Suggested order: US-073 (the model and the screen, with a few pilot cards), then US-074 (the content, family by
+family).
 
-## Hors périmètre
+## Out of scope
 
-- Le mode « Certification » (questionnaire tiré des textes des cartes), gardé pour plus tard dans la vision produit :
-  il pourra s'appuyer sur ces fiches.
-- Les cartes proposées par la communauté (EPIC-08) : elles suivront le même modèle de fiche.
+- "Certification" mode (a questionnaire drawn from the card texts), kept for later in the product vision: it will be
+  able to build on these sheets.
+- Cards proposed by the community (EPIC-08): they will follow the same sheet model.

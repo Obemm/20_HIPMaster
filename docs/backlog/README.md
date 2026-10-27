@@ -1,41 +1,44 @@
-# Méthode de travail : epics et user stories
+# Way of working: epics and user stories
 
-## Vocabulaire
+## Vocabulary
 
-- **Epic** (`EPIC-XX`) : un grand objectif, découpé en plusieurs stories. Ex. : « Ouvrir un booster et voir ses cartes ».
-- **User story** (`US-XXX`) : un besoin d'utilisateur livrable en quelques heures à 2 jours.
-  Formulation : _En tant que [persona], je veux [action] afin de [bénéfice]._
-- **Critères d'acceptation** : conditions vérifiables (format Étant donné / Quand / Alors) qui disent quand la story est terminée.
+- **Epic** (`EPIC-XX`): a large goal, split into several stories. E.g. "Open a booster and see your cards".
+- **User story** (`US-XXX`): a user need that can be delivered in a few hours to 2 days.
+  Wording: _As a [persona], I want [action] so that [benefit]._
+- **Acceptance criteria**: verifiable conditions (Given / When / Then format) that say when the story is finished.
 
-Les numéros sont uniques et jamais réutilisés. Une story appartient à un seul epic.
+Numbers are unique and never reused. A story belongs to a single epic.
 
-## Cycle de vie d'une story
+## Story life cycle
 
-`À affiner` → `Prête` → `En cours` → `En revue` → `Faite`
+`To refine` → `Ready` → `In progress` → `In review` → `Done`
 
-- **Prête** (Definition of Ready) : persona identifié, bénéfice clair, critères d'acceptation écrits, taille estimée.
-- **Faite** (Definition of Done) :
-  - tous les critères d'acceptation sont vérifiés ;
-  - `npm run check` et `npm run build` passent ;
-  - utilisable au clavier et sur mobile (largeur 375 px), contrastes suffisants ;
-  - tests ajoutés quand il y a de la logique ;
-  - [CHANGELOG.md](../../CHANGELOG.md) mis à jour, statut mis à jour dans le fichier de la story et dans [TABLEAU.md](TABLEAU.md).
+- **Ready** (Definition of Ready): persona identified, benefit clear, acceptance criteria written, size estimated.
+- **Done** (Definition of Done):
+  - all acceptance criteria are verified;
+  - `npm run check` and `npm run build` pass;
+  - usable with a keyboard and on mobile (375 px wide), sufficient contrast;
+  - tests added when there is logic;
+  - [CHANGELOG.md](../../CHANGELOG.md) updated, status updated in the story file and in [TABLEAU.md](TABLEAU.md).
+- To close a story, run `python scripts/close-story.py US-XXX "summary"`: it sets the status, ticks the criteria, adds
+  the log entry and updates the board and the epic. The CHANGELOG is still written by hand.
 
-## Traçabilité dans Git
+## Traceability in Git
 
-- **Branche** par story : `us-012-booster-quotidien`.
-- **Commits** : Conventional Commits avec l'ID en portée : `feat(US-012): ouverture d’un booster`.
-- **Décision importante** (choix technique, renoncement…) : un ADR dans [../decisions/](../decisions/README.md), cité dans la story.
+- **Branch** per story: `us-012-daily-booster`.
+- **Commits**: Conventional Commits with the ID as scope: `feat(US-012): open a booster`.
+- **Important decision** (technical choice, giving something up…): an ADR in [../decisions/](../decisions/README.md),
+  cited in the story.
 
-## Taille (estimation)
+## Size (estimate)
 
-`XS` < 1 h · `S` ½ journée · `M` 1 jour · `L` 2 jours · au-delà : découper la story.
+`XS` < 1 h · `S` ½ day · `M` 1 day · `L` 2 days · beyond that: split the story.
 
-## Priorité (MoSCoW)
+## Priority (MoSCoW)
 
-`Must` indispensable · `Should` important · `Could` bonus · `Won't` pas maintenant (gardé pour mémoire).
+`Must` essential · `Should` important · `Could` bonus · `Won't` not now (kept for the record).
 
-## Créer un epic ou une story
+## Creating an epic or a story
 
-Copier un modèle de [templates/](templates/), le nommer `EPIC-XX-titre-court.md` ou `US-XXX-titre-court.md`,
-puis l'ajouter à [TABLEAU.md](TABLEAU.md).
+Copy a template from [templates/](templates/), name it `EPIC-XX-short-title.md` or `US-XXX-short-title.md`, then add it
+to [TABLEAU.md](TABLEAU.md).

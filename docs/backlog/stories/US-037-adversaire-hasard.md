@@ -1,35 +1,35 @@
-# US-037 — Adversaire au hasard
+# US-037 — Random opponent
 
-- **Epic** : EPIC-06
-- **Statut** : Faite
-- **Priorité** : Could
-- **Taille** : M
-- **Branche** : `us-037-adversaire-hasard`
+- **Epic**: EPIC-06
+- **Status**: Done
+- **Priority**: Could
+- **Size**: M
+- **Branch**: `us-037-adversaire-hasard`
 
-## Récit
+## Story
 
-En tant que **joueur connecté**, je veux **trouver un adversaire sans connaître personne** afin de **jouer en duel
-quand j'en ai envie**.
+As a **signed-in player**, I want to **find an opponent without knowing anyone** so that **I can play a duel whenever
+I feel like it**.
 
-## Critères d'acceptation
+## Acceptance criteria
 
-- [x] « Adversaire au hasard » me place dans les duels ouverts : je rejoins le plus ancien duel en attente d'un
-      autre joueur, ou j'en ouvre un s'il n'y en a pas.
-- [x] Je ne tombe jamais contre moi-même, et pas deux fois de suite contre le même joueur si un autre attend.
-- [x] Je peux quitter la file tant que personne ne m'a rejoint.
-- [x] Tests de l'API (appariement, concurrence de deux joueurs qui rejoignent le même duel) et de l'écran.
+- [x] "Random opponent" places me in the open duels: I join the oldest duel waiting for another player, or open one
+      if there is none.
+- [x] I never end up against myself, and not twice in a row against the same player if another is waiting.
+- [x] I can leave the queue as long as nobody has joined me.
+- [x] API tests (pairing, two players joining the same duel concurrently) and screen tests.
 
 ## Notes
 
-- Pas de classement ni d'appariement par niveau pour l'instant (EPIC-07).
+- No ranking or level-based pairing for now (EPIC-07).
 
-## Journal
+## Log
 
-- 2026-10-19 — création (découpage d'EPIC-06, ADR 0020 proposé).
-- 2026-10-19 — colonne `duels.ouvert` (migration `0006_duels_ouverts`) : un duel ouvert forme la file, un défi
-  privé (lien) n'est jamais proposé au hasard. `POST /duels/hasard` : rejoint le plus ancien duel ouvert d'un autre
-  joueur en évitant si possible le dernier adversaire (`SKIP LOCKED` contre les rejoints simultanés), sinon ouvre un
-  duel (201) ; déjà dans la file, on y garde sa place. Front : « un adversaire au hasard » depuis « Jouer »
-  (`/duels/hasard`, même écran que le défi), écran « Recherche d'un adversaire… » avec « Quitter la file ». Tests :
-  API (5, dont la concurrence), écrans (3), e2e (3, profil bureau seulement et en série : file commune).
-- 2026-10-19 — livrée : Adversaire au hasard : file des duels ouverts, défis privés à part
+- 2026-10-19 — created (split of EPIC-06, ADR 0020 proposed).
+- 2026-10-19 — `duels.ouvert` column (migration `0006_duels_ouverts`): an open duel forms the queue, a private
+  challenge (link) is never offered at random. `POST /duels/hasard`: joins the oldest open duel of another player,
+  avoiding the last opponent where possible (`SKIP LOCKED` against simultaneous joins), otherwise opens a duel (201);
+  already in the queue, you keep your place. Front end: "Take on a random opponent" from "Play" (`/duels/hasard`,
+  same screen as the challenge), "Looking for an opponent…" screen with "Leave the queue". Tests: API (5, including
+  concurrency), screens (3), e2e (3, desktop profile only and in series: shared queue).
+- 2026-10-19 — delivered: Random opponent: queue of open duels, private challenges kept apart

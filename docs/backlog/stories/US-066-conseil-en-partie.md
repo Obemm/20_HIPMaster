@@ -1,66 +1,64 @@
-# US-066 — Un conseil à la demande, contre le bot
+# US-066 — A hint on demand, against the bot
 
-- **Epic** : EPIC-11
-- **Statut** : Faite
-- **Priorité** : Should
-- **Taille** : M
-- **Branche** : `us-066-conseil-en-partie`
+- **Epic**: EPIC-11
+- **Status**: Done
+- **Priority**: Should
+- **Size**: M
+- **Branch**: `us-066-conseil-en-partie`
 
-## Récit
+## Story
 
-En tant que **joueur qui découvre le jeu**, je veux **demander quel est le meilleur coup, et pourquoi** afin
-d'**apprendre en jouant contre le bot plutôt qu'en lisant les règles**.
+As a **player discovering the game**, I want **to ask what the best move is, and why** so that **I learn by playing
+against the bot rather than by reading the rules**.
 
-## Contexte
+## Context
 
-Les bots savent déjà choisir une action à partir de la seule vue d'un joueur, sans tricher (ADR 0004, 0013) : règles
-simples de Batch de nuit (`packages/domain/src/combat/bot.ts`) et recherche d'Architecte ESB (`chercher`, `evaluer`
-dans `bots-forts.ts`). Le même calcul peut conseiller le joueur humain. Le travail neuf consiste à **expliquer** le
-coup en une phrase.
+The bots already know how to choose an action from a player's view alone, without cheating (ADR 0004, 0013): simple
+Nightly Batch rules (`packages/domain/src/combat/bot.ts`) and ESB Architect's search (`chercher`, `evaluer` in
+`bots-forts.ts`). The same computation can advise the human player. The new work is to **explain** the move in one
+sentence.
 
-## Critères d'acceptation
+## Acceptance criteria
 
-- [x] **Étant donné** une partie contre le bot, **quand** je demande « Un conseil ? », **alors** l'écran met en
-      évidence l'action recommandée (la carte à poser ; l'attaquant et sa cible ; le sort et ses cibles ; ou « Finir
-      votre tour ») et l'explique en une phrase. Exemples : « Attaquez l'Adaptateur SAP : il a Garde, et votre API
-      REST le détruit sans être détruite » ; « Posez Pub/Sub : c'est la carte la plus forte que votre Débit permet ».
-- [x] **Étant donné** le conseil, **alors** il est calculé par le serveur à partir de ma seule vue : il ne révèle ni la
-      main ni la pioche adverses. Route `GET /api/v1/parties/{id}/conseil`, contrat OpenAPI écrit avant le code,
-      limitée en débit (US-047).
-- [x] **Étant donné** l'option « Un conseil à chaque coup » (gardée par le navigateur), **alors** le conseil s'affiche
-      sans le demander, pour les tout débutants.
-- [x] **Étant donné** un duel, **alors** aucun conseil n'est proposé et l'API le refuse (décision du porteur du
-      projet, 2026-10-23).
-- [x] **Étant donné** un joueur simulé qui suit toujours le conseil, **alors** il bat Stagiaire au moins 85 % du
-      temps et Batch de nuit au moins 45 % du temps (`npm run simuler`). Le conseil se calcule en moins de 200 ms.
-- [x] Tests du domaine (explications), de l'API et de l'écran ; parcours e2e ; accessibilité (conseil annoncé aux
-      lecteurs d'écran, au clavier).
+- [x] **Given** a game against the bot, **when** I ask "A hint?", **then** the screen highlights the recommended action
+      (the card to deploy; the attacker and its target; the spell and its targets; or "End your turn") and explains it
+      in one sentence. Examples: "Attack the SAP Adapter: it has Guard, and your REST API destroys it without being
+      destroyed"; "Deploy Pub/Sub: it is the strongest card your Throughput allows".
+- [x] **Given** the hint, **then** it is computed by the server from my view alone: it reveals neither the opposing
+      hand nor the draw pile. Route `GET /api/v1/parties/{id}/conseil`, OpenAPI contract written before the code,
+      rate-limited (US-047).
+- [x] **Given** the "A hint every move" option (kept by the browser), **then** the hint is displayed without being
+      asked for, for absolute beginners.
+- [x] **Given** a duel, **then** no hint is offered and the API refuses it (project owner's decision, 2026-10-23).
+- [x] **Given** a simulated player who always follows the hint, **then** they beat Intern at least 85% of the time and
+      Nightly Batch at least 45% of the time (`npm run simuler`). The hint is computed in under 200 ms.
+- [x] Domain (explanations), API and screen tests; e2e journeys; accessibility (hint announced to screen readers,
+      keyboard).
 
 ## Notes
 
-- Préférer un conseiller dont les décisions s'expliquent, quitte à jouer un peu moins fort qu'Agent autonome.
-- Le conseil ne change pas la récompense de victoire.
-- Choix retenus ([ADR 0040](../../decisions/0040-conseil-serveur-contre-bot.md)) :
-  - **Conseiller** : `conseiller(vue)` dans le domaine (`combat/conseil.ts`) suit les règles de Batch de nuit
-    (`bot.ts`, dont les règles sont désormais exportées) et explique la règle qui a choisi le coup : pose la plus
-    forte ou seule possible, évolution, Migration, Outillage, sort (par son effet), attaque (victoire, SI sans
-    protection, destruction en survivant à la riposte, échange favorable, Garde), décommissionnement (la carte qu'il
-    permet de poser), fin de tour (attaques perdantes, rien d'utile). Un test vérifie qu'il choisit la même action que
-    Batch de nuit à chaque coup.
-  - **Mesure** (`npm run simuler`, 450 parties par mesure, graine 1) : un joueur qui suit toujours le conseil bat
-    Stagiaire 89 % du temps et Batch de nuit 47 %. Le calcul prend moins d'une milliseconde.
-  - **API** : `GET /api/v1/parties/{id}/conseil` renvoie `{ version, action, explication }`, 409 quand ce n'est pas
-    au joueur de jouer, même propriété que la partie, limite `conseilPartie` de 300 par minute. Pas de route pour les
-    duels : « l'API le refuse » prend la forme d'une route absente (404).
-  - **Écran** : une ampoule « Un conseil ? » dans l'en-tête, contre le bot et pendant son tour seulement ; le conseil
-    s'affiche au-dessus de « Finir mon tour », dans une zone `aria-live`, avec « Masquer le conseil » ; ce qu'il
-    désigne (carte, attaquant et cible, SI, bouton de fin de tour) porte un pointillé doré et « conseillé » dans son
-    nom accessible. Un conseil ne vaut que pour la version de la partie qui l'a produit.
-  - **Option** « Un conseil à chaque coup » dans l'aide « ? » (contre le bot), gardée par le navigateur
-    (`hipmaster.conseil-chaque-coup`, ADR 0032), désactivée par défaut.
+- Prefer an adviser whose decisions can be explained, even if it plays a bit weaker than Autonomous Agent.
+- The hint does not change the victory reward.
+- Choices made ([ADR 0040](../../decisions/0040-conseil-serveur-contre-bot.md)):
+  - **Adviser**: `conseiller(vue)` in the domain (`combat/conseil.ts`) follows the Nightly Batch rules (`bot.ts`,
+    whose rules are now exported) and explains the rule that chose the move: strongest or only possible deployment,
+    evolution, Migration, Tooling, spell (by its effect), attack (victory, unprotected System, destruction while
+    surviving the counter-attack, favourable trade, Guard), decommissioning (the card it lets you deploy), end of turn
+    (losing attacks, nothing useful). A test checks that it chooses the same action as Nightly Batch at every move.
+  - **Measurement** (`npm run simuler`, 450 games per measurement, seed 1): a player who always follows the hint beats
+    Intern 89% of the time and Nightly Batch 47%. The computation takes under a millisecond.
+  - **API**: `GET /api/v1/parties/{id}/conseil` returns `{ version, action, explication }`, 409 when it is not the
+    player's turn, same ownership as the game, `conseilPartie` limit of 300 per minute. No route for duels: "the API
+    refuses it" takes the form of an absent route (404).
+  - **Screen**: a light bulb "A hint?" in the header, against the bot and during its turn only; the hint is displayed
+    above "End my turn", in an `aria-live` area, with "Hide the hint"; what it designates (card, attacker and target,
+    System, end-of-turn button) carries a golden dotted outline and "advised" in its accessible name. A hint is only
+    valid for the version of the game that produced it.
+  - **Option** "A hint every move" in the "?" help (against the bot), kept by the browser
+    (`hipmaster.conseil-chaque-coup`, ADR 0032), off by default.
 
-## Journal
+## Log
 
-- 2026-10-23 — création, à la demande du porteur du projet ; conseil contre le bot seulement (sa décision).
-- 2026-10-24 — affinée et commencée : choix notés ci-dessus (ADR 0040).
-- 2026-10-24 — livrée : conseil à la demande contre le bot (ampoule, mise en évidence et explication), GET /parties/{id}/conseil calculé par le domaine sur les règles de Batch de nuit, option « Un conseil à chaque coup », jamais en duel (ADR 0040)
+- 2026-10-23 — created, at the project owner's request; hint against the bot only (their decision).
+- 2026-10-24 — refined and started: choices noted above (ADR 0040).
+- 2026-10-24 — delivered: hint on demand against the bot (light bulb, highlighting and explanation), GET /parties/{id}/conseil computed by the domain on the Nightly Batch rules, "A hint every move" option, never in a duel (ADR 0040)

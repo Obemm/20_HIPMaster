@@ -1,77 +1,74 @@
-# US-056 — La CI teste l'API sur un vrai PostgreSQL
+# US-056 — The CI tests the API on a real PostgreSQL
 
-- **Epic** : EPIC-09
-- **Statut** : Faite
-- **Priorité** : Must
-- **Taille** : S
-- **Branche** : `us-056-ci-postgresql`
+- **Epic**: EPIC-09
+- **Status**: Done
+- **Priority**: Must
+- **Size**: S
+- **Branch**: `us-056-ci-postgresql`
 
-## Récit
+## Story
 
-En tant que **porteur du projet**, je veux **que la CI fasse aussi passer les tests de l'API sur PostgreSQL** afin
-de **découvrir avant la production ce que PGlite ne peut pas montrer**.
+As the **project owner**, I want **the CI to also run the API tests on PostgreSQL** so that I can **discover before
+production what PGlite cannot show**.
 
-## Contexte
+## Context
 
-Tous les tests de l'API et les parcours e2e tournent sur PGlite (ADR 0018), qui exécute les requêtes **une par une**
-(verrou unique). Les tests « simultanés » des duels passeraient donc même sans `FOR UPDATE` ni `SKIP LOCKED`, et ni
-postgres.js (pool, JSONB), ni les migrations sur un vrai serveur ne sont jamais exercés. La production utilisera
-PostgreSQL chez Neon (ADR 0021).
+All the API tests and the e2e journeys run on PGlite (ADR 0018), which executes queries **one by one** (single lock).
+The "simultaneous" duel tests would therefore pass even without `FOR UPDATE` or `SKIP LOCKED`, and neither postgres.js
+(pool, JSONB) nor the migrations on a real server are ever exercised. Production will use PostgreSQL at Neon (ADR
+0021).
 
-## Critères d'acceptation
+## Acceptance criteria
 
-- [x] **Étant donné** une pull request, **quand** la CI s'exécute, **alors** un job lance la suite de l'API avec un
-      service `postgres` de la même version majeure que la base de production et `DATABASE_URL` renseignée, en plus de la suite
-      PGlite actuelle.
-- [x] **Étant donné** ce job, **alors** les migrations sont appliquées sur une base vide, puis une seconde fois sans
-      effet.
-- [x] **Étant donné** les opérations concurrentes (ouverture de booster, récompense de victoire, appariement des
-      duels, action de duel), **alors** des tests les lancent vraiment en parallèle sur PostgreSQL et vérifient qu'aucun
-      gain n'est doublé et qu'aucun duel n'est rejoint deux fois.
-- [x] Le temps de la CI reste raisonnable (le job tourne en parallèle des autres).
+- [x] **Given** a pull request, **when** the CI runs, **then** a job runs the API suite with a `postgres` service of the
+      same major version as the production database and `DATABASE_URL` set, in addition to the current PGlite suite.
+- [x] **Given** this job, **then** the migrations are applied on an empty database, then a second time with no effect.
+- [x] **Given** the concurrent operations (booster opening, victory reward, duel matchmaking, duel action), **then**
+      tests really launch them in parallel on PostgreSQL and verify that no gain is doubled and that no duel is joined
+      twice.
+- [x] The CI time stays reasonable (the job runs in parallel with the others).
 
 ## Notes
 
-- Le code sait déjà utiliser PostgreSQL via `DATABASE_URL` (ADR 0018) ; il faut donner une base propre à chaque
-  fichier de tests (schéma ou base par fichier).
-- **PostgreSQL 18**, et non 17 comme envisagé au lancement du lot : le projet Neon de production, créé à l'inscription
-  du porteur du projet, est en PostgreSQL 18, et Neon ne change jamais la version majeure d'un projet (constat et
-  ADR 0024 d'US-049). C'est aussi la version de PGlite (18.6) et de `docker-compose.yml`.
-- Une base par fichier plutôt qu'un schéma : les migrations nomment le schéma `public` (`CREATE TYPE "public"…`).
+- The code already knows how to use PostgreSQL through `DATABASE_URL` (ADR 0018); a clean database must be given to
+  each test file (schema or database per file).
+- **PostgreSQL 18**, not 17 as envisaged at the batch launch: the production Neon project, created when the project
+  owner signed up, is on PostgreSQL 18, and Neon never changes a project's major version (finding and ADR 0024 of
+  US-049). It is also the version of PGlite (18.6) and of `docker-compose.yml`.
+- A database per file rather than a schema: the migrations name the `public` schema (`CREATE TYPE "public"…`).
 
-## Réalisation
+## Implementation
 
-- `db/base-de-test.ts` : avec `DATABASE_URL`, `baseDeTest()` crée une base PostgreSQL vide par fichier
-  (`creerBaseVide`), la migre à l'ouverture, la vide avant chaque test et la supprime à la fin ; sans, PGlite en
-  mémoire comme avant.
-- `concurrence.test.ts` : ouvertures de booster, récompenses (même partie, et plafond quotidien), appariement au
-  hasard et actions de duel (avec et sans `If-Match`), dix à la fois. Le pool ouvre d'abord ses connexions : sans
-  cela, il les ouvrait une à une et la première opération finissait avant que la deuxième ne commence.
-- `db/migrations.test.ts` (PostgreSQL seulement) : migrations sur une base vide, puis une seconde ouverture sans effet
-  (même nombre de migrations, données conservées).
-- `.github/workflows/ci.yml` : job « Tests de l'API sur PostgreSQL 18 » (service `postgres:18-alpine`), en parallèle
-  des autres.
+- `db/base-de-test.ts`: with `DATABASE_URL`, `baseDeTest()` creates an empty PostgreSQL database per file
+  (`creerBaseVide`), migrates it on opening, empties it before each test and drops it at the end; without it, in-memory
+  PGlite as before.
+- `concurrence.test.ts`: booster openings, rewards (same game, and daily ceiling), random matchmaking and duel actions
+  (with and without `If-Match`), ten at a time. The pool first opens its connections: without this, it opened them
+  one by one and the first operation finished before the second began.
+- `db/migrations.test.ts` (PostgreSQL only): migrations on an empty database, then a second opening with no effect
+  (same number of migrations, data kept).
+- `.github/workflows/ci.yml`: job "Tests de l'API sur PostgreSQL 18" (`postgres:18-alpine` service), in parallel with
+  the others.
 
-## Vérifications
+## Verifications
 
-Le 2026-10-22, contre le PostgreSQL 18 de `docker-compose.yml` : toute la suite de l'API passe (35 s, contre 90 s sur
-PGlite) et ne laisse aucune base derrière elle. Chaque verrou a été retiré à tour de rôle pour s'assurer que les tests
-le remarquent :
+On 2026-10-22, against the PostgreSQL 18 of `docker-compose.yml`: the whole API suite passes (35 s, against 90 s on
+PGlite) and leaves no database behind. Each lock was removed in turn to make sure the tests notice it:
 
-| Verrou retiré                                     | PostgreSQL               | PGlite          |
-| ------------------------------------------------- | ------------------------ | --------------- |
-| `FOR UPDATE` de l'ouverture de booster            | échec 3 fois sur 3       | passe           |
-| `FOR UPDATE` de la récompense (même partie)       | échec 5 fois sur 5       | passe           |
-| `FOR UPDATE` de la récompense (plafond quotidien) | échec 3 fois sur 3       | passe           |
-| `FOR UPDATE SKIP LOCKED` de l'appariement         | échec 3 fois sur 3       | passe           |
-| `FOR UPDATE` de l'action de duel                  | les deux tests, 3 sur 3  | passe           |
-| aucun                                             | 6 tests passent, 3 sur 3 | 6 tests passent |
+| Lock removed                                | PostgreSQL               | PGlite       |
+| ------------------------------------------- | ------------------------ | ------------ |
+| `FOR UPDATE` of booster opening             | fails 3 times out of 3   | passes       |
+| `FOR UPDATE` of the reward (same game)      | fails 5 times out of 5   | passes       |
+| `FOR UPDATE` of the reward (daily ceiling)  | fails 3 times out of 3   | passes       |
+| `FOR UPDATE SKIP LOCKED` of the matchmaking | fails 3 times out of 3   | passes       |
+| `FOR UPDATE` of the duel action             | both tests, 3 out of 3   | passes       |
+| none                                        | 6 tests pass, 3 out of 3 | 6 tests pass |
 
-En CI (PR #43, 2026-10-22) : le job « Tests de l'API sur PostgreSQL 18 » a duré 46 s, image et `npm ci` compris,
-en parallèle des deux autres jobs, pour 9 fichiers et 73 tests, dont les migrations et les tests concurrents.
+In CI (PR #43, 2026-10-22): the job "Tests de l'API sur PostgreSQL 18" took 46 s, image and `npm ci` included, in
+parallel with the two other jobs, for 9 files and 73 tests, including the migrations and the concurrent tests.
 
-## Journal
+## Log
 
-- 2026-10-22 — création, issue de la revue de l'API avant mise en ligne.
-- 2026-10-22 — prise en charge (lot 1, session API) ; PostgreSQL 18 retenu, comme la base Neon de production.
-- 2026-10-22 — livrée : job de CI « Tests de l'API sur PostgreSQL 18 » (version de la base Neon de production), une base par fichier de tests, vrais tests concurrents (boosters, récompenses, appariement, actions de duel) qui échouent sur PostgreSQL dès qu'un verrou manque, migrations vérifiées sur une base vide puis relancées sans effet
+- 2026-10-22 — created, from the API review before going live.
+- 2026-10-22 — taken on (batch 1, API session); PostgreSQL 18 chosen, like the production Neon database.
+- 2026-10-22 — delivered: CI job "Tests de l'API sur PostgreSQL 18" (version of the production Neon database), one database per test file, real concurrent tests (boosters, rewards, matchmaking, duel actions) that fail on PostgreSQL as soon as a lock is missing, migrations verified on an empty database then rerun with no effect

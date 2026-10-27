@@ -1,30 +1,30 @@
-# US-007 — Dependabot ne propose que des versions compatibles
+# US-007 — Dependabot only proposes compatible versions
 
-- **Epic** : EPIC-00
-- **Statut** : Faite
-- **Priorité** : Must
-- **Taille** : XS
-- **Branche** : `us-007-dependabot-typescript`
+- **Epic**: EPIC-00
+- **Status**: Done
+- **Priority**: Must
+- **Size**: XS
+- **Branch**: `us-007-dependabot-typescript`
 
-## Récit
+## Story
 
-En tant que **développeur**, je veux **que Dependabot ne propose pas de versions incompatibles avec la stack**
-afin de **ne recevoir que des mises à jour fusionnables, sans PR rouges à trier**.
+As a **developer**, I want **Dependabot not to propose versions that are incompatible with the stack**
+so that **I only receive mergeable updates, with no red PRs to sort through**.
 
-## Critères d'acceptation
+## Acceptance criteria
 
-- [x] **Étant donné** Angular 22, qui exige TypeScript `>=6.0 <6.1`, **quand** Dependabot cherche des mises à jour,
-      **alors** il ne propose pas TypeScript 6.1 ou plus.
-- [x] **Étant donné** Node 24 (`.nvmrc`), **alors** Dependabot ne propose pas de version majeure de `@types/node`
-      (qui doit suivre la version majeure de Node).
-- [x] La PR #4 (TypeScript 7, `@types/node` 26), dont `npm ci` échoue, est fermée avec une explication.
+- [x] **Given** Angular 22, which requires TypeScript `>=6.0 <6.1`, **when** Dependabot looks for updates, **then** it
+      does not propose TypeScript 6.1 or later.
+- [x] **Given** Node 24 (`.nvmrc`), **then** Dependabot does not propose a major version of `@types/node` (which must
+      follow the major version of Node).
+- [x] PR #4 (TypeScript 7, `@types/node` 26), whose `npm ci` fails, is closed with an explanation.
 
 ## Notes
 
-Échec constaté le 2026-10-16 sur la PR #4 : `npm ci` en `ERESOLVE` (typescript-eslint et Angular refusent TypeScript 7).
-Les blocages seront levés quand Angular acceptera TypeScript 7, et quand le projet passera à Node 26.
+Failure observed on 2026-10-16 on PR #4: `npm ci` fails with `ERESOLVE` (typescript-eslint and Angular reject
+TypeScript 7). The blocks will be lifted when Angular accepts TypeScript 7, and when the project moves to Node 26.
 
-## Journal
+## Log
 
-- 2026-10-16 — création.
-- 2026-10-16 — livrée : TypeScript >=6.1 et versions majeures de @types/node ignorés par Dependabot ; PR #4 fermée
+- 2026-10-16 — created.
+- 2026-10-16 — delivered: TypeScript >=6.1 and major versions of @types/node ignored by Dependabot; PR #4 closed

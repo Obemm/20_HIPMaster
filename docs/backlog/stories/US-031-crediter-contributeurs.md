@@ -1,30 +1,30 @@
-# US-031 — Créditer les contributeurs dans le jeu
+# US-031 — Credit contributors in the game
 
-- **Epic** : EPIC-08
-- **Statut** : À affiner
-- **Priorité** : Could
-- **Taille** : S
-- **Branche** : `us-031-crediter-contributeurs`
+- **Epic**: EPIC-08
+- **Status**: To refine
+- **Priority**: Could
+- **Size**: S
+- **Branch**: `us-031-crediter-contributeurs`
 
-## Récit
+## Story
 
-En tant que **contributeur**, je veux **voir mon nom sur les cartes que j'ai proposées** afin d'**être reconnu et
-d'avoir envie d'en proposer d'autres**.
+As a **contributor**, I want to **see my name on the cards I proposed** so that **I am recognised and want to propose
+more**.
 
-## Critères d'acceptation
+## Acceptance criteria
 
-- [ ] Le détail d'une carte qui a un auteur (US-030) affiche « Proposée par … » ; le texte est traduit (ADR 0042).
-- [ ] Le catalogue peut se filtrer sur les cartes de la communauté.
-- [ ] Une page « Contributeurs » liste les auteurs et leurs cartes publiées.
-- [ ] Tests de l'écran ; parcours e2e et audit axe-core au vert.
+- [ ] The detail of a card that has an author (US-030) shows "Proposed by …"; the text is translated (ADR 0042).
+- [ ] The catalogue can be filtered on community cards.
+- [ ] A "Contributors" page lists the authors and their published cards.
+- [ ] Screen tests; e2e journey and axe-core audit green.
 
 ## Notes
 
-- Le nom affiché vient de la PR (choisi par l'auteur) : il n'est lié à aucun compte du jeu (ADR 0050). Le plan
-  initial offrait un exemplaire de la carte dans la collection de l'auteur : écarté, faute de lien entre l'auteur et
-  un compte.
+- The display name comes from the PR (chosen by the author): it is not linked to any game account (ADR 0050). The
+  initial plan offered a copy of the card in the author's collection: dropped, for lack of a link between the author
+  and an account.
 
-## Journal
+## Log
 
-- 2026-10-19 — création (EPIC-08, à traiter plus tard).
-- 2026-10-27 — affinage (ADR 0050) : crédit tiré du champ auteur du catalogue.
+- 2026-10-19 — created (EPIC-08, to be handled later).
+- 2026-10-27 — refined (ADR 0050): credit taken from the catalogue's author field.

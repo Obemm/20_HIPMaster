@@ -1,45 +1,44 @@
-# EPIC-14 — Un jeu en français et en anglais
+# EPIC-14 — A game in French and English
 
-- **Statut** : Terminé
-- **Priorité** : Should
+- **Status**: Done
+- **Priority**: Should
 
-## Objectif
+## Goal
 
-Le porteur du projet veut ouvrir HIPMaster aux collègues anglophones de l’entreprise (décision du 2026-10-24) : le jeu doit
-se jouer **en français ou en anglais**, interface comme contenu (cartes, capacités, fiches « En savoir plus », règle).
-La documentation du projet, le backlog, les ADR et les commits restent en français (règle du projet).
+The project owner wants to open HIPMaster to the company's English-speaking colleagues (decision of 2026-10-24): the game
+must be playable **in French or English**, interface and content alike (cards, abilities, "Learn more" sheets, rules).
+The project documentation, backlog, ADRs and commits stay in French (project rule at the time).
 
-Orientation proposée par Claude et retenue par le porteur, à consigner dans un ADR après consultation du référentiel
-the company (ADR 0005) :
+Direction proposed by Claude and adopted by the project owner, to be recorded in an ADR after consulting the the company
+reference (ADR 0005):
 
-- **interface** : l'i18n native d'Angular (`@angular/localize`, `ng extract-i18n`), une version compilée par langue
-  servie sous `/fr/` et `/en/` ; aucun coût à l'exécution, compatible avec la CSP stricte (ADR 0028) et la PWA
-  (ADR 0038). Repli étudié : Transloco, si le changement de langue doit être instantané ;
-- **contenu du jeu** : traductions dans le domaine (`packages/domain`), par langue et par numéro de carte, le
-  français faisant foi et servant de repli ; l'API sert la langue demandée ; les noms de produits ne se traduisent
-  pas ;
-- **choix de la langue** : celle du navigateur à la première visite, puis un sélecteur FR / EN gardé comme
-  préférence du navigateur (ADR 0032) ;
-- **traductions** : rédigées par Claude, relues par le porteur ; pas de service de traduction payant.
+- **interface**: Angular's native i18n (`@angular/localize`, `ng extract-i18n`), one compiled version per language
+  served under `/fr/` and `/en/`; no runtime cost, compatible with the strict CSP (ADR 0028) and the PWA
+  (ADR 0038). Fallback studied: Transloco, if switching language must be instant;
+- **game content**: translations in the domain (`packages/domain`), by language and card number, French being
+  authoritative and serving as the fallback; the API serves the requested language; product names are not translated;
+- **language choice**: the browser's language on the first visit, then an FR / EN selector kept as a browser
+  preference (ADR 0032);
+- **translations**: written by Claude, reviewed by the project owner; no paid translation service.
 
-## Indicateur de réussite
+## Success indicator
 
-- Un joueur anglophone fait tout le parcours (compte, boosters, collection, partie, duel, fiches) sans croiser un
-  mot de français, et inversement.
-- Aucune chaîne d'interface en dur : `ng extract-i18n` ne laisse aucun texte sans identifiant, et un contrôle de la CI
-  vérifie que chaque langue a toutes ses traductions.
-- Les parcours e2e passent dans les deux langues, audit d'accessibilité compris (`lang` juste sur chaque page).
+- An English-speaking player goes through the whole journey (account, boosters, collection, game, duel, sheets)
+  without coming across a word of French, and vice versa.
+- No hard-coded interface string: `ng extract-i18n` leaves no text without an identifier, and a CI check verifies
+  that each language has all its translations.
+- The e2e journeys pass in both languages, accessibility audit included (correct `lang` on every page).
 
 ## Stories
 
-- [x] US-079 — Le socle bilingue : i18n d'Angular, deux versions du site et un sélecteur de langue
-- [x] US-080 — Toute l'interface en anglais
-- [x] US-081 — Les cartes, les capacités, les fiches et la règle en anglais
-- [x] US-082 — Des messages d'erreur traduits et des parcours vérifiés dans les deux langues
+- [x] US-079 — The bilingual foundation: Angular i18n, two versions of the site and a language switcher
+- [x] US-080 — The whole interface in English
+- [x] US-081 — The cards, abilities, sheets and rules in English
+- [x] US-082 — Translated error messages and journeys verified in both languages
 
-Ordre : US-079 d'abord (socle et ADR), puis US-080 et US-081 (indépendantes), et US-082 pour finir.
+Order: US-079 first (foundation and ADR), then US-080 and US-081 (independent), and US-082 to finish.
 
-## Hors périmètre
+## Out of scope
 
-- D'autres langues : le socle doit les permettre, sans les livrer.
-- La traduction de la documentation du projet.
+- Other languages: the foundation must allow them, without delivering them.
+- Translation of the project documentation.

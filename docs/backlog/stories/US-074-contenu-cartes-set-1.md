@@ -1,57 +1,56 @@
-# US-074 — Enrichir le contenu des 71 cartes du set 1
+# US-074 — Enrich the content of the 71 cards of set 1
 
-- **Epic** : EPIC-12
-- **Statut** : Faite
-- **Priorité** : Must
-- **Taille** : L
-- **Branche** : `us-074-contenu-cartes-set-1`
-- **Décision** : [ADR 0036](../../decisions/0036-fiches-pedagogiques-cartes.md)
+- **Epic**: EPIC-12
+- **Status**: Done
+- **Priority**: Must
+- **Size**: L
+- **Branch**: `us-074-contenu-cartes-set-1`
+- **Decision**: [ADR 0036](../../decisions/0036-fiches-pedagogiques-cartes.md)
 
-## Récit
+## Story
 
-En tant que **collègue qui découvre l'intégration**, je veux **que chaque carte m'apprenne quelque chose de juste et
-d'utile** afin de **mieux comprendre les technologies, patterns et incidents de la plateforme en jouant**.
+As a **colleague discovering integration**, I want **every card to teach me something accurate and useful** so that I
+can **better understand the platform's technologies, patterns and incidents while playing**.
 
-## Conception
+## Design
 
-- Les 63 fiches manquantes suivent le format d'US-073 (`packages/domain/src/fiches/`, un fichier par famille) : la
-  relecture se fait **famille par famille, fichier par fichier**, dans une seule PR (huit fichiers indépendants).
-- **Sources** : Wikipédia (en français quand l'article existe), documentation des éditeurs (Google Cloud Apigee,
-  Solace, IBM, Anthropic), standards (RFC, OpenAPI, AsyncAPI, A2A, CA/Browser Forum), _Enterprise Integration
-  Patterns_, OWASP, CNIL, Microsoft Learn. Chaque lien a été ouvert : réponse 200 et titre de page sur le bon sujet.
-- **En interne** : seulement les faits déjà publics dans le dépôt (`docs/produit/univers.md`, `cartes-set-1.md`) ; aucune
-  doctrine interne n'est reprise, le dépôt étant public (ADR 0022).
-- **Liens morts** : `npm run fiches:liens` ouvre chaque adresse (redirections suivies) et affiche statut et titre ; il
-  sort en erreur si un lien ne répond pas. Il demande le réseau : ce n'est pas un test de la CI, il se lance avant
-  chaque modification de fiche.
-- **Texte visible des cartes** : seul celui de SFTP était inexact (« Le FTP chiffré » : SFTP passe par SSH, sans
-  rapport avec FTP) ; il devient « Le transfert de fichiers chiffré par SSH, peu à peu remplacé par les API et les
-  événements ».
+- The 63 missing sheets follow the US-073 format (`packages/domain/src/fiches/`, one file per family): review is done
+  **family by family, file by file**, in a single PR (eight independent files).
+- **Sources**: Wikipedia (in French when the article exists), vendor documentation (Google Cloud Apigee, Solace, IBM,
+  Anthropic), standards (RFC, OpenAPI, AsyncAPI, A2A, CA/Browser Forum), _Enterprise Integration Patterns_, OWASP,
+  CNIL, Microsoft Learn. Every link was opened: 200 response and page title on the right subject.
+- **At the company**: only facts that are already public in the repository (`docs/produit/univers.md`, `cartes-set-1.md`); no
+  internal doctrine is used, the repository being public (ADR 0022).
+- **Dead links**: `npm run fiches:liens` opens every address (redirects followed) and prints status and title; it exits
+  with an error if a link does not respond. It needs the network: it is not a CI test, it is run before every change
+  to a sheet.
+- **Visible card text**: only SFTP's was inaccurate ("Encrypted FTP": SFTP goes through SSH, unrelated to FTP); it
+  becomes "File transfer encrypted by SSH, gradually replaced by APIs and events".
 
-## Critères d'acceptation
+## Acceptance criteria
 
-- [x] **Étant donné** chacune des 71 cartes, **alors** sa fiche « En savoir plus » (format d'US-073) est rédigée :
-      définition, usage, exemple concret, piège ou bonne pratique, et au moins un lien externe.
-- [x] **Étant donné** chaque lien externe, **alors** il a été ouvert et vérifié ; un test ou un script signale les
-      liens morts.
-- [x] **Étant donné** le texte visible de la carte, **alors** il reste court et ludique ; il est retouché seulement s'il
-      était inexact.
-- [x] Le contenu est relu par le porteur du projet, famille par famille (Fichiers & Batch, Messagerie & ESB, API,
-      iPaaS, Événementiel, IA agentique, Patterns, Bestiaire) : une PR par famille si c'est plus simple à relire.
+- [x] **Given** each of the 71 cards, **then** its "Learn more" sheet (US-073 format) is written: definition, use,
+      concrete example, pitfall or good practice, and at least one external link.
+- [x] **Given** each external link, **then** it has been opened and verified; a test or a script reports dead links.
+- [x] **Given** the visible text of the card, **then** it stays short and playful; it is touched up only if it was
+      inaccurate.
+- [x] The content is reviewed by the project owner, family by family (Files & Batch, Messaging & ESB, API, iPaaS,
+      Event-driven, Agentic AI, Patterns, Bestiary): one PR per family if that is easier to review.
 
 ## Notes
 
-- Taille L : à découper par famille au moment de l'affiner.
-- Après US-073, qui fixe le format avec des cartes pilotes.
-- Points à faire trancher par le porteur du projet (relevés dans la PR) : les textes « En interne », le sort de SFTP
-  en interne (le jeu le présente comme une étape vers l'API ou l'événement), et les fiches qui s'appuient sur une
-  documentation d'éditeur susceptible d'évoluer (Apigee AI, Solace Agent Mesh, A2A).
+- Size L: to be split by family when refined.
+- After US-073, which fixes the format with pilot cards.
+- Points for the project owner to decide (noted in the PR): the "At the company" texts, the fate of SFTP at the company (the game
+  presents it as a step towards the API or the event), and the sheets that rely on vendor documentation likely to
+  change (Apigee AI, Solace Agent Mesh, A2A).
 
-## Journal
+## Log
 
-- 2026-10-23 — création, à la demande du porteur du projet.
-- 2026-10-24 — affinage et rédaction des 63 fiches restantes (127 liens, 115 adresses, tous vérifiés), test « une
-  fiche par carte », script `npm run fiches:liens`, texte de SFTP corrigé. En revue : relecture du porteur du projet.
-- 2026-10-24 — décision du porteur du projet : SFTP est proscrit en interne, comme FTP, mais encore utilisé par
-  beaucoup de projets ; la fiche le dit. ADR des fiches renuméroté 0036 (le 0034 est celui d'US-058).
-- 2026-10-24 — livrée : fiche « En savoir plus » pour les 71 cartes du set 1 (127 liens vérifiés, npm run fiches:liens), texte de SFTP corrigé, SFTP proscrit en interne ; textes relus et validés par le porteur du projet
+- 2026-10-23 — created, at the project owner's request.
+- 2026-10-24 — refinement and writing of the 63 remaining sheets (127 links, 115 addresses, all verified), "one sheet
+  per card" test, `npm run fiches:liens` script, SFTP text fixed. In review: project owner's review.
+- 2026-10-24 — project owner's decision: SFTP is banned at the company, like FTP, but still used by many projects; the sheet
+  says so. Sheets ADR renumbered 0036 (0034 is US-058's).
+- 2026-10-24 — delivered: "Learn more" sheet for the 71 cards of set 1 (127 links verified, npm run fiches:liens),
+  SFTP text fixed, SFTP banned at the company; texts reviewed and validated by the project owner

@@ -1,70 +1,71 @@
-# US-073 — Une fiche « En savoir plus » et des liens externes pour chaque carte
+# US-073 — A "Learn more" sheet and external links for every card
 
-- **Epic** : EPIC-12
-- **Statut** : Faite
-- **Priorité** : Must
-- **Taille** : M
-- **Branche** : `us-073-fiche-en-savoir-plus`
-- **Décision** : [ADR 0036](../../decisions/0036-fiches-pedagogiques-cartes.md)
+- **Epic**: EPIC-12
+- **Status**: Done
+- **Priority**: Must
+- **Size**: M
+- **Branch**: `us-073-fiche-en-savoir-plus`
+- **Decision**: [ADR 0036](../../decisions/0036-fiches-pedagogiques-cartes.md)
 
-## Récit
+## Story
 
-En tant que **joueur curieux**, je veux **ouvrir, depuis n'importe quelle carte, une fiche qui m'explique vraiment de
-quoi il s'agit et où en apprendre plus** afin d'**apprendre l'intégration en jouant, sans que la carte elle-même
-devienne un pavé**.
+As a **curious player**, I want to **open, from any card, a sheet that really explains what it is about and where to
+learn more** so that I can **learn about integration while playing, without the card itself turning into a wall of
+text**.
 
-## Conception
+## Design
 
-- **Modèle** (`packages/domain/src/fiches/`, ADR 0036) : une fiche porte `definition` (ce que c'est, en une phrase),
-  `usage` (à quoi ça sert ; pour un incident, comment il survient), `exemple`, `aRetenir` (le piège ou la bonne
-  pratique), `enInterne` facultatif (seulement des faits déjà publics dans le dépôt) et de 1 à 3 `liens`
-  (`titre`, `url` en `https`, `langue` `fr` ou `en`). Un fichier par famille, indexé par numéro de carte.
-- **Validation** : `problemesFiche` borne les longueurs (220 / 360 / 360 / 320 / 240 caractères, 1 300 en tout, soit
-  moins d'une minute de lecture) et contrôle les liens ; les tests du domaine l'appliquent à toutes les fiches.
-- **API** : `GET /api/v1/cartes/{numero}` renvoie la carte et sa `fiche` (schéma `CarteDetaillee`, contrat OpenAPI
-  1.1.0) ; la liste `GET /api/v1/cartes` ne la porte pas, pour rester légère.
-- **Front** : composant `hip-en-savoir-plus`, un bouton « En savoir plus » (`aria-expanded`, `aria-controls`) qui
-  déplie la fiche sous le texte « En vrai ». Dans le détail d'une carte (catalogue, collection, carte vue depuis un
-  booster), il n'apparaît que si la fiche existe ; dans le panneau de la carte choisie en partie, il demande la fiche à
-  l'API à la première ouverture, et annonce une fiche encore à écrire.
-- **Liens externes** : `target="_blank"`, `rel="noopener noreferrer"`, `hreflang`, « (nouvel onglet) » pour les
-  lecteurs d'écran, et sous chaque lien le site et la langue (« en.wikipedia.org · en anglais ») ; une phrase prévient
-  que ces liens ouvrent un autre site. Rien n'est chargé depuis ces sites : la CSP ne change pas.
-- **Cartes pilotes** (une par famille) : FTP (1), webMethods Integration Server 10.15 (9), Apigee API Gateway (18),
-  webMethods.io (26), Solace Event Mesh (31), Serveur MCP (44), Dead Letter Queue (53), Prompt injection (59).
+- **Model** (`packages/domain/src/fiches/`, ADR 0036): a sheet carries `definition` (what it is, in one sentence),
+  `usage` (what it is for; for an incident, how it occurs), `exemple`, `aRetenir` (the pitfall or the good practice),
+  an optional `enInterne` (only facts that are already public in the repository) and 1 to 3 `liens` (`titre`, `url` in
+  `https`, `langue` `fr` or `en`). One file per family, indexed by card number.
+- **Validation**: `problemesFiche` bounds the lengths (220 / 360 / 360 / 320 / 240 characters, 1,300 in all, i.e. less
+  than a minute of reading) and checks the links; the domain tests apply it to every sheet.
+- **API**: `GET /api/v1/cartes/{numero}` returns the card and its `fiche` (`CarteDetaillee` schema, OpenAPI contract
+  1.1.0); the list `GET /api/v1/cartes` does not carry it, to stay light.
+- **Front end**: `hip-en-savoir-plus` component, a "Learn more" button (`aria-expanded`, `aria-controls`) that unfolds
+  the sheet under the "In real life" text. In a card's detail (catalogue, collection, card seen from a booster), it only
+  appears if the sheet exists; in the panel of the card chosen during a game, it asks the API for the sheet on first
+  opening, and announces a sheet that is still to be written.
+- **External links**: `target="_blank"`, `rel="noopener noreferrer"`, `hreflang`, "(new tab)" for screen readers, and
+  under each link the site and the language ("en.wikipedia.org · in English"); a sentence warns that these links open
+  another site. Nothing is loaded from these sites: the CSP does not change.
+- **Pilot cards** (one per family): FTP (1), webMethods Integration Server 10.15 (9), Apigee API Gateway (18),
+  webMethods.io (26), Solace Event Mesh (31), MCP server (44), Dead Letter Queue (53), Prompt injection (59).
 
-## Critères d'acceptation
+## Acceptance criteria
 
-- [x] **Étant donné** le modèle de carte du domaine (ADR 0011), **alors** une carte peut porter une fiche : définition
-      en une phrase, à quoi ça sert, un exemple concret, un piège ou une bonne pratique, et une liste de liens externes
-      (titre, adresse, langue). Ces données sont versionnées avec le catalogue et validées par les tests du domaine
-      (adresses `https`, champs obligatoires).
-- [x] **Étant donné** une carte affichée (catalogue, collection, détail en partie, ouverture de booster), **alors** un
-      bouton « En savoir plus » ouvre la fiche. Le texte visible sur la carte reste court et ludique.
-- [x] **Étant donné** un lien externe, **alors** il s'ouvre dans un nouvel onglet (`rel="noopener noreferrer"`) et
-      signale qu'on quitte le jeu ; la CSP du site n'a pas à changer.
-- [x] **Étant donné** quelques cartes pilotes (au moins une par famille), **alors** leur fiche est rédigée et relue,
-      pour valider le format avant US-074.
-- [x] L'API du catalogue renvoie la fiche (contrat OpenAPI mis à jour d'abord) ; accessibilité (clavier, lecteur
-      d'écran, 375 px).
+- [x] **Given** the domain's card model (ADR 0011), **then** a card can carry a sheet: a one-sentence definition, what
+      it is for, a concrete example, a pitfall or a good practice, and a list of external links (title, address,
+      language). This data is versioned with the catalogue and validated by the domain tests (`https` addresses,
+      mandatory fields).
+- [x] **Given** a displayed card (catalogue, collection, detail during a game, booster opening), **then** a "Learn
+      more" button opens the sheet. The text visible on the card stays short and playful.
+- [x] **Given** an external link, **then** it opens in a new tab (`rel="noopener noreferrer"`) and signals that the
+      player is leaving the game; the site's CSP does not have to change.
+- [x] **Given** a few pilot cards (at least one per family), **then** their sheet is written and reviewed, to validate
+      the format before US-074.
+- [x] The catalogue API returns the sheet (OpenAPI contract updated first); accessibility (keyboard, screen reader,
+      375 px).
 
 ## Notes
 
-- Ton : apprendre sans ennuyer. Une fiche se lit en moins d'une minute ; l'humour d'équipe a sa place dans le texte
-  d'ambiance de la carte, la fiche reste exacte.
-- Ressources externes possibles : Wikipédia, documentation des éditeurs (Apigee, Solace, webMethods…), standards
-  (RFC, OpenAPI, AsyncAPI), _Enterprise Integration Patterns_. Préférer des sources publiques et stables.
-- Demande du porteur du projet (2026-10-23) : « l'objectif du jeu est avant tout l'acculturation […] mais elles
-  doivent quand même rester ludiques ».
-- Depuis un booster, la fiche s'ouvre par le détail de la carte (chaque carte révélée y mène déjà, US-023).
-- Les textes « En interne » des pilotes ne reprennent que l'univers du jeu (`docs/produit/univers.md`) : à confirmer
-  par le porteur du projet à la relecture.
+- Tone: learn without getting bored. A sheet reads in under a minute; team humour has its place in the card's flavour
+  text, the sheet stays accurate.
+- Possible external resources: Wikipedia, vendor documentation (Apigee, Solace, webMethods…), standards (RFC, OpenAPI,
+  AsyncAPI), _Enterprise Integration Patterns_. Prefer public and stable sources.
+- Request from the project owner (2026-10-23): "the goal of the game is above all acculturation […] but they must
+  still remain playful".
+- From a booster, the sheet opens through the card's detail (each revealed card already leads there, US-023).
+- The "At the company" texts of the pilots only use the game's universe (`docs/produit/univers.md`): to be confirmed by the
+  project owner during review.
 
-## Journal
+## Log
 
-- 2026-10-23 — création, à la demande du porteur du projet.
-- 2026-10-24 — affinage (conception, ADR 0036) et réalisation : modèle et validation dans le domaine, contrat OpenAPI
-  1.1.0 puis API, composant « En savoir plus » dans le détail d'une carte et en partie, 8 fiches pilotes aux liens
-  vérifiés (réponse 200, bon sujet), tests unitaires et e2e.
-- 2026-10-24 — livrée : Fiche « En savoir plus » : modèle validé dans le domaine, API (contrat 1.1.0), dépliant accessible dans le détail et en partie, 8 cartes pilotes
-- 2026-10-24 — ADR renuméroté 0036 : le 0034 a été pris en parallèle par US-058 (hasard et appariement).
+- 2026-10-23 — created, at the project owner's request.
+- 2026-10-24 — refinement (design, ADR 0036) and implementation: model and validation in the domain, OpenAPI contract
+  1.1.0 then API, "Learn more" component in a card's detail and during a game, 8 pilot sheets with verified links
+  (200 response, right subject), unit and e2e tests.
+- 2026-10-24 — delivered: "Learn more" sheet: model validated in the domain, API (contract 1.1.0), accessible
+  disclosure in the detail and during a game, 8 pilot cards
+- 2026-10-24 — ADR renumbered 0036: 0034 was taken in parallel by US-058 (randomness and matchmaking).

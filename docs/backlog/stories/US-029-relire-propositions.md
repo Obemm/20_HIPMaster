@@ -1,46 +1,46 @@
-# US-029 — Relire une carte proposée dans sa pull request
+# US-029 — Review a card proposed in its pull request
 
-- **Epic** : EPIC-08
-- **Statut** : Faite
-- **Priorité** : Should
-- **Taille** : S
-- **Branche** : `us-029-relecture-pr-carte`
+- **Epic**: EPIC-08
+- **Status**: Done
+- **Priority**: Should
+- **Size**: S
+- **Branch**: `us-029-relecture-pr-carte`
 
-## Récit
+## Story
 
-En tant que **porteur du projet**, je veux **relire chaque carte proposée dans sa PR avec une liste de contrôle**
-afin de **ne publier que des cartes justes, équilibrées et sans contenu sensible**.
+As the **project owner**, I want to **review each card proposed in its PR with a checklist** so that **I only publish
+cards that are accurate, balanced and free of sensitive content**.
 
-## Critères d'acceptation
+## Acceptance criteria
 
-- [x] Un modèle de PR « carte » (`.github/PULL_REQUEST_TEMPLATE/carte.md`) porte la proposition et la liste de
-      contrôle : exactitude technique, texte « En vrai » compréhensible, confidentialité, pas de doublon avec une
-      carte existante, équilibrage plausible, illustration conforme, original joint.
-- [x] Un fichier `CODEOWNERS` demande la relecture du porteur du projet sur toute PR.
-- [x] La CI d'une PR venant d'un fork vérifie les invariants du catalogue (`npm run check`) sans aucun secret.
-- [x] L'équilibrage d'une carte proposée se mesure par simulation (`npm run simuler:carte`, deux exemplaires dans
-      chaque deck prêté contre les trois decks, méthode d'US-077), lancée en CI sur chaque PR pour les cartes
-      nouvelles et affichée dans le résumé du job ; la démarche est décrite dans le guide.
-- [x] Le guide (US-027) indique les réponses possibles et le délai visé (moins de deux semaines) : fusionnée, à
-      retravailler, refusée avec un motif.
+- [x] A "card" PR template (`.github/PULL_REQUEST_TEMPLATE/carte.md`) carries the proposal and the checklist:
+      technical accuracy, understandable "In real life" text, confidentiality, no duplicate of an existing card,
+      plausible balance, compliant illustration, original attached.
+- [x] A `CODEOWNERS` file asks for the project owner's review on every PR.
+- [x] The CI of a PR coming from a fork checks the catalogue invariants (`npm run check`) without any secret.
+- [x] The balance of a proposed card is measured by simulation (`npm run simuler:carte`, two copies in each lent deck
+      against the three decks, method of US-077), run in CI on each PR for the new cards and shown in the job
+      summary; the approach is described in the guide.
+- [x] The guide (US-027) states the possible answers and the target turnaround (under two weeks): merged, to be
+      reworked, or refused with a reason.
 
 ## Notes
 
-- ADR [0050](../../decisions/0050-cartes-communaute-par-pull-request.md). Remplace la file de relecture dans le jeu
-  du plan initial (rôle de relecteur, statuts en base, routes protégées).
-- `npm run simuler -- 200` prend 10 à 30 minutes : trop long pour chaque PR ; prévoir un volume réduit.
+- ADR [0050](../../decisions/0050-cartes-communaute-par-pull-request.md). Replaces the in-game review queue of the
+  initial plan (reviewer role, statuses in the database, protected routes).
+- `npm run simuler -- 200` takes 10 to 30 minutes: too long for each PR; a reduced volume is to be planned.
 
-## Journal
+## Log
 
-- 2026-10-19 — création (EPIC-08, à traiter plus tard).
-- 2026-10-27 — affinage (ADR 0050) : la relecture se fait dans la PR GitHub, plus dans le jeu.
-- 2026-10-27 — `scripts/simuler-carte.ts` : 400 parties par duel, une minute et demie par carte ; le signal est un
-  écart de 10 points ou plus entre le deck inchangé et le deck avec la carte (et non des bornes absolues : la
-  référence elle-même varie de quelques points). Essayé sur les cartes 72 à 74 retrouvées par `--base` (catalogue
-  d'avant US-077) : API GraphQL fait gagner nettement plus le deck Héritage (+17 à +23 points à 100 parties), ce
-  que la mesure d'US-077, faite dans le seul deck Moderne, ne montrait pas. Confirmé à 400 parties sur les graines 1
-  et 2 : Héritage +13 à +18 points contre chaque deck, Moderne et Hybride +1 à +10. À examiner hors de cette story
-  (la carte, ou les cartes qu'elle remplace dans Héritage).
-- 2026-10-27 — `CODEOWNERS` demande la relecture du porteur du projet ; la protection de branche (relecture
-  obligatoire) n'est pas activée : seul le porteur du projet peut fusionner.
-- 2026-10-27 — livrée : Modèle de PR carte (vérifications du contributeur, liste de contrôle du relecteur), CODEOWNERS, script simuler:carte et job de CI Équilibrage des cartes nouvelles ; guides mis à jour.
+- 2026-10-19 — created (EPIC-08, to be handled later).
+- 2026-10-27 — refined (ADR 0050): the review happens in the GitHub PR, no longer in the game.
+- 2026-10-27 — `scripts/simuler-carte.ts`: 400 games per duel, a minute and a half per card; the signal is a gap of
+  10 points or more between the unchanged deck and the deck with the card (rather than absolute bounds: the baseline
+  itself varies by a few points). Tried on cards 72 to 74 recovered through `--base` (catalogue from before US-077):
+  GraphQL API makes the Legacy deck win noticeably more (+17 to +23 points at 100 games), which the US-077
+  measurement, done in the Modern deck alone, did not show. Confirmed at 400 games on seeds 1 and 2: Legacy +13 to
+  +18 points against each deck, Modern and Hybrid +1 to +10. To be examined outside this story (the card, or the
+  cards it replaces in Legacy).
+- 2026-10-27 — `CODEOWNERS` asks for the project owner's review; branch protection (mandatory review) is not
+  enabled: only the project owner can merge.
+- 2026-10-27 — delivered: Card PR template (contributor's checks, reviewer's checklist), CODEOWNERS, simuler:carte script and CI job Balance of new cards; guides updated.

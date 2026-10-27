@@ -1,63 +1,61 @@
-# US-016 — Direction artistique et choix du générateur d'images
+# US-016 — Art direction and choice of the image generator
 
-- **Epic** : EPIC-05
-- **Statut** : Faite
-- **Priorité** : Should
-- **Taille** : M
-- **Branche** : `us-016-direction-artistique`
+- **Epic**: EPIC-05
+- **Status**: Done
+- **Priority**: Should
+- **Size**: M
+- **Branch**: `us-016-direction-artistique`
 
-## Récit
+## Story
 
-En tant que **porteur du projet**, je veux **un style d'illustration défini et un outil dont j'ai le droit d'utiliser
-les images** afin que **les 71 cartes forment un set cohérent, sans risque sur la propriété des images**.
+As the **project owner**, I want **a defined illustration style and a tool whose images I am entitled to use** so that
+**the 71 cards form a coherent set, with no risk over image ownership**.
 
-## Critères d'acceptation
+## Acceptance criteria
 
-- [x] Un ADR tranche l'outil de génération : **Recraft** (piste de départ) ou une autre solution, avec l'offre
-      retenue, son coût et la **propriété des images**.
-- [x] La direction artistique tient sur une page (`docs/produit/direction-artistique.md`) : style, palette par
-      famille (cohérente avec les couleurs d'accent d'US-009), cadrage 4:3, ce qu'on montre ou non (pas de logo de
-      produit, pas de personne réelle reconnaissable, pas de texte dans l'image).
-- [x] Une consigne de génération type par famille, et la règle pour écrire le texte alternatif d'une carte.
-- [x] Un essai sur **4 cartes de familles différentes** (par exemple FTP, webMethods IS, Apigee, Solace Agent Mesh),
-      validé par le porteur du projet, passé par la chaîne d'US-015.
+- [x] An ADR settles the generation tool: **Recraft** (starting point) or another solution, with the chosen plan, its
+      cost and the **ownership of the images**.
+- [x] The art direction fits on one page (`docs/produit/direction-artistique.md`): style, palette per family
+      (consistent with the accent colours of US-009), 4:3 framing, what is shown or not (no product logo, no
+      recognisable real person, no text in the image).
+- [x] A standard generation prompt per family, and the rule for writing a card's alternative text.
+- [x] A trial on **4 cards from different families** (for example FTP, webMethods IS, Apigee, Solace Agent Mesh),
+      validated by the project owner, run through the US-015 pipeline.
 
 ## Notes
 
-- **Licence Recraft** (vérifiée le 2026-10-18 sur la page des tarifs, à reconfirmer au moment de l'achat) : avec
-  l'offre **gratuite**, les images **appartiennent à Recraft** et sont publiques dans sa galerie, sans usage
-  commercial ; avec une **offre payante** (abonnement ou API à l'usage), elles appartiennent à l'abonné, avec les
-  droits commerciaux, même après la fin de l'abonnement. → L'offre gratuite est exclue, même pour un jeu interne.
-- Recraft permet de créer un **style personnalisé** réutilisable (aussi par API) : c'est le moyen d'obtenir un set
-  cohérent.
-- Référentiel the company : [ref] (règles d'usage des assistants d'IA) — aucune donnée d'entreprise dans les consignes ;
-  [ref] (Figma) à considérer pour le gabarit de carte.
-- Décision attendue du porteur du projet : souscrire à une offre payante de Recraft, ou choisir une autre voie
-  (illustrations vectorielles faites à la main, autre générateur).
+- **Recraft licence** (checked on 2026-10-18 on the pricing page, to be reconfirmed at the time of purchase): with the
+  **free** plan, the images **belong to Recraft** and are public in its gallery, with no commercial use; with a
+  **paid plan** (subscription or pay-as-you-go API), they belong to the subscriber, with commercial rights, even after
+  the subscription ends. → The free plan is ruled out, even for an internal game.
+- Recraft lets you create a reusable **custom style** (also through the API): this is the way to get a coherent set.
+- the company reference: [ref] (rules for using AI assistants) — no company data in the prompts; [ref] (Figma) to be
+  considered for the card template.
+- Decision expected from the project owner: subscribe to a paid Recraft plan, or choose another route (hand-made vector
+  illustrations, another generator).
 
-## Journal
+## Log
 
-- 2026-10-18 — création, au découpage d'EPIC-05.
-- 2026-10-18 — le porteur du projet choisit d'**essayer l'offre gratuite** de Recraft. Conséquences : pas d'API (les
-  images se génèrent à la main dans l'interface web) et images **propriété de Recraft**, publiques : elles servent à
-  juger le style et ne sont **pas commitées** ; le set final demandera une offre payante ou une autre voie.
-  Brouillon de [direction artistique](../../produit/direction-artistique.md) et consignes des 4 cartes d'essai.
-- 2026-10-18 — **essai réalisé** dans Recraft (offre gratuite, modèle V4.1 Flash, sans style imposé, format 4:3) :
-  2 variantes par carte, **8 crédits sur 60**, environ 10 s par génération ; originaux en 1216 × 896 px, sans texte
-  ni logo. Retenues par le porteur du projet : FTP (robot au cadenas), webMethods IS (moyeu en étoile), Apigee
-  (porte-forteresse), Solace Agent Mesh (créatures lumineuses). Passées par la chaîne d'US-015 : 16 fichiers de 7 à
-  71 Ko, affichés dans le catalogue et le détail. **Constat** : chaque image est réussie, mais le rendu varie d'une
-  carte à l'autre (peinture texturée, dessin au trait, aplats isométriques, style « mignon ») : sans style verrouillé,
-  le bloc de style commun ne suffit pas pour 71 cartes. Piste : la fonction « Créer un style » de Recraft, à partir
-  des images retenues. Images et métadonnées de l'essai gardées hors des commits (propriété de Recraft).
-- 2026-10-18 — **style verrouillé** : style personnalisé Recraft « Sunlit Sketches » (fonction « Créer un style »,
-  disponible en offre gratuite) construit sur les 4 images retenues, puis les 4 cartes régénérées avec ce style
-  (modèle V4.1, mode Flexible, consignes réduites au sujet et à la palette de la famille) : **4 crédits par paire**
-  au lieu de 2, 16 crédits, il en reste 36 sur 60. **Résultat** : rendu nettement plus homogène (même fond bleu nuit,
-  même trait, même halo d'une carte à l'autre), images plus légères (6 à 49 Ko). Retenues : FTP gauche, webMethods
-  gauche, Apigee droite, Solace droite. Reste à trancher : l'offre (les images gratuites restent la propriété de
-  Recraft) avant de produire les 71 cartes (US-017).
-- 2026-10-18 — décision du porteur du projet : l'offre Recraft attend ; **pour le moment**, des illustrations simples
-  générées par le code (US-018, ADR 0016). Les images de l'essai sont rangées hors du dépôt
+- 2026-10-18 — created, when EPIC-05 was broken down.
+- 2026-10-18 — the project owner chooses to **try the free plan** of Recraft. Consequences: no API (images are
+  generated by hand in the web interface) and images **owned by Recraft**, public: they serve to judge the style and
+  are **not committed**; the final set will require a paid plan or another route. Draft of the
+  [art direction](../../produit/direction-artistique.md) and prompts for the 4 trial cards.
+- 2026-10-18 — **trial carried out** in Recraft (free plan, V4.1 Flash model, no imposed style, 4:3 format): 2 variants
+  per card, **8 credits out of 60**, about 10 s per generation; originals at 1216 × 896 px, with no text or logo.
+  Retained by the project owner: FTP (robot with a padlock), webMethods IS (star-shaped hub), Apigee (fortress
+  door), Solace Agent Mesh (glowing creatures). Run through the US-015 pipeline: 16 files of 7 to 71 KB, displayed in
+  the catalogue and the detail view. **Finding**: every image is successful, but the look varies from one card to the
+  next (textured painting, line drawing, isometric flat colours, "cute" style): without a locked style, the common
+  style block is not enough for 71 cards. Lead: Recraft's "Create a style" feature, based on the retained images.
+  Images and metadata of the trial kept out of the commits (owned by Recraft).
+- 2026-10-18 — **style locked**: custom Recraft style "Sunlit Sketches" ("Create a style" feature, available on the
+  free plan) built on the 4 retained images, then the 4 cards regenerated with this style (V4.1 model, Flexible mode,
+  prompts reduced to the subject and the family palette): **4 credits per pair** instead of 2, 16 credits, 36 left
+  out of 60. **Result**: a clearly more uniform look (same midnight-blue background, same line, same halo from one card
+  to the next), lighter images (6 to 49 KB). Retained: FTP left, webMethods left, Apigee right, Solace right. Still to
+  settle: the plan (the free images remain the property of Recraft) before producing the 71 cards (US-017).
+- 2026-10-18 — project owner's decision: the Recraft plan waits; **for the time being**, simple illustrations
+  generated by code (US-018, ADR 0016). The trial images are stored outside the repository
   (`packages/illustrations/sources/recraft-essai/`).
-- 2026-10-25 — livrée : générateur retenu : Gemini (ADR 0047) ; direction artistique et consignes d'une créature par carte dans docs/produit ; 71 cartes illustrées par US-017
+- 2026-10-25 — delivered: chosen generator: Gemini (ADR 0047); art direction and one-creature-per-card prompts in docs/produit; 71 cards illustrated by US-017

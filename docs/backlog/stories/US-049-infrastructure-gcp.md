@@ -1,85 +1,82 @@
-# US-049 — Infrastructure gratuite et reproductible
+# US-049 — Free and reproducible infrastructure
 
-- **Epic** : EPIC-09
-- **Statut** : Faite
-- **Priorité** : Must
-- **Taille** : M
-- **Branche** : `us-049-infrastructure-gcp`
+- **Epic**: EPIC-09
+- **Status**: Done
+- **Priority**: Must
+- **Size**: M
+- **Branch**: `us-049-infrastructure-gcp`
 
-## Récit
+## Story
 
-En tant que **porteur du projet**, je veux **que l'infrastructure décrite par l'ADR 0021 soit créée par un script
-versionné, que Claude peut exécuter et relancer** afin de **ne rien payer, ne rien configurer à la main et pouvoir
-tout recréer**.
+As the **project owner**, I want **the infrastructure described by ADR 0021 to be created by a versioned script that
+Claude can run and rerun** so that **I pay nothing, configure nothing by hand and can recreate everything**.
 
-## Critères d'acceptation
+## Acceptance criteria
 
-- [x] **Étant donné** le compte Google personnel du porteur du projet, **quand** le script s'exécute, **alors** il
-      utilise une configuration `gcloud` dédiée (`hipmaster`), vérifie le compte et le projet avant toute écriture, et
-      ne touche jamais la configuration professionnelle du poste.
-- [x] **Étant donné** cette configuration, **alors** le script crée le projet `hipmaster` (ou le réutilise), le relie
-      au compte de facturation personnel, active les API nécessaires et crée, à Francfort (`europe-west3`) :
-  - un dépôt Docker **Artifact Registry** qui ne garde que les 2 dernières images ;
-  - un bucket **Cloud Storage** pour les sauvegardes, qui supprime les fichiers de plus de 30 jours ;
-  - le compte de service de l'API (lecture de son seul secret) ;
-  - le compte de service de déploiement, relié au dépôt GitHub par **Workload Identity Federation** et limité à la
-    branche `main` (aucune clé JSON créée) ;
-  - un **budget** avec alerte dès 1 €.
-- [x] **Étant donné** la CLI `neonctl` autorisée par le porteur du projet, **alors** le script crée (ou réutilise)
-      le projet Neon (AWS `eu-central-1`, Francfort, PostgreSQL 18 comme PGlite, ADR 0024), plafonne le calcul à
-      0,25 CU, crée la base et son rôle, et range l'URL de connexion dans **Secret Manager** sans jamais l'afficher
-      ni l'écrire sur le disque.
-- [x] **Étant donné** la configuration `gcloud` dédiée, **alors** le script ajoute Firebase au projet et crée le site
-      Hosting (`hipmaster` s'il est libre), par l'API Firebase avec le jeton de cette configuration (ADR 0024).
-- [x] **Étant donné** le script relancé sur une infrastructure existante, **alors** il ne casse rien et dit ce qu'il a
-      fait.
-- [x] Un guide d'exploitation (`docs/exploitation/`) décrit les seules étapes manuelles : créer le compte Neon
-      gratuit, et autoriser les CLI (`gcloud`, `neonctl` ; `firebase` pour les opérations à la main d'US-050) par une
-      connexion dans le navigateur.
-- [x] Aucun secret ni adresse e-mail n'est écrit en dur dans le dépôt : ils sont passés en paramètres ou en
-      variables.
+- [x] **Given** the project owner's personal Google account, **when** the script runs, **then** it uses a dedicated
+      `gcloud` configuration (`hipmaster`), checks the account and the project before any write, and never touches the
+      machine's professional configuration.
+- [x] **Given** this configuration, **then** the script creates the `hipmaster` project (or reuses it), links it to the
+      personal billing account, enables the necessary APIs and creates, in Frankfurt (`europe-west3`):
+  - a Docker **Artifact Registry** repository that keeps only the last 2 images;
+  - a **Cloud Storage** bucket for backups, which deletes files older than 30 days;
+  - the API's service account (read access to its single secret);
+  - the deployment service account, linked to the GitHub repository through **Workload Identity Federation** and
+    limited to the `main` branch (no JSON key created);
+  - a **budget** with an alert from €1.
+- [x] **Given** the `neonctl` CLI authorised by the project owner, **then** the script creates (or reuses) the Neon
+      project (AWS `eu-central-1`, Frankfurt, PostgreSQL 18 like PGlite, ADR 0024), caps compute at 0.25 CU, creates
+      the database and its role, and stores the connection URL in **Secret Manager** without ever displaying it or
+      writing it to disk.
+- [x] **Given** the dedicated `gcloud` configuration, **then** the script adds Firebase to the project and creates the
+      Hosting site (`hipmaster` if it is free), through the Firebase API with the token of this configuration (ADR
+      0024).
+- [x] **Given** the script rerun on an existing infrastructure, **then** it breaks nothing and says what it did.
+- [x] An operations guide (`docs/exploitation/`) describes the only manual steps: creating the free Neon account, and
+      authorising the CLIs (`gcloud`, `neonctl`; `firebase` for the manual operations of US-050) by signing in in the
+      browser.
+- [x] No secret or e-mail address is hard-coded in the repository: they are passed as parameters or variables.
 
 ## Notes
 
-- Outil : un **script `gcloud`** idempotent suffit à cette échelle (rien à installer de plus) ; Terraform resterait
-  possible plus tard. Choix noté dans l'[ADR 0024](../../decisions/0024-infrastructure-script-gcloud.md) :
-  [`scripts/gcp/infrastructure.sh`](../../../scripts/gcp/infrastructure.sh), mode `--simulation` pour le plan et la
-  vérification, guide dans [`docs/exploitation/`](../../exploitation/README.md).
-- **PostgreSQL 18** sur Neon, et non 17 : c'est la version de PGlite (18.6) et de `docker-compose.yml`, et le projet
-  Neon « HIPMaster » créé à l'inscription du porteur du projet l'utilise déjà. Neon ne change pas la version majeure
-  d'un projet : la CI d'US-056 suit (ADR 0024).
-- **Firebase** passe par son API REST, avec le jeton de la configuration `gcloud` vérifiée : une seule identité. La
-  connexion de la CLI Firebase avait expiré (erreur 401 le 2026-10-22) ; elle ne sert plus qu'aux opérations à la
-  main.
-- **URL de la base** : point d'accès direct, `sslmode=verify-full` (avec postgres.js, `require` ne vérifie pas le
-  certificat) et sans `channel_binding`, que `neonctl` ajoute et que postgres.js 3.4 enverrait au serveur comme un
-  paramètre inconnu.
-- **Droits du déploiement** : `run.admin` plutôt que `run.developer`, car rendre l'API joignable par Firebase Hosting
-  (`allUsers` invocateur) demande `run.services.setIamPolicy`.
-- Le nombre de projets reliables à un compte de facturation est limité : si la liaison échoue, réutiliser un projet
-  existant ou demander une hausse de quota.
-- Option de qualité, reportée à US-050 qui crée le job de migration : deux rôles PostgreSQL, l'un propriétaire du
-  schéma pour les migrations, l'autre limité aux lectures et écritures pour l'API. Sur Neon, un rôle créé par l'API
-  hérite de `neon_superuser` : le rôle limité devra être créé en SQL.
-- Le service Cloud Run et le job de migration sont créés par le premier déploiement (US-050).
+- Tool: an idempotent **`gcloud` script** is enough at this scale (nothing more to install); Terraform would remain
+  possible later. Choice recorded in [ADR 0024](../../decisions/0024-infrastructure-script-gcloud.md):
+  [`scripts/gcp/infrastructure.sh`](../../../scripts/gcp/infrastructure.sh), `--simulation` mode for the plan and the
+  check, guide in [`docs/exploitation/`](../../exploitation/README.md).
+- **PostgreSQL 18** on Neon, not 17: it is the version of PGlite (18.6) and of `docker-compose.yml`, and the "HIPMaster"
+  Neon project created when the project owner signed up already uses it. Neon does not change a project's major
+  version: the CI of US-056 follows (ADR 0024).
+- **Firebase** goes through its REST API, with the token of the verified `gcloud` configuration: a single identity. The
+  Firebase CLI sign-in had expired (401 error on 2026-10-22); it now serves only for manual operations.
+- **Database URL**: direct endpoint, `sslmode=verify-full` (with postgres.js, `require` does not verify the
+  certificate) and without `channel_binding`, which `neonctl` adds and which postgres.js 3.4 would send to the server
+  as an unknown parameter.
+- **Deployment rights**: `run.admin` rather than `run.developer`, because making the API reachable by Firebase Hosting
+  (`allUsers` invoker) requires `run.services.setIamPolicy`.
+- The number of projects that can be linked to a billing account is limited: if the link fails, reuse an existing
+  project or ask for a quota increase.
+- Quality option, postponed to US-050 which creates the migration job: two PostgreSQL roles, one owning the schema for
+  migrations, the other limited to reads and writes for the API. On Neon, a role created through the API inherits
+  `neon_superuser`: the limited role will have to be created in SQL.
+- The Cloud Run service and the migration job are created by the first deployment (US-050).
 
-## Journal
+## Log
 
-- 2026-10-22 — création, issue de la revue avant mise en ligne (ADR 0021).
-- 2026-10-22 — revue pour une infrastructure gratuite (Neon au lieu de Cloud SQL), à la demande du porteur du projet.
-- 2026-10-22 — en cours : script `scripts/gcp/infrastructure.sh`, guide d'exploitation et ADR 0024 ; simulation sur le
-  compte personnel (rien d'écrit) ; projet Neon « HIPMaster » (PostgreSQL 18) trouvé, créé à l'inscription.
-- 2026-10-22 — infrastructure créée sur le compte personnel, avec l'accord du porteur du projet (PostgreSQL 18 retenu) :
-  projet `hipmaster` (n° 307763122401) relié à la facturation, dépôt `images`, bucket `hipmaster-sauvegardes`,
-  comptes `hipmaster-api` et `hipmaster-deploiement`, pool `github` et fournisseur `github-actions`, secret
-  `database-url`, budget de 1 EUR, Firebase et site `hipmaster` ; projet Neon « HIPMaster » réutilisé, calcul fixé à
-  0,25 CU, rôle et base `hipmaster`. La première exécution s'est arrêtée à l'étape 5 : Artifact Registry, tout juste
-  activé, avait créé le dépôt malgré une erreur. « Existe déjà » vaut désormais succès lors d'un nouvel essai, et la
-  relance a repris là. Chaque ressource relue ; connexion vérifiée avec postgres.js depuis le secret, sans l'afficher
+- 2026-10-22 — created, from the review before going live (ADR 0021).
+- 2026-10-22 — reviewed for a free infrastructure (Neon instead of Cloud SQL), at the project owner's request.
+- 2026-10-22 — in progress: script `scripts/gcp/infrastructure.sh`, operations guide and ADR 0024; simulation on the
+  personal account (nothing written); "HIPMaster" Neon project (PostgreSQL 18) found, created at sign-up.
+- 2026-10-22 — infrastructure created on the personal account, with the project owner's agreement (PostgreSQL 18
+  chosen): `hipmaster` project (no. 307763122401) linked to billing, `images` repository, `hipmaster-sauvegardes`
+  bucket, `hipmaster-api` and `hipmaster-deploiement` accounts, `github` pool and `github-actions` provider,
+  `database-url` secret, €1 budget, Firebase and `hipmaster` site; "HIPMaster" Neon project reused, compute set to
+  0.25 CU, `hipmaster` role and database. The first run stopped at step 5: Artifact Registry, just enabled, had created
+  the repository despite an error. "Already exists" now counts as success on a new attempt, and the rerun resumed
+  there. Each resource re-read; connection verified with postgres.js from the secret, without displaying it
   (PostgreSQL 18.6, `verify-full`).
-- 2026-10-22 — idempotence : la première relance a remis à la cible le fournisseur WIF déjà conforme (la variable
-  attendue, en lecture seule, n'arrivait pas à la vérification) ; corrigé. Relance suivante : 0 créé, 0 modifié,
-  29 déjà en place, URL du secret à jour ; configuration `gcloud` active du poste inchangée à chaque passage.
-- 2026-10-22 — livrée : infrastructure Google Cloud, Firebase et Neon créée par scripts/gcp/infrastructure.sh (idempotent, --simulation), relancée sans écart ; guide d'exploitation ; ADR 0024 (script plutôt que Terraform, PostgreSQL 18, Firebase par son API REST)
-- 2026-10-22 — guide : variante PowerShell, où `bash` désigne WSL (constaté par le porteur du projet, qui a relancé
-  la simulation depuis PowerShell : 29 éléments en place, rien à faire).
+- 2026-10-22 — idempotence: the first rerun put back on target the WIF provider that was already compliant (the
+  expected variable, read-only, did not reach the check); fixed. Next rerun: 0 created, 0 modified, 29 already in
+  place, secret URL up to date; the machine's active `gcloud` configuration unchanged at each pass.
+- 2026-10-22 — delivered: Google Cloud, Firebase and Neon infrastructure created by scripts/gcp/infrastructure.sh (idempotent, --simulation), rerun without discrepancy; operations guide; ADR 0024 (script rather than Terraform, PostgreSQL 18, Firebase through its REST API)
+- 2026-10-22 — guide: PowerShell variant, where `bash` means WSL (noted by the project owner, who reran the simulation
+  from PowerShell: 29 items in place, nothing to do).

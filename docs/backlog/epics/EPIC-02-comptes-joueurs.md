@@ -1,23 +1,23 @@
-# EPIC-02 — Comptes joueurs
+# EPIC-02 — Player accounts
 
-- **Statut** : Terminé
-- **Priorité** : Must
+- **Status**: Done
+- **Priority**: Must
 
-## Objectif
+## Goal
 
-Permettre à un joueur de créer un compte et de retrouver sa collection sur tous ses appareils.
+Let a player create an account and find their collection again on all their devices.
 
-## Indicateur de réussite
+## Success indicator
 
-Inscription et connexion en moins de 30 secondes, sans mot de passe à retenir si possible (lien magique ou fournisseur OAuth).
+Sign-up and sign-in in under 30 seconds, with no password to remember if possible (magic link or OAuth provider).
 
 ## Stories
 
-- [x] US-022 — Compte invité, sans mot de passe
+- [x] US-022 — Guest account, without a password
 
-Choix du porteur du projet (2026-10-18) : « faisons simple pour le moment » — compte invité avec pseudo et code de
-récupération ; connexion OIDC, profil et avatar plus tard.
+Project owner's choice (2026-10-18): "let's keep it simple for now" — a guest account with a nickname and a recovery
+code; OIDC sign-in, profile and avatar later.
 
-## Hors périmètre
+## Out of scope
 
-Paiements.
+Payments.

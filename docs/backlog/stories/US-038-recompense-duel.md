@@ -1,35 +1,35 @@
-# US-038 — Un booster pour une victoire en duel
+# US-038 — A booster for a duel victory
 
-- **Epic** : EPIC-06
-- **Statut** : Faite
-- **Priorité** : Could
-- **Taille** : S
-- **Branche** : `us-038-recompense-duel`
+- **Epic**: EPIC-06
+- **Status**: Done
+- **Priority**: Could
+- **Size**: S
+- **Branch**: `us-038-recompense-duel`
 
-## Récit
+## Story
 
-En tant que **joueur connecté**, je veux **gagner un booster quand je remporte un duel** afin d'**avoir une raison
-de défier mes collègues**.
+As a **signed-in player**, I want to **win a booster when I win a duel** so that **I have a reason to challenge my
+colleagues**.
 
-## Critères d'acceptation
+## Acceptance criteria
 
-- [x] Une victoire en duel rapporte un booster, dans le même plafond quotidien que les victoires contre le bot
-      (US-025), une seule fois par duel.
-- [x] Une victoire par abandon ou forfait compte, sauf contre un adversaire déjà affronté le même jour (pour
-      décourager les arrangements).
-- [x] L'écran de fin annonce le booster gagné ; tests de l'API et de l'écran.
+- [x] A duel victory earns a booster, under the same daily cap as victories against the bot (US-025), only once per
+      duel.
+- [x] A victory by concession or forfeit counts, except against an opponent already faced the same day (to
+      discourage collusion).
+- [x] The end screen announces the booster won; API and screen tests.
 
 ## Notes
 
-- Réutiliser la table `recompenses` (US-025), dont la clé devient l'identifiant de partie ou de duel.
+- Reuse the `recompenses` table (US-025), whose key becomes the game or duel identifier.
 
-## Journal
+## Log
 
-- 2026-10-19 — création (découpage d'EPIC-06, ADR 0020 proposé).
-- 2026-10-19 — `recompenserVictoire` sert aussi aux duels (la colonne `partie_id` de `recompenses` porte
-  l'identifiant de la partie ou du duel) ; nouvelle colonne `motif` (migration `0007_motif_recompense`) :
-  « plafond » ou « adversaire-deja-affronte ». Un duel gagné expose `recompense` au vainqueur seulement, décidée
-  une fois. Victoire par abandon ou forfait sans booster s'il existe un autre duel entre les deux joueurs créé le
-  même jour UTC. Écran de fin : booster gagné, plafond, ou « ne compte qu'une fois par jour contre le même
-  adversaire ». Tests : API (2), écran (1), e2e (booster annoncé au vainqueur d'un abandon).
-- 2026-10-19 — livrée : Booster pour une victoire en duel, plafond commun, garde-fou contre les arrangements
+- 2026-10-19 — created (split of EPIC-06, ADR 0020 proposed).
+- 2026-10-19 — `recompenserVictoire` also serves duels (the `partie_id` column of `recompenses` carries the game or
+  duel identifier); new `motif` column (migration `0007_motif_recompense`): "plafond" or
+  "adversaire-deja-affronte". A won duel exposes `recompense` to the winner only, decided once. A victory by
+  concession or forfeit earns no booster if another duel between the two players was created the same UTC day. End
+  screen: booster won, cap reached, or "only counts once a day against the same opponent". Tests: API (2), screen
+  (1), e2e (booster announced to the winner of a concession).
+- 2026-10-19 — delivered: Booster for a duel victory, shared cap, safeguard against collusion

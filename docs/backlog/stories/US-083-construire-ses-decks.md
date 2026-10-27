@@ -1,71 +1,70 @@
-# US-083 — Construire, nommer et garder ses decks à partir de sa collection
+# US-083 — Build, name and keep your own decks from your collection
 
-- **Epic** : EPIC-15
-- **Statut** : Faite
-- **ADR** : [0048](../../decisions/0048-decks-des-joueurs.md)
-- **Priorité** : Should
-- **Taille** : L
-- **Branche** : `us-083-construire-ses-decks`
+- **Epic**: EPIC-15
+- **Status**: Done
+- **ADR**: [0048](../../decisions/0048-decks-des-joueurs.md)
+- **Priority**: Should
+- **Size**: L
+- **Branch**: `us-083-construire-ses-decks`
 
-## Récit
+## Story
 
-En tant que **joueur**, je veux **composer mes propres decks avec les cartes de ma collection** afin de **jouer
-avec ma stratégie et mes cartes préférées**.
+As a **player**, I want to **compose my own decks with the cards of my collection** so that I can **play with my own
+strategy and my favourite cards**.
 
-## Critères d'acceptation
+## Acceptance criteria
 
-- [x] **Étant donné** un joueur connecté, **quand** il crée un deck, **alors** il choisit ses cartes parmi celles
-      qu'il possède (filtres par famille, rareté et coût, courbe de coût et répartition par famille visibles), le
-      nomme, et l'enregistre ; il peut en garder **5 au plus**, les modifier, les dupliquer et les supprimer.
-      → « Mes decks » (`/decks`) et l'écran de construction (`/decks/nouveau`, `/decks/{id}`) ; le sixième deck est
-      refusé (409 `decks-plafond`), même demandé en même temps que le cinquième (verrou de la ligne du joueur).
-- [x] **Étant donné** les règles du deck (20 cartes, 2 exemplaires au plus, 1 pour une légendaire), **alors**
-      l'écran dit ce qui manque ou dépasse pendant la construction, et le serveur refuse un deck invalide ou qui
-      contient une carte non possédée (`validerDeck` du domaine, ADR 0004).
-      → `problemesDeck` du domaine (codes stables), 422 avec le code du premier problème et la liste complète,
-      traduite par le front ; un brouillon de moins de 20 cartes s'enregistre, signalé incomplet (ADR 0048).
-- [x] **Étant donné** un deck enregistré, **alors** il est gardé en base avec le compte (contrat OpenAPI d'abord,
-      migration compatible, ADR 0028), retrouvé sur un autre appareil, et supprimé avec le compte (US-053).
-      → `apps/api/openapi/mes-decks.yaml`, table `decks` (migration `0016_decks_joueurs.sql`, une table ajoutée),
-      clé étrangère en cascade ; textes de « Mon compte » et de la page de confidentialité complétés.
-- [x] **Étant donné** une carte supprimée, **alors** sa place se libère dans les decks qui la contenaient ; ces
-      decks sont signalés incomplets et ne se proposent plus pour jouer tant qu'ils ne sont pas complétés.
-      → `libererPlaces` du domaine, appliqué à chaque lecture (ADR 0048) : le deck revient sans l'exemplaire disparu,
-      `complet: false`, et « Mes decks » dit combien de places se sont libérées. Ne plus le proposer pour jouer :
-      US-084.
-- [x] Un deck prêté peut servir de point de départ (« copier ce deck »), limité aux cartes possédées.
-      → « Partir d'un deck prêté » dans « Mes decks » : la copie ne garde que les exemplaires de la collection.
-- [x] Écran pensé pour le téléphone, accessible, traduit en anglais (EPIC-14).
-      → Compteur et « Enregistrer » collants en haut de l'écran, lignes de cartes à deux boutons (− / +) ; audit axe
-      dans les deux thèmes et parcours anglais sur 375 px (`e2e/decks.spec.ts`, `e2e/parcours-anglais.spec.ts`).
+- [x] **Given** a signed-in player, **when** they create a deck, **then** they choose their cards among those they own
+      (filters by family, rarity and cost, cost curve and breakdown by family visible), name it, and save it; they can
+      keep **5 at most**, edit, duplicate and delete them.
+      → "My decks" (`/decks`) and the building screen (`/decks/nouveau`, `/decks/{id}`); the sixth deck is refused
+      (409 `decks-plafond`), even when requested at the same time as the fifth (lock on the player's row).
+- [x] **Given** the deck rules (20 cards, 2 copies at most, 1 for a legendary), **then** the screen says what is
+      missing or in excess while building, and the server refuses an invalid deck or one that contains a card that is
+      not owned (domain `validerDeck`, ADR 0004).
+      → domain `problemesDeck` (stable codes), 422 with the code of the first problem and the full list, translated by
+      the front end; a draft of fewer than 20 cards can be saved, flagged incomplete (ADR 0048).
+- [x] **Given** a saved deck, **then** it is kept in the database with the account (OpenAPI contract first, compatible
+      migration, ADR 0028), found again on another device, and deleted with the account (US-053).
+      → `apps/api/openapi/mes-decks.yaml`, `decks` table (migration `0016_decks_joueurs.sql`, one table added), cascade
+      foreign key; texts of "My account" and of the privacy page completed.
+- [x] **Given** a deleted card, **then** its place is freed in the decks that contained it; these decks are flagged
+      incomplete and are no longer offered for playing until they are completed.
+      → domain `libererPlaces`, applied on every read (ADR 0048): the deck comes back without the vanished copy,
+      `complet: false`, and "My decks" says how many places were freed. No longer offering it for playing: US-084.
+- [x] A loaner deck can serve as a starting point ("copy this deck"), limited to owned cards.
+      → "Start from a loaner deck" in "My decks": the copy only keeps the copies found in the collection.
+- [x] Screen designed for the phone, accessible, translated into English (EPIC-14).
+      → Sticky counter and "Save" at the top of the screen, card rows with two buttons (− / +); axe audit in both
+      themes and English journey at 375 px (`e2e/decks.spec.ts`, `e2e/parcours-anglais.spec.ts`).
 
-## Conception (2026-10-26)
+## Design (2026-10-26)
 
-- **Domaine** (`packages/domain/src/combat/decks.ts`) : `DECKS_MAX = 5`, `problemesDeck(cartes, possedes?,
+- **Domain** (`packages/domain/src/combat/decks.ts`): `DECKS_MAX = 5`, `problemesDeck(cartes, possedes?,
 { incompletPermis })` (codes `taille`, `carte-inconnue`, `exemplaires`, `non-possedee`), `libererPlaces`,
-  `exemplairesMax` ; `validerDeck` garde ses phrases françaises en s'appuyant sur `problemesDeck`.
-- **API** : `GET /moi/decks` (règles et decks effectifs), `POST /moi/decks`, `PUT` et `DELETE /moi/decks/{id}` ;
-  `no-store`, limite de débit `ecritureDeck` (120 par minute). Codes : `decks-plafond`, `deck-introuvable`,
-  `deck-taille`, `deck-exemplaires`, `deck-carte-inconnue`, `deck-carte-non-possedee`.
-- **Front** (`apps/web/src/app/decks/`) : `MesDecksService` (chargé à la connexion), « Mes decks » (boîtes de deck
-  d'US-068, dupliquer, supprimer après confirmation, copier un deck prêté), écran de construction (filtres famille,
-  rareté, coût ; contenu du deck ; courbe de coût de 1 à « 6+ » ; familles ; règles et ce qui manque ou dépasse).
-  Accès : tuile « Mes decks » de l'accueil et lien depuis « Ma collection ».
-- **Décisions** : ADR 0048 (5 decks, brouillon permis, places libérées à la lecture sans réécriture, règles servies
-  avec la liste, dernier enregistrement gagnant).
+  `exemplairesMax`; `validerDeck` keeps its French sentences by relying on `problemesDeck`.
+- **API**: `GET /moi/decks` (rules and effective decks), `POST /moi/decks`, `PUT` and `DELETE /moi/decks/{id}`;
+  `no-store`, `ecritureDeck` rate limit (120 per minute). Codes: `decks-plafond`, `deck-introuvable`, `deck-taille`,
+  `deck-exemplaires`, `deck-carte-inconnue`, `deck-carte-non-possedee`.
+- **Front end** (`apps/web/src/app/decks/`): `MesDecksService` (loaded on sign-in), "My decks" (US-068's deck boxes,
+  duplicate, delete after confirmation, copy a loaner deck), building screen (filters by family, rarity, cost; deck
+  content; cost curve from 1 to "6+"; families; rules and what is missing or in excess). Access: "My decks" tile on the
+  home page and link from "My collection".
+- **Decisions**: ADR 0048 (5 decks, draft allowed, places freed on read without rewriting, rules served with the list,
+  last save wins).
 
 ## Notes
 
-- Demande du porteur du projet (2026-10-26).
-- Décisions du porteur du projet (2026-10-26) : **5 decks au plus par joueur** ; si une carte est supprimée (de la
-  collection du joueur ou du catalogue), **sa place se libère** dans chaque deck qui la contenait : le deck redevient
-  incomplet, il est signalé comme tel et ne peut plus servir à jouer tant qu'il n'est pas complété.
+- Request from the project owner (2026-10-26).
+- Project owner's decisions (2026-10-26): **5 decks at most per player**; if a card is deleted (from the player's
+  collection or from the catalogue), **its place is freed** in every deck that contained it: the deck becomes
+  incomplete again, is flagged as such and can no longer be used to play until it is completed.
 
-## Journal
+## Log
 
-- 2026-10-26 — création, à la demande du porteur du projet (EPIC-15).
-- 2026-10-26 — décisions du porteur : 5 decks au plus ; une carte supprimée libère sa place dans les decks.
-- 2026-10-26 — affinée (conception, ADR 0048), puis codée : domaine, table et migration, contrat et routes
-  `/moi/decks`, écrans « Mes decks » et construction, textes anglais, tests unitaires, d'API (PGlite et
-  PostgreSQL 18) et e2e.
-- 2026-10-26 — livrée : Decks à soi : 5 au plus, construits sur téléphone depuis la collection, vérifiés par le serveur, places libérées à la lecture
+- 2026-10-26 — created, at the project owner's request (EPIC-15).
+- 2026-10-26 — owner's decisions: 5 decks at most; a deleted card frees its place in the decks.
+- 2026-10-26 — refined (design, ADR 0048), then coded: domain, table and migration, contract and `/moi/decks` routes,
+  "My decks" and building screens, English texts, unit, API (PGlite and PostgreSQL 18) and e2e tests.
+- 2026-10-26 — delivered: Own decks: 5 at most, built on a phone from the collection, checked by the server, places
+  freed on read

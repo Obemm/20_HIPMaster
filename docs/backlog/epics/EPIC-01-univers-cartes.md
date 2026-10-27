@@ -1,25 +1,25 @@
-# EPIC-01 — Univers et modèle de carte
+# EPIC-01 — Universe and card model
 
-- **Statut** : Terminé
-- **Priorité** : Must
+- **Status**: Done
+- **Priority**: Must
 
-## Objectif
+## Goal
 
-Savoir de quoi parle le jeu et à quoi ressemble une carte : univers, familles, caractéristiques, raretés,
-mécanique de combat, premier set de cartes.
+Know what the game is about and what a card looks like: universe, families, characteristics, rarities, combat
+mechanics, first set of cards.
 
-## Indicateur de réussite
+## Success indicator
 
-Un premier set d'au moins 50 cartes est décrit dans des données versionnées, et les règles tiennent sur une page.
+A first set of at least 50 cards is described in versioned data, and the rules fit on one page.
 
 ## Stories
 
-- [x] US-005 — Univers et règles du jeu
-- [x] US-008 — Catalogue du set 1
+- [x] US-005 — Game universe and rules
+- [x] US-008 — Set 1 catalogue
 
-Stories à découper ensuite : moteur de combat et modèle d'effets dans `packages/domain`, équilibrage du set par
-simulations « bot contre bot ».
+Stories to split out next: combat engine and effects model in `packages/domain`, set balancing through "bot against
+bot" simulations.
 
-## Hors périmètre
+## Out of scope
 
-Illustrations définitives (EPIC-05).
+Final illustrations (EPIC-05).

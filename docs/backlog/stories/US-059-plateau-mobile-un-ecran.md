@@ -1,61 +1,60 @@
-# US-059 — Un plateau de partie qui tient dans un écran de téléphone
+# US-059 — A game board that fits on a phone screen
 
-- **Epic** : EPIC-10
-- **Statut** : Faite
-- **Priorité** : Should
-- **Taille** : M
-- **Branche** : `us-059-plateau-mobile-un-ecran`
+- **Epic**: EPIC-10
+- **Status**: Done
+- **Priority**: Should
+- **Size**: M
+- **Branch**: `us-059-plateau-mobile-un-ecran`
 
-## Récit
+## Story
 
-En tant que **joueur sur téléphone**, je veux **voir le camp adverse, mon camp et ma main sans faire défiler la
-page** afin de **jouer une partie comme dans un vrai jeu de cartes, d'une seule main, entre deux réunions**.
+As a **player on a phone**, I want **to see the opposing side, my side and my hand without scrolling the page** so that
+**I can play a game like in a real card game, one-handed, between two meetings**.
 
-## Contexte
+## Context
 
-Constat de la revue du 2026-10-22, en 375 × 812 : à l'ouverture d'une partie, l'encadré « Comment jouer ? » est
-déplié et occupe le premier écran et demi ; le camp du bot commence vers 1 100 px, la main du joueur vers 1 500 px
-(page de 2 000 px). Pour jouer, il faut faire défiler entre le camp adverse, son camp, sa main et le bouton « Finir
-mon tour ». Même disposition dans l'écran de duel.
+Finding from the 2026-10-22 review, at 375 × 812: when a game opens, the "How to play" box is expanded and takes up
+the first screen and a half; the bot's side starts at about 1,100 px, the player's hand at about 1,500 px (page of
+2,000 px). To play, you have to scroll between the opposing side, your side, your hand and the "End my turn" button.
+Same layout on the duel screen.
 
-## Critères d'acceptation
+## Acceptance criteria
 
-- [x] **Étant donné** une partie ouverte sur un écran de 375 × 667 px (petit téléphone), **alors** le SLA et le camp
-      adverses, mon camp, ma main et l'action principale (« Finir mon tour ») sont visibles **sans défilement de la
-      page** ; seuls la main et les camps défilent horizontalement si besoin.
-- [x] **Étant donné** une première partie, **alors** l'aide « Comment jouer ? » s'ouvre une fois (ou depuis un bouton
-      « ? » toujours visible), puis reste repliée : on retient qu'elle a été vue.
-- [x] **Étant donné** le journal de la partie, **alors** il est accessible à la demande (panneau ou onglet) au lieu
-      de pousser le plateau vers le bas.
-- [x] **Étant donné** un écran de bureau, **alors** la disposition profite de la largeur (plateau au centre, journal
-      et aide sur le côté).
-- [x] **Étant donné** un joueur qui a agrandi la taille du texte de son téléphone, **alors** le texte des cartes et
-      des jetons suit ce réglage (tailles en `rem`, plus de plancher figé à 10 px dans `vignette-carte.html` et
-      `jeton-composant.ts`) sans casser la mise en page.
-- [x] Mêmes règles pour l'écran de duel. Navigation au clavier, lecteur d'écran et parcours e2e inchangés ou
-      adaptés ; audit axe sans nouvelle violation.
+- [x] **Given** a game open on a 375 × 667 px screen (small phone), **then** the opposing System and side, my side, my
+      hand and the main action ("End my turn") are visible **without scrolling the page**; only the hand and the sides
+      scroll horizontally if needed.
+- [x] **Given** a first game, **then** the "How to play" help opens once (or from an always-visible "?" button), then
+      stays collapsed: we remember it has been seen.
+- [x] **Given** the game log, **then** it is available on demand (panel or tab) instead of pushing the board down.
+- [x] **Given** a desktop screen, **then** the layout takes advantage of the width (board in the centre, log and help
+      on the side).
+- [x] **Given** a player who has enlarged the text size on their phone, **then** the text of cards and tokens follows
+      that setting (sizes in `rem`, no more fixed 10 px floor in `vignette-carte.html` and `jeton-composant.ts`)
+      without breaking the layout.
+- [x] Same rules for the duel screen. Keyboard navigation, screen reader and e2e journeys unchanged or adapted; axe
+      audit with no new violation.
 
 ## Notes
 
-- La boucle « jouer » est le cœur du jeu : c'est le gain d'ergonomie le plus rentable avant d'inviter des joueurs.
-- Pistes : zone adverse en haut, zone du joueur en bas, main ancrée au bas de l'écran (comme Hearthstone ou
-  WikiMasters), détails de carte en feuille modale.
-- Choix retenus :
-  - **Aide** : une fenêtre modale « Comment jouer ? » (objectif, règle courte, capacités en jeu), ouverte d'elle-même
-    à la première partie jouée dans ce navigateur, puis depuis le bouton « ? » de l'en-tête. Le fait qu'elle a été
-    vue est gardé par le navigateur ([ADR 0032](../../decisions/0032-preferences-interface-navigateur.md)).
-  - **Journal** : un bandeau de deux lignes entre les deux camps (les derniers coups restent lisibles et annoncés
-    aux lecteurs d'écran), qui se déplie à la demande par-dessus le plateau.
-  - **Détail d'une carte ou d'un composant** (US-040, US-041) : une feuille fixée au bas de l'écran, non modale, qui
-    recouvre la main sans pousser le plateau ; le focus y passe à l'ouverture et revient à la carte à la fermeture.
-  - **Camps et main** : une rangée qui défile horizontalement ; la barre d'action reste collée au bas de l'écran.
-  - **Bureau** (≥ 1 024 px) : le plateau au centre, et sur le côté l'objectif, les capacités en jeu et le journal
-    complet.
+- The "play" loop is the heart of the game: it is the most worthwhile ergonomic gain before inviting players.
+- Leads: opposing area at the top, player's area at the bottom, hand anchored at the bottom of the screen (like
+  Hearthstone or WikiMasters), card details in a modal sheet.
+- Choices made:
+  - **Help**: a "How to play" modal window (objective, short rule, abilities in play), opened by itself on the first
+    game played in this browser, then from the "?" button in the header. The fact that it has been seen is kept by the
+    browser ([ADR 0032](../../decisions/0032-preferences-interface-navigateur.md)).
+  - **Log**: a two-line strip between the two sides (the latest moves stay readable and announced to screen readers),
+    which unfolds on demand over the board.
+  - **Detail of a card or component** (US-040, US-041): a sheet fixed to the bottom of the screen, non-modal, which
+    covers the hand without pushing the board; focus moves to it on opening and returns to the card on closing.
+  - **Sides and hand**: a row that scrolls horizontally; the action bar stays stuck to the bottom of the screen.
+  - **Desktop** (≥ 1,024 px): the board in the centre, and on the side the objective, abilities in play and the full
+    log.
 
-## Journal
+## Log
 
-- 2026-10-22 — création, issue de la revue du design avant mise en ligne.
-- 2026-10-23 — affinée et commencée (lot 2, session front) : choix de disposition notés ci-dessus.
-- 2026-10-23 — livrée : plateau en un écran de téléphone (375 × 667 sans défilement), aide en fenêtre ouverte une fois puis par « ? », journal en bandeau dépliable, détail en feuille au bas de l'écran, colonne latérale au bureau, textes des cartes en rem (ADR 0032)
-- 2026-10-23 — fusion avec main : le pied de page « À propos et confidentialité » (US-053) s'efface pendant une partie
-  ou un duel, sinon il faisait déborder le plateau d'un petit téléphone.
+- 2026-10-22 — created, from the design review before going live.
+- 2026-10-23 — refined and started (batch 2, front-end session): layout choices noted above.
+- 2026-10-23 — delivered: board on one phone screen (375 × 667 with no scrolling), help window opened once then through "?", log as an expandable strip, detail in a sheet at the bottom of the screen, side column on desktop, card texts in rem (ADR 0032)
+- 2026-10-23 — merge with main: the "About and privacy" footer (US-053) disappears during a game or a duel, otherwise
+  it made the board overflow on a small phone.

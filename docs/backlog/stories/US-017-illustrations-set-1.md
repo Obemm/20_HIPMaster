@@ -1,64 +1,65 @@
-# US-017 — Illustrations des 71 cartes du set 1
+# US-017 — Illustrations for the 71 cards of set 1
 
-- **Epic** : EPIC-05
-- **Statut** : Faite
-- **Priorité** : Should
-- **Taille** : L
-- **Branche** : `us-017-illustrations-set-1`
+- **Epic**: EPIC-05
+- **Status**: Done
+- **Priority**: Should
+- **Size**: L
+- **Branch**: `us-017-illustrations-set-1`
 
-## Récit
+## Story
 
-En tant que **joueur de l'équipe d'intégration**, je veux **que chaque carte du set 1 ait son illustration** afin de
-**reconnaître une carte d'un coup d'œil et d'avoir envie de la collectionner**.
+As a **player on the integration team**, I want **every card of set 1 to have its illustration** so that **I can
+recognise a card at a glance and want to collect it**.
 
-## Critères d'acceptation
+## Acceptance criteria
 
-- [x] Les 71 cartes ont une illustration conforme à la direction artistique (US-016), relue par le porteur du projet.
-- [x] Chacune a un texte alternatif et sa provenance (outil, date, consigne) dans `packages/illustrations/set-1.json`.
-- [x] Un test vérifie que **toutes** les cartes du set 1 ont une illustration de moins de 100 Ko (indicateur de
-      réussite d'EPIC-05).
-- [x] Les originaux sont archivés hors du dépôt (ADR 0015).
-- [x] Les captures du catalogue, sur mobile et sur bureau, en thème clair et sombre, sont jointes à la PR.
+- [x] The 71 cards have an illustration that complies with the art direction (US-016), reviewed by the project owner.
+- [x] Each has alternative text and its provenance (tool, date, prompt) in `packages/illustrations/set-1.json`.
+- [x] A test checks that **all** the cards of set 1 have an illustration of less than 100 KB (EPIC-05 success
+      indicator).
+- [x] The originals are archived outside the repository (ADR 0015).
+- [x] Screenshots of the catalogue, on mobile and desktop, in light and dark themes, are attached to the PR.
 
 ## Notes
 
-- Dépend d'US-015 (chaîne d'images) et d'US-016 (outil et style).
-- Si le générateur a une API (Recraft), un script peut produire les originaux à partir des consignes de
-  `set-1.json` ; la clé d'API reste dans `.env`, jamais dans le dépôt.
+- Depends on US-015 (image pipeline) and US-016 (tool and style).
+- If the generator has an API (Recraft), a script can produce the originals from the prompts in `set-1.json`; the API
+  key stays in `.env`, never in the repository.
 
-## Journal
+## Log
 
-- 2026-10-18 — création, au découpage d'EPIC-05.
-- 2026-10-24 — essai sur 3 cartes (FTP, Apigee API Gateway, Solace Agent Mesh) : images générées par Gemini (application
-  web, compte du porteur du projet) pilotée depuis Chrome, avec les prompts de `docs/produit/prompts-illustrations-gemini.md` ;
-  Apigee sert de référence de style aux deux autres, dans la même conversation. Originaux JPEG 2400 × 1792 archivés hors
-  du dépôt (ADR 0015), convertis en PNG puis déclinés par `npm run illustrations` (49 à 62 Ko en 640 px). Les 68 autres
-  cartes gardent leur illustration provisoire en attendant l'avis du porteur sur l'essai.
-- 2026-10-24 — avis du porteur sur l'essai : images **trop ressemblantes** (toujours un robot de face dans une arche,
-  avec un halo ; seule la couleur changeait). Nouvelle consigne : l'image de référence ne transmet que le rendu, chaque
-  carte reçoit une créature à elle. SFTP refait ainsi (coursier blindé à carapace de cadenas), devenu la référence de
-  rendu. Liste des 71 créatures, prompts et direction artistique réécrits, soumis au porteur avant la génération.
-- 2026-10-24 — famille Fichiers & Batch (1 à 8) : FTP refait (pélican facteur), 3 à 8 générées avec SFTP comme
-  référence de rendu. Le premier paquet reprenait le décor de SFTP (sol de câbles, bandes perforées) : à la demande du
-  porteur, les prompts imposent un décor propre à chaque carte et 3 à 8 ont été refaites ; quatre ont reçu une phrase
-  corrective (texte sur le document, décor trop proche d'une autre carte), consignée dans `set-1.json`. Les
-  originaux remplacés sont gardés hors du dépôt (`*-essai-*.jpeg`).
-- 2026-10-24 — famille Messagerie & ESB (9 à 17) : neuf créatures, neuf décors ; six images ont reçu une phrase de
-  décor ou de lisibilité (pieuvre de la 9), consignée dans `set-1.json`. Gemini a refusé une fois la 17 sans raison,
-  la relance avec un décor a fonctionné.
-- 2026-10-24 — famille API (18 à 25) : Apigee API Gateway refait en griffon gardien (l'essai robot est écarté,
-  original gardé) ; chaque prompt reçoit d'emblée une phrase de décor, consignée dans `set-1.json`.
-- 2026-10-24 — famille iPaaS (26 à 30) : webMethods.io générée avec deux références (le rendu de SFTP et la pieuvre
-  de la 9, dont elle est l'évolution) ; matières variées (plumes, pierre, ailes d'insecte) et non plus toutes
-  mécaniques. La limite quotidienne d'images de Gemini est tombée sur la 38 (AsyncAPI).
-- 2026-10-24 — familles Événementiel (31 à 38) et IA agentique (39 à 52) : AsyncAPI générée après la remise à zéro
-  de la limite (Gemini était repassé seul de « Pro » à « Flash Lite », remis sur « Pro ») ; Solace Agent Mesh et Apigee
-  AI Gateway générées avec l'image de leur carte d'origine (31, 18) en seconde référence, les essais « robot » écartés.
-  Gemini répond parfois par du texte au lieu d'une image : une relance suffit. Les deux familles partagent une PR (leurs
-  lignes du manifeste se touchent).
-- 2026-10-24 — familles Patterns (53 à 58) et Bestiaire (59 à 71), dans une nouvelle conversation Gemini (l'ancienne,
-  trop longue, figeait Chrome). Trois Patterns (53, 57, 58), d'abord en tons chauds qui se confondaient avec Fichiers
-  & Batch et le Bestiaire, ont été refaites en palette ardoise (anciens originaux gardés). Un test vérifie désormais
-  que chacune des 71 cartes a son illustration. Captures du catalogue (mobile et bureau, clair et sombre) jointes à la
-  PR. Textes alternatifs anglais : restent à faire au titre d'US-081.
-- 2026-10-24 — livrée : Les 71 cartes du set 1 ont une créature à elle, générée avec Gemini, chacune dans son décor
+- 2026-10-18 — created, when EPIC-05 was broken down.
+- 2026-10-24 — trial on 3 cards (FTP, Apigee API Gateway, Solace Agent Mesh): images generated by Gemini (web
+  application, project owner's account) driven from Chrome, with the prompts of
+  `docs/produit/prompts-illustrations-gemini.md`; Apigee serves as the style reference for the other two, in the same
+  conversation. JPEG originals at 2400 × 1792 archived outside the repository (ADR 0015), converted to PNG then
+  produced by `npm run illustrations` (49 to 62 KB at 640 px). The other 68 cards keep their provisional illustration
+  while waiting for the owner's opinion on the trial.
+- 2026-10-24 — owner's opinion on the trial: images **too similar** (always a robot seen from the front in an arch,
+  with a halo; only the colour changed). New instruction: the reference image conveys only the rendering, each card
+  gets its own creature. SFTP redone that way (armoured courier with a padlock shell), which became the rendering
+  reference. List of the 71 creatures, prompts and art direction rewritten, submitted to the owner before generation.
+- 2026-10-24 — Files & Batch family (1 to 8): FTP redone (postman pelican), 3 to 8 generated with SFTP as the
+  rendering reference. The first batch reused SFTP's setting (cable floor, punched tapes): at the owner's request, the
+  prompts now impose a setting specific to each card and 3 to 8 were redone; four received a corrective sentence (text
+  on the document, setting too close to another card), recorded in `set-1.json`. The replaced originals are kept
+  outside the repository (`*-essai-*.jpeg`).
+- 2026-10-24 — Messaging & ESB family (9 to 17): nine creatures, nine settings; six images received a setting or
+  legibility sentence (octopus of card 9), recorded in `set-1.json`. Gemini refused card 17 once for no reason; retrying
+  with a setting worked.
+- 2026-10-24 — API family (18 to 25): Apigee API Gateway redone as a guardian griffin (the robot trial is discarded,
+  original kept); each prompt now receives a setting sentence from the start, recorded in `set-1.json`.
+- 2026-10-24 — iPaaS family (26 to 30): webMethods.io generated with two references (the rendering of SFTP and the
+  octopus of card 9, of which it is the evolution); varied materials (feathers, stone, insect wings) and no longer
+  all mechanical. Gemini's daily image limit was hit on card 38 (AsyncAPI).
+- 2026-10-24 — Event-driven (31 to 38) and Agentic AI (39 to 52) families: AsyncAPI generated after the limit was
+  reset (Gemini had switched back on its own from "Pro" to "Flash Lite", set back to "Pro"); Solace Agent Mesh and
+  Apigee AI Gateway generated with the image of their original card (31, 18) as a second reference, the "robot" trials
+  discarded. Gemini sometimes answers with text instead of an image: a retry is enough. The two families share one PR
+  (their manifest lines touch).
+- 2026-10-24 — Patterns (53 to 58) and Bestiary (59 to 71) families, in a new Gemini conversation (the old one, too
+  long, froze Chrome). Three Patterns cards (53, 57, 58), first in warm tones that were confused with Files & Batch
+  and the Bestiary, were redone in a slate palette (old originals kept). A test now checks that each of the 71 cards
+  has its illustration. Catalogue screenshots (mobile and desktop, light and dark) attached to the PR. English
+  alternative texts: still to do under US-081.
+- 2026-10-24 — delivered: The 71 cards of set 1 each have their own creature, generated with Gemini, each in its own setting

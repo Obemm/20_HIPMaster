@@ -1,22 +1,22 @@
-# US-001 — Socle de développement
+# US-001 — Development foundation
 
-- **Epic** : EPIC-00
-- **Statut** : Faite
-- **Priorité** : Must
-- **Taille** : S
+- **Epic**: EPIC-00
+- **Status**: Done
+- **Priority**: Must
+- **Size**: S
 
-## Récit
+## Story
 
-En tant que **développeur**, je veux **un projet outillé (Git, TypeScript, ESLint, Prettier, Vitest, Playwright, Husky, CI)**
-afin de **produire un code propre et vérifié automatiquement**.
+As a **developer**, I want **a fully tooled project (Git, TypeScript, ESLint, Prettier, Vitest, Playwright, Husky, CI)**
+so that **I produce clean code that is verified automatically**.
 
-## Critères d'acceptation
+## Acceptance criteria
 
-- [x] `npm run check` lance lint, format, typecheck et tests unitaires.
-- [x] `npm run test:e2e` lance les parcours Playwright (mobile et bureau) avec un audit d'accessibilité axe-core.
-- [x] Hooks Git : lint-staged avant commit, commitlint sur le message.
-- [x] CI GitHub Actions et Dependabot configurés.
+- [x] `npm run check` runs lint, format, typecheck and unit tests.
+- [x] `npm run test:e2e` runs the Playwright journeys (mobile and desktop) with an axe-core accessibility audit.
+- [x] Git hooks: lint-staged before commit, commitlint on the message.
+- [x] GitHub Actions CI and Dependabot configured.
 
-## Journal
+## Log
 
-- 2026-10-16 — réalisée.
+- 2026-10-16 — delivered.

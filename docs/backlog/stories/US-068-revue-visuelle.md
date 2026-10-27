@@ -1,86 +1,84 @@
-# US-068 — Une revue visuelle de tout le site
+# US-068 — A visual review of the whole site
 
-- **Epic** : EPIC-10
-- **Statut** : Faite
-- **Priorité** : Should
-- **Taille** : M
-- **Branche** : `us-068-revue-visuelle`
+- **Epic**: EPIC-10
+- **Status**: Done
+- **Priority**: Should
+- **Size**: M
+- **Branch**: `us-068-revue-visuelle`
 
-## Récit
+## Story
 
-En tant que **porteur du projet**, je veux **une revue visuelle de toutes les pages du site en ligne** afin
-d'**obtenir un ensemble cohérent et soigné, au-delà de l'accueil et du plateau**.
+As the **project owner**, I want **a visual review of all the live site's pages** so that **I get a coherent, polished
+whole, beyond the home page and the board**.
 
-## Critères d'acceptation
+## Acceptance criteria
 
-- [x] **Étant donné** chaque écran (accueil, catalogue, détail de carte, compte, boosters, collection, duels, partie),
-      **alors** une capture en 375 px et en bureau, dans les deux thèmes, est relevée avec ses défauts visuels
-      (alignements, espacements, hiérarchie des titres, couleurs, états vides et d'erreur).
-- [x] **Étant donné** ce relevé, **alors** les corrections sont classées et découpées en stories, ou faites ici si
-      elles sont petites.
-- [x] Les règles retenues (espacements, tailles, composants communs) sont écrites dans une page de charte.
-- [x] **Étant donné** les parcours e2e, **alors** ils passent tous, audit axe compris, et le plateau tient toujours
-      dans 375 × 667.
+- [x] **Given** each screen (home, catalogue, card detail, account, boosters, collection, duels, game), **then** a
+      screenshot at 375 px and on desktop, in both themes, is taken and its visual defects noted (alignments, spacing,
+      title hierarchy, colours, empty and error states).
+- [x] **Given** this survey, **then** the fixes are sorted and split into stories, or done here if they are small.
+- [x] The rules adopted (spacing, sizes, shared components) are written in a charter page.
+- [x] **Given** the e2e journeys, **then** they all pass, axe audit included, and the board still fits in 375 × 667.
 
-## Relevé (2026-10-24, après l'identité d'US-061)
+## Survey (2026-10-24, after US-061's identity)
 
-Captures de 16 écrans, téléphone (375 × 667) et bureau (1280 × 800), clair et sombre : 64 captures avant, 64 après
-(script de capture Playwright, sans fenêtre ; planches dans `docs/produit/captures/us-068-*`).
+Screenshots of 16 screens, phone (375 × 667) and desktop (1280 × 800), light and dark: 64 screenshots before, 64
+after (Playwright capture script, no window; sheets in `docs/produit/captures/us-068-*`).
 
-| Écran                   | Défauts relevés                                                                                   | Correction                                                                                          |
-| ----------------------- | ------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
-| Jouer                   | Un mur de règles avant de pouvoir choisir ; decks en boîtes de texte ; « Jouer avec » en indigo   | Difficulté en tuiles, decks en boîtes de jeu (cartes phares), « Jouer avec » en or, règle repliable |
-| Mes duels               | Liste de boîtes grises, état du duel noyé dans le texte                                           | Cartes de duel : initiale de l'adversaire, pastille d'état (À vous, Son tour, Victoire…), bord doré |
-| Défier / au hasard      | Lien « ← Jouer », decks en texte                                                                  | Surtitre, decks en boîtes de jeu, action en or                                                      |
-| Défi reçu, file         | Lien « ← Jouer », champ et boutons au style de formulaire                                         | Titre de page, champ commun, « Copier le lien » et « Relever le défi » en or                        |
-| Plateau (partie, duel)  | « Finir mon tour » de la même couleur que le reste ; SI adverse sur le fond ; fin de partie terne | « Finir mon tour » en or ; SI sur une surface ; « Victoire ! » en or, suite logique en or           |
-| Boosters                | Une phrase et un bouton                                                                           | Surtitre, « Ouvrir un booster » en or ; le paquet et la révélation viennent avec US-062             |
-| Collection              | Barre de progression fine, tuiles grises, filtres de formulaire, « Manquante » en texte gris      | Panneau de progression, jauge dorée, raretés en cadres de carte, filtres en panneau, pastilles      |
-| Catalogue               | Titre et description en guillemets, filtres de formulaire                                         | Surtitre, consigne (« touchez une carte »), filtres en panneau                                      |
-| Détail d'une carte      | Statistiques en boîtes grises                                                                     | Chiffres en Exo 2 sur fond en retrait, « En vrai » en panneau, « En savoir plus » en bouton commun  |
-| Mon compte              | Lien « ← Accueil » (retiré ailleurs par US-060), sections nues, sept styles de boutons            | Sections en panneaux, champs communs, or pour « Créer mon compte » et « C'est noté », rouge à part  |
-| Confidentialité         | Lien « ← Accueil », longue page sans repères                                                      | Surtitre, sections en panneaux                                                                      |
-| Inviter                 | Formulaire et liste au style d'administration                                                     | Panneaux, champs communs, statut en pastille, « Créer l'invitation » en or                          |
-| Pied de page            | Un lien seul                                                                                      | Logo et signature du jeu, lien                                                                      |
-| États vides et d'erreur | « Réessayer » au style ancien                                                                     | Bouton commun ; messages inchangés (US-055)                                                         |
+| Screen                    | Defects noted                                                                              | Fix                                                                                                   |
+| ------------------------- | ------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------- |
+| Play                      | A wall of rules before being able to choose; decks as text boxes; "Play with" in indigo    | Difficulty as tiles, decks as game boxes (flagship cards), "Play with" in gold, collapsible rule      |
+| My duels                  | List of grey boxes, duel state drowned in text                                             | Duel cards: opponent's initial, state badge (Your move, Their turn, Victory…), golden edge            |
+| Challenge / random        | "← Play" link, decks as text                                                               | Overline, decks as game boxes, action in gold                                                         |
+| Challenge received, queue | "← Play" link, field and buttons in form style                                             | Page title, shared field, "Copy the link" and "Take up the challenge" in gold                         |
+| Board (game, duel)        | "End my turn" same colour as the rest; opposing System on the background; dull end of game | "End my turn" in gold; System on a surface; "Victory!" in gold, logical next step in gold             |
+| Boosters                  | One sentence and one button                                                                | Overline, "Open a booster" in gold; the pack and the reveal come with US-062                          |
+| Collection                | Thin progress bar, grey tiles, form filters, "Missing" in grey text                        | Progress panel, golden gauge, rarities as card frames, filters in a panel, badges                     |
+| Catalogue                 | Title and description in quotation marks, form filters                                     | Overline, instruction ("tap a card"), filters in a panel                                              |
+| Card detail               | Statistics in grey boxes                                                                   | Figures in Exo 2 on a recessed background, "In real life" in a panel, "Learn more" as a shared button |
+| My account                | "← Home" link (removed elsewhere by US-060), bare sections, seven button styles            | Sections as panels, shared fields, gold for "Create my account" and "Got it", red set apart           |
+| Privacy                   | "← Home" link, long page with no landmarks                                                 | Overline, sections as panels                                                                          |
+| Invite                    | Form and list in administration style                                                      | Panels, shared fields, status as a badge, "Create the invitation" in gold                             |
+| Footer                    | A lone link                                                                                | Logo and game signature, link                                                                         |
+| Empty and error states    | "Try again" in the old style                                                               | Shared button; messages unchanged (US-055)                                                            |
 
-Rien n'est assez gros pour une story à part : tout est fait ici, sauf l'ouverture de booster mise en scène (US-062)
-et l'installation sur téléphone (US-063), déjà prévues.
+Nothing is big enough for a separate story: everything is done here, except the staged booster opening (US-062) and
+installation on a phone (US-063), already planned.
 
-## Captures avant / après
+## Before / after screenshots
 
-- Téléphone : [Jouer et Mes duels](../../produit/captures/us-068-jouer-duels-tel-avant-apres.jpg),
-  [Collection et Mon compte](../../produit/captures/us-068-collection-compte-tel-avant-apres.jpg),
-  [Défier, plateau et boosters](../../produit/captures/us-068-defi-plateau-tel-avant-apres.jpg)
-- Bureau : [Catalogue et détail](../../produit/captures/us-068-bureau-avant-apres.jpg),
-  [Inviter et confidentialité](../../produit/captures/us-068-bureau-2-avant-apres.jpg)
+- Phone: [Play and My duels](../../produit/captures/us-068-jouer-duels-tel-avant-apres.jpg),
+  [Collection and My account](../../produit/captures/us-068-collection-compte-tel-avant-apres.jpg),
+  [Challenge, board and boosters](../../produit/captures/us-068-defi-plateau-tel-avant-apres.jpg)
+- Desktop: [Catalogue and detail](../../produit/captures/us-068-bureau-avant-apres.jpg),
+  [Invite and privacy](../../produit/captures/us-068-bureau-2-avant-apres.jpg)
 
-## Décisions
+## Decisions
 
-- **Une seule action en or par écran** : « Jouer avec… », « Défier avec… », « Relever le défi… », « Finir mon
-  tour », « Ouvrir un booster », « Créer mon compte », « Créer l'invitation ». Les actions secondaires sont en
-  contour ou en indigo plein, la suppression du compte et l'attaque en rouge.
-- **Un deck se présente comme une boîte de jeu** : ses trois cartes phares (les plus rares, puis les plus chères,
-  d'après le catalogue) en mini-éventail, son nom, sa description. Le catalogue (21 Ko) est donc lu sur « Jouer »,
-  « Défier » et quand on relève un défi.
-- **La règle en bref est repliée** sur « Jouer » : l'aide « Comment jouer ? » s'ouvre d'elle-même à la première
-  partie (US-059), et le choix du deck passe en premier.
-- Les liens « ← Accueil » de « Mon compte » et de la confidentialité disparaissent, comme ailleurs depuis US-060 ;
-  « ← Mon compte » reste sur « Inviter », qui n'a pas d'onglet.
-- Les listes déroulantes gardent leur flèche du système : une flèche en image de fond empêcherait axe de mesurer le
-  contraste de leur texte.
+- **A single gold action per screen**: "Play with…", "Challenge with…", "Take up the challenge…", "End my turn",
+  "Open a booster", "Create my account", "Create the invitation". Secondary actions are outlined or solid indigo,
+  account deletion and attack are red.
+- **A deck is presented like a game box**: its three flagship cards (the rarest, then the most expensive, according to
+  the catalogue) in a mini fan, its name, its description. The catalogue (21 KB) is therefore read on "Play",
+  "Challenge" and when taking up a challenge.
+- **The short rule is collapsed** on "Play": the "How to play" help opens by itself on the first game (US-059), and
+  the deck choice comes first.
+- The "← Home" links on "My account" and on privacy disappear, as elsewhere since US-060; "← My account" stays on
+  "Invite", which has no tab.
+- Drop-down lists keep their system arrow: a background-image arrow would prevent axe from measuring the contrast of
+  their text.
 
 ## Notes
 
-- Demande du porteur du projet (2026-10-23), à faire après l'identité visuelle (US-061) pour partir de la nouvelle
-  charte.
-- Charte : [charte graphique](../../produit/charte-graphique.md), complétée des composants d'écran.
+- Project owner's request (2026-10-23), to be done after the visual identity (US-061) in order to start from the new
+  charter.
+- Charter: [graphic charter](../../produit/charte-graphique.md), completed with the screen components.
 
-## Journal
+## Log
 
-- 2026-10-23 — création, notée pour plus tard à la demande du porteur du projet.
-- 2026-10-24 — affinée et commencée (session de nuit) : relevé des 16 écrans, corrections, charte complétée.
-- 2026-10-24 — livrée : Relevé visuel des 16 écrans (téléphone et bureau, deux thèmes) et corrections : decks en boîtes de jeu, duels en cartes à pastille d'état, actions principales en or, panneaux, champs et jauge communs, charte complétée.
-- 2026-10-24 — anomalie signalée en ligne : sur téléphone, les cartes de la main (80 px) coupaient l'attaque et les PV,
-  les textes à leur taille minimale débordant du format de la carte. Sous 7,5 rem de large, l'illustration rétrécit,
-  la ligne type · famille s'efface et le nom tient sur deux lignes ; parcours e2e ajouté (échouait avant).
+- 2026-10-23 — created, noted for later at the project owner's request.
+- 2026-10-24 — refined and started (overnight session): survey of the 16 screens, fixes, charter completed.
+- 2026-10-24 — delivered: Visual survey of the 16 screens (phone and desktop, two themes) and fixes: decks as game boxes, duels as cards with a state badge, main actions in gold, shared panels, fields and gauge, charter completed.
+- 2026-10-24 — anomaly reported live: on phones, the hand's cards (80 px) cut off the attack and HP, the texts at their
+  minimum size overflowing the card format. Below 7.5 rem wide, the illustration shrinks, the type · family line
+  disappears and the name fits on two lines; e2e journey added (it failed before).

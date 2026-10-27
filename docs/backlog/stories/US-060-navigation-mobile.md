@@ -1,63 +1,62 @@
-# US-060 — Une navigation pensée pour le téléphone
+# US-060 — Navigation designed for the phone
 
-- **Epic** : EPIC-10
-- **Statut** : Faite
-- **Priorité** : Should
-- **Taille** : S
-- **Branche** : `us-060-navigation-mobile`
+- **Epic**: EPIC-10
+- **Status**: Done
+- **Priority**: Should
+- **Size**: S
+- **Branch**: `us-060-navigation-mobile`
 
-## Récit
+## Story
 
-En tant que **joueur sur téléphone**, je veux **passer d'une rubrique à l'autre d'un geste du pouce** afin de
-**retrouver mes duels, mes boosters et ma collection sans chercher les liens**.
+As a **player on a phone**, I want **to move from one section to another with a thumb gesture** so that **I can find my
+duels, my boosters and my collection without hunting for links**.
 
-## Contexte
+## Context
 
-Constat de la revue du 2026-10-22, en 375 px : connecté, l'en-tête aligne « HIPMaster », « Duels », « Boosters »,
-« Collection » et le pseudo, en petits liens soulignés ; le pseudo passe sur deux lignes. « Jouer contre le bot » et
-le catalogue ne sont accessibles que depuis l'accueil, et chaque page répète un lien « ← Accueil ».
+Finding from the 2026-10-22 review, at 375 px: when signed in, the header lines up "HIPMaster", "Duels", "Boosters",
+"Collection" and the username, as small underlined links; the username wraps onto two lines. "Play against the bot"
+and the catalogue are only reachable from the home page, and every page repeats a "← Home" link.
 
-## Critères d'acceptation
+## Acceptance criteria
 
-- [x] **Étant donné** un écran de moins de 768 px, **alors** une barre d'onglets fixée en bas donne accès à : Jouer,
-      Duels (avec la pastille « à vous de jouer »), Boosters (avec le stock), Collection, Compte ; l'onglet courant
-      est signalé visuellement et par `aria-current`.
-- [x] **Étant donné** un écran plus large, **alors** la même navigation est en en-tête.
-- [x] **Étant donné** un visiteur sans compte, **alors** les onglets qui exigent un compte mènent à la création de
-      compte, avec une phrase qui dit pourquoi.
-- [x] Chaque zone tactile mesure au moins 44 × 44 px ; la barre ne masque jamais l'action principale d'un écran
-      (marge basse, zone de sécurité des téléphones à encoche).
-- [x] **Étant donné** un lecteur d'écran, **quand** le joueur change de page, **alors** le focus passe sur le titre
-      de la nouvelle page, qui est ainsi annoncée.
-- [x] Parcours e2e adaptés ; l'audit axe vérifie aussi les règles WCAG 2.1 et 2.2 AA (`wcag21aa`, `wcag22aa`).
+- [x] **Given** a screen narrower than 768 px, **then** a tab bar fixed at the bottom gives access to: Play, Duels
+      (with the "your move" badge), Boosters (with the stock), Collection, Account; the current tab is indicated
+      visually and by `aria-current`.
+- [x] **Given** a wider screen, **then** the same navigation is in the header.
+- [x] **Given** a visitor without an account, **then** the tabs that require an account lead to account creation, with
+      a sentence saying why.
+- [x] Every touch target measures at least 44 × 44 px; the bar never hides a screen's main action (bottom margin,
+      safe area of notched phones).
+- [x] **Given** a screen reader, **when** the player changes page, **then** focus moves to the new page's title, which
+      is thereby announced.
+- [x] E2e journeys adapted; the axe audit also checks the WCAG 2.1 and 2.2 AA rules (`wcag21aa`, `wcag22aa`).
 
 ## Notes
 
-- À concevoir avec US-059 : la barre d'onglets et la main du joueur se partagent le bas de l'écran pendant une
-  partie (la barre peut s'effacer en partie).
-- Choix retenus :
-  - **Une seule navigation** (`<nav aria-label="Navigation principale">`) : barre fixée en bas sous 768 px, liens
-    de l'en-tête au-delà. Onglets : Jouer (`/jouer`), Duels (pastille « à vous de jouer »), Boosters (stock),
-    Collection, Compte (pseudo au bureau). Chaque onglet mesure au moins 44 px de haut, la barre respecte la zone de
-    sécurité des téléphones à encoche (`viewport-fit=cover`, `env(safe-area-inset-*)`) et une cale en fin de page
-    l'empêche de masquer le bas d'un écran.
-  - **En partie** (`/jouer/:id`, `/duels/:id`), la barre s'efface sur téléphone : le plateau d'US-059 garde tout
-    l'écran ; « Quitter » ramène à la navigation.
-  - **Visiteur sans compte** : Duels, Boosters et Collection mènent à leur page, qui dit déjà pourquoi il faut un
-    compte et propose de le créer ; l'onglet Compte s'appelle « Créer un compte ».
-  - **Stock de boosters** : lu à la connexion, puis relu quand le serveur annonce la prochaine recharge
-    (`prochainDans`), après une ouverture et après une victoire qui rapporte un booster ; jamais calculé par le front
-    (ADR 0004, ADR 0019).
-  - **Focus** : à chaque changement de page (pas à l'ouverture d'une fenêtre de détail sur la même page), le focus
-    passe sur le titre `h1` de la nouvelle page.
-  - **Audit WCAG 2.1 et 2.2** : il a relevé « Libellé dans le nom » (2.5.3) sur les cartes de la main et les jetons du
-    plateau, dont le bouton enveloppait tout le texte de la carte. Le bouton est désormais posé sur la vignette ou le
-    jeton (purement visuels) et porte seul le nom : ce qu'annonce un lecteur d'écran ne change pas.
-  - Les liens « ← Accueil » des pages disparaissent : le logo et les onglets les remplacent (sauf « Mon compte »,
-    que la session API modifie en parallèle).
+- To be designed together with US-059: the tab bar and the player's hand share the bottom of the screen during a game
+  (the bar may disappear in a game).
+- Choices made:
+  - **A single navigation** (`<nav aria-label="Main navigation">`): bar fixed at the bottom below 768 px, header links
+    above. Tabs: Play (`/jouer`), Duels ("your move" badge), Boosters (stock), Collection, Account (username on
+    desktop). Each tab is at least 44 px high, the bar respects the safe area of notched phones
+    (`viewport-fit=cover`, `env(safe-area-inset-*)`) and a spacer at the end of the page keeps it from hiding the
+    bottom of a screen.
+  - **In a game** (`/jouer/:id`, `/duels/:id`), the bar disappears on phones: the US-059 board keeps the whole screen;
+    "Quit" takes you back to the navigation.
+  - **Visitor without an account**: Duels, Boosters and Collection lead to their page, which already says why an
+    account is needed and offers to create one; the Account tab is called "Create an account".
+  - **Booster stock**: read at sign-in, then read again when the server announces the next refill (`prochainDans`),
+    after an opening and after a win that earns a booster; never computed by the front end (ADR 0004, ADR 0019).
+  - **Focus**: on every page change (not when a detail window opens on the same page), focus moves to the new page's
+    `h1` title.
+  - **WCAG 2.1 and 2.2 audit**: it flagged "Label in name" (2.5.3) on the hand's cards and the board's tokens, whose
+    button wrapped all the card's text. The button is now placed over the thumbnail or token (purely visual) and alone
+    carries the name: what a screen reader announces does not change.
+  - The pages' "← Home" links disappear: the logo and the tabs replace them (except "My account", which the API
+    session is changing in parallel).
 
-## Journal
+## Log
 
-- 2026-10-22 — création, issue de la revue du design avant mise en ligne.
-- 2026-10-23 — affinée et commencée (lot 2, session front) : choix notés ci-dessus.
-- 2026-10-23 — livrée : barre d'onglets en bas sous 768 px (stock de boosters, duels à jouer, aria-current, 44 px, zone de sécurité), effacée en partie, en-tête au bureau, focus sur le titre à chaque page, audit axe WCAG 2.1 et 2.2 AA
+- 2026-10-22 — created, from the design review before going live.
+- 2026-10-23 — refined and started (batch 2, front-end session): choices noted above.
+- 2026-10-23 — delivered: tab bar at the bottom below 768 px (booster stock, duels to play, aria-current, 44 px, safe area), hidden in a game, header on desktop, focus on the title on every page, axe audit WCAG 2.1 and 2.2 AA
