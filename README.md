@@ -8,7 +8,8 @@ Stack, alignée sur le référentiel technologique the company ([ADR 0005](docs/
 PostgreSQL + [Drizzle ORM](https://orm.drizzle.team), TypeScript strict, monorepo npm workspaces.
 
 **Proposer une carte** : les architectes et tech leads peuvent proposer leurs propres cartes par pull request, voir
-[CONTRIBUTING.md](CONTRIBUTING.md).
+[CONTRIBUTING.md](CONTRIBUTING.md) (en anglais). **Proposing a card**: architects and tech leads can propose their own
+cards through a pull request, see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Prérequis
 

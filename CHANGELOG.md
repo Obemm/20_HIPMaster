@@ -7,6 +7,9 @@ Toutes les évolutions notables du projet sont consignées ici
 
 ### Ajouté
 
+- Le kit du contributeur passe en anglais, pour des collègues anglophones : `CONTRIBUTING.md`, le guide « Designing
+  a card », les consignes de carte et d'illustration et le modèle de PR « carte » ; une proposition peut s'écrire en
+  anglais, l'IA du contributeur écrit les textes du jeu en français et en anglais (US-086, ADR 0050).
 - Une carte peut porter le nom de la personne qui l'a proposée : champ `auteur` facultatif du catalogue, servi par
   l'API (`GET /api/v1/cartes`), non traduit ; la consigne de carte le renseigne (US-030, ADR 0050).
 - Relecture des cartes proposées dans leur PR : un modèle de PR « carte » avec les vérifications du contributeur et la

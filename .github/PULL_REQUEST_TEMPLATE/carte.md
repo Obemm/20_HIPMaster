@@ -1,49 +1,50 @@
-## Carte proposée
+## Proposed card
 
-<!-- Collez ici votre gabarit rempli (docs/contribuer/regles-cartes.md#gabarit-de-proposition). -->
+<!-- Paste your filled-in template here (docs/contribuer/regles-cartes.md#proposal-template). -->
 
-- Nom de la carte :
-- Famille :
-- Type :
-- Rareté visée :
-- Coût / Attaque / PV :
-- Capacités :
-- Effet :
-- En vrai :
-- Fiche « En savoir plus » :
-- Idée d'illustration :
-- Sources :
-- Auteur affiché :
+- Card name:
+- Family:
+- Type:
+- Target rarity:
+- Cost / Attack / HP:
+- Abilities:
+- Effect:
+- In real life:
+- "Learn more" sheet:
+- Illustration idea:
+- Sources:
+- Displayed author:
 
 ## Illustration
 
-<!-- Joignez ici l'original de l'image (glisser-déposer), ou dites qu'elle viendra plus tard. -->
+<!-- Attach the original picture here (drag and drop), or say it will come later. -->
 
-## Ce que l'IA a changé par rapport à la proposition
+## What the AI changed compared with the proposal
 
-<!-- Un lien remplacé, un texte raccourci, un doute signalé par votre assistant… -->
+<!-- A replaced link, a shortened text, a doubt raised by your assistant… -->
 
-## Vérifications du contributeur
+## Contributor checks
 
-- [ ] Rien de confidentiel : ni serveur, ni adresse, ni client, ni faille, ni chiffre interne, ni nom de collègue
-      ([règles de contenu](https://github.com/Obemm/20_HIPMaster/blob/main/docs/contribuer/regles-cartes.md#règles-de-contenu))
-- [ ] `npm run check` passe (seul le test des illustrations peut rester rouge si l'image manque)
-- [ ] J'ai vu la carte dans le catalogue avec `npm run dev`
-- [ ] Le texte « En vrai » est compréhensible par quelqu'un qui n'est pas du métier
+- [ ] Nothing confidential: no server, address, customer, vulnerability, internal figure or colleague's name
+      ([content rules](https://github.com/Obemm/20_HIPMaster/blob/main/docs/contribuer/regles-cartes.md#content-rules))
+- [ ] `npm run check` passes (only the illustration test may stay red if the picture is missing)
+- [ ] I have seen the card in the catalogue (`npm run start:en`)
+- [ ] The "In real life" text makes sense to someone outside the trade
 
 ---
 
-<!-- Partie du relecteur : ne pas remplir. -->
+<!-- Reviewer's section: please leave it as it is. -->
 
-## Relecture
+## Review
 
-- [ ] **Exactitude** : la carte, son effet et sa fiche disent vrai ; les liens s'ouvrent et sont pertinents
-- [ ] **Pédagogie** : « En vrai » et la fiche se comprennent sans être du métier ; la mécanique raconte la technologie
-- [ ] **Confidentialité** : rien d'interne dans la carte, la fiche, l'illustration ni la discussion
-- [ ] **Doublon** : aucune carte existante ne raconte la même chose
-- [ ] **Règles** : aucune capacité ni mécanique nouvelle ; une carte existante n'est ni modifiée ni renumérotée
-- [ ] **Équilibrage** : job « Équilibrage des cartes nouvelles » sans ⚠️, ou écart confirmé sur une autre graine et
-      ajusté
-- [ ] **Illustration** : une créature distincte, ni texte, ni logo, ni personne réelle ; palette de la famille ;
-      original archivé
-- [ ] **Réponse** : fusionnée, à retravailler (commentaires) ou refusée (motif), en moins de deux semaines
+- [ ] **Accuracy**: the card, its effect and its sheet are true; the links open and are relevant
+- [ ] **Teaching**: "In real life" and the sheet make sense to a non-specialist; the mechanics tell the technology's
+      story
+- [ ] **French texts**: card, effect and sheet read well in French (reference language)
+- [ ] **Confidentiality**: nothing internal in the card, the sheet, the illustration or the discussion
+- [ ] **Duplicate**: no existing card tells the same story
+- [ ] **Rules**: no new ability or mechanic; no existing card changed or renumbered
+- [ ] **Balance**: "Équilibrage des cartes nouvelles" job without ⚠️, or the gap confirmed on another seed and
+      adjusted
+- [ ] **Illustration**: a distinct creature, no text, logo or real person; the family's palette; original archived
+- [ ] **Answer**: merged, changes requested (comments) or declined (reason), within two weeks

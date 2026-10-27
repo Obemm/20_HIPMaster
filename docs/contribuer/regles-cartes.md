@@ -1,207 +1,205 @@
-# Concevoir une carte HIPMaster
+# Designing a HIPMaster card
 
-Ce guide s'adresse aux architectes et tech leads qui veulent proposer une carte : une technologie, un pattern ou un
-incident vécu, avec un texte qui explique ce qu'il représente dans un SI. Il suffit de connaître ce que l'on veut
-raconter : pas besoin de lire le code du jeu. La démarche (fork, consignes pour votre IA, pull request) est décrite
-dans [CONTRIBUTING.md](../../CONTRIBUTING.md) ; la décision qui la fonde, dans l'ADR
-[0050](../decisions/0050-cartes-communaute-par-pull-request.md).
+This guide is for architects and tech leads who want to propose a card: a technology, a pattern or an incident you have
+lived through, with a short text that explains what it means in an information system. You only need to know what you
+want to tell: no need to read the game's code. The process (fork, prompts for your AI, pull request) is described in
+[CONTRIBUTING.md](../../CONTRIBUTING.md); the decision behind it is ADR
+[0050](../decisions/0050-cartes-communaute-par-pull-request.md) (in French, like the rest of the project's documents).
 
-Pour jouer avant de proposer : [règles du jeu](../produit/regles.md), [univers](../produit/univers.md) et
-[catalogue actuel](../produit/cartes-set-1.md).
+To play before proposing: the game in English at <https://hipmaster.web.app/en/> (on invitation), with its card
+catalogue and a guided first game.
 
-## Ce qui fait une bonne carte
+## What makes a good card
 
-- **Elle apprend quelque chose de vrai.** Le joueur doit comprendre ce qu'est la technologie, ou pourquoi l'incident
-  arrive, en lisant la carte. Sa mécanique raconte la même chose que son texte : un batch est lent mais fort, une
-  passerelle d'API protège le SI, un agent agit seul.
-- **Elle est jouable.** Ni indispensable, ni inutile : elle trouve sa place dans un deck sans écraser les cartes de
-  même coût.
-- **Elle est nouvelle.** Elle ne double pas une carte existante (vérifier le [catalogue](../produit/cartes-set-1.md)).
+- **It teaches something true.** Reading the card, a player understands what the technology is, or why the incident
+  happens. Its mechanics tell the same story as its text: a batch is slow but strong, an API gateway protects the
+  System, an agent acts on its own.
+- **It is playable.** Neither a must-have nor useless: it finds its place in a deck without crushing the cards of the
+  same cost.
+- **It is new.** It does not duplicate an existing card (check the catalogue in the game).
 
-## Les éléments d'une carte
+## The parts of a card
 
-### Famille
+### Family
 
-Huit familles : six époques de l'intégration, puis deux familles transverses.
+Eight families: six eras of integration, then two cross-cutting families. The code is what goes into the game files.
 
-| Famille            | Code        | Exemples                                  | Mécanique typique               |
-| ------------------ | ----------- | ----------------------------------------- | ------------------------------- |
-| Fichiers & Batch   | `fichiers`  | FTP, SFTP, CSV, EDI, cron                 | Batch : lent mais fort          |
-| Messagerie & ESB   | `esb`       | webMethods Integration Server, JMS        | Hub : bonus, point unique       |
-| API                | `api`       | Apigee, REST, OpenAPI, OAuth2, GraphQL    | Garde : protège le SI           |
-| iPaaS              | `ipaas`     | webMethods.io, connecteurs SaaS, low-code | Connecteur : fait piocher       |
-| Événementiel (EDA) | `eda`       | Solace Event Mesh, topic, file, CDC       | Diffusion : plusieurs cibles    |
-| IA agentique       | `ia`        | LLM, MCP, A2A, Solace Agent Mesh          | Autonome : agit seul            |
-| Patterns           | `patterns`  | Router, Splitter, Circuit Breaker, DLQ    | sorts                           |
-| Bestiaire          | `bestiaire` | Message poison, Timeout, Prompt injection | incidents, et quelques monstres |
+| Family             | Code        | Examples                                  | Typical mechanics             |
+| ------------------ | ----------- | ----------------------------------------- | ----------------------------- |
+| Files & Batch      | `fichiers`  | FTP, SFTP, CSV, EDI, cron                 | Batch: slow but strong        |
+| Messaging & ESB    | `esb`       | webMethods Integration Server, JMS        | Hub: bonus, single point      |
+| API                | `api`       | Apigee, REST, OpenAPI, OAuth2, GraphQL    | Guard: protects the System    |
+| iPaaS              | `ipaas`     | webMethods.io, SaaS connectors, low-code  | Connector: draws cards        |
+| Event-driven (EDA) | `eda`       | Solace Event Mesh, topic, queue, CDC      | Broadcast: several targets    |
+| Agentic AI         | `ia`        | LLM, MCP, A2A, Solace Agent Mesh          | Autonomous: acts on its own   |
+| Patterns           | `patterns`  | Router, Splitter, Circuit Breaker, DLQ    | spells                        |
+| Bestiary           | `bestiaire` | Poison message, Timeout, Prompt injection | incidents, and a few monsters |
 
 ### Type
 
-- **Composant** : se pose sur le plateau (5 emplacements), avec une attaque et des PV ; il attaque à partir du tour
-  suivant. C'est le type d'une technologie.
-- **Évolution** : se pose **à la place** d'un composant précis (sa forme modernisée), avec ses PV pleins. Rare : elle
-  suppose une lignée claire (Apigee API Gateway → Apigee AI Gateway).
-- **Sort** : effet immédiat, puis défausse. C'est le type d'une pratique, d'un pattern, d'une façon de concevoir.
-- **Incident** : effet contre l'adversaire, puis défausse. C'est le type d'une panne ou d'un risque (Bestiaire).
+- **Component**: deployed on the board (5 slots), with attack and HP; it can attack from the following turn. The type
+  of a technology.
+- **Evolution**: deployed **in place of** a specific component (its modernised form), at full HP. Rare: it needs a
+  clear lineage (Apigee API Gateway → Apigee AI Gateway).
+- **Spell**: immediate effect, then discarded. The type of a practice, a pattern, a way of designing.
+- **Incident**: effect against the opponent, then discarded. The type of an outage or a risk (Bestiary).
 
-### Rareté
+### Rarity
 
-| Rareté     | Dans un booster | À viser pour…                                              |
-| ---------- | --------------- | ---------------------------------------------------------- |
-| Commune    | 70 %            | une brique de base, simple, sans capacité ou avec une      |
-| Rare       | 22 %            | une technologie ou un pattern qui a une vraie mécanique    |
-| Épique     | 7 %             | une pièce maîtresse, qui change une partie                 |
-| Légendaire | 1 %             | une carte mythique ; une seule par deck (à éviter d'abord) |
+| Rarity    | In a booster | Aim for it with…                                         |
+| --------- | ------------ | -------------------------------------------------------- |
+| Common    | 70 %         | a basic building block, simple, with one ability at most |
+| Rare      | 22 %         | a technology or pattern with real mechanics              |
+| Epic      | 7 %          | a centrepiece that changes a game                        |
+| Legendary | 1 %          | a mythical card; one per deck (avoid at first)           |
 
-Le relecteur peut ajuster la rareté visée : la plupart des propositions sont communes ou rares.
+The reviewer may adjust the rarity: most proposals end up common or rare.
 
-### Statistiques
+### Stats
 
-Le **coût** se paie en Débit (1 au premier tour, +1 par tour, 10 au plus). L'**attaque** est infligée à la cible, les
-**PV** sont les points de vie du composant. Ordres de grandeur relevés le 2026-10-27 sur les 74 cartes du catalogue (minimum–maximum,
-moyenne entre parenthèses) :
+**Cost** is paid in Throughput (1 on the first turn, +1 per turn, 10 at most). **Attack** is dealt to the target,
+**HP** are the component's hit points. Typical values measured on 2026-10-27 on the 74 cards of the catalogue
+(minimum–maximum, average in brackets):
 
-| Type et rareté       | Cartes | Coût      | Attaque   | PV        | Capacités |
-| -------------------- | ------ | --------- | --------- | --------- | --------- |
-| Composant commun     | 21     | 1–3 (1,9) | 0–3 (1,5) | 1–5 (2,8) | 0 ou 1    |
-| Composant rare       | 18     | 2–5 (3,2) | 1–5 (2,3) | 3–5 (3,7) | 0 ou 1    |
-| Composant épique     | 4      | 4–5 (4,8) | 2–6 (3,8) | 4–7 (6,0) | 0 à 3     |
-| Évolution légendaire | 3      | 5–6 (5,3) | 3–5 (4,0) | 7–8 (7,3) | 2 à 5     |
-| Sort commun          | 7      | 1–2 (1,3) | —         | —         | —         |
-| Sort rare            | 5      | 1–3 (2,0) | —         | —         | —         |
-| Sort épique          | 2      | 3         | —         | —         | —         |
-| Incident commun      | 8      | 1–2 (1,3) | —         | —         | —         |
-| Incident rare        | 4      | 2–3 (2,3) | —         | —         | —         |
+| Type and rarity     | Cards | Cost      | Attack    | HP        | Abilities |
+| ------------------- | ----- | --------- | --------- | --------- | --------- |
+| Common component    | 21    | 1–3 (1.9) | 0–3 (1.5) | 1–5 (2.8) | 0 or 1    |
+| Rare component      | 18    | 2–5 (3.2) | 1–5 (2.3) | 3–5 (3.7) | 0 or 1    |
+| Epic component      | 4     | 4–5 (4.8) | 2–6 (3.8) | 4–7 (6.0) | 0 to 3    |
+| Legendary evolution | 3     | 5–6 (5.3) | 3–5 (4.0) | 7–8 (7.3) | 2 to 5    |
+| Common spell        | 7     | 1–2 (1.3) | —         | —         | —         |
+| Rare spell          | 5     | 1–3 (2.0) | —         | —         | —         |
+| Epic spell          | 2     | 3         | —         | —         | —         |
+| Common incident     | 8     | 1–2 (1.3) | —         | —         | —         |
+| Rare incident       | 4     | 2–3 (2.3) | —         | —         | —         |
 
-Repère simple pour un composant sans capacité : attaque + PV ≈ 2 × coût + 1. Une capacité forte ou un effet se paie
-par 1 de coût en plus, ou par une statistique plus basse. Les chiffres proposés restent indicatifs : l'équilibrage se
-mesure par simulation pendant la relecture.
+A simple benchmark for a component with no ability: attack + HP ≈ 2 × cost + 1. A strong ability or an effect costs 1
+more, or a lower stat. Your numbers are only a starting point: balance is measured by simulation during the review.
 
-### Capacités et effet
+### Abilities and effect
 
-Les **capacités** sont des mots-clés du glossaire, déjà programmés : Batch, Vétéran, Non conforme, Sur site, Hub,
-Point unique, Garde, Quotas, Connecteur (N), Diffusion, Réactif, File durable, Supervision, Migration, Autonome,
-Orchestration, Outillage, Délégation, Contexte, Garde-fous, Asynchrone, Cache sémantique, Routage multi-modèles. Leur
-effet exact est dans le [tableau des capacités](../produit/regles.md#capacités).
+**Abilities** are keywords of the glossary, already programmed: Batch, Veteran, Non-compliant, On-premises, Hub,
+Single point of failure, Guard, Quotas, Connector (N), Broadcast, Reactive, Durable queue, Monitoring, Migration,
+Autonomous, Orchestration, Tooling, Delegation, Context, Guardrails, Asynchronous, Semantic cache, Multi-model routing.
+The game's card details explain what each one does.
 
-- Une carte en porte **zéro, une, rarement deux** ; choisir celles qui racontent la technologie.
-- **Une capacité nouvelle n'est jamais créée par une proposition de carte** : elle touche tout le moteur et fait
-  l'objet d'une story à part. Si votre idée l'exige, dites-le dans la proposition.
+- A card has **none, one, rarely two**; pick the ones that tell the technology's story.
+- **A card proposal never creates a new ability, nor a new game mechanic**: it would change the whole engine, so it
+  becomes a separate piece of work for the project owner. If your idea needs one, say so in your proposal.
 
-Un **effet** est une phrase propre à la carte, quand aucune capacité ne suffit ; c'est le cas de tous les sorts et
-incidents. Il est programmé dans le moteur avec la carte : le garder **court, d'une seule action** (piocher, infliger
-des dégâts, donner un bonus, immobiliser, renvoyer en main) et proche d'effets existants. Exemples : « Infligez 2
-dégâts à un composant », « Piochez les deux premières cartes API de votre pioche ».
+An **effect** is a sentence specific to the card, when no ability is enough; every spell and incident has one. It is
+programmed in the engine along with the card: keep it **short, a single action** (draw, deal damage, give a bonus,
+immobilise, return to hand) and close to existing effects. Examples: "Deal 2 damage to a component", "Draw the first
+two API cards from your deck".
 
-### Le texte « En vrai »
+### The "In real life" text
 
-C'est le cœur pédagogique de la carte : ce que la technologie fait **en vrai**, en une phrase de 110 caractères au
-plus, lisible par quelqu'un qui n'est pas du métier. Un trait d'humour d'équipe est bienvenu s'il reste juste.
+This is the heart of the card: what the technology **really** does, in one sentence of 110 characters at most,
+readable by someone outside the trade. A touch of team humour is welcome if it stays accurate.
 
-- Bien : « Un seul point d'entrée : le client demande exactement les champs voulus, en une requête sur plusieurs
-  sources. »
-- À éviter : « Langage de requête pour API basé sur un schéma typé avec résolveurs. » (exact, mais incompréhensible
-  pour un non-spécialiste) ; « La meilleure techno du monde. » (rien appris).
+- Good: "A single endpoint: the client asks for exactly the fields it needs, in one query across several sources."
+- Avoid: "Schema-typed API query language with resolvers." (accurate, but opaque to a non-specialist); "The best tech in
+  the world." (teaches nothing).
 
-### La fiche « En savoir plus »
+### The "Learn more" sheet
 
-Chaque carte a une fiche, ouverte depuis son détail (ADR [0036](../decisions/0036-fiches-pedagogiques-cartes.md)), qui
-se lit en moins d'une minute : exacte plutôt que ludique.
+Every card has a sheet, opened from its details (ADR [0036](../decisions/0036-fiches-pedagogiques-cartes.md)), that
+takes less than a minute to read: accurate rather than playful.
 
-| Champ      | Contenu                                                                 | Longueur max |
-| ---------- | ----------------------------------------------------------------------- | ------------ |
-| Définition | ce que c'est, en une phrase                                             | 220 car.     |
-| Usage      | à quoi ça sert ; pour un incident, comment il survient                  | 360 car.     |
-| Exemple    | un cas concret, tiré de la vie d'une équipe d'intégration               | 360 car.     |
-| À retenir  | le piège à éviter ou la bonne pratique                                  | 320 car.     |
-| En interne  | facultatif : le lien avec l'intégration en interne, **s'il est public**  | 240 car.     |
-| Liens      | 1 à 3 ressources `https` (Wikipédia, documentation d'éditeur, standard) | —            |
+| Field      | Content                                                               | Max length |
+| ---------- | --------------------------------------------------------------------- | ---------- |
+| Definition | what it is, in one sentence                                           | 220 chars  |
+| Use        | what it is for; for an incident, how it happens                       | 360 chars  |
+| Example    | a concrete case from the life of an integration team                  | 360 chars  |
+| Takeaway   | the pitfall to avoid or the good practice                             | 320 chars  |
+| At the company    | optional: the link with integration at the company, **only if it is public** | 240 chars  |
+| Links      | 1 to 3 `https` resources (Wikipedia, vendor docs, standard)           | —          |
 
-Le total ne dépasse pas 1 300 caractères. Le jeu est bilingue : votre IA écrit aussi la version anglaise de la carte
-et de la fiche.
+The total stays under 1,300 characters. The game is bilingual and French is its reference language: write your
+proposal in English, and your AI writes the card and its sheet in French and in English. The project owner reviews the
+French version.
 
-## Règles de contenu
+## Content rules
 
-**Le dépôt est public, et une pull request l'est dès son ouverture**, avant toute relecture. Vérifiez donc vous-même,
-avant d'ouvrir la PR, que la carte, sa fiche et son illustration ne contiennent rien de ce qui suit.
+**The repository is public, and a pull request is public as soon as it is opened**, before any review. So check
+yourself, before opening it, that the card, its sheet and its illustration contain none of the following.
 
-- **Rien de confidentiel** : ni nom de serveur, d'environnement ou de machine ; ni adresse, URL interne ou nom de
-  domaine interne ; ni client, partenaire ou fournisseur identifiable ; ni faille non corrigée ; ni volumétrie,
-  incident daté ou chiffre interne ; ni nom de collègue. Les noms de produits du marché et leurs versions publiques
-  sont admis (ADR [0022](../decisions/0022-depot-public.md)).
-- **Un incident se raconte en généralités** : « un certificat expire un vendredi soir » plutôt que l'incident réel de
-  telle application.
-- **Aucune marque dénigrée** : on peut dire qu'une technologie vieillit ou coûte cher, pas qu'un éditeur est mauvais.
-  Les vrais noms de produits sont permis, jamais leurs logos.
-- **Un ton bienveillant** : l'humour vise les situations, jamais des personnes ou des équipes.
-- **Un texte compréhensible par un non-spécialiste**, sans sigle laissé sans explication.
-- **Rien de vous dans les consignes données à l'IA** au-delà de la proposition elle-même (règles d'usage des
-  assistants IA, [ref] de l’entreprise).
+- **Nothing confidential**: no server, environment or machine name; no address, internal URL or internal domain name;
+  no identifiable customer, partner or supplier; no unpatched vulnerability; no volumes, dated incident or internal
+  figure; no colleague's name. Names of products on the market and their public versions are fine
+  (ADR [0022](../decisions/0022-depot-public.md)).
+- **Tell an incident in general terms**: "a certificate expires on a Friday evening" rather than the real incident of
+  a given application.
+- **No brand bashing**: you may say a technology is ageing or costly, not that a vendor is bad. Real product names are
+  allowed, never their logos.
+- **A kind tone**: humour targets situations, never people or teams.
+- **Text that a non-specialist understands**, with no unexplained acronym.
+- **Nothing about you in the prompts given to your AI** beyond the proposal itself (the company guidelines on AI assistants,
+  [ref]).
 
-## Gabarit de proposition
+## Proposal template
 
-À remplir avant tout, puis à donner à votre IA et à reprendre dans la description de la PR.
+Fill it in first, then give it to your AI and paste it into the pull request description.
 
 ```markdown
-- Nom de la carte :
-- Famille : (fichiers, esb, api, ipaas, eda, ia, patterns, bestiaire)
-- Type : (composant, évolution de …, sort, incident)
-- Rareté visée : (commune, rare, épique, légendaire)
-- Coût / Attaque / PV : (attaque et PV pour un composant ou une évolution seulement)
-- Capacités : (mots-clés du glossaire, ou aucune)
-- Effet : (une phrase, ou aucun)
-- En vrai : (une phrase, 110 caractères au plus)
-- Fiche « En savoir plus » : définition, usage, exemple, à retenir, en interne (facultatif), 1 à 3 liens
-- Idée d'illustration : (la créature, sa posture, son décor)
-- Sources : (où vérifier ce que dit la carte)
-- Auteur affiché : (le nom qui apparaîtra sur la carte, 40 caractères au plus ; public, comme toute la PR)
+- Card name:
+- Family: (fichiers, esb, api, ipaas, eda, ia, patterns, bestiaire)
+- Type: (component, evolution of …, spell, incident)
+- Target rarity: (common, rare, epic, legendary)
+- Cost / Attack / HP: (attack and HP for a component or an evolution only)
+- Abilities: (glossary keywords, or none)
+- Effect: (one sentence, or none)
+- In real life: (one sentence, 110 characters at most)
+- "Learn more" sheet: definition, use, example, takeaway, at the company (optional), 1 to 3 links
+- Illustration idea: (the creature, its pose, its setting)
+- Sources: (where to check what the card says)
+- Displayed author: (the name shown on the card, 40 characters at most; public, like the whole pull request)
 ```
 
-## Deux exemples commentés
+## Two annotated examples
 
-### Une bonne carte : API GraphQL (n° 74)
+### A good card: GraphQL API (no. 74)
 
-| Famille | Type      | Rareté | Coût | Attaque / PV | Effet                                                                                    |
-| ------- | --------- | ------ | ---- | ------------ | ---------------------------------------------------------------------------------------- |
-| API     | Composant | Rare   | 3    | 2 / 3        | Quand elle est posée, piochez une carte par autre composant en jeu chez vous (2 au plus) |
+| Family | Type      | Rarity | Cost | Attack / HP | Effect                                                                             |
+| ------ | --------- | ------ | ---- | ----------- | ---------------------------------------------------------------------------------- |
+| API    | Component | Rare   | 3    | 2 / 3       | When deployed, draw one card for each other component you have in play (2 at most) |
 
-En vrai : « Un seul point d'entrée : le client demande exactement les champs voulus, en une requête sur plusieurs
-sources. »
+In real life: "A single endpoint: the client asks for exactly the fields it needs, in one query across several
+sources."
 
-- **La mécanique raconte la technologie** : une requête qui agrège plusieurs sources devient une pioche qui grandit
-  avec les composants déjà en jeu.
-- **Les statistiques sont modestes** (2 / 3 pour 3 de Débit, sous le repère) parce que l'effet rapporte des cartes.
-- **Pas de capacité nouvelle** : un effet court, de la même famille que la pioche ciblée d'Apigee API Hub.
+- **The mechanics tell the technology's story**: one query that gathers several sources becomes a draw that grows with
+  the components already in play.
+- **The stats are modest** (2 / 3 for 3 Throughput, below the benchmark) because the effect brings cards.
+- **No new ability**: a short effect, of the same kind as Apigee API Hub's targeted draw.
 
-### Une carte retravaillée : API First (n° 72)
+### A reworked card: API First (no. 72)
 
-Proposition de départ : sort rare, **2 de Débit**, « Piochez la première carte API de votre pioche, puis un de vos
-composants API gagne +1 attaque. »
+Original proposal: rare spell, **2 Throughput**, "Draw the first API card from your deck, then one of your API
+components gains +1 attack."
 
-- **Première mesure** : trop faible, le deck qui la jouait perdait plus souvent (44 à 48 % de victoires).
-- **Deuxième essai** : deux cartes piochées pour 2 de Débit : trop forte (53 à 59 %).
-- **Version publiée** : deux cartes piochées pour **3 de Débit**, entre 43 et 50 %. Le texte « En vrai » a été
-  raccourci pour tenir sur la carte : « Concevoir le contrat de l'API avant le code : fournisseur et consommateurs
-  avancent en parallèle. »
+- **First measure**: too weak, the deck playing it lost more often (44 to 48 % wins).
+- **Second attempt**: two cards drawn for 2 Throughput: too strong (53 to 59 %).
+- **Published version**: two cards drawn for **3 Throughput**, between 43 and 50 %. The "In real life" text was
+  shortened to fit on the card: "Designing the API contract before the code: provider and consumers move forward in
+  parallel."
 
-C'est le cas le plus courant : l'idée est bonne, la relecture ajuste un chiffre. Les mesures complètes sont dans le
-[catalogue](../produit/cartes-set-1.md#extension--api-first-eda-et-api-graphql-us-077-2026-10-25).
+This is the most common case: the idea is good, the review adjusts a number.
 
-## Ce que devient une proposition
+## What happens to a proposal
 
-1. **Pull request** : vous ouvrez la PR depuis votre fork, avec le gabarit rempli (voir
-   [CONTRIBUTING.md](../../CONTRIBUTING.md)). La CI vérifie que le catalogue reste cohérent.
-2. **Relecture** : le porteur du projet relit l'exactitude, le texte « En vrai », la confidentialité, l'absence de
-   doublon et l'illustration. Réponse visée en moins de deux semaines : **fusionnée**, **à retravailler** (avec des
-   commentaires dans la PR) ou **refusée** (avec un motif).
-3. **Équilibrage** : une simulation « bot contre bot » met deux exemplaires de la carte dans chaque deck prêté et
-   les fait jouer contre les trois decks ; la CI l'affiche dans le résumé du job « Équilibrage des cartes nouvelles »
-   (`npm run simuler:carte -- <numéro>` pour la lancer chez vous). Un deck qui gagne ou perd 10 points ou plus avec
-   la carte signale un déséquilibre : le coût ou les statistiques sont ajustés, comme pour API First.
-4. **Publication** : à la fusion, la carte est mise en ligne automatiquement. Elle prend le numéro suivant du
-   catalogue et peut sortir des boosters.
-5. **Crédit** : votre nom figure dans le catalogue et le CHANGELOG ; il s'affichera sur la carte (« Proposée par … »)
-   dès que le jeu saura le montrer (US-030, US-031).
+1. **Pull request**: you open it from your fork, with the filled-in template (see
+   [CONTRIBUTING.md](../../CONTRIBUTING.md)). The CI checks that the catalogue stays consistent.
+2. **Review**: the project owner checks accuracy, the "In real life" text, confidentiality, duplicates and the
+   illustration. Answer within two weeks: **merged**, **changes requested** (with comments in the pull request) or
+   **declined** (with a reason).
+3. **Balance**: a bot-versus-bot simulation puts two copies of the card into each starter deck and plays them against
+   the three starter decks; the CI shows it in the summary of the "Équilibrage des cartes nouvelles" job
+   (`npm run simuler:carte -- <card number>` to run it yourself). A deck that wins or loses 10 points or more with the
+   card signals an imbalance: cost or stats are adjusted, as for API First.
+4. **Release**: once merged, the card goes live automatically. It takes the next number in the catalogue and can come
+   out of boosters.
+5. **Credit**: your name is recorded in the catalogue and the changelog; it will show on the card ("Proposed by …")
+   once the game can display it.
 
-**Pas de compte GitHub, ou pas le temps ?** Envoyez le gabarit rempli au porteur du projet, par message ou en
-atelier : il intégrera la carte lui-même, avec votre nom.
+**No GitHub account, or no time?** Send the filled-in template to the project owner, by message or during a workshop:
+they will add the card for you, with your name.

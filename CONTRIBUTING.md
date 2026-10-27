@@ -1,41 +1,47 @@
-# Proposer une carte
+# Proposing a card
 
-HIPMaster accueille les cartes de la communauté IT : une technologie, un pattern ou un incident vécu, avec un texte qui
-explique ce qu'il représente dans un SI. Une carte proposée est une **pull request**
+HIPMaster welcomes cards from the IT community: a technology, a pattern or an incident you have lived through, with a
+short text that explains what it means in an information system. A proposed card is a **pull request**
 (ADR [0050](docs/decisions/0050-cartes-communaute-par-pull-request.md)).
 
-## Avant de commencer
+The contributor kit is in English; the rest of the project (backlog, decisions, code comments, product docs) is in
+French. You never need to read it: the guide below and your AI assistant are enough. The game itself is bilingual
+(<https://hipmaster.web.app/en/>, on invitation: ask the project owner).
 
-Lisez le guide **[Concevoir une carte](docs/contribuer/regles-cartes.md)** : familles, types, raretés, ordres de
-grandeur des statistiques, capacités, texte « En vrai », règles de contenu et gabarit de proposition. Remplissez le
-gabarit : c'est lui que vous donnerez à votre IA et que vous reprendrez dans la PR.
+## Before you start
 
-**Le dépôt est public, et votre PR l'est dès son ouverture** : relisez les
-[règles de contenu](docs/contribuer/regles-cartes.md#règles-de-contenu) avant de pousser quoi que ce soit.
+Read the guide **[Designing a card](docs/contribuer/regles-cartes.md)**: families, types, rarities, typical stats,
+abilities, the "In real life" text, content rules and the proposal template. Fill in the template: you will give it to
+your AI assistant and paste it into your pull request.
 
-## La démarche
+**The repository is public, and so is your pull request as soon as you open it**: read the
+[content rules](docs/contribuer/regles-cartes.md#content-rules) before pushing anything.
 
-1. **Forkez** le dépôt sur GitHub, puis clonez votre fork. Vous n'avez besoin d'aucun droit sur le dépôt d'origine.
-2. **Installez** le projet : Node 24.15 ou plus, puis `npm ci` (voir le [README](README.md#démarrage)).
-3. **Créez une branche** `carte-<nom-de-la-carte>`.
-4. **Écrivez la carte avec votre assistant IA**, à partir de votre gabarit : donnez-lui la
-   [consigne de carte](docs/contribuer/consigne-carte.md) (la carte, sa traduction anglaise, sa fiche « En savoir
-   plus », les tests), puis dessinez la créature avec la [consigne d'illustration](docs/contribuer/consigne-illustration.md).
-5. **Vérifiez** : `npm run check` doit passer (lint, format, types, tests), et `npm run dev` vous montre la carte dans
-   le catalogue (localhost:4200).
-6. **Ouvrez la PR** vers `main` avec le modèle « carte », en ajoutant `?expand=1&template=carte.md` à l'adresse de
-   comparaison : `https://github.com/Obemm/20_HIPMaster/compare/main...<votre-compte>:<votre-branche>?expand=1&template=carte.md`.
-   Collez-y votre gabarit, joignez l'original de l'illustration et cochez vos vérifications.
+## Step by step
 
-Pas de compte GitHub, ou pas le temps ? Envoyez le gabarit rempli au porteur du projet : il intégrera la carte lui-même.
+1. **Fork** the repository on GitHub, then clone your fork. You need no rights on the original repository.
+2. **Install** the project: Node 24.15 or later, then `npm ci` (see the [README](README.md#démarrage)).
+3. **Create a branch** named `carte-<card-name>`.
+4. **Write the card with your AI coding assistant**, from your template: give it the
+   [card prompt](docs/contribuer/consigne-carte.md) (the card, its French and English texts, its "Learn more" sheet,
+   the tests), then draw its creature with the [illustration prompt](docs/contribuer/consigne-illustration.md).
+5. **Check**: `npm run check` must pass (lint, format, types, tests), and `npm run dev` shows the card in the catalogue
+   (<http://localhost:4200>, French version; `npm run start:en` serves the English one).
+6. **Open the pull request** against `main` with the "card" template, by adding `?expand=1&template=carte.md` to the
+   compare URL: `https://github.com/Obemm/20_HIPMaster/compare/main...<your-account>:<your-branch>?expand=1&template=carte.md`.
+   Paste your template, attach the original illustration and tick your checks.
 
-## Après la PR
+No GitHub account, or no time? Send your filled-in template to the project owner, who will add the card for you.
 
-Le porteur du projet relit la carte avec la liste de contrôle du modèle (exactitude, clarté, confidentialité,
-doublons, règles, équilibrage, illustration). La CI mesure l'équilibrage de votre carte : le job « Équilibrage des
-cartes nouvelles » affiche, dans son résumé, ce qu'elle change dans chaque deck prêté ; vous pouvez le mesurer
-vous-même avant, avec `npm run simuler:carte -- <numéro>` (une minute et demie environ). Il répond dans la PR : fusionnée, à retravailler ou refusée avec un motif, en moins de deux
-semaines. À la fusion, la carte est mise en ligne automatiquement, avec votre nom.
+## After the pull request
 
-Les commits suivent les [Conventional Commits](https://www.conventionalcommits.org/fr/) en français, sujet en
-minuscules : `feat(carte): la carte api graphql`.
+The project owner reviews the card with the checklist of the template (accuracy, clarity, confidentiality, duplicates,
+rules, balance, illustration). The CI measures your card's balance: the "Équilibrage des cartes nouvelles" job shows,
+in its summary, how the card changes each starter deck; you can measure it yourself beforehand with
+`npm run simuler:carte -- <card number>` (about a minute and a half). You get an answer in the pull request within two
+weeks: merged, changes requested, or declined with a reason. Once merged, the card goes live automatically, with your
+name.
+
+Commits follow [Conventional Commits](https://www.conventionalcommits.org/), with a lowercase subject:
+`feat(carte): add the graphql api card`. The pull request is squash-merged with a French title, so the language of your
+commits does not matter.

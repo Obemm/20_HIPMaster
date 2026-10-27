@@ -14,7 +14,7 @@ _Dernière mise à jour : 2026-10-27_
 | [EPIC-05 — Illustrations des cartes](epics/EPIC-05-illustrations.md)                              | Should   | Terminé  | 6/6        |
 | [EPIC-06 — Duels entre joueurs](epics/EPIC-06-duels-joueurs.md)                                   | Should   | Terminé  | 8/8        |
 | [EPIC-07 — Vie sociale](epics/EPIC-07-vie-sociale.md)                                             | Could    | Terminé  | 1/1        |
-| [EPIC-08 — Cartes proposées par la communauté IT](epics/EPIC-08-cartes-communaute.md)             | Should   | En cours | 3/5        |
+| [EPIC-08 — Cartes proposées par la communauté IT](epics/EPIC-08-cartes-communaute.md)             | Should   | En cours | 4/6        |
 | [EPIC-09 — Mise en ligne sur Google Cloud](epics/EPIC-09-mise-en-ligne-gcp.md)                    | Must     | Terminé  | 14/14      |
 | [EPIC-10 — Identité visuelle et confort sur téléphone](epics/EPIC-10-identite-visuelle-mobile.md) | Should   | Terminé  | 6/6        |
 | [EPIC-11 — Apprendre à jouer](epics/EPIC-11-apprendre-a-jouer.md)                                 | Should   | Terminé  | 3/3        |
@@ -187,6 +187,7 @@ catalogue, set d'accueil).
 | [US-029 — Relire une carte dans sa pull request](stories/US-029-relire-propositions.md)                                                | EPIC-08 | Should   | S      | Faite     |
 | [US-030 — L'auteur d'une carte, première carte de la communauté](stories/US-030-integrer-carte-acceptee.md)                            | EPIC-08 | Should   | M      | En cours  |
 | [US-031 — Créditer les contributeurs](stories/US-031-crediter-contributeurs.md)                                                        | EPIC-08 | Could    | S      | À affiner |
+| [US-086 — Le kit du contributeur en anglais](stories/US-086-kit-contributeur-anglais.md)                                               | EPIC-08 | Should   | S      | Faite     |
 | [US-076 — Concevoir le set 2 : DDD, microservices, DevOps](stories/US-076-concevoir-set-2.md)                                          | EPIC-13 | Could    | L      | À affiner |
 | [US-077 — Trois nouvelles cartes : API First, EDA et API GraphQL](stories/US-077-api-first-eda-graphql.md)                             | EPIC-13 | Should   | M      | Faite     |
 | [US-079 — Le socle bilingue : i18n d'Angular, deux versions du site et un sélecteur de langue](stories/US-079-socle-bilingue.md)       | EPIC-14 | Should   | M      | Faite     |

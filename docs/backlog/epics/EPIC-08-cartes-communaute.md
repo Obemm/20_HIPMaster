@@ -30,6 +30,7 @@ suivant du catalogue et porte le nom de son auteur.
 - [x] US-029 — Relire une carte proposée dans sa pull request
 - [ ] US-030 — L'auteur d'une carte dans le catalogue, et une première carte de la communauté
 - [ ] US-031 — Créditer les contributeurs dans le jeu
+- [x] US-086 — Le kit du contributeur en anglais
 
 Ordre suggéré : US-027 (utile tout de suite, y compris pour des idées reçues par message ou en atelier), US-028 et
 US-029 (le kit complet), puis US-030 avec un premier collègue pour éprouver le parcours, et US-031.

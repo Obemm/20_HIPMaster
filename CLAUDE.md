@@ -7,7 +7,9 @@ pure en TypeScript, PostgreSQL + Drizzle. TypeScript strict, Node ≥ 24.15.
 ## Règles impératives du projet
 
 1. **Toujours parler en français** à l'utilisateur (réponses, questions, récapitulatifs), ainsi que dans la
-   documentation, les messages de commit et les commentaires de code.
+   documentation, les messages de commit et les commentaires de code. Seule exception : le kit du contributeur
+   (`CONTRIBUTING.md`, `docs/contribuer/`, modèle de PR « carte ») est en anglais, pour des contributeurs anglophones
+   (ADR 0050).
 2. **Tout ce qui est codé est documenté dans une story et un epic.** Aucune ligne de code sans story `US-XXX`
    rattachée à un epic `EPIC-XX`. Si aucune story ne couvre la demande, rédiger la story (et l'epic si besoin) dans
    `docs/backlog/` **avant** de coder, et la tenir à jour pendant et après le travail (critères, journal, tableau).
