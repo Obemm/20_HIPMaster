@@ -167,6 +167,22 @@ with its full 7 HP and can attack straight away, since webMethods IS could.
 
 "Agent" means the AI components that have the Autonomous ability.
 
+### Set 2 abilities (designed, not playable yet)
+
+Decided in [ADR 0052](../decisions/0052-set-2-familles-ddd-microservices-devops.md); cards in
+[cartes-set-2.md](cartes-set-2.md).
+
+| Ability                    | Effect                                                                                                         |
+| -------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| **Bounded**                | Takes no collateral damage: only attacks it takes part in and effects that target it alone can damage it.      |
+| **Independent deployment** | Can attack on the turn it is deployed.                                                                         |
+| **Pipeline**               | The first component (or evolution) you deploy each turn costs 1 less, minimum 1. Several Pipelines do not add. |
+
+**Collateral damage**: damage a card takes without being chosen alone — an effect that hits several components at once
+(Splitter, Cascading failure), the extra damage of Broadcast, or damage passed on from another card (Tight coupling,
+Big Ball of Mud, Single point of failure). Counter-attacks and Reactive belong to the attack: a Bounded card takes
+them.
+
 ## The bot
 
 Four levels, from simplest to strongest: **Intern** (easy: it plays like a beginner), **Nightly Batch** (medium),

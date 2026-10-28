@@ -9,6 +9,11 @@ Set 1 is about the building blocks of integration (files, APIs, ESB, events, iPa
 would like, one day, to extend the acculturation to the **ways of designing and delivering** these systems:
 _Domain-Driven Design_, microservice architectures, DevOps… Topics noted on 2026-10-24, with no commitment on a date.
 
+## On hold (2026-10-28)
+
+New sets wait, to leave room for the cards proposed by contributors (EPIC-08). The design of set 2 is ready and kept
+(US-076, [cartes-set-2.md](../../produit/cartes-set-2.md), ADR 0052 proposed); it will be resumed later.
+
 ## Success indicator
 
 - A playable set 2 in which every card teaches a concept, with its "Learn more" sheet (EPIC-12).

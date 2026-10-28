@@ -32,6 +32,17 @@ Six era families, two cross-cutting families.
 | **Patterns**           | —     | _Enterprise Integration Patterns_: Router, Splitter, Circuit Breaker, Dead Letter Queue | spells                           |
 | **Bestiary**           | —     | Poison message, Timeout, Hallucination, Prompt injection, Token bill                    | incidents                        |
 
+### Set 2: designing and delivering
+
+Set 2 ([cartes-set-2.md](cartes-set-2.md), [ADR 0052](../decisions/0052-set-2-familles-ddd-microservices-devops.md))
+adds three families about the ways of designing and delivering systems. Its incidents join the Bestiary.
+
+| Family            | Examples                                                       | Signature ability                       |
+| ----------------- | -------------------------------------------------------------- | --------------------------------------- |
+| **DDD**           | Bounded Context, Aggregate, Anti-corruption Layer, Context Map | **Bounded** (no collateral damage)      |
+| **Microservices** | Monolith, Microservice, Service mesh, Kubernetes, Saga         | **Independent deployment** (no waiting) |
+| **DevOps**        | CI/CD pipeline, Container, Terraform, Feature flag, Canary     | **Pipeline** (cheaper deployments)      |
+
 ## The evolution lines
 
 An evolution card is deployed **in place of** the card it comes from (see [regles.md](regles.md)).
@@ -41,6 +52,9 @@ An evolution card is deployed **in place of** the card it comes from (see [regle
   single point of failure.
 - **Apigee API Gateway → Apigee AI Gateway**: token quotas, semantic cache, guardrails, multi-model routing.
 - **Solace Event Mesh → Solace Agent Mesh**: events become the nervous system of the agents (A2A and MCP).
+
+- **Monolith → Modular monolith** (set 2): the monolith loses its single point of failure without being split into
+  services.
 
 Notable synergy: **Apigee AI Gateway + Solace Agent Mesh** in play together form "governed agents".
 

@@ -189,7 +189,7 @@ culture. To be handled later; ADR to plan (identity, reviewer role, path to the 
 | [US-030 — A card's author in the catalogue, and a first community card](stories/US-030-integrer-carte-acceptee.md)                         | EPIC-08 | Should   | M    | In progress |
 | [US-031 — Credit contributors in the game](stories/US-031-crediter-contributeurs.md)                                                       | EPIC-08 | Could    | S    | Done        |
 | [US-086 — The contributor kit in English](stories/US-086-kit-contributeur-anglais.md)                                                      | EPIC-08 | Should   | S    | Done        |
-| [US-076 — Design set 2: DDD, microservices, DevOps](stories/US-076-concevoir-set-2.md)                                                     | EPIC-13 | Could    | L    | To refine   |
+| [US-076 — Design set 2: DDD, microservices, DevOps](stories/US-076-concevoir-set-2.md)                                                     | EPIC-13 | Won't    | M    | In progress |
 | [US-077 — Three new cards: API First, EDA and GraphQL API](stories/US-077-api-first-eda-graphql.md)                                        | EPIC-13 | Should   | M    | Done        |
 | [US-085 — Rebalance the GraphQL API card](stories/US-085-reequilibrer-api-graphql.md)                                                      | EPIC-13 | Should   | S    | Done        |
 | [US-079 — The bilingual foundation: Angular i18n, two versions of the site and a language switcher](stories/US-079-socle-bilingue.md)      | EPIC-14 | Should   | M    | Done        |
