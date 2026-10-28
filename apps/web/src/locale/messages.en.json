@@ -771,6 +771,20 @@
     "5771082855276359989": "{VAR_PLURAL, plural, =1 {One of your decks is incomplete: it is not offered.} other {{INTERPOLATION} of your decks are incomplete: they are not offered.}}",
     "1393435339889796554": "{$ICU} {$START_LINK}Complete them in “My decks”{$CLOSE_LINK}",
     "1934657749316210449": "{$START_LINK}Build your decks{$CLOSE_LINK} with the cards of your collection to play with them. ",
-    "1965971765770831841": "Your deck, {$nombre} cards."
+    "1965971765770831841": "Your deck, {$nombre} cards.",
+    "5629870128781637124": "Contributors",
+    "2891255132816451685": "Contributors — HIPMaster",
+    "6574415136392302048": "Origin",
+    "1715675428288809219": "Community cards",
+    "7292950688706578930": " These cards were proposed by architects: {$START_LINK}meet the contributors{$CLOSE_LINK}. ",
+    "2127907050535921383": "Proposed by {$START_LINK}{$INTERPOLATION}{$CLOSE_LINK}",
+    "2307833208019184506": "Community",
+    "7716536537964335852": " Architects have proposed their own cards: a technology, a pattern or an incident they lived through. Thank you! ",
+    "3775124251637774418": "{VAR_PLURAL, plural, =1 {1 published card} other {{INTERPOLATION} published cards}}",
+    "2336729097312325422": " No community card yet ",
+    "8992964219955922212": " The first cards proposed by architects are coming soon. Do you know a technology, a pattern or an incident that deserves its card? The {$START_LINK}contributor guide{$CLOSE_LINK} explains how to propose it. ",
+    "5413997942340911197": " Propose a card too: the {$START_LINK}contributor guide{$CLOSE_LINK} explains how. ",
+    "2539619807521384205": "The list of contributors could not be loaded.",
+    "7174731198369688570": "Loading the contributors…"
   }
 }

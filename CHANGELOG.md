@@ -7,6 +7,7 @@ All notable changes to the project are recorded here
 
 ### Added
 
+- Contributors credited in the game: the detail of a community card shows "Proposed by …" with its author's name, the catalogue gets an "Origin" filter for community cards, and a "Contributors" page (link in the footer) lists the authors and their published cards, or points to the contributor guide while there are none. Derived from the cached catalogue, no new API route; in French and English (US-031, ADR 0050).
 - The whole repository in English (EPIC-16, ADR 0051): product docs, READMEs and operations guide (US-088), ADRs
   (US-089), backlog (US-090) and CHANGELOG (US-091) translated, paths kept; links checked across folders and the
   contributor kit updated for the English repository (US-092).

@@ -81,7 +81,10 @@
         <img src="/logo.svg" alt="" width="20" height="20" class="size-5" />
         <ng-container i18n>HIPMaster, le jeu de cartes de l’intégration</ng-container>
       </p>
-      <p><a routerLink="/confidentialite" class="lien" i18n>À propos et confidentialité</a></p>
+      <ul class="flex flex-wrap gap-x-4 gap-y-2">
+        <li><a routerLink="/contributeurs" class="lien" i18n>Contributeurs</a></li>
+        <li><a routerLink="/confidentialite" class="lien" i18n>À propos et confidentialité</a></li>
+      </ul>
     </div>
   </footer>
   <!-- Cale sous la page : la barre d'onglets ne masque jamais le bas d'un écran. -->

@@ -1,3 +1,4 @@
+import { NgTemplateOutlet } from '@angular/common';
 import { Component, computed, inject, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Icone } from '../icone';
@@ -11,7 +12,7 @@ import { ILLUSTRATIONS_CARTES, sourcesIllustration } from './illustrations';
  */
 @Component({
   selector: 'hip-vignette-carte',
-  imports: [RouterLink, Icone],
+  imports: [NgTemplateOutlet, RouterLink, Icone],
   templateUrl: './vignette-carte.html',
   host: { class: 'block @container' },
 })
@@ -21,6 +22,8 @@ export class VignetteCarte {
   readonly lien = input<string[]>();
   /** Nom en titre (h2) ; `false` quand la carte est dans un bouton, où un titre n'a pas sa place. */
   readonly titre = input(true);
+  /** Niveau du titre : 3 quand la carte se range sous un titre de section, comme sur la page des contributeurs. */
+  readonly niveauTitre = input<2 | 3>(2);
 
   protected readonly libelleRarete = computed(
     () => `${SYMBOLES_RARETE[this.carte().rarete]} ${LIBELLES_RARETE[this.carte().rarete]}`,

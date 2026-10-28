@@ -89,6 +89,20 @@ export const routes: Routes = [
     loadComponent: () => import('./compte/compte').then((m) => m.CompteEcran),
     title: $localize`Mon compte — HIPMaster`,
   },
+  // Les contributeurs et leurs cartes (US-031) ; le détail d'une carte s'ouvre par-dessus, comme dans le catalogue.
+  {
+    path: 'contributeurs',
+    loadComponent: () => import('./contributeurs/contributeurs').then((m) => m.ContributeursEcran),
+    title: $localize`Contributeurs — HIPMaster`,
+    children: [
+      {
+        path: ':numero',
+        loadComponent: detailCarte,
+        title: $localize`Carte — HIPMaster`,
+        data: { retour: '/contributeurs' },
+      },
+    ],
+  },
   {
     path: 'confidentialite',
     loadComponent: () =>

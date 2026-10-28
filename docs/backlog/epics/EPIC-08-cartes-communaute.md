@@ -29,7 +29,7 @@ carries its author's name.
 - [x] US-028 — Kit for the contributor's AI: card and illustration prompts
 - [x] US-029 — Review a card proposed in its pull request
 - [ ] US-030 — A card's author in the catalogue, and a first community card
-- [ ] US-031 — Credit contributors in the game
+- [x] US-031 — Credit contributors in the game
 - [x] US-086 — The contributor kit in English
 
 Suggested order: US-027 (useful right away, including for ideas received by message or in a workshop), US-028 and

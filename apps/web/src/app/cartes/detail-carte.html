@@ -36,6 +36,16 @@
               >N° {{ c.numero }} · {{ libelleType(c) }} · {{ libellesFamille[c.famille] }}</span
             >
           </p>
+          @if (c.auteur) {
+            <!-- Carte de la communauté (US-031) : le nom choisi par son auteur, qui ne se traduit pas. -->
+            <p class="mt-2 flex items-center gap-1.5 text-sm">
+              <hip-icone nom="contributeurs" class="size-4 shrink-0 text-accent" />
+              <span i18n
+                >Proposée par
+                <a routerLink="/contributeurs" class="lien font-semibold">{{ c.auteur }}</a></span
+              >
+            </p>
+          }
         </div>
 
         <dl class="grid grid-cols-3 gap-2">

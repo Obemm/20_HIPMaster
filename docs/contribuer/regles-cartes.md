@@ -200,8 +200,9 @@ This is the most common case: the idea is good, the review adjusts a number.
    card signals an imbalance: cost or stats are adjusted, as for API First.
 4. **Release**: once merged, the card goes live automatically. It takes the next number in the catalogue and can come
    out of boosters.
-5. **Credit**: your name is recorded in the catalogue and the changelog; it will show on the card ("Proposed by …")
-   once the game can display it.
+5. **Credit**: your name is recorded in the catalogue and the changelog. In the game, the card's detail shows
+   "Proposed by …" with your name, the catalogue can be filtered on community cards, and the **Contributors** page
+   (link in the footer) lists every author with their published cards.
 
 **No GitHub account, or no time?** Send the filled-in template to the project owner, by message or during a workshop:
 they will add the card for you, with your name.

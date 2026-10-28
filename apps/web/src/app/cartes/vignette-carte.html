@@ -35,15 +35,13 @@
   </div>
 
   <div class="flex shrink-0 flex-col gap-[1cqw]">
-    @if (titre()) {
+    @if (titre() && niveauTitre() === 3) {
+      <h3 class="line-clamp-2 font-titre text-[max(0.8125rem,8cqw)] leading-tight font-bold">
+        <ng-container [ngTemplateOutlet]="nom" />
+      </h3>
+    } @else if (titre()) {
       <h2 class="line-clamp-2 font-titre text-[max(0.8125rem,8cqw)] leading-tight font-bold">
-        @if (lien(); as l) {
-          <a [routerLink]="l" class="after:absolute after:inset-0 focus-visible:outline-none">{{
-            c.nom
-          }}</a>
-        } @else {
-          {{ c.nom }}
-        }
+        <ng-container [ngTemplateOutlet]="nom" />
       </h2>
     } @else {
       <p class="line-clamp-2 font-titre text-[max(0.8125rem,8cqw)] leading-tight font-bold">
@@ -76,3 +74,14 @@
     </div>
   }
 </article>
+
+<!-- Le nom de la carte, en lien vers son détail quand elle en a un. -->
+<ng-template #nom>
+  @if (lien(); as l) {
+    <a [routerLink]="l" class="after:absolute after:inset-0 focus-visible:outline-none">{{
+      carte().nom
+    }}</a>
+  } @else {
+    {{ carte().nom }}
+  }
+</ng-template>

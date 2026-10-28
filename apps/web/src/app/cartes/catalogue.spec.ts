@@ -96,6 +96,25 @@ describe('Catalogue', () => {
     expect(page.querySelector('[role="status"]')?.textContent).toContain('Aucune carte');
   });
 
+  it('filtre les cartes de la communauté et mène aux contributeurs (US-031)', async () => {
+    const fixture = await afficher(
+      CARTES.map((carte) => (carte.numero === 22 ? { ...carte, auteur: 'Camille D.' } : carte)),
+    );
+    const page = fixture.nativeElement as HTMLElement;
+    expect(page.querySelector('a[href="/contributeurs"]')).toBeNull();
+    const select = page.querySelector<HTMLSelectElement>('#filtre-origine');
+    if (!select) throw new Error('filtre d’origine absent');
+    select.value = 'communaute';
+    select.dispatchEvent(new Event('change'));
+    fixture.detectChanges();
+    await fixture.whenStable();
+    expect(page.querySelector('[role="status"]')?.textContent).toContain('1 carte affichée');
+    expect(page.querySelector('h2')?.textContent).toContain('API REST');
+    expect(page.querySelector('a[href="/contributeurs"]')?.textContent).toContain(
+      'découvrez les contributeurs',
+    );
+  });
+
   it('dit pourquoi le catalogue manque, et le recharge quand on réessaie', async () => {
     const fixture = await afficher('erreur');
     const page = fixture.nativeElement as HTMLElement;

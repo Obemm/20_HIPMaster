@@ -33,6 +33,9 @@ const TRACES = {
   compte: 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8z M4 21a8 8 0 0 1 16 0',
   // Score et classement (US-069) : un podium.
   classement: 'M3 20h18 M4 20v-6h5v6 M9 20V8h6v12 M15 20v-9h5v9',
+  // Contributeurs (US-031) : deux personnes.
+  contributeurs:
+    'M9 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z M2 20a7 7 0 0 1 14 0 M16 4.5a3.5 3.5 0 0 1 0 6.5 M18 14a6 6 0 0 1 4 6',
 } as const;
 
 export type NomIcone = keyof typeof TRACES;

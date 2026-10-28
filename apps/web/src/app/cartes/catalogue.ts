@@ -1,15 +1,16 @@
 import { httpResource } from '@angular/common/http';
 import { Component, computed, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { RouterLink, RouterOutlet } from '@angular/router';
 import { LIBELLES_RARETE, type Rarete, SYMBOLES_RARETE } from '../libelles';
 import { ErreurChargement } from '../reseau/erreur-chargement';
 import { type Carte, type Famille, LIBELLES_FAMILLE } from './carte';
+import { estCarteCommunaute } from './communaute';
 import { VignetteCarte } from './vignette-carte';
 
 /** Catalogue du set 1. Le détail d'une carte s'ouvre par-dessus (route enfant), sans perdre les filtres. */
 @Component({
   selector: 'hip-catalogue',
-  imports: [RouterOutlet, VignetteCarte, ErreurChargement],
+  imports: [RouterLink, RouterOutlet, VignetteCarte, ErreurChargement],
   templateUrl: './catalogue.html',
 })
 export class Catalogue {
@@ -20,13 +21,19 @@ export class Catalogue {
   protected readonly cartes = httpResource<Carte[]>(() => '/api/v1/cartes');
   protected readonly famille = signal<Famille | ''>('');
   protected readonly rarete = signal<Rarete | ''>('');
+  /** Filtre d'origine (US-031) : toutes les cartes, ou celles proposées par la communauté. */
+  protected readonly communaute = signal(false);
 
   protected readonly cartesAffichees = computed(() => {
     const cartes = this.cartes.hasValue() ? this.cartes.value() : [];
     const famille = this.famille();
     const rarete = this.rarete();
+    const communaute = this.communaute();
     return cartes.filter(
-      (carte) => (!famille || carte.famille === famille) && (!rarete || carte.rarete === rarete),
+      (carte) =>
+        (!famille || carte.famille === famille) &&
+        (!rarete || carte.rarete === rarete) &&
+        (!communaute || estCarteCommunaute(carte)),
     );
   });
 
@@ -36,5 +43,9 @@ export class Catalogue {
 
   protected choisirRarete(evenement: Event): void {
     this.rarete.set((evenement.target as HTMLSelectElement).value as Rarete | '');
+  }
+
+  protected choisirOrigine(evenement: Event): void {
+    this.communaute.set((evenement.target as HTMLSelectElement).value === 'communaute');
   }
 }

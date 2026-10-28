@@ -1,0 +1,70 @@
+<main class="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 py-8 sm:px-6">
+  <div class="flex flex-col gap-2">
+    <p class="surtitre" i18n>Communauté</p>
+    <h1 class="titre-page" i18n>Contributeurs</h1>
+    <p class="max-w-2xl text-texte-doux" i18n>
+      Des architectes ont proposé leurs propres cartes : une technologie, un pattern ou un incident
+      qu’ils ont vécu. Merci à eux !
+    </p>
+  </div>
+
+  @if (cartes.hasValue()) {
+    @for (contributeur of contributeurs(); track contributeur.nom; let i = $index) {
+      <section [attr.aria-labelledby]="'contributeur-' + i" class="flex flex-col gap-3">
+        <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+          <h2 [id]="'contributeur-' + i" class="text-2xl font-extrabold">{{ contributeur.nom }}</h2>
+          <p class="text-texte-doux" i18n>
+            {contributeur.cartes.length, plural,
+              =1 {1 carte publiée}
+              other {{{ contributeur.cartes.length }} cartes publiées}
+            }
+          </p>
+        </div>
+        <ul class="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4 xl:grid-cols-5">
+          @for (carte of contributeur.cartes; track carte.numero) {
+            <li>
+              <hip-vignette-carte
+                [carte]="carte"
+                [lien]="['/contributeurs', carte.numero.toString()]"
+                [niveauTitre]="3"
+              />
+            </li>
+          }
+        </ul>
+      </section>
+    } @empty {
+      <section aria-labelledby="titre-aucun" class="panneau flex max-w-2xl flex-col gap-2 p-4">
+        <h2 id="titre-aucun" class="text-xl font-extrabold" i18n>
+          Aucune carte de la communauté pour l’instant
+        </h2>
+        <p i18n>
+          Les premières cartes proposées par des architectes arriveront bientôt. Vous connaissez une
+          technologie, un pattern ou un incident qui mérite sa carte ? Le
+          <a [href]="guide" rel="noopener noreferrer" class="lien">guide du contributeur</a>
+          (en anglais) explique comment la proposer.
+        </p>
+      </section>
+    }
+
+    @if (contributeurs().length) {
+      <p class="text-texte-doux" i18n>
+        Vous aussi, proposez une carte : le
+        <a [href]="guide" rel="noopener noreferrer" class="lien">guide du contributeur</a>
+        (en anglais) explique comment.
+      </p>
+    }
+  } @else if (cartes.error()) {
+    <hip-erreur-chargement
+      i18n-quoi
+      quoi="La liste des contributeurs n’a pas pu être chargée."
+      [erreur]="cartes.error()"
+      [enCours]="cartes.isLoading()"
+      (reessayer)="cartes.reload()"
+    />
+  } @else {
+    <p i18n>Chargement des contributeurs…</p>
+  }
+</main>
+
+<!-- Détail d'une carte, en fenêtre modale au-dessus de la page (route enfant :numero). -->
+<router-outlet />

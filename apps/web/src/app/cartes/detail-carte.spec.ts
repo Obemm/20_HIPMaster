@@ -121,6 +121,26 @@ describe('DetailCarte', () => {
     expect(page.textContent).toContain('L’offre iPaaS de webMethods.');
   });
 
+  it('crédite l’auteur d’une carte de la communauté et mène aux contributeurs (US-031)', async () => {
+    const fixture = creer('26');
+    TestBed.inject(HttpTestingController)
+      .expectOne('/api/v1/cartes/26')
+      .flush({ ...SANS_ORIGINE, auteur: 'Camille D.' });
+    await fixture.whenStable();
+    const page = fixture.nativeElement as HTMLElement;
+    const lien = page.querySelector('a[href="/contributeurs"]');
+    expect(lien?.textContent).toBe('Camille D.');
+    expect(lien?.closest('p')?.textContent).toContain('Proposée par');
+  });
+
+  it('ne mentionne aucun auteur pour une carte du porteur du projet', async () => {
+    const fixture = creer('26');
+    TestBed.inject(HttpTestingController).expectOne('/api/v1/cartes/26').flush(SANS_ORIGINE);
+    await fixture.whenStable();
+    const page = fixture.nativeElement as HTMLElement;
+    expect(page.textContent).not.toContain('Proposée par');
+  });
+
   it('annonce une carte introuvable quand l’API répond 404', async () => {
     const fixture = creer('999');
     TestBed.inject(HttpTestingController)
