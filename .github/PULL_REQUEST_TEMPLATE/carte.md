@@ -19,9 +19,14 @@
 
 <!-- Attach the original picture here (drag and drop), or say it will come later. -->
 
+## Balance
+
+<!-- Paste the tables of `npm run simuler:carte -- <card number>` (seed 1) and `-- <card number> 400 2` (seed 2).
+     If a ⚠️ showed, say what you adjusted, or why you kept the card (a third seed, for instance). -->
+
 ## What the AI changed compared with the proposal
 
-<!-- A replaced link, a shortened text, a doubt raised by your assistant… -->
+<!-- A replaced link, a shortened text, a doubt raised by your assistant, links it could not open… -->
 
 ## Contributor checks
 
@@ -29,6 +34,7 @@
       ([content rules](https://github.com/Obemm/20_HIPMaster/blob/main/docs/contribuer/regles-cartes.md#content-rules))
 - [ ] `npm run check` passes (only the illustration test may stay red if the picture is missing)
 - [ ] I have seen the card in the catalogue (`npm run start:en`)
+- [ ] I have measured the balance on two seeds, and adjusted the card if a ⚠️ showed on both
 - [ ] The "In real life" text makes sense to someone outside the trade
 
 ---

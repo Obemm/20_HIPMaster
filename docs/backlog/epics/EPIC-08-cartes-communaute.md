@@ -31,6 +31,7 @@ carries its author's name.
 - [ ] US-030 — A card's author in the catalogue, and a first community card
 - [x] US-031 — Credit contributors in the game
 - [x] US-086 — The contributor kit in English
+- [x] US-093 — Fix the contributor kit after a first trial
 
 Suggested order: US-027 (useful right away, including for ideas received by message or in a workshop), US-028 and
 US-029 (the complete kit), then US-030 with a first colleague to test the journey, and US-031.

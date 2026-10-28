@@ -14,7 +14,7 @@ _Last updated: 2026-10-28_
 | [EPIC-05 — Card illustrations](epics/EPIC-05-illustrations.md)                                 | Should   | Done        | 6/6      |
 | [EPIC-06 — Duels between players](epics/EPIC-06-duels-joueurs.md)                              | Should   | Done        | 8/8      |
 | [EPIC-07 — Social life](epics/EPIC-07-vie-sociale.md)                                          | Could    | Done        | 1/1      |
-| [EPIC-08 — Cards proposed by the IT community](epics/EPIC-08-cartes-communaute.md)             | Should   | In progress | 5/6      |
+| [EPIC-08 — Cards proposed by the IT community](epics/EPIC-08-cartes-communaute.md)             | Should   | In progress | 6/7      |
 | [EPIC-09 — Going live on Google Cloud](epics/EPIC-09-mise-en-ligne-gcp.md)                     | Must     | Done        | 14/14    |
 | [EPIC-10 — Visual identity and comfort on a phone](epics/EPIC-10-identite-visuelle-mobile.md)  | Should   | Done        | 6/6      |
 | [EPIC-11 — Learning to play](epics/EPIC-11-apprendre-a-jouer.md)                               | Should   | Done        | 3/3      |
@@ -189,6 +189,7 @@ culture. To be handled later; ADR to plan (identity, reviewer role, path to the 
 | [US-030 — A card's author in the catalogue, and a first community card](stories/US-030-integrer-carte-acceptee.md)                         | EPIC-08 | Should   | M    | In progress |
 | [US-031 — Credit contributors in the game](stories/US-031-crediter-contributeurs.md)                                                       | EPIC-08 | Could    | S    | Done        |
 | [US-086 — The contributor kit in English](stories/US-086-kit-contributeur-anglais.md)                                                      | EPIC-08 | Should   | S    | Done        |
+| [US-093 — Fix the contributor kit after a first trial](stories/US-093-contributor-kit-frictions.md)                                        | EPIC-08 | Should   | S    | Done        |
 | [US-076 — Design set 2: DDD, microservices, DevOps](stories/US-076-concevoir-set-2.md)                                                     | EPIC-13 | Could    | L    | To refine   |
 | [US-077 — Three new cards: API First, EDA and GraphQL API](stories/US-077-api-first-eda-graphql.md)                                        | EPIC-13 | Should   | M    | Done        |
 | [US-085 — Rebalance the GraphQL API card](stories/US-085-reequilibrer-api-graphql.md)                                                      | EPIC-13 | Should   | S    | Done        |

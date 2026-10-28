@@ -16,7 +16,10 @@ catalogue and a guided first game.
   System, an agent acts on its own.
 - **It is playable.** Neither a must-have nor useless: it finds its place in a deck without crushing the cards of the
   same cost.
-- **It is new.** It does not duplicate an existing card (check the catalogue in the game).
+- **It is new.** It does not duplicate an existing card: check the catalogue in the game, or, without an invitation,
+  the tables of [cartes-set-1.md](../produit/cartes-set-1.md) and the code of the cards,
+  `packages/domain/src/set-1.ts` (French names and effects; the English ones are in
+  `packages/domain/src/langues/en/cartes.ts`).
 
 ## The parts of a card
 
@@ -42,7 +45,9 @@ Eight families: six eras of integration, then two cross-cutting families. The co
 - **Evolution**: deployed **in place of** a specific component (its modernised form), at full HP. Rare: it needs a
   clear lineage (Apigee API Gateway → Apigee AI Gateway).
 - **Spell**: immediate effect, then discarded. The type of a practice, a pattern, a way of designing.
-- **Incident**: effect against the opponent, then discarded. The type of an outage or a risk (Bestiary).
+- **Incident**: effect against the opponent, then discarded. The type of an outage or a risk (Bestiary). An incident
+  is either an **AI incident** (it only targets AI components, and Veteran is immune to it) or not: say which in your
+  proposal (`ia: true` or `false` in the code).
 
 ### Rarity
 
@@ -91,6 +96,24 @@ An **effect** is a sentence specific to the card, when no ability is enough; eve
 programmed in the engine along with the card: keep it **short, a single action** (draw, deal damage, give a bonus,
 immobilise, return to hand) and close to existing effects. Examples: "Deal 2 damage to a component", "Draw the first
 two API cards from your deck".
+
+**The power of an effect** sets the cost of a spell or an incident. Compare yours with these cards of the catalogue,
+then let the simulation decide (see [Balance](#balance)):
+
+| Cost | Effect                                                                  | Card (rarity)                       |
+| ---- | ----------------------------------------------------------------------- | ----------------------------------- |
+| 1    | Deal 2 damage to the opposing component of your choice                  | Content-Based Router (common spell) |
+| 1    | Deal 2 damage to an opposing Files or ESB component (a narrower target) | Broken encoding (common incident)   |
+| 1    | Cancel Duplicate; otherwise, draw a card (a fallback when useless)      | Idempotent Consumer (common spell)  |
+| 1    | Your opponent has 2 less Throughput on their next turn                  | Token bill (common incident)        |
+| 2    | Deal 1 damage to each opposing component                                | Splitter (common spell)             |
+| 2    | Draw 2 cards                                                            | Chain of thought (rare spell)       |
+| 2    | Destroy an opposing component costing 2 or less                         | Poison message (common incident)    |
+| 3    | Draw the first two API cards from your deck, then an API component +1   | API First (rare spell)              |
+| 3    | Return a component from your discard pile to play with 1 HP             | Dead Letter Queue (epic spell)      |
+
+An effect that only works against some decks (one family, one ability) is cheaper, but it may be dead in hand: give it
+a modest fallback, like Idempotent Consumer.
 
 ### The "In real life" text
 
@@ -144,14 +167,15 @@ Fill it in first, then give it to your AI and paste it into the pull request des
 ```markdown
 - Card name:
 - Family: (fichiers, esb, api, ipaas, eda, ia, patterns, bestiaire)
-- Type: (component, evolution of …, spell, incident)
+- Type: (component, evolution of …, spell, incident; for an incident, AI incident or not)
 - Target rarity: (common, rare, epic, legendary)
 - Cost / Attack / HP: (attack and HP for a component or an evolution only)
 - Abilities: (glossary keywords, or none)
 - Effect: (one sentence, or none)
 - In real life: (one sentence, 110 characters at most)
 - "Learn more" sheet: definition, use, example, takeaway, at the company (optional), 1 to 3 links
-- Illustration idea: (the creature, its pose, its setting)
+- Illustration idea: (the creature, its pose, its setting; not one already taken, see
+  docs/produit/prompts-illustrations-gemini.md)
 - Sources: (where to check what the card says)
 - Displayed author: (the name shown on the card, 40 characters at most; public, like the whole pull request)
 ```
@@ -187,6 +211,31 @@ components gains +1 attack."
 
 This is the most common case: the idea is good, the review adjusts a number.
 
+## Balance
+
+Measure your card before opening the pull request; the CI measures it again (the "Équilibrage des cartes nouvelles"
+job). In your clone, once the card is written:
+
+```text
+npm run simuler:carte -- <card number>
+npm run simuler:carte -- <card number> 400 2
+```
+
+The first command uses seed 1, the second seed 2 (400 games per duel; about a minute and a half each). Two copies of
+the card go into each starter deck, which then faces the three starter decks; each cell gives the deck's win rate
+without and with the card. A gap of **10 points or more** shows a ⚠️. Results vary by about 2.5 points from one seed to
+another.
+
+- **No ⚠️ on either seed**: put both tables in the "Balance" section of your pull request.
+- **A ⚠️ on both seeds**: adjust the card yourself before the pull request, then measure again. A deck that wins too
+  much: raise the cost or lower a stat. A deck that loses too much: the reverse, or, for a card that is dead against
+  some decks (an effect aimed at one family), add a modest fallback, like Idempotent Consumer's "otherwise, draw a
+  card".
+- **The seeds disagree** (a ⚠️ on one only): run a third seed (`-- <card number> 400 3`) and follow the majority; say so
+  in the pull request.
+
+The reviewer may still adjust a number, as for API First below: your measurements save a round trip.
+
 ## What happens to a proposal
 
 1. **Pull request**: you open it from your fork, with the filled-in template (see
@@ -196,8 +245,8 @@ This is the most common case: the idea is good, the review adjusts a number.
    **declined** (with a reason).
 3. **Balance**: a bot-versus-bot simulation puts two copies of the card into each starter deck and plays them against
    the three starter decks; the CI shows it in the summary of the "Équilibrage des cartes nouvelles" job
-   (`npm run simuler:carte -- <card number>` to run it yourself). A deck that wins or loses 10 points or more with the
-   card signals an imbalance: cost or stats are adjusted, as for API First.
+   (you measured it beforehand, see [Balance](#balance)). A deck that wins or loses 10 points or more with the card
+   signals an imbalance: cost or stats are adjusted, as for API First.
 4. **Release**: once merged, the card goes live automatically. It takes the next number in the catalogue and can come
    out of boosters.
 5. **Credit**: your name is recorded in the catalogue and the changelog. In the game, the card's detail shows

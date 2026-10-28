@@ -12,7 +12,8 @@ itself (see the [illustration prompt](consigne-illustration.md)).
 2. In your clone, on a `carte-<card-name>` branch, start your assistant at the root of the repository.
 3. Copy the prompt below, paste your proposal where indicated, and send it.
 4. Read what it wrote (above all the "In real life" text, the sheet and the English texts; the project owner will
-   review the French ones), then run `npm run check` yourself, and `npm run start:en` to see the card in the English
+   review the French ones) and its balance tables (adjust the card if a ⚠️ shows, see
+   [Balance](regles-cartes.md#balance)), then run `npm run check` yourself, and `npm run start:en` to see the card in the English
    catalogue (<http://localhost:4200>).
 
 ## The prompt
@@ -44,16 +45,19 @@ Do not change any existing card and never renumber a card.
 Code: no enum or namespace (erasableSyntaxOnly); relative imports with the .ts extension. Game texts: typographic
 apostrophe ’, like the existing cards.
 
-Files to write or change (use cards 72 to 74 as a model, added by commit f189195):
+Files to write or change (use cards 72 to 74 as a model, added by commit f189195; that commit also changes the backlog,
+the README and the illustrations, which are out of scope here: follow only the list below):
 1. packages/domain/src/set-1.ts: the card, at the end of the array, with the number following the last one (French
-   name, family, type, rarity, cost, attack and HP for a component or an evolution, abilities, optional effect in
-   French, enVrai in French of 110 characters at most, and auteur: the displayed author of the proposal, 40 characters
+   name, family, type, rarity, cost, attack and HP for a component or an evolution, ia for an incident (true for an AI
+   incident, which only targets AI components), abilities, optional effect in French, enVrai in French of 110
+   characters at most, and auteur: the displayed author of the proposal, 40 characters
    at most), under a comment "// Community cards (EPIC-08)" to create if missing.
 2. packages/domain/src/langues/en/cartes.ts: its name (product names are not translated), its "In real life" text and
    optional effect in British English, following the glossary at the top of the file, under the same comment; update
    the number of cards in the header.
 3. packages/domain/src/fiches/<family>.ts: its "Learn more" sheet in French (definition, usage, exemple, aRetenir,
-   enInterne only if the proposal gives it, 1 to 3 https links that you have opened), within LIMITES_FICHE
+   enInterne only if the proposal gives it, 1 to 3 https links that you have opened; if you cannot open web pages, keep
+   the proposal's links and list them as unchecked in your report), within LIMITES_FICHE
    (fiches/fiche.ts); and its English version in packages/domain/src/langues/en/fiches/<family>.ts. When a resource
    exists in both languages, the French sheet links to the French version, the English sheet to the English one.
 4. If the card has an effect (every spell and incident, and components that have one):
@@ -69,10 +73,13 @@ Files to write or change (use cards 72 to 74 as a model, added by commit f189195
 5. Card counts written in the code: look for the current number of cards (for instance 74) and the count per rarity in
    packages/domain/src/set-1.test.ts, packages/domain/src/booster.test.ts,
    packages/domain/src/combat/effets-composants.test.ts, apps/api/src/app.test.ts, e2e/catalogue.spec.ts (and the
-   number of cards of the filtered family), e2e/collection.spec.ts and e2e/robustesse.spec.ts, and update them.
+   number of cards of the filtered family), e2e/collection.spec.ts, e2e/robustesse.spec.ts and
+   e2e/contributeurs.spec.ts, and update them.
 6. docs/produit/cartes-set-1.md: a row for the card in a section "Community cards (EPIC-08)", placed just before
-   "Points to settle during balancing" (create it if missing), as a table modelled on the
-   US-077 extension ("En vrai" shortened), with an Auteur column. Do not change the family headings.
+   "Points to settle during balancing" (create it if missing), as a table modelled on the US-077 extension (columns
+   No., Card, Family, Type, Rarity, Cost, Att/HP, Abilities / effect, In real life shortened), with an extra Author
+   column; also update the "Composition" line at the top of the file (number of cards and count per rarity). Do not
+   change the family headings.
 7. CHANGELOG.md: one line under "Unreleased", "Added", naming the card and its author.
 
 If you had to add an interface text (which should not happen with the rules above), run `npm run i18n:extraire` and
@@ -82,10 +89,13 @@ Checks: run `npx prettier --write` on the changed files, then `npm run check` at
 Do not touch the illustrations, which have their own prompt: until the picture is added, exactly one test stays red,
 "chaque carte du set 1 a son illustration" (packages/illustrations/src/versionnees.test.ts), and that is expected;
 since it stops `npm test` before the front-end tests, also run `npm test -w @hipmaster/web`.
+Then measure the balance on two seeds: `npm run simuler:carte -- <card number>` and
+`npm run simuler:carte -- <card number> 400 2` (about a minute and a half each). Do not change the card yourself: if a
+⚠️ shows, propose an adjustment following the "Balance" section of docs/contribuer/regles-cartes.md.
 
 To finish, give me in English: the card as it will be displayed (French and English texts), the list of changed
-files, anything you are unsure about (technical accuracy, balance, translation), and what you changed compared with
-the proposal (a replaced link, a shortened text).
+files, the two balance tables, anything you are unsure about (technical accuracy, balance, translation), the links you
+could not open, and what you changed compared with the proposal (a replaced link, a shortened text).
 ```
 
 ## Next steps
@@ -95,8 +105,8 @@ the proposal (a replaced link, a shortened text).
   illustration test only.
 - **The pull request**: commit (for instance `feat(carte): add the circuit breaker card`, lowercase subject), push to
   your fork and open the pull request against `main` with the "card" template (see
-  [CONTRIBUTING.md](../../CONTRIBUTING.md)). The CI measures the card's balance; you can do it beforehand with
-  `npm run simuler:carte -- <card number>`.
+  [CONTRIBUTING.md](../../CONTRIBUTING.md)), with the balance tables in its "Balance" section. The CI measures the
+  balance again.
 
 This prompt follows the game's code: if it misses a file (a failing test, a new language), say so in your pull
 request and it will be fixed.

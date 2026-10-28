@@ -7,6 +7,7 @@ All notable changes to the project are recorded here
 
 ### Added
 
+- The contributor kit after a first trial (an AI playing a first-time contributor): the contributor measures the balance on two seeds before the PR, with rules for a ⚠️, seeds that disagree and a card too narrow, and a "Balance" section in the card PR template; the guide gives a benchmark for the power of spell and incident effects and points to the card tables and illustration prompts to avoid duplicates; `CONTRIBUTING.md` agrees with the card prompt on the illustration test; the community e2e journeys no longer depend on the real catalogue's authors (US-093).
 - Contributors credited in the game: the detail of a community card shows "Proposed by …" with its author's name, the catalogue gets an "Origin" filter for community cards, and a "Contributors" page (link in the footer) lists the authors and their published cards, or points to the contributor guide while there are none. Derived from the cached catalogue, no new API route; in French and English (US-031, ADR 0050).
 - The whole repository in English (EPIC-16, ADR 0051): product docs, READMEs and operations guide (US-088), ADRs
   (US-089), backlog (US-090) and CHANGELOG (US-091) translated, paths kept; links checked across folders and the
