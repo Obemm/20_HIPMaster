@@ -133,6 +133,7 @@ All notable changes to the project are recorded here
 
 ### Security
 
+- The the company ADR reference leaves the public repository: ADR 0005, which copied the table of the the company technology ADRs and their internal tools, stays on the project owner's machine, ignored by Git, and is removed from the whole Git history of every branch; public links to it become plain text (US-095, ADR 0054).
 - API protections before opening (US-047, ADR 0025):
   - rate limiting per address (IPv6: per /64) on account creation (30 per hour), login by code (10 per minute), games against the bot (20 creations and 300 actions per minute) and each duel route; beyond that, a 429 Problem Details with `Retry-After`. The limits, documented in the OpenAPI contracts, are set through `LIMITES_DEBIT` (active by default in production only);
   - the player's address is read behind Firebase Hosting and Cloud Run, without an added `X-Forwarded-For` being able to forge it (`PROXYS_DE_CONFIANCE`, mandatory in production);

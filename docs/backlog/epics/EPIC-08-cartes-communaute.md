@@ -33,7 +33,7 @@ carries its author's name.
 - [x] US-086 — The contributor kit in English
 - [x] US-093 — Fix the contributor kit after a first trial
 - [x] US-094 — A GitHub repository open to contributors, validated by the project owner
-- [ ] US-095 — Keep the the company ADR reference out of the public repository
+- [x] US-095 — Keep the the company ADR reference out of the public repository
 
 Suggested order: US-027 (useful right away, including for ideas received by message or in a workshop), US-028 and
 US-029 (the complete kit), then US-030 with a first colleague to test the journey, and US-031.
