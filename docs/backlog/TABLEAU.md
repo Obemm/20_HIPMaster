@@ -185,6 +185,7 @@ culture. To be handled later; ADR to plan (identity, reviewer role, path to the 
 | ------------------------------------------------------------------------------------------------------------------------------------------ | ------- | -------- | ---- | ----------- |
 | [US-027 — Contributor guide: the rules for creating a card](stories/US-027-guide-contributeur.md)                                          | EPIC-08 | Should   | S    | Done        |
 | [US-094 — A GitHub repository open to contributors, validated by the owner](stories/US-094-github-external-contributions.md)               | EPIC-08 | Should   | S    | Done        |
+| [US-095 — Keep the the company ADR reference out of the public repository](stories/US-095-private-reference.md)                              | EPIC-08 | Should   | XS   | In progress |
 | [US-028 — Kit for the contributor's AI: card and illustration prompts](stories/US-028-proposer-carte.md)                                   | EPIC-08 | Should   | M    | Done        |
 | [US-029 — Review a card proposed in its pull request](stories/US-029-relire-propositions.md)                                               | EPIC-08 | Should   | S    | Done        |
 | [US-030 — A card's author in the catalogue, and a first community card](stories/US-030-integrer-carte-acceptee.md)                         | EPIC-08 | Should   | M    | In progress |

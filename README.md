@@ -3,7 +3,7 @@
 Collectible card game in the browser: open boosters, complete your collection, challenge the bot and your friends.
 Inspired by WikiMasters and the Async TCG — see [docs/produit/inspirations.md](docs/produit/inspirations.md).
 
-Stack, aligned with the the company technology reference ([ADR 0005](docs/decisions/0005-reference.local.md)):
+Stack, aligned with the the company technology reference (ADR 0005, kept locally, see [ADR 0054](docs/decisions/0054-reference-out-of-repository.md)):
 [Angular 22](https://angular.dev) + [Tailwind CSS 4](https://tailwindcss.com), [Fastify 5](https://fastify.dev) API,
 PostgreSQL + [Drizzle ORM](https://orm.drizzle.team), strict TypeScript, npm workspaces monorepo.
 
