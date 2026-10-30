@@ -45,3 +45,6 @@ packages/illustrations/sources/
 
 # the company ADR reference: kept on the owner's machine, out of the public repository (ADR 0054)
 docs/decisions/0005-reference.local.md
+# the company reference of each ADR and the local rules that use it (ADR 0055)
+docs/decisions/reference-mapping.local.md
+CLAUDE.local.md
