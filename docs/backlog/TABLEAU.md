@@ -1,6 +1,6 @@
 # Tracking board
 
-_Last updated: 2026-10-29_
+_Last updated: 2026-10-31_
 
 ## Epics
 
@@ -14,7 +14,7 @@ _Last updated: 2026-10-29_
 | [EPIC-05 — Card illustrations](epics/EPIC-05-illustrations.md)                                 | Should   | Done        | 6/6      |
 | [EPIC-06 — Duels between players](epics/EPIC-06-duels-joueurs.md)                              | Should   | Done        | 8/8      |
 | [EPIC-07 — Social life](epics/EPIC-07-vie-sociale.md)                                          | Could    | Done        | 1/1      |
-| [EPIC-08 — Cards proposed by the IT community](epics/EPIC-08-cartes-communaute.md)             | Should   | In progress | 8/9      |
+| [EPIC-08 — Cards proposed by the IT community](epics/EPIC-08-cartes-communaute.md)             | Should   | In progress | 9/10     |
 | [EPIC-09 — Going live on Google Cloud](epics/EPIC-09-mise-en-ligne-gcp.md)                     | Must     | Done        | 14/14    |
 | [EPIC-10 — Visual identity and comfort on a phone](epics/EPIC-10-identite-visuelle-mobile.md)  | Should   | Done        | 6/6      |
 | [EPIC-11 — Learning to play](epics/EPIC-11-apprendre-a-jouer.md)                               | Should   | Done        | 3/3      |
@@ -186,7 +186,7 @@ culture. To be handled later; ADR to plan (identity, reviewer role, path to the 
 | [US-027 — Contributor guide: the rules for creating a card](stories/US-027-guide-contributeur.md)                                          | EPIC-08 | Should   | S    | Done        |
 | [US-094 — A GitHub repository open to contributors, validated by the owner](stories/US-094-github-external-contributions.md)               | EPIC-08 | Should   | S    | Done        |
 | [US-095 — Keep the the company ADR reference out of the public repository](stories/US-095-private-reference.md)                              | EPIC-08 | Should   | XS   | Done        |
-| [US-096 — Keep the the company reference of each ADR out of the public repository](stories/US-096-reference-out-of-adrs.md)                  | EPIC-08 | Should   | S    | In progress |
+| [US-096 — Keep the the company reference of each ADR out of the public repository](stories/US-096-reference-out-of-adrs.md)                  | EPIC-08 | Should   | S    | Done        |
 | [US-028 — Kit for the contributor's AI: card and illustration prompts](stories/US-028-proposer-carte.md)                                   | EPIC-08 | Should   | M    | Done        |
 | [US-029 — Review a card proposed in its pull request](stories/US-029-relire-propositions.md)                                               | EPIC-08 | Should   | S    | Done        |
 | [US-030 — A card's author in the catalogue, and a first community card](stories/US-030-integrer-carte-acceptee.md)                         | EPIC-08 | Should   | M    | In progress |

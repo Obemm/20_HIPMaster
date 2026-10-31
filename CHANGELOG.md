@@ -133,6 +133,7 @@ All notable changes to the project are recorded here
 
 ### Security
 
+- The the company reference of each ADR leaves the public repository: the "the company reference" field of the ADRs, their template and their index moves to a local file ignored by Git, ADR bodies no longer quote the company ADR numbers, internal tools or rules, and rule 4 of `CLAUDE.md` keeps its local details in `CLAUDE.local.md`; the Git history of these files is rewritten on every branch (US-096, ADR 0055).
 - The the company ADR reference leaves the public repository: ADR 0005, which copied the table of the the company technology ADRs and their internal tools, stays on the project owner's machine, ignored by Git, and is removed from the whole Git history of every branch; public links to it become plain text (US-095, ADR 0054).
 - API protections before opening (US-047, ADR 0025):
   - rate limiting per address (IPv6: per /64) on account creation (30 per hour), login by code (10 per minute), games against the bot (20 creations and 300 actions per minute) and each duel route; beyond that, a 429 Problem Details with `Retry-After`. The limits, documented in the OpenAPI contracts, are set through `LIMITES_DEBIT` (active by default in production only);

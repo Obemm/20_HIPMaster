@@ -1,7 +1,7 @@
 # US-096 — Keep the the company reference of each ADR out of the public repository
 
 - **Epic**: EPIC-08
-- **Status**: In progress
+- **Status**: Done
 - **Priority**: Should
 - **Size**: S
 - **Branch**: `us-096-reference-out-of-adrs`
@@ -21,7 +21,7 @@ contributors can no longer rebuild the list of the company internal rules and to
       former field of every ADR, and `CLAUDE.local.md` the local details of rule 4; both are ignored by Git.
 - [x] **Given** `CLAUDE.md`, **then** rule 4 keeps the principle without the mirror path or the internal tools.
 - [x] **Given** the decision, **then** ADR 0055 records it, and ADR 0054 points to it.
-- [ ] **Given** the Git history of GitHub after the owner runs `.donnees/reecrire-historique-adr.sh`, **then** no commit
+- [x] **Given** the Git history of GitHub after the owner runs `.donnees/reecrire-historique-adr.sh`, **then** no commit
       of a branch holds the field or an the company ADR number in the ADRs, their index, their template, `CLAUDE.md` or
       `README.md`.
 - [x] `npm run check` passes.
@@ -38,3 +38,4 @@ contributors can no longer rebuild the list of the company internal rules and to
 - 2026-10-30 — ADRs, template, index and rule 4 cleaned; mapping kept in `docs/decisions/reference-mapping.local.md`.
   History script `.donnees/reecrire-historique-adr.sh` rehearsed on a local mirror: 2,517 lines citing the reference
   before, 0 after, tip of `main` unchanged, 125 commits kept. To run by the project owner once the PR is merged.
+- 2026-10-31 — delivered: the company reference of each ADR moved to a local file, ADR bodies cleaned, Git history rewritten (ADR 0055)
