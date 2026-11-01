@@ -4,7 +4,7 @@
 # L'API s'exécute en TypeScript natif, et Node refuse de retirer les types d'un fichier situé sous node_modules :
 # @hipmaster/domain reste donc un lien vers packages/domain, comme dans le dépôt.
 
-FROM node:24.22.1-alpine3.24 AS dependances
+FROM node:24.22.2-alpine3.24 AS dependances
 WORKDIR /app
 # Tous les package.json des workspaces, pour que npm ci retrouve l'arbre du package-lock.json.
 COPY package.json package-lock.json ./
@@ -16,7 +16,7 @@ COPY packages/illustrations/package.json packages/illustrations/
 # optionnel de drizzle-orm, ne part qu'avec --omit=optional (77 Mo de dépendances au lieu de 43).
 RUN npm ci --workspace @hipmaster/api --omit=dev --omit=optional --ignore-scripts --no-audit --no-fund
 
-FROM node:24.22.1-alpine3.24
+FROM node:24.22.2-alpine3.24
 ENV NODE_ENV=production
 # Cloud Run impose son port par PORT ; 8080 sert pour `docker run` en local.
 ENV PORT=8080
