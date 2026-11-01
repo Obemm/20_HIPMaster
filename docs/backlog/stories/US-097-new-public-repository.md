@@ -1,7 +1,7 @@
 # US-097 — A new public repository that no longer names the company
 
 - **Epic**: EPIC-08
-- **Status**: In progress
+- **Status**: Done
 - **Priority**: Must
 - **Size**: M
 - **Branch**: `us-097-new-public-repository`
@@ -14,17 +14,17 @@ support to purge the old pull requests**.
 
 ## Acceptance criteria
 
-- [ ] **Given** the files of `main`, **then** a search for the company's name finds nothing, nor any company ADR number or local
+- [x] **Given** the files of `main`, **then** a search for the company's name finds nothing, nor any company ADR number or local
       mirror path; tool and product names stay.
-- [ ] **Given** the game, **then** the "At …" line of the "Learn more" sheets is gone in both languages, and the "In real
+- [x] **Given** the game, **then** the "At …" line of the "Learn more" sheets is gone in both languages, and the "In real
       life" texts no longer name the company; the FTP joke stays.
-- [ ] **Given** the screenshots of the repository, **then** none shows the company's name.
-- [ ] **Given** the new repository, **then** its whole history (contents, file names, commit messages) passes the same
+- [x] **Given** the screenshots of the repository, **then** none shows the company's name.
+- [x] **Given** the new repository, **then** its whole history (contents, file names, commit messages) passes the same
       search, and the tip of `main` is identical to the one rehearsed.
-- [ ] **Given** the old repository, **then** it is private, named `Obemm/20_HIPMaster-archive`.
-- [ ] **Given** the new repository, **then** it is public, has the settings of ADR 0053, and a deployment from `main`
+- [x] **Given** the old repository, **then** it is private, named `Obemm/20_HIPMaster-archive`.
+- [x] **Given** the new repository, **then** it is public, has the settings of ADR 0053, and a deployment from `main`
       succeeds.
-- [ ] ADR 0056 records the decision; `npm run check` and `npm run test:e2e` pass.
+- [x] ADR 0056 records the decision; `npm run check` and `npm run test:e2e` pass.
 
 ## Notes
 
@@ -38,3 +38,7 @@ support to purge the old pull requests**.
   on a local mirror: 0 match left over 4,791 Git objects, tip of `main` unchanged, 128 commits kept. The screenshots were
   read by eye: no mention visible, and the about and home pages never held one in their source; some small card text stays
   unreadable.
+- 2026-11-01 — delivered: New public repository live, cleaned history pushed, old repository kept private as an archive, deployment from main verified (ADR 0056)
+- 2026-11-01 — checked after the switch: old commits answer "not found" on the new repository, the archive answers 404 to
+  an anonymous visitor, rulesets active, CI and deployment green from the new repository. The end-to-end journeys ran in
+  the CI (`test:e2e:production`), not locally. Small card text in some screenshots could not be read by eye.
