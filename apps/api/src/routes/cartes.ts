@@ -50,7 +50,6 @@ const schemaFiche = z.object({
   usage: z.string(),
   exemple: z.string(),
   aRetenir: z.string(),
-  enInterne: z.string().optional(),
   liens: z.array(
     z.object({
       titre: z.string(),

@@ -34,7 +34,7 @@ Goal: a well-equipped base, checked automatically, and a documented way of worki
 | [US-002 — Next.js + Tailwind CSS](stories/US-002-nextjs-tailwind.md)                                                  | EPIC-00 | Must     | XS   | Done   |
 | [US-003 — Project-mode organisation](stories/US-003-organisation-projet.md)                                           | EPIC-00 | Must     | S    | Done   |
 | [US-004 — Local database](stories/US-004-base-de-donnees.md)                                                          | EPIC-00 | Must     | XS   | Done   |
-| [US-006 — Angular foundation aligned with the the company reference](stories/US-006-socle-angular-reference.md)       | EPIC-00 | Must     | M    | Done   |
+| [US-006 — Angular foundation aligned with the company reference](stories/US-006-socle-angular-reference.md)           | EPIC-00 | Must     | M    | Done   |
 | [US-007 — Dependabot only proposes compatible versions](stories/US-007-dependabot-versions-compatibles.md)            | EPIC-00 | Must     | XS   | Done   |
 | [US-043 — API tests that stay robust on a loaded machine](stories/US-043-tests-api-pglite.md)                         | EPIC-00 | Must     | S    | Done   |
 | [US-044 — The quality gate ignores the Claude Desktop app worktrees](stories/US-044-quality-gate-ignore-worktrees.md) | EPIC-00 | Must     | XS   | Done   |
@@ -185,8 +185,9 @@ culture. To be handled later; ADR to plan (identity, reviewer role, path to the 
 | ------------------------------------------------------------------------------------------------------------------------------------------ | ------- | -------- | ---- | ----------- |
 | [US-027 — Contributor guide: the rules for creating a card](stories/US-027-guide-contributeur.md)                                          | EPIC-08 | Should   | S    | Done        |
 | [US-094 — A GitHub repository open to contributors, validated by the owner](stories/US-094-github-external-contributions.md)               | EPIC-08 | Should   | S    | Done        |
-| [US-095 — Keep the the company ADR reference out of the public repository](stories/US-095-private-reference.md)                              | EPIC-08 | Should   | XS   | Done        |
-| [US-096 — Keep the the company reference of each ADR out of the public repository](stories/US-096-reference-out-of-adrs.md)                  | EPIC-08 | Should   | S    | Done        |
+| [US-095 — Keep the company ADR reference out of the public repository](stories/US-095-private-reference.md)                                | EPIC-08 | Should   | XS   | Done        |
+| [US-096 — Keep the company reference of each ADR out of the public repository](stories/US-096-reference-out-of-adrs.md)                    | EPIC-08 | Should   | S    | Done        |
+| [US-097 — A new public repository that no longer names the company](stories/US-097-new-public-repository.md)                               | EPIC-08 | Must     | M    | In progress |
 | [US-028 — Kit for the contributor's AI: card and illustration prompts](stories/US-028-proposer-carte.md)                                   | EPIC-08 | Should   | M    | Done        |
 | [US-029 — Review a card proposed in its pull request](stories/US-029-relire-propositions.md)                                               | EPIC-08 | Should   | S    | Done        |
 | [US-030 — A card's author in the catalogue, and a first community card](stories/US-030-integrer-carte-acceptee.md)                         | EPIC-08 | Should   | M    | In progress |

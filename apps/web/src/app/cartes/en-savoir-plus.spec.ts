@@ -9,7 +9,6 @@ const FICHE: Fiche = {
   usage: 'Déposer ou récupérer des fichiers.',
   exemple: 'Un partenaire dépose commandes.csv.',
   aRetenir: 'FTP ne chiffre rien.',
-  enInterne: 'Interdit en interne.',
   liens: [
     {
       titre: 'File Transfer Protocol',
@@ -63,12 +62,7 @@ describe('EnSavoirPlus', () => {
     await fixture.whenStable();
     expect(bouton()?.getAttribute('aria-expanded')).toBe('true');
     expect(fiche()?.hidden).toBe(false);
-    for (const texte of [
-      'C’est quoi ?',
-      'le protocole historique',
-      'À quoi ça sert ?',
-      'En interne',
-    ])
+    for (const texte of ['C’est quoi ?', 'le protocole historique', 'À quoi ça sert ?'])
       expect(fiche()?.textContent).toContain(texte);
 
     bouton()?.click();

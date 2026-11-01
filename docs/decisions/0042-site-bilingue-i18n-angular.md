@@ -5,7 +5,7 @@
 
 ## Context
 
-The project owner is opening HIPMaster to English-speaking colleagues at the company (EPIC-14): the game must be playable in
+The project owner is opening HIPMaster to English-speaking colleagues (EPIC-14): the game must be playable in
 French or in English, interface and content. French is the reference language: the code, the documentation and the
 catalogue are written in French.
 

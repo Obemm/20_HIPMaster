@@ -5,11 +5,11 @@
 
 ## Goal
 
-The project owner wants to open HIPMaster to the company's English-speaking colleagues (decision of 2026-10-24): the game
+The project owner wants to open HIPMaster to English-speaking colleagues (decision of 2026-10-24): the game
 must be playable **in French or English**, interface and content alike (cards, abilities, "Learn more" sheets, rules).
 The project documentation, backlog, ADRs and commits stay in French (project rule at the time).
 
-Direction proposed by Claude and adopted by the project owner, to be recorded in an ADR after consulting the the company
+Direction proposed by Claude and adopted by the project owner, to be recorded in an ADR after consulting the company
 reference (ADR 0005):
 
 - **interface**: Angular's native i18n (`@angular/localize`, `ng extract-i18n`), one compiled version per language

@@ -11,7 +11,6 @@ export const FICHES_API_EN: Readonly<Record<number, Fiche>> = {
       'A mobile app calls /orders: Apigee checks its token, rejects the request that goes over the per-minute limit, then forwards the others to the internal service.',
     aRetenir:
       'The gateway protects and observes; it does not carry business logic. A proxy stuffed with rules turns into a small ESB that is hard to maintain.',
-    enInterne: 'the company’s API gateway: the single entry point for its APIs.',
     liens: [
       {
         titre: 'What is Apigee?',

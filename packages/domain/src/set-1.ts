@@ -16,7 +16,7 @@ export const SET_1: readonly Carte[] = [
     attaque: 5,
     pv: 4,
     capacites: ['batch', 'veteran', 'non-conforme'],
-    enVrai: 'Transfert de fichiers en clair. Officiellement interdit en interne. Officieusement…',
+    enVrai: 'Transfert de fichiers en clair. Officiellement interdit. Officieusement…',
   },
   {
     numero: 2,
@@ -118,7 +118,7 @@ export const SET_1: readonly Carte[] = [
     attaque: 4,
     pv: 7,
     capacites: ['hub', 'point-unique', 'sur-site'],
-    enVrai: 'L’ESB historique d’the company, hébergé sur site.',
+    enVrai: 'L’ESB historique, hébergé sur site.',
   },
   {
     numero: 10,
@@ -229,7 +229,7 @@ export const SET_1: readonly Carte[] = [
     attaque: 2,
     pv: 7,
     capacites: ['garde', 'quotas'],
-    enVrai: 'La passerelle API d’the company : point d’entrée unique, sécurité, quotas et statistiques.',
+    enVrai: 'La passerelle API : point d’entrée unique, sécurité, quotas et statistiques.',
   },
   {
     numero: 19,
@@ -391,7 +391,7 @@ export const SET_1: readonly Carte[] = [
     attaque: 3,
     pv: 6,
     capacites: ['diffusion'],
-    enVrai: 'Le maillage d’événements d’the company : un événement publié atteint tous ses abonnés.',
+    enVrai: 'Le maillage d’événements : un événement publié atteint tous ses abonnés.',
   },
   {
     numero: 32,
@@ -508,7 +508,7 @@ export const SET_1: readonly Carte[] = [
     pv: 8,
     capacites: ['garde', 'quotas', 'garde-fous', 'cache-semantique', 'routage-multi-modeles'],
     enVrai:
-      'La future passerelle IA d’the company : quotas de tokens, cache sémantique, garde-fous et routage entre modèles.',
+      'La future passerelle IA : quotas de tokens, cache sémantique, garde-fous et routage entre modèles.',
   },
   {
     numero: 41,

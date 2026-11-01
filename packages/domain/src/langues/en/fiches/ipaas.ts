@@ -11,8 +11,6 @@ export const FICHES_IPAAS_EN: Readonly<Record<number, Fiche>> = {
       'When a customer is created in the CRM, a webMethods.io flow creates it in the ERP, then notifies the billing department.',
     aRetenir:
       'Fewer servers does not mean less rigour: versioning flows, testing them, monitoring runs and watching consumption remain essential.',
-    enInterne:
-      'The target for the company’s legacy ESB: migrating to the iPaaS removes the upkeep of on-premises servers.',
     liens: [
       {
         titre: 'Cloud-based integration (iPaaS)',

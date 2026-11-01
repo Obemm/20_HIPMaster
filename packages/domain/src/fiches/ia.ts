@@ -33,7 +33,6 @@ export const FICHES_IA: Readonly<Record<number, Fiche>> = {
       'L’assistant interne appelle l’IA par la passerelle : elle vérifie son jeton, coupe au-delà de son quota quotidien de tokens, sert une réponse en cache si la question a déjà été posée, sinon route vers le modèle.',
     aRetenir:
       'Centraliser l’accès aux modèles évite les clés dispersées dans le code et les factures surprises : un seul point pour contrôler, mesurer et changer de modèle.',
-    enInterne: 'La future passerelle IA d’the company, évolution de sa passerelle API.',
     liens: [
       {
         titre: 'Solutions d’IA Apigee (Google Cloud)',

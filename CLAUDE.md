@@ -19,8 +19,8 @@ Drizzle. Strict TypeScript, Node ≥ 24.15.
    in `docs/decisions/README.md`). Accepted ADRs are **authoritative**: read them before designing or coding, follow
    them, and never contradict them silently. To change your mind, write a new ADR that supersedes the old one (status
    "Superseded by NNNN").
-4. **the company technology ADRs are the reference** (ADR 0005, a local file ignored by Git, ADR 0054): before a decision,
-   read them, then keep, adapt or reject them. Their numbers and internal tools never enter the repository: the the company
+4. **The company's technology ADRs are the reference** (ADR 0005, a local file ignored by Git, ADR 0054): before a
+   decision, read them, then keep, adapt or reject them. Neither the company's name nor their numbers enter the repository (ADR 0056): the company
    reference of each ADR goes to the local `docs/decisions/reference-mapping.local.md` (ADR 0055), and the public ADR
    speaks only of "the reference" (ADR 0005). Details in `CLAUDE.local.md`, on the project owner's machine.
 

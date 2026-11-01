@@ -13,7 +13,7 @@ translation can start and every new document is written in English**.
 
 ## Acceptance criteria
 
-- [x] ADR 0051 records the decision (scope, what stays in French, transition, formats), with the company [ref].
+- [x] ADR 0051 records the decision (scope, what stays in French, transition, formats).
 - [x] `CLAUDE.md` is in English, its rule 1 rewritten (French with the user, English in the repository).
 - [x] The story and epic templates are in English.
 - [x] `scripts/close-story.py` (renamed from `cloturer-story.py`) closes an English or a French story, and updates an

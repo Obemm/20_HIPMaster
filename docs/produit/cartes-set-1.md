@@ -27,7 +27,7 @@ plus the 3 cards of the US-077 extension).
 
 | No. | Card                                | Type      | Rarity | Cost | Att/HP | Abilities / effect                        | In real life                                          |
 | --- | ----------------------------------- | --------- | ------ | ---- | ------ | ----------------------------------------- | ----------------------------------------------------- |
-| 9   | webMethods Integration Server 10.15 | Component | Epic   | 5    | 4/7    | Hub, Single point of failure, On-premises | the company's long-standing ESB, hosted on-premises          |
+| 9   | webMethods Integration Server 10.15 | Component | Epic   | 5    | 4/7    | Hub, Single point of failure, On-premises | The long-standing ESB, hosted on-premises             |
 | 10  | Universal Messaging                 | Component | Rare   | 3    | 2/4    | Durable queue                             | The messaging layer of webMethods                     |
 | 11  | MWS – My webMethods Server          | Component | Rare   | 3    | 1/4    | Monitoring                                | Administration and monitoring. "The page is loading…" |
 | 12  | MQSeries                            | Component | Rare   | 3    | 3/4    | Durable queue                             | The ancestor of message queues                        |
@@ -41,7 +41,7 @@ plus the 3 cards of the US-077 extension).
 
 | No. | Card               | Type      | Rarity | Cost | Att/HP | Abilities / effect                                        | In real life                      |
 | --- | ------------------ | --------- | ------ | ---- | ------ | --------------------------------------------------------- | --------------------------------- |
-| 18  | Apigee API Gateway | Component | Epic   | 4    | 2/7    | Guard, Quotas                                             | the company's API gateway                |
+| 18  | Apigee API Gateway | Component | Epic   | 4    | 2/7    | Guard, Quotas                                             | The API gateway                   |
 | 19  | Apigee API Hub     | Component | Rare   | 2    | 1/3    | When deployed, draw an API or Agentic AI card             | The API catalogue                 |
 | 20  | OAuth2             | Component | Rare   | 2    | 1/3    | Your API components are immune to Expired certificate     | Delegated authorisation, by token |
 | 21  | Rate limiting      | Spell     | Rare   | 1    | —      | An opposing component cannot attack on its next turn      | Capping the number of calls       |
@@ -64,7 +64,7 @@ plus the 3 cards of the US-077 extension).
 
 | No. | Card                | Type      | Rarity | Cost | Att/HP | Abilities / effect                                                     | In real life                            |
 | --- | ------------------- | --------- | ------ | ---- | ------ | ---------------------------------------------------------------------- | --------------------------------------- |
-| 31  | Solace Event Mesh   | Component | Epic   | 5    | 3/6    | Broadcast                                                              | the company's event mesh                       |
+| 31  | Solace Event Mesh   | Component | Epic   | 5    | 3/6    | Broadcast                                                              | The event mesh                          |
 | 32  | Solace Event Portal | Component | Rare   | 2    | 1/3    | When deployed, draw an EDA card                                        | The event catalogue                     |
 | 33  | Event broker        | Component | Rare   | 4    | 3/5    | Reactive                                                               | Receives, stores and distributes events |
 | 34  | CDC                 | Component | Rare   | 3    | 2/3    | When deployed, draw one card for each Files component you have in play | Capturing the changes of a database     |
@@ -78,7 +78,7 @@ plus the 3 cards of the US-077 extension).
 | No. | Card                     | Type                            | Rarity    | Cost | Att/HP | Abilities / effect                                                              | In real life                                      |
 | --- | ------------------------ | ------------------------------- | --------- | ---- | ------ | ------------------------------------------------------------------------------- | ------------------------------------------------- |
 | 39  | Solace Agent Mesh        | Evolution of Solace Event Mesh  | Legendary | 6    | 4/7    | Broadcast, Orchestration, Asynchronous; your agents gain Delegation and Tooling | The agents plugged into the event mesh (A2A, MCP) |
-| 40  | Apigee AI Gateway        | Evolution of Apigee API Gateway | Legendary | 5    | 3/8    | Guard, Quotas, Guardrails, Semantic cache, Multi-model routing                  | the company's upcoming AI gateway                        |
+| 40  | Apigee AI Gateway        | Evolution of Apigee API Gateway | Legendary | 5    | 3/8    | Guard, Quotas, Guardrails, Semantic cache, Multi-model routing                  | The upcoming AI gateway                           |
 | 41  | LLM                      | Component                       | Epic      | 5    | 6/4    | —                                                                               | The large language model                          |
 | 42  | Agent                    | Component                       | Rare      | 4    | 4/3    | Autonomous                                                                      | An LLM that acts with tools                       |
 | 43  | Multi-agent orchestrator | Component                       | Rare      | 5    | 3/5    | Orchestration                                                                   | Shares the work out between agents                |

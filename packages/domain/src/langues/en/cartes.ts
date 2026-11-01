@@ -11,7 +11,7 @@ export const TEXTES_CARTES_EN: Readonly<Record<number, TexteCarte>> = {
   // 1 — FTP
   1: {
     nom: 'FTP',
-    enVrai: 'Plain-text file transfer. Officially banned at the company. Unofficially…',
+    enVrai: 'Plain-text file transfer. Officially banned. Unofficially…',
   },
   // 2 — SFTP
   2: {
@@ -56,7 +56,7 @@ export const TEXTES_CARTES_EN: Readonly<Record<number, TexteCarte>> = {
   // 9 — webMethods Integration Server 10.15
   9: {
     nom: 'webMethods Integration Server 10.15',
-    enVrai: 'the company’s long-standing ESB, hosted on-premises.',
+    enVrai: 'The long-standing ESB, hosted on-premises.',
   },
   // 10 — Universal Messaging
   10: {
@@ -104,7 +104,7 @@ export const TEXTES_CARTES_EN: Readonly<Record<number, TexteCarte>> = {
   // 18 — Apigee API Gateway
   18: {
     nom: 'Apigee API Gateway',
-    enVrai: 'the company’s API gateway: single point of entry, security, quotas and analytics.',
+    enVrai: 'The API gateway: single point of entry, security, quotas and analytics.',
   },
   // 19 — Apigee API Hub
   19: {
@@ -178,7 +178,7 @@ export const TEXTES_CARTES_EN: Readonly<Record<number, TexteCarte>> = {
   // 31 — Solace Event Mesh
   31: {
     nom: 'Solace Event Mesh',
-    enVrai: 'the company’s event mesh: one published event reaches all of its subscribers.',
+    enVrai: 'The event mesh: one published event reaches all of its subscribers.',
   },
   // 32 — Solace Event Portal
   32: {
@@ -230,7 +230,7 @@ export const TEXTES_CARTES_EN: Readonly<Record<number, TexteCarte>> = {
   40: {
     nom: 'Apigee AI Gateway',
     enVrai:
-      'the company’s upcoming AI gateway: token quotas, semantic cache, guardrails and routing between models.',
+      'The upcoming AI gateway: token quotas, semantic cache, guardrails and routing between models.',
   },
   // 41 — LLM
   41: {

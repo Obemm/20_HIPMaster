@@ -11,7 +11,6 @@ export const FICHES_EDA_EN: Readonly<Record<number, Fiche>> = {
       'The order system publishes “order validated”; logistics, billing and customer relations each receive it in their own queue, with no direct call.',
     aRetenir:
       'An event is a contract: describe its schema (AsyncAPI, Event Portal) and evolve it without breaking existing subscribers.',
-    enInterne: 'the company’s event mesh.',
     liens: [
       {
         titre: 'Event-driven architecture',
@@ -188,7 +187,6 @@ export const FICHES_EDA_EN: Readonly<Record<number, Fiche>> = {
       'When an order is validated, the ERP publishes the event; invoicing, the warehouse and the e-mail service each receive it and act on their own, even if one of them is briefly down.',
     aRetenir:
       'An event says what happened, not what to do. Accept eventual consistency, make consumers idempotent and describe the events (AsyncAPI, catalogue).',
-    enInterne: 'Solace Event Mesh is the company’s event mesh.',
     liens: [
       {
         titre: 'Event-driven architecture',

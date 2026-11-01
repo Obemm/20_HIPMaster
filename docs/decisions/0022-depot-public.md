@@ -7,7 +7,7 @@
 ## Context
 
 The review before going online on 2026-10-22 found that the `Obemm/20_HIPMaster` repository is **public**, whereas ADR
-0009 reasons "as long as the repository is private". The repository contains the text of the cards (the company products and
+0009 reasons "as long as the repository is private". The repository contains the text of the cards (company products and
 integration platform, with their versions) and a summary of the company ADR reference (ADR 0005).
 
 ## Decision

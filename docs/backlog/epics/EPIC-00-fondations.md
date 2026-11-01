@@ -18,7 +18,7 @@ documented.
 - [x] US-002 — Next.js + Tailwind CSS
 - [x] US-003 — Project-mode organisation
 - [x] US-004 — Local database
-- [x] US-006 — Angular foundation aligned with the the company reference
+- [x] US-006 — Angular foundation aligned with the company reference
 - [x] US-007 — Dependabot only proposes compatible versions
 - [x] US-043 — API tests that stay robust on a loaded machine
 - [x] US-044 — The quality gate ignores the Claude Desktop app worktrees

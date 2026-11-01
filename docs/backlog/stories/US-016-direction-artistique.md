@@ -29,8 +29,7 @@ As the **project owner**, I want **a defined illustration style and a tool whose
   **paid plan** (subscription or pay-as-you-go API), they belong to the subscriber, with commercial rights, even after
   the subscription ends. → The free plan is ruled out, even for an internal game.
 - Recraft lets you create a reusable **custom style** (also through the API): this is the way to get a coherent set.
-- the company reference: [ref] (rules for using AI assistants) — no company data in the prompts; [ref] (Figma) to be
-  considered for the card template.
+- No company data in the prompts; Figma to be considered for the card template.
 - Decision expected from the project owner: subscribe to a paid Recraft plan, or choose another route (hand-made vector
   illustrations, another generator).
 

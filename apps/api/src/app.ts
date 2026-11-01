@@ -100,7 +100,7 @@ export function construireApp(
           reglages,
         ),
     }),
-    // Limites posées dès le départ (ADR 0007, inspiré d'[ref] the company), resserrées avant l'ouverture (ADR 0025).
+    // Limites posées dès le départ (ADR 0007), resserrées avant l'ouverture (ADR 0025).
     bodyLimit: CORPS_MAX_OCTETS,
     requestTimeout: 10_000,
     // Les `proxysDeConfiance` derniers maillons (la connexion, puis X-Forwarded-For lu de droite à gauche) sont des

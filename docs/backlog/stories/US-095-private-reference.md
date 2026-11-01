@@ -1,4 +1,4 @@
-# US-095 — Keep the the company ADR reference out of the public repository
+# US-095 — Keep the company ADR reference out of the public repository
 
 - **Epic**: EPIC-08
 - **Status**: Done
@@ -8,8 +8,8 @@
 
 ## Story
 
-As the **project owner**, I want **ADR 0005, which copies the table of the the company technology ADRs, to stay on my machine
-and leave the public repository** so that **contributors and visitors no longer read the list of the company internal tools
+As the **project owner**, I want **ADR 0005, which copies the table of the company's technology ADRs, to stay on my machine
+and leave the public repository** so that **contributors and visitors no longer read the list of company internal tools
 and rules (identity provider, cloud, governance tools…)**.
 
 ## Acceptance criteria
@@ -19,15 +19,15 @@ and rules (identity provider, cloud, governance tools…)**.
 - [x] **Given** a public file that linked to ADR 0005, **then** it no longer holds a broken link: it cites "ADR 0005"
       as plain text, kept locally.
 - [x] **Given** the decision, **then** ADR 0054 records it, its consequences on ADR 0022 and what it does not cover
-      (Git history, the "the company reference" field of the other ADRs, the card texts).
+      (Git history, the "company reference" field of the other ADRs, the card texts).
 - [x] `npm run check` passes.
 
 ## Notes
 
-- Audit of 2026-10-29 of the the company mentions in the repository and the game: ADR 0005 is the file that lists the most
-  the company internal tools (Okta, Azure Repo, TAD, LeanIX, AT Internet, ConfigCat, Localazy…). The project owner chose to
+- Audit of 2026-10-29 of the company mentions in the repository and the game: ADR 0005 is the file that lists the most
+  company internal tools (Okta, Azure Repo, TAD, LeanIX, AT Internet, ConfigCat, Localazy…). The project owner chose to
   start with this file only.
-- Out of scope at first, then done on the project owner's request: rewriting the Git history. Still out of scope: the "the company reference" field of
+- Out of scope at first, then done on the project owner's request: rewriting the Git history. Still out of scope: the "company reference" field of
   the other ADRs, the "At the company" and "In real life" texts of the cards.
 
 ## Log

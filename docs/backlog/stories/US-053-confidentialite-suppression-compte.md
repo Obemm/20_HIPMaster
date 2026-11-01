@@ -45,7 +45,7 @@ that I can **play with confidence**.
 
 - Today, deleting a player cascades to the duels they appear in, including for their opponent (`onDelete: 'cascade'`
   in `apps/api/src/db/schema.ts`): to be reviewed in this story.
-- the company [ref] (AT Internet) remains rejected: no audience measurement (ADR 0005).
+- No audience measurement (ADR 0005).
 
 ## Log
 

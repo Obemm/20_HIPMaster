@@ -1,4 +1,4 @@
-# US-006 — Angular foundation aligned with the the company reference
+# US-006 — Angular foundation aligned with the company reference
 
 - **Epic**: EPIC-00
 - **Status**: Done
@@ -8,12 +8,12 @@
 
 ## Story
 
-As the **project owner**, I want **the first technical choices to rely on the the company technology ADRs**
+As the **project owner**, I want **the first technical choices to rely on the company's technology ADRs**
 so that **I work with the Group's stack and practices, without bearing its enterprise obligations**.
 
 ## Acceptance criteria
 
-- [x] An ADR sets the reference: each relevant the company technology ADR is kept, adapted or rejected, with its reason.
+- [x] An ADR sets the reference: each relevant company technology ADR is kept, adapted or rejected, with its reason.
 - [x] The ADRs that contradict the reference (0001 Next.js) are replaced by new ADRs, without being rewritten.
 - [x] **Given** the repository, **when** I type `npm run dev`, **then** the Angular front end (localhost:4200) and the
       API (localhost:3000) start, and the front end displays the state of the API.
@@ -24,9 +24,8 @@ so that **I work with the Group's stack and practices, without bearing its enter
 
 ## Notes
 
-Source: reference of the the company ADRs from the [ref] Confluence space (mirror dated 2026-09-16 in
-`(local mirror)`). User's decision on 2026-10-16:
-**inspiration only** (no Okta, Azure Repo, TAD or LeanIX imposed) and **switch to Angular** (the company [ref]).
+Source: the company's ADRs (ADR 0005, kept locally). User's decision on 2026-10-16: **inspiration only** (no Okta,
+Azure Repo, TAD or LeanIX imposed) and **switch to Angular**.
 
 ## Log
 
@@ -34,4 +33,4 @@ Source: reference of the the company ADRs from the [ref] Confluence space (mirro
 - 2026-10-16 — ADRs 0005 to 0009 written, 0001 replaced. Next.js removed; npm workspaces monorepo; `packages/domain`
   and Fastify API (`/api/v1/sante`, `/api/v1/raretes`, Problem Details errors) tested (9 tests), ESLint + SonarJS green.
   **Blocked**: Angular 22 requires Node ≥ 24.15 (installed: 24.14) — Node update to be done by the project owner.
-- 2026-10-16 — delivered: ADRs 0005 to 0009 inspired by the the company reference; Angular 22 + Fastify 5 API + packages/domain; SonarJS; 12 unit tests and 4 e2e journeys green
+- 2026-10-16 — delivered: ADRs 0005 to 0009 inspired by the company reference; Angular 22 + Fastify 5 API + packages/domain; SonarJS; 12 unit tests and 4 e2e journeys green

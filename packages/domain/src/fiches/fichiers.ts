@@ -11,8 +11,6 @@ export const FICHES_FICHIERS: Readonly<Record<number, Fiche>> = {
       'Un partenaire dépose chaque soir commandes.csv sur le serveur FTP ; à 2 h, un traitement batch le récupère et l’intègre dans l’ERP.',
     aRetenir:
       'FTP ne chiffre rien : identifiant, mot de passe et contenu circulent en clair sur le réseau. Et un fichier déposé ne dit ni s’il est complet, ni s’il a déjà été traité.',
-    enInterne:
-      'Interdit en interne : les échanges qui en dépendent encore sont appelés à passer par une API ou un événement.',
     liens: [
       {
         titre: 'File Transfer Protocol',
@@ -35,8 +33,6 @@ export const FICHES_FICHIERS: Readonly<Record<number, Fiche>> = {
       'Chaque matin, une banque met un relevé à disposition sur son serveur SFTP ; le traitement de la trésorerie s’y connecte avec sa clé et le télécharge.',
     aRetenir:
       'Le chiffrement protège le transport, pas le reste : un fichier peut toujours arriver incomplet, en double ou en retard. Et les clés se gèrent : une par partenaire, renouvelées, révoquées au départ du partenaire.',
-    enInterne:
-      'Proscrit en interne, comme FTP, et pourtant encore utilisé par beaucoup de projets : chaque nouvel échange passe par une API ou un événement, et les flux existants sont appelés à y migrer.',
     liens: [
       {
         titre: 'SSH File Transfer Protocol',

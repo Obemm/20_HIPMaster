@@ -43,8 +43,6 @@ packages/illustrations/sources/
 # Worktrees Git créés par l'app Claude Desktop dans le dossier du projet (US-044)
 .claude/worktrees/
 
-# the company ADR reference: kept on the owner's machine, out of the public repository (ADR 0054)
-docs/decisions/0005-reference.local.md
-# the company reference of each ADR and the local rules that use it (ADR 0055)
-docs/decisions/reference-mapping.local.md
+# The company reference and its mapping: kept on the owner's machine, out of the repository (ADR 0054, 0055)
+docs/decisions/*.local.md
 CLAUDE.local.md

@@ -17,7 +17,7 @@ text**.
 
 - **Model** (`packages/domain/src/fiches/`, ADR 0036): a sheet carries `definition` (what it is, in one sentence),
   `usage` (what it is for; for an incident, how it occurs), `exemple`, `aRetenir` (the pitfall or the good practice),
-  an optional `enInterne` (only facts that are already public in the repository) and 1 to 3 `liens` (`titre`, `url` in
+  an optional company field (removed by US-097) and 1 to 3 `liens` (`titre`, `url` in
   `https`, `langue` `fr` or `en`). One file per family, indexed by card number.
 - **Validation**: `problemesFiche` bounds the lengths (220 / 360 / 360 / 320 / 240 characters, 1,300 in all, i.e. less
   than a minute of reading) and checks the links; the domain tests apply it to every sheet.

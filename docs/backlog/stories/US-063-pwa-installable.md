@@ -13,7 +13,7 @@ screen, and find it quickly**.
 
 ## Context
 
-ADR 0006 announces a front end "delivered as a PWA" (the company [ref]); the 2026-10-22 review finds there is no web
+ADR 0006 announces a front end "delivered as a PWA"; the 2026-10-22 review finds there is no web
 manifest, no service worker and no icons: the game is not installable.
 
 ## Acceptance criteria

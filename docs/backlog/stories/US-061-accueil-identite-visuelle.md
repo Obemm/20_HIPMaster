@@ -88,7 +88,7 @@ so they can validate or correct it on waking.
 
 - Build on US-016's art direction (night-blue background and glows in the "Sunlit Sketches" style) so that the
   interface and the future illustrations speak the same language.
-- the company [ref] (Figma): no mock-up tonight; the PR's before and after screenshots stand in for it.
+- Figma: no mock-up tonight; the PR's before and after screenshots stand in for it.
 - The link preview image (`apercu-lien.jpg`) is taken from the home page rendering: to be regenerated with the final
   illustrations (US-017).
 

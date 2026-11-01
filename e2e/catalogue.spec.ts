@@ -85,7 +85,7 @@ test('« En savoir plus » déplie la fiche d’une carte, et ses liens partent 
   await bouton.click();
   await expect(bouton).toHaveAttribute('aria-expanded', 'true');
   await expect(fenetre.getByText('C’est quoi ?')).toBeVisible();
-  await expect(fenetre.getByText('En interne', { exact: true })).toBeVisible();
+  await expect(fenetre.getByText('À retenir', { exact: true })).toBeVisible();
   const lien = fenetre.getByRole('link', {
     name: 'File Transfer Protocol (nouvel onglet)',
     exact: true,

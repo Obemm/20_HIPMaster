@@ -23,7 +23,7 @@ export default defineConfig([
     extends: [
       js.configs.recommended,
       tseslint.configs.recommended,
-      // Équivalent local du profil SonarWay (ADR 0009, inspiré d'[ref] the company).
+      // Équivalent local du profil SonarWay (ADR 0009).
       sonarjs.configs.recommended,
     ],
     languageOptions: { globals: { ...globals.node } },

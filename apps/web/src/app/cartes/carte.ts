@@ -43,7 +43,6 @@ export interface Fiche {
   usage: string;
   exemple: string;
   aRetenir: string;
-  enInterne?: string;
   liens: LienExterne[];
 }
 

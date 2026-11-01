@@ -42,31 +42,11 @@ describe('problemesFiche', () => {
     expect(problemesFiche(FICHE)).toEqual([]);
   });
 
-  it('signale un champ vide ou trop long, et une fiche trop longue', () => {
-    expect(problemesFiche({ ...FICHE, definition: '  ', enInterne: '' })).toEqual([
-      'definition : vide',
-      'enInterne : vide',
-    ]);
+  it('signale un champ vide ou trop long', () => {
+    expect(problemesFiche({ ...FICHE, definition: '  ' })).toEqual(['definition : vide']);
     expect(problemesFiche({ ...FICHE, usage: 'x'.repeat(361) })).toEqual([
       'usage : 361 caractères (au plus 360)',
     ]);
-    expect(problemesFiche({ ...FICHE, enInterne: 'x'.repeat(241) })).toEqual([
-      'enInterne : 241 caractères (au plus 240)',
-    ]);
-  });
-
-  it('signale une fiche dont le total dépasse une minute de lecture', () => {
-    const presque = (n: number) => 'x'.repeat(n);
-    expect(
-      problemesFiche({
-        ...FICHE,
-        definition: presque(220),
-        usage: presque(360),
-        exemple: presque(360),
-        aRetenir: presque(320),
-        enInterne: presque(100),
-      }),
-    ).toEqual(['fiche : 1360 caractères (au plus 1300)']);
   });
 
   it('exige de 1 à 3 liens https distincts, titrés, en français ou en anglais', () => {

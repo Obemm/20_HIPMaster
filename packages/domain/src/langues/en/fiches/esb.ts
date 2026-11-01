@@ -11,7 +11,6 @@ export const FICHES_ESB_EN: Readonly<Record<number, Fiche>> = {
       'An order arrives as XML; a flow service converts it to the ERP format, sends it through the SAP adapter, then returns an acknowledgement.',
     aRetenir:
       'A central bus is handy… until it becomes the single point of failure and the place where business logic piles up. An ESB transforms and routes; business rules live in the applications.',
-    enInterne: 'the company’s legacy ESB, hosted on premises; its target is the webMethods.io iPaaS.',
     liens: [
       {
         titre: 'Enterprise service bus',

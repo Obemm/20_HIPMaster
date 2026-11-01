@@ -33,7 +33,7 @@ have checked the obvious flaws** so that I can **invite my colleagues with peace
 
 ## Notes
 
-- the company [ref] (DAST) adapted: a baseline scan before opening, then at each major version (ADR 0021).
+- DAST: a baseline scan before opening, then at each major version (ADR 0021).
 - Neon Free's restore history covers only 6 hours: hence the backup of each night.
 - Cloud Scheduler offers 3 free tasks: backup, purge (US-054) and consumption reading.
 - Cloud Logging logs are kept 30 days by default: duration to be restated in the privacy page (US-053).
@@ -70,7 +70,7 @@ have checked the obvious flaws** so that I can **invite my colleagues with peace
 - **Infrastructure**: `infrastructure.sh` created 15 items (2 service accounts, rights, `neon-cle-api` secret, 2
   scheduled tasks, e-mail channel, uptime check, 2 alerts), then, after the first deployment of the jobs, the rights of
   the scheduled tasks. Two more passes: stable (the two defects found on the way are fixed: JSON body with accents
-  garbled by Windows, bucket rights misread). The machine's `company` configuration intact.
+  garbled by Windows, bucket rights misread). The machine's professional configuration intact.
 - **Jobs**: `exploitation` image pushed (separate package: the API images did not move), jobs created by
   `deployer.sh exploitation`.
 - **Consumption**: "0,5 h-CU sur 100 (0,5 %, 4,9 prévues sur le mois), stockage 38 Mo sur 1 024 Mo (3,7 %)".

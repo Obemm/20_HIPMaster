@@ -23,8 +23,6 @@ export interface Fiche {
   exemple: string;
   /** Le piège à éviter ou la bonne pratique. */
   aRetenir: string;
-  /** Le lien avec l'intégration en interne, seulement quand il est public et déjà établi (rien d'inventé). */
-  enInterne?: string;
   /** De une à trois ressources externes. */
   liens: readonly LienExterne[];
 }
@@ -35,28 +33,21 @@ export const LIMITES_FICHE = {
   usage: 360,
   exemple: 360,
   aRetenir: 320,
-  enInterne: 240,
-  total: 1300,
   liens: { min: 1, max: 3 },
 } as const;
 
-const CHAMPS_TEXTE = ['definition', 'usage', 'exemple', 'aRetenir', 'enInterne'] as const;
+const CHAMPS_TEXTE = ['definition', 'usage', 'exemple', 'aRetenir'] as const;
 
 /** Liste ce qui ne va pas dans une fiche (champ vide ou trop long, lien invalide) ; vide si elle est conforme. */
 export function problemesFiche(fiche: Fiche): string[] {
   const problemes: string[] = [];
-  let total = 0;
   for (const champ of CHAMPS_TEXTE) {
     const texte = fiche[champ];
-    if (texte === undefined && champ === 'enInterne') continue;
-    const longueur = texte?.trim().length ?? 0;
-    total += longueur;
+    const longueur = texte.trim().length;
     if (longueur === 0) problemes.push(`${champ} : vide`);
     else if (longueur > LIMITES_FICHE[champ])
       problemes.push(`${champ} : ${longueur} caractères (au plus ${LIMITES_FICHE[champ]})`);
   }
-  if (total > LIMITES_FICHE.total)
-    problemes.push(`fiche : ${total} caractères (au plus ${LIMITES_FICHE.total})`);
 
   const { min, max } = LIMITES_FICHE.liens;
   if (fiche.liens.length < min || fiche.liens.length > max)

@@ -22,7 +22,7 @@ player**.
       (initial target 60%, achieved 55%: the game's randomness caps the gap, see the notes), Autonomous Agent at least
       55% against ESB Architect (achieved 58%) and 63% against Nightly Batch; results recorded in
       [cartes-set-1.md](../../produit/cartes-set-1.md). `npm run simuler` also compares the levels.
-- [x] A bot turn stays fast: under 200 ms on average for the strongest level (limit from the company [ref]: 3 s for a front
+- [x] A bot turn stays fast: under 200 ms on average for the strongest level (response target: 3 s for a front-end
       API).
 - [x] The API lists the levels (`GET /api/v1/niveaux`) and accepts the level when a game is created (Nightly Batch by
       default); OpenAPI contract up to date.

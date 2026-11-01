@@ -11,7 +11,6 @@ export const FICHES_API: Readonly<Record<number, Fiche>> = {
       'Une application mobile appelle /commandes : Apigee contrôle son jeton, refuse la requête de trop dans la minute, puis transmet les autres au service interne.',
     aRetenir:
       'La passerelle protège et observe ; elle ne porte pas la logique métier. Un proxy bourré de règles devient un petit ESB, difficile à maintenir.',
-    enInterne: 'La passerelle API d’the company : le point d’entrée unique de ses API.',
     liens: [
       {
         titre: 'Qu’est-ce qu’Apigee ?',

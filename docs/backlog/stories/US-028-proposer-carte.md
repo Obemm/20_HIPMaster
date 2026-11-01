@@ -32,7 +32,7 @@ card and its illustration in line with the game, without my having to know all t
 
 - ADR [0050](../../decisions/0050-cartes-communaute-par-pull-request.md). Replaces the in-game proposal form of the
   initial plan (ADR, form, preview, "My proposals").
-- The prompt contains only public information from the repository (the company [ref]).
+- The prompt contains only public information from the repository.
 - To be updated when adding a card changes (new file, new language).
 
 ## Log

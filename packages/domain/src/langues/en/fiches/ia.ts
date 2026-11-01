@@ -33,7 +33,6 @@ export const FICHES_IA_EN: Readonly<Record<number, Fiche>> = {
       'The internal assistant calls the AI through the gateway: it checks the assistant’s token, cuts it off beyond its daily token quota, serves a cached answer if the question has already been asked, otherwise routes it to the model.',
     aRetenir:
       'Centralising access to models avoids keys scattered across the code and surprise bills: a single point to control, measure and switch models.',
-    enInterne: 'the company’s future AI gateway, an evolution of its API gateway.',
     liens: [
       {
         titre: 'Apigee AI solutions (Google Cloud)',

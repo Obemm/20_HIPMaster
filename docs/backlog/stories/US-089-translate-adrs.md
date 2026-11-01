@@ -15,7 +15,7 @@ project is built this way before proposing a change**.
 
 - [x] Every ADR of `docs/decisions/` (0001 to 0050), its index `README.md` and `template.md` are in English, numbers,
       dates, statuses and paths unchanged; the translation changes no decision.
-- [x] Headers follow ADR 0051 (`- **Date**:`, `- **Status**:`, `- **the company reference**:`…).
+- [x] Headers follow ADR 0051 (`- **Date**:`, `- **Status**:`, `- **company reference**:`…).
 - [x] Links and anchors still resolve; `npm run check` passes.
 
 ## Log

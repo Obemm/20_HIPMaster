@@ -55,9 +55,6 @@ describe.each(AUTRES_LANGUES)('le catalogue en %s', (langue) => {
       expect(traduite, `fiche ${carte.numero}`).toBeDefined();
       if (!traduite) continue;
       expect(problemesFiche(traduite), `fiche ${carte.numero}`).toEqual([]);
-      expect(traduite.enInterne === undefined, `enInterne ${carte.numero}`).toBe(
-        francaise.enInterne === undefined,
-      );
     }
   });
 

@@ -28,10 +28,10 @@ Deliverables: [univers.md](../../produit/univers.md), [regles.md](../../produit/
 [cartes-set-1.md](../../produit/cartes-set-1.md) (draft of 64 cards), [ADR 0010](../../decisions/0010-combat-plateau.md).
 
 Project owner's choices (discussion of 2026-10-16): the integration platform universe, from FTP to agentic AI (MCP,
-A2A, LLM, prompting); real the company building blocks as signature cards — on-premises webMethods Integration Server 10.15
+A2A, LLM, prompting); real building blocks as signature cards — on-premises webMethods Integration Server 10.15
 (with Universal Messaging and MWS) towards webMethods.io, Apigee API Gateway towards AI Gateway, Solace Event Mesh
 towards Solace Agent Mesh (no agentic AI tool in place: Agent Mesh chosen for the game); FTP is officially forbidden
-at the company and SFTP is being gradually replaced; real product names, without logos, internal game.
+and SFTP is being gradually replaced; real product names, without logos, internal game.
 
 ## Log
 

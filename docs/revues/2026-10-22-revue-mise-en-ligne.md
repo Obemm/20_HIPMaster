@@ -47,14 +47,14 @@ invitations.
 
 ## Content and compliance
 
-| Finding                                                                                                                                                                                                                                                                                                             | Severity  | Follow-up |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- | --------- |
-| The GitHub repository `Obemm/20_HIPMaster` is **public**, whereas ADR 0009 reasons "as long as the repository is private". It contains the card text (the company products and integration platform) and a summary of the the company ADR reference. The project owner accepts this choice: this information is public elsewhere. | Accepted  | ADR 0022  |
-| No page says what data is kept (username, collection, IP addresses in the logs) or how to delete one's account.                                                                                                                                                                                                     | Important | US-053    |
-| No instruction to search engines (`robots.txt`, `noindex`) for a site reserved for invited users.                                                                                                                                                                                                                   | Minor     | US-050    |
+| Finding                                                                                                                                                                                                                                                                                                                   | Severity  | Follow-up |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- | --------- |
+| The GitHub repository `Obemm/20_HIPMaster` is **public**, whereas ADR 0009 reasons "as long as the repository is private". It contains the card text (company products and integration platform) and a summary of the company ADR reference. The project owner accepts this choice: this information is public elsewhere. | Accepted  | ADR 0022  |
+| No page says what data is kept (username, collection, IP addresses in the logs) or how to delete one's account.                                                                                                                                                                                                           | Important | US-053    |
+| No instruction to search engines (`robots.txt`, `noindex`) for a site reserved for invited users.                                                                                                                                                                                                                         | Minor     | US-050    |
 
-A public repository keeps GitHub Actions minutes free and unlimited, and makes SonarQube Cloud free: the gap with the company
-[ref] noted by ADR 0009 can be closed (ADR 0022).
+A public repository keeps GitHub Actions minutes free and unlimited, and makes SonarQube Cloud free: the gap noted
+by ADR 0009 can be closed (ADR 0022).
 
 ## Architecture and API
 

@@ -6,7 +6,7 @@
 ## Context
 
 The vision left the choice of combat mechanic open: a quiz on the content of the cards (WikiMasters) or a board with
-resource / attack / HP (Async TCG). The chosen universe is the company's integration platform, from FTP to AI agents
+resource / attack / HP (Async TCG). The chosen universe is a hybrid integration platform, from FTP to AI agents
 ([univers.md](../produit/univers.md)): the technologies have behaviours (slowness of batch, the single point of the
 ESB, the gateway's protection, event broadcasting, the autonomy of agents) that we want players to **feel**.
 

@@ -11,7 +11,6 @@ export const FICHES_EDA: Readonly<Record<number, Fiche>> = {
       'Le système de commandes publie « commande validée » ; la logistique, la facturation et la relation client le reçoivent chacune dans sa file, sans appel direct.',
     aRetenir:
       'Un événement est un contrat : décrire son schéma (AsyncAPI, Event Portal) et le faire évoluer sans casser les abonnés qui existent déjà.',
-    enInterne: 'Le maillage d’événements d’the company.',
     liens: [
       {
         titre: 'Architecture orientée événements',
@@ -188,7 +187,6 @@ export const FICHES_EDA: Readonly<Record<number, Fiche>> = {
       'Quand une commande est validée, l’ERP publie l’événement ; la facturation, l’entrepôt et l’envoi d’e-mails le reçoivent et agissent chacun de leur côté, même si l’un d’eux est momentanément arrêté.',
     aRetenir:
       'Un événement dit ce qui s’est passé, pas ce qu’il faut faire. Accepter la cohérence à terme, rendre les consommateurs idempotents et décrire les événements (AsyncAPI, catalogue).',
-    enInterne: 'Solace Event Mesh est le maillage d’événements d’the company.',
     liens: [
       {
         titre: 'Architecture orientée événements',

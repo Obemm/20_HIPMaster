@@ -11,8 +11,6 @@ export const FICHES_IPAAS: Readonly<Record<number, Fiche>> = {
       'Quand un client est créé dans le CRM, un flux webMethods.io le crée dans l’ERP, puis prévient le service facturation.',
     aRetenir:
       'Moins de serveurs ne veut pas dire moins de rigueur : versionner les flux, les tester, superviser les exécutions et surveiller la consommation restent indispensables.',
-    enInterne:
-      'La cible de l’ESB historique d’the company : migrer vers l’iPaaS supprime l’entretien des serveurs sur site.',
     liens: [
       {
         titre: 'Cloud-based integration (iPaaS)',

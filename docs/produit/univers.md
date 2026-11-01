@@ -1,6 +1,6 @@
 # Universe: the integration platform
 
-HIPMaster tells the story of the company's **hybrid integration platform** (HIP), from the file dropped over FTP to AI
+HIPMaster tells the story of a **hybrid integration platform** (HIP), from the file dropped over FTP to AI
 agents. Each card is a technology, a pattern or an incident that an integration team knows well. The game is first of
 all **internal**: it is used to train and engage the team.
 
@@ -8,7 +8,7 @@ all **internal**: it is used to train and engage the team.
 
 | Era                | Starting point                      | Target                  |
 | ------------------ | ----------------------------------- | ----------------------- |
-| Files & Batch      | FTP (**banned** at the company) → SFTP     | → API or event          |
+| Files & Batch      | FTP (**banned**) → SFTP             | → API or event          |
 | Messaging & ESB    | webMethods Integration Server 10.15 | → webMethods.io (iPaaS) |
 | API                | Apigee API Gateway                  | → Apigee AI Gateway     |
 | Event-driven (EDA) | Solace Event Mesh                   | → Solace Agent Mesh     |

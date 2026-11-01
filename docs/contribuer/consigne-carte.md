@@ -56,7 +56,7 @@ the README and the illustrations, which are out of scope here: follow only the l
    optional effect in British English, following the glossary at the top of the file, under the same comment; update
    the number of cards in the header.
 3. packages/domain/src/fiches/<family>.ts: its "Learn more" sheet in French (definition, usage, exemple, aRetenir,
-   enInterne only if the proposal gives it, 1 to 3 https links that you have opened; if you cannot open web pages, keep
+   1 to 3 https links that you have opened; if you cannot open web pages, keep
    the proposal's links and list them as unchecked in your report), within LIMITES_FICHE
    (fiches/fiche.ts); and its English version in packages/domain/src/langues/en/fiches/<family>.ts. When a resource
    exists in both languages, the French sheet links to the French version, the English sheet to the English one.

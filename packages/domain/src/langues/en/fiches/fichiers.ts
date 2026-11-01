@@ -11,8 +11,6 @@ export const FICHES_FICHIERS_EN: Readonly<Record<number, Fiche>> = {
       'Every evening a partner drops orders.csv on the FTP server; at 2 a.m. a batch job fetches it and loads it into the ERP.',
     aRetenir:
       'FTP encrypts nothing: username, password and content travel in plain text over the network. And a dropped file says neither whether it is complete nor whether it has already been processed.',
-    enInterne:
-      'Banned at the company: the exchanges that still depend on it are due to move to an API or an event.',
     liens: [
       {
         titre: 'File Transfer Protocol',
@@ -35,8 +33,6 @@ export const FICHES_FICHIERS_EN: Readonly<Record<number, Fiche>> = {
       'Every morning a bank makes a statement available on its SFTP server; the treasury job connects with its key and downloads it.',
     aRetenir:
       'Encryption protects the transport, not the rest: a file can still arrive incomplete, twice or late. And keys need managing: one per partner, renewed, revoked when the partner leaves.',
-    enInterne:
-      'Prohibited at the company, like FTP, yet still used by many projects: every new exchange goes through an API or an event, and existing flows are due to migrate to them.',
     liens: [
       {
         titre: 'SSH File Transfer Protocol',

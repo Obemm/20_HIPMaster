@@ -14,7 +14,7 @@ shown in the video "J'ai demandé à une IA de RECODER WikiMaster…" (see [insp
 
 ## Who it is for
 
-the company's integration team and colleagues curious about the platform: casual players who want a short game (under
+An integration team and colleagues curious about the platform: casual players who want a short game (under
 5 minutes) on a phone or computer, and to learn while playing.
 
 ## Goals
@@ -26,7 +26,7 @@ the company's integration team and colleagues curious about the platform: casual
 
 ## Questions settled (US-005, 2026-10-16)
 
-- **Universe**: HIP = the company's **hybrid integration platform**, from FTP to AI agents — see [univers.md](univers.md).
+- **Universe**: HIP = a **hybrid integration platform**, from FTP to AI agents — see [univers.md](univers.md).
 - **Origin of the cards**: written by hand, as versioned data — draft: [cartes-set-1.md](cartes-set-1.md).
 - **Combat**: board with Throughput / attack / HP against the opposing System's SLA — [regles.md](regles.md), ADR 0010.
   A multiple-choice "Certification" mode is kept for later.

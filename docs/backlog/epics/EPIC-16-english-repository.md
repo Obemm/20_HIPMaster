@@ -5,7 +5,7 @@
 
 ## Goal
 
-Open the whole project to English-speaking colleagues (architects at the company), who will read the rules and decisions and
+Open the whole project to English-speaking colleagues (architects), who will read the rules and decisions and
 propose cards and features: the repository is written in English from now on (ADR
 [0051](../../decisions/0051-english-repository-language.md)), and its existing French documents are translated.
 Decision of the project owner, 2026-10-27.

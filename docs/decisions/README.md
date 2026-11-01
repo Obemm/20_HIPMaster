@@ -3,8 +3,8 @@
 Every structuring decision is recorded here to remember **why** a choice was made.
 An ADR is never modified after acceptance: if it is challenged, a new ADR supersedes it.
 
-**Reference**: the the company technology ADRs are read before any decision, as inspiration and without the corporate
-obligations — see ADR 0005, kept on the owner's machine ([0054](0054-reference-out-of-repository.md)). The the company
+**Reference**: the company's technology ADRs are read before any decision, as inspiration and without the corporate
+obligations — see ADR 0005, kept on the owner's machine ([0054](0054-reference-out-of-repository.md)). The company
 reference of each ADR is recorded on that machine too, out of the public ADRs ([0055](0055-reference-out-of-adrs.md)).
 
 | No.                                                       | Decision                                                                              | Status                       |
@@ -13,7 +13,7 @@ reference of each ADR is recorded on that machine too, out of the public ADRs ([
 | [0002](0002-backlog-dans-le-depot.md)                     | Epics/stories backlog in Markdown in the repository                                   | Accepted                     |
 | [0003](0003-postgresql-drizzle.md)                        | PostgreSQL + Drizzle ORM, Docker in development                                       | Accepted (Docker: 0018)      |
 | [0004](0004-logique-de-jeu-pure.md)                       | Game logic in pure TypeScript, server authority                                       | Accepted (completed by 0007) |
-| 0005 (local, [0054](0054-reference-out-of-repository.md)) | The the company technology ADRs as the reference                                             | Accepted                     |
+| 0005 (local, [0054](0054-reference-out-of-repository.md)) | The company's technology ADRs as the reference                                        | Accepted                     |
 | [0006](0006-angular-pwa.md)                               | Angular for the front end, delivered as a PWA                                         | Accepted                     |
 | [0007](0007-api-rest-monorepo.md)                         | Fastify REST API and npm workspaces monorepo                                          | Accepted                     |
 | [0008](0008-hebergement-azure.md)                         | Azure as the target hosting                                                           | Superseded by 0021           |
@@ -61,7 +61,8 @@ reference of each ADR is recorded on that machine too, out of the public ADRs ([
 | [0050](0050-cartes-communaute-par-pull-request.md)        | Community cards by PR from a fork, kit for the contributor's AI                       | Accepted                     |
 | [0051](0051-english-repository-language.md)               | English is the language of the repository                                             | Accepted                     |
 | [0053](0053-gouvernance-depot-github.md)                  | Repository governance: protected `main`, owner review, settings as a script           | Accepted                     |
-| [0054](0054-reference-out-of-repository.md)               | The the company ADR reference stays out of the public repository                             | Accepted                     |
-| [0055](0055-reference-out-of-adrs.md)                | The the company reference of each ADR stays out of the public repository                     | Accepted                     |
+| [0054](0054-reference-out-of-repository.md)               | The company ADR reference stays out of the public repository                          | Accepted                     |
+| [0055](0055-reference-out-of-adrs.md)                     | The company reference of each ADR stays out of the public repository                  | Accepted                     |
+| [0056](0056-new-public-repository.md)                     | A new public repository that no longer names the company                              | Accepted                     |
 
 Template: [template.md](template.md).

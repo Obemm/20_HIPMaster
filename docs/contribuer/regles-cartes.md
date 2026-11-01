@@ -129,16 +129,15 @@ readable by someone outside the trade. A touch of team humour is welcome if it s
 Every card has a sheet, opened from its details (ADR [0036](../decisions/0036-fiches-pedagogiques-cartes.md)), that
 takes less than a minute to read: accurate rather than playful.
 
-| Field      | Content                                                               | Max length |
-| ---------- | --------------------------------------------------------------------- | ---------- |
-| Definition | what it is, in one sentence                                           | 220 chars  |
-| Use        | what it is for; for an incident, how it happens                       | 360 chars  |
-| Example    | a concrete case from the life of an integration team                  | 360 chars  |
-| Takeaway   | the pitfall to avoid or the good practice                             | 320 chars  |
-| At the company    | optional: the link with integration at the company, **only if it is public** | 240 chars  |
-| Links      | 1 to 3 `https` resources (Wikipedia, vendor docs, standard)           | —          |
+| Field      | Content                                                     | Max length |
+| ---------- | ----------------------------------------------------------- | ---------- |
+| Definition | what it is, in one sentence                                 | 220 chars  |
+| Use        | what it is for; for an incident, how it happens             | 360 chars  |
+| Example    | a concrete case from the life of an integration team        | 360 chars  |
+| Takeaway   | the pitfall to avoid or the good practice                   | 320 chars  |
+| Links      | 1 to 3 `https` resources (Wikipedia, vendor docs, standard) | —          |
 
-The total stays under 1,300 characters. The game is bilingual and French is its reference language: write your
+The game is bilingual and French is its reference language: write your
 proposal in English, and your AI writes the card and its sheet in French and in English. The project owner reviews the
 French version.
 
@@ -157,8 +156,7 @@ yourself, before opening it, that the card, its sheet and its illustration conta
   allowed, never their logos.
 - **A kind tone**: humour targets situations, never people or teams.
 - **Text that a non-specialist understands**, with no unexplained acronym.
-- **Nothing about you in the prompts given to your AI** beyond the proposal itself (the company guidelines on AI assistants,
-  [ref]).
+- **Nothing about you in the prompts given to your AI** beyond the proposal itself.
 
 ## Proposal template
 
@@ -173,7 +171,7 @@ Fill it in first, then give it to your AI and paste it into the pull request des
 - Abilities: (glossary keywords, or none)
 - Effect: (one sentence, or none)
 - In real life: (one sentence, 110 characters at most)
-- "Learn more" sheet: definition, use, example, takeaway, at the company (optional), 1 to 3 links
+- "Learn more" sheet: definition, use, example, takeaway, 1 to 3 links
 - Illustration idea: (the creature, its pose, its setting; not one already taken, see
   docs/produit/prompts-illustrations-gemini.md)
 - Sources: (where to check what the card says)
